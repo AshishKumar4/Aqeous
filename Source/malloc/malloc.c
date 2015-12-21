@@ -4,8 +4,8 @@
 #include <system.h>
 #include <stdio.h>
 
-/** MEMORY ALLOCATION **/
-// a memory block
+/**NOT PORTED BC, Just wrote what i learnt from ProjectOS's Malloc(). ProjectOS was our base project, remember? **/
+
 struct MemBlock_t {
 	unsigned int		used : 1;
 	unsigned int		size;
@@ -232,6 +232,7 @@ struct __freelist {
 	struct __freelist *nx;
 };
 
+/**THIS MALLOC DOSENT WORK, use the kmalloc() only-!!! Come on fb now!**/
 
 char *g_heapstart, *g_heapend;
 #define __malloc_heap_start g_heapstart

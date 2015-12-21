@@ -1,4 +1,7 @@
 #!/bin/sh
+
+rm -rfv isodir
+rm -rfv objs
 make all
 mkdir -p isodir
 mkdir -p isodir/boot
