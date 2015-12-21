@@ -1,5 +1,8 @@
 #include <sys/cdefs.h>
-
+#include <stdbool.h>
+#include <stdarg.h>
+#include <string.h>
+extern int putchar(int ic);
 static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
