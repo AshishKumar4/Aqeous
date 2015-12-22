@@ -30,7 +30,7 @@ _start:
 	# Call the global constructors.
 	# call _init
 	# Transfer control to the main kernel.
-	cli
+
 	call kernel_start
 	call kernel_main
 	# Hang if kernel_main unexpectedly returns.

@@ -3,8 +3,8 @@
 #define TIMER_H
 
 #include "common.h"
-#include "interrupts.c"
+#include "interrupts.h"
 
-void init_timer(u32int frequency);
+void init_timer();
 
 #endif

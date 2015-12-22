@@ -1,8 +1,8 @@
 
 #include <graphics.c>
-#include <timer.c>
 #include <common.h>
 #include <sys.h>
+
 void mouse_wait(unsigned char type)
 {
   unsigned int _time_out=100000;
@@ -91,8 +91,8 @@ int mousex=100,mousey=100;
       //RectD(100,100,50,100,1000,90,2000);  //Another Mouse Button Clicked
     /*if(mouse_bytes[1]>=1||mouse_bytes>=1)
         RectD(10,10,50,50,1000,1000,90);*/
-        deltax=mouse_bytes[1]/2;
-        deltay=mouse_bytes[2]/2;
+    deltax=mouse_bytes[1];
+    deltay=mouse_bytes[2];
     mousex+=(deltax);
     mousey-=(deltay);
    // WriteText(mouse_bytes[0],100,200,1000,0);

@@ -22,10 +22,10 @@ INCLUDED:=-Ilibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
 
 FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc $(INCLUDED)
-all: clean build-nasm build.kernel
+all: clean build-nasm build-kernel
 
 clean:
-	rm -f build.kernel *.o */*.o */*/*.o
+	rm -f build-kernel *.o */*.o */*/*.o
 
 build-nasm:
 	nasm -f elf $(NASMARCH)/*.asm -o $(OBJ)/arch.o
@@ -33,8 +33,8 @@ build-nasm:
 	nasm -f elf $(ARCH)/interrupts.s -o $(OBJ)/interrupts.o
 	i686-elf-as $(SOURCE)/arch/x86/boot.s -o $(OBJ)/boot.o
 
-build.kernel: $(KERNEL) linker.ld
-	$(CC) -T linker.ld -o $(OBJ)/Aqeous.water $(FLAGS) $(KERNEL) $(OBJS)
+build-kernel: $(KERNEL) linker.ld
+	$(CC) -T linker.ld -o $(OBJ)/Aqeous $(FLAGS) $(KERNEL) $(OBJS)
 %.o: %.c
 	$(CC) -c $< -o $@ -std=gnu11 $(FLAGS)
 
