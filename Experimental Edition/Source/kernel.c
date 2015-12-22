@@ -13,8 +13,8 @@ void kernel_early()
     console_init();
     console_writestring("HELLO WORLD");
     init_descriptor_tables();
-    init_timer(10000); //PIT NOT WORKING
-   // init_timer_RTC();
+    //init_timer(1); //PIT NOT WORKING
+    init_timer_RTC();
     mouseinit();
     setVesa(0x117);
 }
@@ -29,7 +29,7 @@ void kernel_main()
     while(1)
     {
         //RectD(500,500,10,20,1000,1000,1000);
-       // mouse_handler();
+        //mouse_handler();
         Mouse_Plot(mousex,mousey);
         DBuff();
     }

@@ -66,9 +66,12 @@ void mouse_write(unsigned char a_write)
     mouse_read();
     register_interrupt_handler(IRQ12,&mouse_handler);
 }
+
 int mousex=100,mousey=100;
+
  void mouse_handler()
 {
+  //asm volatile("cli");
   static unsigned char cycle = 0;
   static char mouse_bytes[3];
   while(cycle<3)
@@ -91,10 +94,11 @@ int mousex=100,mousey=100;
       //RectD(100,100,50,100,1000,90,2000);  //Another Mouse Button Clicked
     /*if(mouse_bytes[1]>=1||mouse_bytes>=1)
         RectD(10,10,50,50,1000,1000,90);*/
-    deltax=mouse_bytes[1];
-    deltay=mouse_bytes[2];
+    deltax=mouse_bytes[1]/2;
+    deltay=mouse_bytes[2]/2;
     mousex+=(deltax);
     mousey-=(deltay);
+    //asm volatile("sti");
    // WriteText(mouse_bytes[0],100,200,1000,0);
   }
 }

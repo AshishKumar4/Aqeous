@@ -27,7 +27,7 @@ void timer_callback()
      outb(0x71, (prev & 0xF0) | rate); //write only our rate to A. Note, rate is the bottom 4 bits.
 
      asm volatile("sti");
-    register_interrupt_handler(8,&timertest);
+    register_interrupt_handler(IRQ8,&timertest);
  }
 
  /**PIT TIMER, working**/
