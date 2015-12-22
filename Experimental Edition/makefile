@@ -16,10 +16,12 @@ TIMER:=$(SOURCE)/timer
 DESCRIPTORS:=$(SOURCE)/GDT_IDT
 INTERRUPTS:=$(SOURCE)/interrupts
 DRIVERS:=$(SOURCE)/drivers
+PAGING:=$(SOURCE)/paging
+KHEAP:=$(SOURCE)/kheap
 
 OBJS:= $(OBJ)/*.o
 INCLUDED:=-Ilibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
-INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
+INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(KHEAP) -I$(PAGING) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
 
 FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc $(INCLUDED)
 all: clean build-nasm build-kernel
