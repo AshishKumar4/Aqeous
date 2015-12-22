@@ -132,7 +132,7 @@ void initialise_paging()
         i += 0x1000;
     }
     // Before we enable paging, we must register our page fault handler.
-    register_interrupt_handler(IRQ14, page_fault);
+    register_interrupt_handler(14, page_fault);
 
     // Now, enable paging!
     switch_page_directory(kernel_directory);
@@ -176,7 +176,7 @@ page_t *get_page(u32int address, int make, page_directory_t *dir)
  {
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
-    u32int faulting_address;
+   /* u32int faulting_address;
     asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
 
     // The error code gives us details of what happened.
@@ -191,7 +191,7 @@ page_t *get_page(u32int address, int make, page_directory_t *dir)
     if (present) {console_writestring("present ");}
     if (rw) {console_writestring("read-only ");}
     if (us) {console_writestring("user-mode ");}
-    if (reserved) {console_writestring("reserved ");}
-    console_writestring(") at 0x");
+    if (reserved) {console_writestring("reserved ");}*/
+    console_writestring("Error");
     console_writestring("\n");
  }
