@@ -1,6 +1,36 @@
 #include "paging.h"
 #include "kheap.h"
 
+unsigned int read_cr0()
+{
+	unsigned int cr0;
+	__asm__ __volatile__ ( "movl %%cr0,%%eax" : "=a" (cr0) );
+	return cr0;
+}
+void write_cr0( unsigned int cr0 )
+{
+	__asm__ __volatile__ ( "movl %%eax,%%cr0" : : "a" (cr0) );
+}
+
+// CR2
+unsigned int read_cr2()
+{
+	unsigned int cr2;
+	__asm__ __volatile__ ( "movl %%cr2,%%eax" : "=a" (cr2) );
+	return cr2;
+}
+
+// CR3
+unsigned int read_cr3()
+{
+	unsigned int cr3;
+	__asm__ __volatile__ ( "movl %%cr3,%%eax" : "=a" (cr3) );
+	return cr3;
+}
+void write_cr3( unsigned int cr3 )
+{
+	__asm__ __volatile__ ( "movl %%eax,%%cr3" : : "a" (cr3) );
+}
 // The kernel's page directory
 page_directory_t *kernel_directory=0;
 
@@ -107,7 +137,7 @@ void initialise_paging()
 {
     // The size of physical memory. For the moment we
     // assume it is 16MB big.
-    u32int mem_end_page = 0x1000000;
+    u32int mem_end_page = 0xf4e1c00;
 
     nframes = mem_end_page / 0x1000;
     frames = (u32int*)kmalloc_(INDEX_FROM_BIT(nframes));

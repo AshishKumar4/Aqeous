@@ -18,12 +18,15 @@ INTERRUPTS:=$(SOURCE)/interrupts
 DRIVERS:=$(SOURCE)/drivers
 PAGING:=$(SOURCE)/paging
 KHEAP:=$(SOURCE)/kheap
+VFS:=$(SOURCE)/vfs
+MULTIBOOT:=$(SOURCE)/multiboot
 
 OBJS:= $(OBJ)/*.o
 INCLUDED:=-Ilibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(KHEAP) -I$(PAGING) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
+INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT)
 
-FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc $(INCLUDED)
+FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:

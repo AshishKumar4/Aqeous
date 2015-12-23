@@ -1,6 +1,6 @@
 
 #include <stddef.h>
-#include <abc.h>
+
 #include <system.h>
 #include <stdio.h>
 
@@ -83,6 +83,8 @@ typedef struct memory_map
 	unsigned long type;
 } memory_map_t;
 
+// the location of the end of the kernel's image
+extern char end;
 
 // the kernel heap
 static MemBlock* kheap;
