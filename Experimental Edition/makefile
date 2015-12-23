@@ -20,11 +20,12 @@ PAGING:=$(SOURCE)/paging
 KHEAP:=$(SOURCE)/kheap
 VFS:=$(SOURCE)/vfs
 MULTIBOOT:=$(SOURCE)/multiboot
+MULTITASK:=$(SOURCE)/multitask
 
 OBJS:= $(OBJ)/*.o
 INCLUDED:=-Ilibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(KHEAP) -I$(PAGING) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
-INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT)
+INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK)
 
 FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
@@ -33,6 +34,7 @@ clean:
 	rm -f build-kernel *.o */*.o */*/*.o
 
 build-nasm:
+	nasm -f elf $(ARCH)/process.s -o $(OBJ)/process.o
 	nasm -f elf $(NASMARCH)/*.asm -o $(OBJ)/arch.o
 	nasm -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
 	nasm -f elf $(ARCH)/interrupts.s -o $(OBJ)/interrupts.o

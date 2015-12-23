@@ -1,3 +1,5 @@
+#ifndef STRING_H
+#define STRING_H
 #include <sys/cdefs.h>
 
 #include <stddef.h>
@@ -95,6 +97,15 @@ char *strtok(char *_s, const char *_delim)
 	p = *p ? *p=0,p+1 : 0;
 	return _s;
 }
+
+size_t strlen(const char *_s)
+{
+   size_t n;
+   for(n=0; _s[n] != '\0'; n++) {
+	   ;
+   }
+   return n;
+}
 char *strstr(const char *_haystack, const char *_needle)
 {
 	size_t needleLen;
@@ -156,13 +167,6 @@ char *strcat(char *_dest, const char *_src)
 
    return _dest;
 }
-size_t strlen(const char *_s)
-{
-   size_t n;
-   for(n=0; _s[n] != '\0'; n++) {
-	   ;
-   }
-   return n;
-}
 
 
+#endif // STRING_H

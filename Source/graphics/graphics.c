@@ -6,7 +6,7 @@
 extern int widthVESA, heightVESA, depthVESA;
 unsigned int background=90;
 unsigned char *tempbuff;
-unsigned char buffer;
+unsigned char buffer=90& 0xff;
 extern unsigned char *vga_mem; //pointer where we assign our vga address
 void Init()
 {
@@ -101,12 +101,12 @@ void Mouse_Plot(int x,int y)
         if(i<13)
             for (int j=0;j <i;j++)
             {
-                Pixel_VESA_BUFF(x+j,y+i,90,10000,10000);
+                Pixel_VESA_BUFF(x+j,y+i,500,10000,10000);
             }
         else
             for(float j=0;j<19-i;j=j+0.6)
             {
-                Pixel_VESA_BUFF(x+j,y+i,90,10000,10000);
+                Pixel_VESA_BUFF(x+j,y+i,500,10000,10000);
             }
     }
 }

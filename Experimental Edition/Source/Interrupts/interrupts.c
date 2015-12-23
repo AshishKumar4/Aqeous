@@ -13,9 +13,6 @@ void register_interrupt_handler(u8int n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-    console_writestring("recieved interrupt: ");
-    console_write_dec(regs.int_no);
-
     if (interrupt_handlers[regs.int_no] != 0)
     {
         isr_t handler = interrupt_handlers[regs.int_no];

@@ -24,6 +24,8 @@ stack_top:
 .type _start, @function
 _start:
 	movl $stack_top, %esp
+	push %esp
+	push %ebx
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early
 

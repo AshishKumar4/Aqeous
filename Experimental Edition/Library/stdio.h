@@ -1,3 +1,5 @@
+#ifndef STDIO_H
+#define STDIO_H
 #include <sys/cdefs.h>
 #include <stdbool.h>
 #include <stdarg.h>
@@ -95,3 +97,5 @@ int puts(const char* string)
 {
 	return printf("%s\n", string);
 }
+
+#endif // STDIO_H

@@ -66,3 +66,26 @@ int putchar(int ic)
 	console_write(&c, sizeof(c));
 	return ic;
 }
+
+void console_write_dec(unsigned int in)
+{
+    unsigned int d=1,ln=0,b=in,arr[10];
+    char c[2],a[10];
+    for(int i=0;b;i++)
+    {
+        b=b/10;
+        ++ln;
+    }
+    b=in;
+    for(int i=0;i<ln;i++) d=d*10;
+    d=d/10;
+    int i;
+    for(i=0;i<ln;i++)
+    {
+        a[i]=48+b/d;
+        b=b%d;
+        d=d/10;
+    }
+    a[i]='\0';
+    console_writestring(a);
+}
