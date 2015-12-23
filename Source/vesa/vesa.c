@@ -1,5 +1,6 @@
-#include <malloc.c>
+
 #include <common.h>
+#include <kheap.h>
 
 #define wVESA     1024
 #define hVESA     768
@@ -82,7 +83,6 @@ void setBank(int bankNo)
 
   int32(0x10, &regs);
 }
-
 void setVesa(u32int mode)
 {
 
@@ -93,7 +93,7 @@ void setVesa(u32int mode)
 
   /**Gets VESA information**/
 
-  u32int buffer = (u32int)kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
+  u32int buffer = kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
 
   memcpy(buffer, "VBE2", 4);
   memset(&regs, 0, sizeof(regs));
@@ -104,7 +104,7 @@ void setVesa(u32int mode)
   int32(0x10, &regs);
   memcpy(&info, buffer, sizeof(VESA_INFO));
 
-  u32int modeBuffer = (u32int)kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
+  u32int modeBuffer = kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
 
   memset(&regs, 0, sizeof(regs));
   regs.ax = 0x4f01;

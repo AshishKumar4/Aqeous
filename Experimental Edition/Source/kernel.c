@@ -28,8 +28,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     u32int initrd_location = *((u32int*)mboot_ptr->mods_addr);
     u32int initrd_end = *(u32int*)(mboot_ptr->mods_addr+4);
     placement_address = initrd_end;
-    //initialise_paging();
-    fs_root = initialise_initrd(initrd_location);
+    initialise_paging();
     fs_root = initialise_initrd(initrd_location);
     int i = 0;
     struct dirent *node = 0;
@@ -48,7 +47,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
          u32int sz = read_fs(fsnode, 0, 256, buf);
          int j;
          for (j = 0; j < sz; j++)
-           console_writestring(buf[j]);
+           console_putchar(buf[j]);
 
          console_writestring("\"\n");
        }

@@ -6,8 +6,6 @@ u32int tick = 0;
 void timer_callback()
  {
     tick++;
-    console_writestring("Tick: ");
-    console_write_dec(tick);
  }
  /**REAL TIMER RTC, might not work**/
  void init_timer_RTC()
