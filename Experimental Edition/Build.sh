@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 rm -rfv isodir
 rm -rfv objs

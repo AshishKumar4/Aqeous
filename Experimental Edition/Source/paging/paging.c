@@ -108,7 +108,7 @@ void initialise_paging()
 {
     // The size of physical memory. For the moment we
     // assume it is 16MB big.
-    u32int mem_end_page = 0xFFFFFFF;
+    u32int mem_end_page = placement_address;
 
     nframes = mem_end_page / 0x1000;
     frames = (u32int*)kmalloc(INDEX_FROM_BIT(nframes));
@@ -139,16 +139,16 @@ void initialise_paging()
     // Allocate a lil' bit extra so the kernel heap can be
     // initialised properly.
     i = 0;
+    //placement_address=end;
     while (i < placement_address+0x1000)
     {
         // Kernel code is readable but not writeable from userspace.
-        alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
+        alloc_frame( get_page(i, 1, kernel_directory), 1,1);
         i += 0x1000;
     }
-
     // Now allocate those pages we mapped earlier.
     for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
-        alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
+        alloc_frame( get_page(i, 1, kernel_directory), 1, 1);
 
     // Before we enable paging, we must register our page fault handler.
     register_interrupt_handler(14, page_fault);
@@ -161,6 +161,7 @@ void initialise_paging()
 
     current_directory = clone_directory(kernel_directory);
     switch_page_directory(current_directory);
+
 }
 
 void switch_page_directory(page_directory_t *dir)

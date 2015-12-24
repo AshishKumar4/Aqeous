@@ -110,9 +110,4 @@ void Mouse_Plot(int x,int y)
             }
     }
 }
-//the vga identifiers
-u32int VGA_width=768;
-u32int VGA_height=1024;
-u32int VGA_bpp=64;
-
 
