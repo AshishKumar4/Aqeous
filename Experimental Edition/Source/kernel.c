@@ -1,44 +1,41 @@
-#include <mouse.c>
-#include <kheap.c>
-#include <console.c>
-#include <interrupts.c>
+#include "mouse.c"
+#include "console.c"
+#include "interrupts.c"
 #include "multiboot.h"
-#include "vfs.c"
-#include "ordered_array.c"
-#include "initrd.c"
-#include <timer.c>
+//#include "vfs.c"
+//#include "initrd.c"
+#include "timer.c"
+#include "mem.c"
 #include "paging.c"
-#include "task.c"
 
 u32int initial_esp;
 void timertest()
 {
     //RectD(50,100,20,30,1000,1000,1000);
 }
+
+uint32_t kernelSize=4096;
+
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
+    Init_mem(4096*1024*128,0x100000 + kernelSize*8);
+
     initial_esp = initial_stack;
+    pmmngr_init_region(0x100000 + 4096*8,4096*32);
+    pmmngr_init_region(0x100000 + 4096*32,4096*1024*128);
+	pmmngr_deinit_region (0x100000, kernelSize*8);
     //end1=end;
+	vmmngr_initialize ();
     console_init();
     init_descriptor_tables();
-    //placement_address=0x100000;
-    console_writestring("HELLO WORLD");
+    console_writestring("Mem Size: ");
+    console_write_dec(max_blocks);
+    console_writestring("  IS PAGING ENABLED? 2 means true, 0 means false ");
+    console_write_dec(pmmngr_is_paging());
     asm volatile("sti");
     init_timer(50); //PIT WORKING
-    u32int initrd_location = *((u32int*)mboot_ptr->mods_addr);
-    u32int initrd_end = *(u32int*)(mboot_ptr->mods_addr+4);
-    asm volatile ("cli");
-    setVesa(0x117);
-    placement_address=&vga_mem[0];
-    //initialise_paging();
-    asm volatile("sti");
-    /**COMMENT OUT THESE TO ENABLE PAGING, But VESA WONT WORK**/
-    //initialise_paging();
-    //console_writestring("TEST");
-    //initialise_tasking();
-    /**JUST THIS MUCH TO ENABLE PAGING AND MULTITASKING**/
-    //abc=PhyToVirtual(abc);
    // init_timer_RTC();
+    //setVesa(0x117);
     mouseinit();
 }
 

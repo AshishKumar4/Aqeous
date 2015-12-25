@@ -1,7 +1,6 @@
 
 #include <common.h>
-#include <kheap.h>
-#include <paging.h>
+#include <mem.h>
 #include <console.h>
 
 #define wVESA     1024
@@ -95,7 +94,7 @@ void setVesa(u32int mode)
 
   /**Gets VESA information**/
 
-  u32int buffer = kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
+  u32int buffer = (u32int)kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
 
   memcpy(buffer, "VBE2", 4);
   memset(&regs, 0, sizeof(regs));
@@ -106,7 +105,7 @@ void setVesa(u32int mode)
   int32(0x10, &regs);
   memcpy(&info, buffer, sizeof(VESA_INFO));
 
-  u32int modeBuffer = kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
+  u32int modeBuffer = (u32int)kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
 
   memset(&regs, 0, sizeof(regs));
   regs.ax = 0x4f01;
@@ -122,7 +121,7 @@ void setVesa(u32int mode)
   heightVESA = vbeModeInfo.YResolution;
   depthVESA = vbeModeInfo.BitsPerPixel;
   vga_mem = (u8int*)vbeModeInfo.PhysBasePtr;
-  buff=(u8int*)kmalloc(1024*768*2);
+  buff=(u32int*)kmalloc(4);
   //paging();
   asm volatile("sti");
 

@@ -2,15 +2,24 @@
 #define COMMON_H
 
 #include <system.h>
+#include <stdint-gcc.h>
 
 // Some nice typedefs, to standardise sizes across platforms.
 // These typedefs are written for 32-bit X86.
+typedef int bool;
+
 typedef unsigned int   u32int;
 typedef          int   s32int;
 typedef unsigned short u16int;
 typedef          short s16int;
 typedef unsigned char  u8int;
 typedef          char  s8int;
+typedef unsigned int   uint_t;
+typedef          int   sint_t;
+typedef unsigned short ushort_t;
+typedef          short short_t;
+typedef unsigned char  uchar_t;
+typedef          char  schar_t;
 
 typedef struct registers
  {
