@@ -36,6 +36,7 @@ clean:
 
 build-nasm:
 	mkdir -p objs
+	nasm -f elf $(ARCH)/process.s -o $(OBJ)/process.o
 	nasm -f elf $(NASMARCH)/*.asm -o $(OBJ)/arch.o
 	nasm -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
 	nasm -f elf $(ARCH)/interrupts.s -o $(OBJ)/interrupts.o

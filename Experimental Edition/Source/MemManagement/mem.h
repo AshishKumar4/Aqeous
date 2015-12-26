@@ -1,36 +1,94 @@
-#ifndef MEM_H
-#define MEM_H
-#include <string.h>
-#include <stddef.h>
-#include <stdio.h>
+#ifndef MEM
+#define MEM
+
 #include <common.h>
-//! 8 blocks per byte
-#define PMMNGR_BLOCKS_PER_BYTE 8
+#include <sys.h>
+#include <string.h>
+#include <stdio.h>
+#include <ordered_array.h>
 
-//! block size (4k)
-#define PMMNGR_BLOCK_SIZE	4096
+#define KHEAP_START         0xC0000000
+#define KHEAP_INITIAL_SIZE  0x100000
 
-//! block alignment
-#define PMMNGR_BLOCK_ALIGN	PMMNGR_BLOCK_SIZE
+#define HEAP_INDEX_SIZE   0x20000
+#define HEAP_MAGIC        0x123890AB
+#define HEAP_MIN_SIZE     0x70000
+typedef struct
+{
+    u32int magic;   // Magic number, used for error checking and identification.
+    u8int is_hole;   // 1 if this is a hole. 0 if this is a block.
+    u32int size;    // size of the block, including the end footer.
+} header_t;
 
-u32int GetMemMap(u32int flag,u32int mmap);
+typedef struct
+{
+    u32int magic;     // Magic number, same as in header_t.
+    header_t *header; // Pointer to the block header.
+} footer_t;
 
-void Init_mem();
+typedef struct
+{
+    ordered_array_t index;
+    u32int start_address; // The start of our allocated space.
+    u32int end_address;   // The end of our allocated space. May be expanded up to max_address.
+    u32int max_address;   // The maximum address the heap can be expanded to.
+    u8int supervisor;     // Should extra pages requested by us be mapped as supervisor-only?
+    u8int readonly;       // Should extra pages requested by us be mapped as read-only?
+} heap_t;
 
-//! size of physical memory
-static	uint32_t	memory_size=0;
+/**
+   Create a new heap.
+**/
+heap_t *create_heap(u32int start, u32int end, u32int max, u8int supervisor, u8int readonly);
 
-//! number of blocks currently in use
-static	uint32_t	used_blocks=0;
+/**
+   Allocates a contiguous region of memory 'size' in size. If page_align==1, it creates that block starting
+   on a page boundary.
+**/
+void *alloc(u32int size, u8int page_align, heap_t *heap);
 
-//! maximum number of available memory blocks
-static	uint32_t	max_blocks=0;
+/**
+   Releases a block allocated with 'alloc'.
+**/
+void free(void *p, heap_t *heap);
 
-//! memory map bit array. Each bit represents a memory block
-static	uint32_t*	memory_map= 0;
+/**
+   Allocate a chunk of memory, sz in size. If align == 1,
+   the chunk must be page-aligned. If phys != 0, the physical
+   location of the allocated chunk will be stored into phys.
 
-void kfree(void* p, size_t size);
+   This is the internal version of kmalloc. More user-friendly
+   parameter representations are available in kmalloc, kmalloc_a,
+   kmalloc_ap, kmalloc_p.
+**/
+u32int kmalloc_int(u32int sz, int align, u32int *phys);
 
-void*	kmalloc (size_t size);
+/**
+   Allocate a chunk of memory, sz in size. The chunk must be
+   page aligned.
+**/
+u32int kmalloc_a(u32int sz);
 
-#endif // MEM_H
+/**
+   Allocate a chunk of memory, sz in size. The physical address
+   is returned in phys. Phys MUST be a valid pointer to u32int!
+**/
+u32int kmalloc_p(u32int sz, u32int *phys);
+
+/**
+   Allocate a chunk of memory, sz in size. The physical address
+   is returned in phys. It must be page-aligned.
+**/
+u32int kmalloc_ap(u32int sz, u32int *phys);
+
+/**
+   General allocation function.
+**/
+u32int kmalloc(u32int sz);
+
+/**
+   General deallocation function.
+**/
+void kfree(void *p);
+
+#endif // MEM

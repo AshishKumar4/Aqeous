@@ -7,6 +7,7 @@
 #include "timer.c"
 #include "mem.c"
 #include "paging.c"
+#include "ordered_array.c"
 
 u32int initial_esp;
 void timertest()
@@ -18,25 +19,48 @@ uint32_t kernelSize=4096;
 
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
-    Init_mem(4096*1024*128,0x100000 + kernelSize*8);
+    init_descriptor_tables();
 
     initial_esp = initial_stack;
-    pmmngr_init_region(0x100000 + 4096*8,4096*32);
-    pmmngr_init_region(0x100000 + 4096*32,4096*1024*128);
-	pmmngr_deinit_region (0x100000, kernelSize*8);
-    //end1=end;
-	vmmngr_initialize ();
-    console_init();
-    init_descriptor_tables();
-    console_writestring("Mem Size: ");
+	//setVesa(0x117);
+	//buff=(u8int*)kmalloc(1024*768*2);
+	initialise_paging();
+	console_init();
+	int *abc;
+	int b;
+	for(int i=0;i<100;i++)
+    {
+        abc=(int*)vmalloc(1);
+        *abc=*abc+10;
+        console_write_dec(*abc);
+        console_writestring("  ");
+        b=abc;
+        console_write_dec(b);
+        console_writestring("  ");
+    }
+    console_writestring(" Just this much");
+	/*pt_entry Page1;
+    pt_entry_add_attrib (&Page1, I86_PTE_PRESENT);
+	vmmngr_alloc_page(Page1);
+	pt_entry Page2;
+    pt_entry_add_attrib (&Page2, I86_PTE_PRESENT);
+	vmmngr_alloc_page(Page2);
+
+	pt_entry Page3;
+    pt_entry_add_attrib (&Page3, I86_PTE_PRESENT);
+	vmmngr_alloc_page(Page3);
+    //setVesa(0x117,&Page1,&Page2,&Page3);
+	//vmmngr_map_page(&vga_mem,&Page1);
+	//RectL(0,0,1023,767,90,90,90);*/
+    /*console_writestring("Mem Size: ");
     console_write_dec(max_blocks);
-    console_writestring("  IS PAGING ENABLED? 2 means true, 0 means false ");
-    console_write_dec(pmmngr_is_paging());
+    console_writestring("  IS PAGING ENABLED? 2 means true, 0 means false: ");
+    console_write_dec(pmmngr_is_paging());//*/
     asm volatile("sti");
     init_timer(50); //PIT WORKING
-   // init_timer_RTC();
     //setVesa(0x117);
-    mouseinit();
+   // init_timer_RTC();
+   mouseinit();
 }
 
 void kernel_start()
@@ -45,7 +69,7 @@ void kernel_start()
 
 void kernel_main()
 {
-    RectD(0,0,1023,767,150,150,150);
+    /*RectD(0,0,1023,767,150,150,150);
     while(1)
     {
         //RectD(500,500,10,20,1000,1000,1000);

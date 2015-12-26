@@ -2,6 +2,7 @@
 #include <common.h>
 #include <mem.h>
 #include <console.h>
+#include <paging.h>
 
 #define wVESA     1024
 #define hVESA     768
@@ -87,13 +88,13 @@ void setBank(int bankNo)
 extern u32int placement_address;
 void setVesa(u32int mode)
 {
-  VESA_INFO info; //VESA information
+  //VESA_INFO info; //VESA information
   MODE_INFO vbeModeInfo; //VESA mode information
 
   regs16_t regs;
 
   /**Gets VESA information**/
-
+/*
   u32int buffer = (u32int)kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
 
   memcpy(buffer, "VBE2", 4);
@@ -104,7 +105,7 @@ void setVesa(u32int mode)
   regs.es = (buffer>>4) & 0xFFFF;
   int32(0x10, &regs);
   memcpy(&info, buffer, sizeof(VESA_INFO));
-
+//*/
   u32int modeBuffer = (u32int)kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
 
   memset(&regs, 0, sizeof(regs));
@@ -121,7 +122,6 @@ void setVesa(u32int mode)
   heightVESA = vbeModeInfo.YResolution;
   depthVESA = vbeModeInfo.BitsPerPixel;
   vga_mem = (u8int*)vbeModeInfo.PhysBasePtr;
-  buff=(u32int*)kmalloc(4);
   //paging();
   asm volatile("sti");
 

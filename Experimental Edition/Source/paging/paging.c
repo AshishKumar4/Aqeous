@@ -1,276 +1,321 @@
-#include <paging.h>
-#include <mem.h>
+#include "paging.h"
+#include "mem.h"
 
-void vmmngr_flush_tlb_entry (virtual_addr addr)
+// The kernel's page directory
+page_directory_t *kernel_directory=0;
+
+// The current page directory;
+page_directory_t *current_directory=0;
+
+// A bitset of frames - used or free.
+u32int *frames;
+u32int nframes;
+
+// Defined in kheap.c
+extern u32int placement_address;
+extern heap_t *kheap;
+
+// Macros used in the bitset algorithms.
+#define INDEX_FROM_BIT(a) (a/(8*4))
+#define OFFSET_FROM_BIT(a) (a%(8*4))
+
+// Static function to set a bit in the frames bitset
+static void set_frame(u32int frame_addr)
 {
-    virtual_addr *abc;
-    abc=addr;
-    asm volatile
-    (
-        "cli\n\t"
-        "invlpg (%0)"::"r"(abc)
-     );
+    u32int frame = frame_addr/0x1000;
+    u32int idx = INDEX_FROM_BIT(frame);
+    u32int off = OFFSET_FROM_BIT(frame);
+    frames[idx] |= (0x1 << off);
 }
 
-void pmmngr_paging_enable ()
+// Static function to clear a bit in the frames bitset
+static void clear_frame(u32int frame_addr)
 {
-	u32int cr0;
+    u32int frame = frame_addr/0x1000;
+    u32int idx = INDEX_FROM_BIT(frame);
+    u32int off = OFFSET_FROM_BIT(frame);
+    frames[idx] &= ~(0x1 << off);
+}
+
+// Static function to test if a bit is set.
+static u32int test_frame(u32int frame_addr)
+{
+    u32int frame = frame_addr/0x1000;
+    u32int idx = INDEX_FROM_BIT(frame);
+    u32int off = OFFSET_FROM_BIT(frame);
+    return (frames[idx] & (0x1 << off));
+}
+
+// Static function to find the first free frame.
+static u32int first_frame()
+{
+    u32int i, j;
+    for (i = 0; i < INDEX_FROM_BIT(nframes); i++)
+    {
+        if (frames[i] != 0xFFFFFFFF) // nothing free, exit early.
+        {
+            // at least one bit is free here.
+            for (j = 0; j < 32; j++)
+            {
+                u32int toTest = 0x1 << j;
+                if ( !(frames[i]&toTest) )
+                {
+                    return i*4*8+j;
+                }
+            }
+        }
+    }
+}
+
+// Function to allocate a frame.
+void alloc_frame(page_t *page, int is_kernel, int is_writeable)
+{
+    if (page->frame != 0)
+    {
+        return;
+    }
+    else
+    {
+        u32int idx = first_frame();
+        if (idx == (u32int)-1)
+        {
+            // PANIC! no free frames!!
+        }
+        set_frame(idx*0x1000);
+        page->present = 1;
+        page->rw = (is_writeable==1)?1:0;
+        page->user = (is_kernel==1)?0:1;
+        page->frame = idx;
+    }
+}
+
+// Function to deallocate a frame.
+void free_frame(page_t *page)
+{
+    u32int frame;
+    if (!(frame=page->frame))
+    {
+        return;
+    }
+    else
+    {
+        clear_frame(frame);
+        page->frame = 0x0;
+    }
+}
+
+void initialise_paging()
+{
+    // The size of physical memory. For the moment we
+    // assume it is 16MB big.
+    u32int mem_end_page = 0xFFFFFFF;
+
+    nframes = mem_end_page / 0x1000;
+    frames = (u32int*)kmalloc(INDEX_FROM_BIT(nframes));
+    memset(frames, 0, INDEX_FROM_BIT(nframes));
+
+    // Let's make a page directory.
+    u32int phys;
+    kernel_directory = (page_directory_t*)kmalloc_a(sizeof(page_directory_t));
+    memset(kernel_directory, 0, sizeof(page_directory_t));
+    kernel_directory->physicalAddr = (u32int)kernel_directory->tablesPhysical;
+
+    // Map some pages in the kernel heap area.
+    // Here we call get_page but not alloc_frame. This causes page_table_t's
+    // to be created where necessary. We can't allocate frames yet because they
+    // they need to be identity mapped first below, and yet we can't increase
+    // placement_address between identity mapping and enabling the heap!
+    int i = 0;
+    for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
+        get_page(i, 1, kernel_directory);
+
+    // We need to identity map (phys addr = virt addr) from
+    // 0x0 to the end of used memory, so we can access this
+    // transparently, as if paging wasn't enabled.
+    // NOTE that we use a while loop here deliberately.
+    // inside the loop body we actually change placement_address
+    // by calling kmalloc(). A while loop causes this to be
+    // computed on-the-fly rather than once at the start.
+    // Allocate a lil' bit extra so the kernel heap can be
+    // initialised properly.
+    i = 0;
+    while (i < placement_address+0x1000)
+    {
+        // Kernel code is readable but not writeable from userspace.
+        alloc_frame( get_page(i, 1, kernel_directory), 1, 1);
+        i += 0x1000;
+    }
+
+    // Now allocate those pages we mapped earlier.
+    for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
+        alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
+
+    // Before we enable paging, we must register our page fault handler.
+    register_interrupt_handler(14, page_fault);
+
+    // Now, enable paging!
+    switch_page_directory(kernel_directory);
+
+    // Initialise the kernel heap.
+    kheap = create_heap(KHEAP_START, KHEAP_START+KHEAP_INITIAL_SIZE, 0xCFFFF000, 0, 0);
+
+    current_directory = clone_directory(kernel_directory);
+    switch_page_directory(current_directory);
+}
+
+void switch_page_directory(page_directory_t *dir)
+{
+    current_directory = dir;
+    asm volatile("mov %0, %%cr3":: "r"(dir->physicalAddr));
+    u32int cr0;
     asm volatile("mov %%cr0, %0": "=r"(cr0));
     cr0 |= 0x80000000; // Enable paging!
     asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 
-int pmmngr_is_paging ()
- {
-	uint32_t res=0;
-    asm volatile
-    (
-        "mov %%cr0,%0":"=r"(res)
-    );
-    if(res&0x80000000)
-	return 2;
-    return 1;
-}
-
-void pmmngr_load_PDBR (physical_addr addr)
+page_t *get_page(u32int address, int make, page_directory_t *dir)
 {
-    asm volatile
-    (
-        "mov %0,%%cr3"::"r"(addr)
-    );
-}
+    // Turn the address into an index.
+    address /= 0x1000;
+    // Find the page table containing this address.
+    u32int table_idx = address / 1024;
 
-physical_addr pmmngr_get_PDBR ()
-{
-    physical_addr addr;
-    asm volatile
-    (
-        "mov %%cr3,%0":"=r"(addr)
-    );
-    return addr;
-}
-
-/**Page table entry functions**/
-inline void pt_entry_add_attrib (pt_entry* e, uint32_t attrib) {
-	*e |= attrib;
-}
-
-inline void pt_entry_del_attrib (pt_entry* e, uint32_t attrib) {
-	*e &= ~attrib;
-}
-
-inline void pt_entry_set_frame (pt_entry* e, physical_addr addr) {
-	*e = (*e & ~I86_PTE_FRAME) | addr;
-}
-
-inline bool pt_entry_is_present (pt_entry e) {
-	return e & I86_PTE_PRESENT;
-}
-
-inline bool pt_entry_is_writable (pt_entry e) {
-	return e & I86_PTE_WRITABLE;
-}
-
-inline physical_addr pt_entry_pfn (pt_entry e) {
-	return e & I86_PTE_FRAME;
-}
-
-/**end**/
-
-/**PAGE DIRECTORY ENTRY FUNCTIONS**/
-
-inline void pd_entry_add_attrib (pd_entry* e, uint32_t attrib) {
-	*e |= attrib;
-}
-
-inline void pd_entry_del_attrib (pd_entry* e, uint32_t attrib) {
-	*e &= ~attrib;
-}
-
-inline void pd_entry_set_frame (pd_entry* e, physical_addr addr) {
-	*e = (*e & ~I86_PDE_FRAME) | addr;
-}
-
-inline bool pd_entry_is_present (pd_entry e) {
-	return e & I86_PDE_PRESENT;
-}
-
-inline bool pd_entry_is_writable (pd_entry e) {
-	return e & I86_PDE_WRITABLE;
-}
-
-inline physical_addr pd_entry_pfn (pd_entry e) {
-	return e & I86_PDE_FRAME;
-}
-
-inline bool pd_entry_is_user (pd_entry e) {
-	return e & I86_PDE_USER;
-}
-
-inline bool pd_entry_is_4mb (pd_entry e) {
-	return e & I86_PDE_4MB;
-}
-
-inline void pd_entry_enable_global (pd_entry e) {
-
-}
-/**end**/
-
-
-
-bool vmmngr_alloc_page (pt_entry* e) {
-
-	//! allocate a free physical frame
-	void* p = kmalloc1 ();
-	if (!p)
-		return false;
-
-	//! map it to the page
-	pt_entry_set_frame (e, (physical_addr)p);
-	pt_entry_add_attrib (e, I86_PTE_PRESENT);
-
-	return true;
-}
-
-void vmmngr_free_page (pt_entry* e)
- {
-
-	void* p = (void*)pt_entry_pfn (*e);
-	if (p)
-		kfree1 (p);
-
-	pt_entry_del_attrib (e, I86_PTE_PRESENT);
-}
-
-inline pt_entry* vmmngr_ptable_lookup_entry (ptable* p,virtual_addr addr)
-{
-
-	if (p)
-		return &p->m_entries[ PAGE_TABLE_INDEX (addr) ];
-	return 0;
-}
-
-inline pd_entry* vmmngr_pdirectory_lookup_entry (pdirectory* p, virtual_addr addr)
-{
-
-	if (p)
-		return &p->m_entries[ PAGE_TABLE_INDEX (addr) ];
-	return 0;
-}
-
-
-inline bool vmmngr_switch_pdirectory (pdirectory* dir)
-{
-
-	if (!dir)
-		return false;
-
-	_cur_directory = dir;
-	pmmngr_load_PDBR (_cur_pdbr);
-    asm volatile("mov %0, %%cr3":: "r"(_cur_pdbr));
-	return true;
-}
-
-pdirectory* vmmngr_get_directory ()
- {
-
-	return _cur_directory;
-}
-
-
-void vmmngr_map_page (void* phys, void* virt) {
-
-   //! get page directory
-   pdirectory* pageDirectory = vmmngr_get_directory ();
-
-   //! get page table
-   pd_entry* e = &pageDirectory->m_entries [PAGE_DIRECTORY_INDEX ((uint32_t) virt) ];
-   if ( (*e & I86_PTE_PRESENT) != I86_PTE_PRESENT)
-    {      //! page table not present, allocate it
-      ptable* table = (ptable*) kmalloc1 ();
-      if (!table)
-         return;
-
-      //! clear page table
-      memset (table, 0, sizeof(ptable));
-
-      //! create a new entry
-      pd_entry* entry =
-         &pageDirectory->m_entries [PAGE_DIRECTORY_INDEX ( (uint32_t) virt) ];
-
-      //! map in the table (Can also just do *entry |= 3) to enable these bits
-      pd_entry_add_attrib (entry, I86_PDE_PRESENT);
-      pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
-      pd_entry_set_frame (entry, (physical_addr)table);
-   }
-   //! get table
-   ptable* table = (ptable*) PAGE_GET_PHYSICAL_ADDRESS ( e );
-
-   //! get page
-   pt_entry* page = &table->m_entries [ PAGE_TABLE_INDEX ( (uint32_t) virt) ];
-
-   //! map it in (Can also do (*page |= 3 to enable..)
-   pt_entry_set_frame ( page, (physical_addr) phys);
-   pt_entry_add_attrib ( page, I86_PTE_PRESENT);
-}
-
-void vmmngr_initialize () {
-
-	//! allocate default page table
-	ptable* table = (ptable*) kmalloc1 ();
-	if (!table)
-		return;
-
-	//! allocates 3gb page table
-	ptable* table2 = (ptable*) kmalloc1 ();
-	if (!table2)
-		return;
-
-	//! clear page table
-   memset (table, 0, sizeof (ptable));
-   	//! 1st 4mb are idenitity mapped
-	for (int i=0, frame=0x0, virt=0x00000000; i<1024; i++, frame+=4096, virt+=4096)
+    if (dir->tables[table_idx]) // If this table is already assigned
     {
-
- 		//! create a new page
-		pt_entry page=0;
-		pt_entry_add_attrib (&page, I86_PTE_PRESENT);
- 		pt_entry_set_frame (&page, frame);
-
-		//! ...and add it to the page table
-		table2->m_entries [PAGE_TABLE_INDEX (virt) ] = page;
-	}	//! map 1mb to 3gb (where we are at)
-	for (int i=0, frame=0x100000, virt=0xc0000000; i<1024; i++, frame+=4096, virt+=4096) {
-
-		//! create a new page
-		pt_entry page=0;
-		pt_entry_add_attrib (&page, I86_PTE_PRESENT);
-		pt_entry_set_frame (&page, frame);
-
-		//! ...and add it to the page table
-		table->m_entries [PAGE_TABLE_INDEX (virt) ] = page;
-	}	//! create default directory table
-	pdirectory*	dir = (pdirectory*) kmalloc (3);
-	if (!dir)
-		return;
-
-	//! clear directory table and set it as current
-	memset (dir, 0, sizeof (pdirectory));
-		pd_entry* entry = &dir->m_entries [PAGE_DIRECTORY_INDEX (0xc0000000) ];
-	pd_entry_add_attrib (entry, I86_PDE_PRESENT);
-	pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
-	pd_entry_set_frame (entry, (physical_addr)table);
-
-	pd_entry* entry2 = &dir->m_entries [PAGE_DIRECTORY_INDEX (0x00000000) ];
-	pd_entry_add_attrib (entry2, I86_PDE_PRESENT);
-	pd_entry_add_attrib (entry2, I86_PDE_WRITABLE);
-	pd_entry_set_frame (entry2, (physical_addr)table2);
-		//! store current PDBR
-	_cur_pdbr = (physical_addr) &dir->m_entries;
-
-	//! switch to our page directory
-	vmmngr_switch_pdirectory (dir);
-
-	//! enable paging
-	pmmngr_paging_enable ();
+        return &dir->tables[table_idx]->pages[address%1024];
+    }
+    else if(make)
+    {
+        u32int tmp;
+        dir->tables[table_idx] = (page_table_t*)kmalloc_ap(sizeof(page_table_t), &tmp);
+        memset(dir->tables[table_idx], 0, 0x1000);
+        dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, US.
+        return &dir->tables[table_idx]->pages[address%1024];
+    }
+    else
+    {
+        return 0;
+    }
 }
+
+
+void page_fault(registers_t regs)
+{
+    // A page fault has occurred.
+    // The faulting address is stored in the CR2 register.
+    u32int faulting_address;
+    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+    // The error code gives us details of what happened.
+    int present   = !(regs.err_code & 0x1); // Page not present
+    int rw = regs.err_code & 0x2;           // Write operation?
+    int us = regs.err_code & 0x4;           // Processor was in user-mode?
+    int reserved = regs.err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
+    int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
+
+    // Output an error message.
+    console_writestring("Page fault! ( ");
+    if (present) {console_writestring("present ");}
+    if (rw) {console_writestring("read-only ");}
+    if (us) {console_writestring("user-mode ");}
+    if (reserved) {console_writestring("reserved ");}
+    console_writestring(") at 0x");
+    console_write_dec(faulting_address);
+    console_writestring(" - EIP: ");
+   // monitor_write_hex(regs.eip);
+    console_writestring("\n");
+   // PANIC("Page fault");
+}
+
+static page_table_t *clone_table(page_table_t *src, u32int *physAddr)
+{
+    // Make a new page table, which is page aligned.
+    page_table_t *table = (page_table_t*)kmalloc_ap(sizeof(page_table_t), physAddr);
+    // Ensure that the new table is blank.
+    memset(table, 0, sizeof(page_directory_t));
+
+    // For every entry in the table...
+    int i;
+    for (i = 0; i < 1024; i++)
+    {
+        // If the source entry has a frame associated with it...
+        if (src->pages[i].frame)
+        {
+            // Get a new frame.
+            alloc_frame(&table->pages[i], 0, 0);
+            // Clone the flags from source to destination.
+            if (src->pages[i].present) table->pages[i].present = 1;
+            if (src->pages[i].rw) table->pages[i].rw = 1;
+            if (src->pages[i].user) table->pages[i].user = 1;
+            if (src->pages[i].accessed) table->pages[i].accessed = 1;
+            if (src->pages[i].dirty) table->pages[i].dirty = 1;
+            // Physically copy the data across. This function is in process.s.
+            copy_page_physical(src->pages[i].frame*0x1000, table->pages[i].frame*0x1000);
+        }
+    }
+    return table;
+}
+
+page_directory_t *clone_directory(page_directory_t *src)
+{
+    u32int phys;
+    // Make a new page directory and obtain its physical address.
+    page_directory_t *dir = (page_directory_t*)kmalloc_ap(sizeof(page_directory_t), &phys);
+    // Ensure that it is blank.
+    memset(dir, 0, sizeof(page_directory_t));
+
+    // Get the offset of tablesPhysical from the start of the page_directory_t structure.
+    u32int offset = (u32int)dir->tablesPhysical - (u32int)dir;
+
+    // Then the physical address of dir->tablesPhysical is:
+    dir->physicalAddr = phys + offset;
+
+    // Go through each page table. If the page table is in the kernel directory, do not make a new copy.
+    int i;
+    for (i = 0; i < 1024; i++)
+    {
+        if (!src->tables[i])
+            continue;
+
+        if (kernel_directory->tables[i] == src->tables[i])
+        {
+            // It's in the kernel, so just use the same pointer.
+            dir->tables[i] = src->tables[i];
+            dir->tablesPhysical[i] = src->tablesPhysical[i];
+        }
+        else
+        {
+            // Copy the table.
+            u32int phys;
+            dir->tables[i] = clone_table(src->tables[i], &phys);
+            dir->tablesPhysical[i] = phys | 0x07;
+        }
+    }
+    return dir;
+}
+
+u32int* PhyToVirtual(u32int* Phy)
+{
+    for(int i=0;i<1024;i++)
+    {
+        if(Phy==kernel_directory->tablesPhysical[i])
+        {
+            console_writestring("FOUND");
+        }
+    }
+}
+
+u32int ab=0x000A000;
+
+void* vmalloc(size_t pages)
+{
+    u32int temp=ab;
+    for(int i=0;i<pages;i++)
+    {
+        alloc_frame( get_page(ab, 1, current_directory), 0, 1);
+        memset((void*)ab,0,0x1000);
+        ab=ab+0x1000;
+    }
+    return (void*)temp;
+}
+
