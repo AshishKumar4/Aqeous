@@ -89,9 +89,9 @@ extern u32int placement_address;
 void setVesa(u32int mode)
 {
   //VESA_INFO info; //VESA information
-  MODE_INFO vbeModeInfo; //VESA mode information
+  MODE_INFO *vbeModeInfo; //VESA mode information
 
-  regs16_t regs;
+  regs16_t *regs;
 
   /**Gets VESA information**/
 /*
@@ -106,22 +106,23 @@ void setVesa(u32int mode)
   int32(0x10, &regs);
   memcpy(&info, buffer, sizeof(VESA_INFO));
 //*/
-  u32int modeBuffer = (u32int)kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
-
-  memset(&regs, 0, sizeof(regs));
-  regs.ax = 0x4f01;
-  regs.di = modeBuffer & 0xF;
-  regs.es = (modeBuffer>>4) & 0xFFFF;
-  regs.cx = mode;
-  int32(0x10, &regs);
-  memcpy(&vbeModeInfo, modeBuffer, sizeof(MODE_INFO));
-  regs.ax = 0x4f02;
-  regs.bx = (mode | 0x4000);
-  int32(0x10, &regs);
-  widthVESA = vbeModeInfo.XResolution;
-  heightVESA = vbeModeInfo.YResolution;
-  depthVESA = vbeModeInfo.BitsPerPixel;
-  vga_mem = (u8int*)vbeModeInfo.PhysBasePtr;
+  vbeModeInfo=kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
+  u32int modeBuffer = vbeModeInfo;
+  regs=kmalloc(sizeof(regs)) & 0xFFFFF;
+  //memset(&regs, 0, sizeof(regs));
+  regs->ax = 0x4f01;
+  regs->di = modeBuffer & 0xF;
+  regs->es = (modeBuffer>>4) & 0xFFFF;
+  regs->cx = mode;
+  int32(0x10, regs);
+  //memcpy(vbeModeInfo, modeBuffer, sizeof(MODE_INFO));
+  regs->ax = 0x4f02;
+  regs->bx = (mode | 0x4000);
+  int32(0x10, regs);
+  widthVESA = vbeModeInfo->XResolution;
+  heightVESA = vbeModeInfo->YResolution;
+  depthVESA = vbeModeInfo->BitsPerPixel;
+  vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
   //paging();
   asm volatile("sti");
 

@@ -23,14 +23,15 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 
     initial_esp = initial_stack;
 	//setVesa(0x117);
-	//buff=(u8int*)kmalloc(1024*768*2);
 	initialise_paging();
 	console_init();
+	//setVesa(0x117);
+	//buff=(u8int*)kmalloc(4096*768*2);
 	int *abc;
 	int b;
 	for(int i=0;i<100;i++)
     {
-        abc=(int*)vmalloc(1);
+        abc=(int*)vmalloc_id(512);
         *abc=*abc+10;
         console_write_dec(*abc);
         console_writestring("  ");
@@ -69,7 +70,7 @@ void kernel_start()
 
 void kernel_main()
 {
-    /*RectD(0,0,1023,767,150,150,150);
+    RectD(0,0,1023,767,150,150,150);
     while(1)
     {
         //RectD(500,500,10,20,1000,1000,1000);

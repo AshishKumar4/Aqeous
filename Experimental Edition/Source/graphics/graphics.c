@@ -40,9 +40,9 @@ void Pixel_VESA(int x, int y, int C1,int C2, int C3)
    // buffer1[offset] = C1;           //BLUE
   //  buffer2[offset] = C2;    //GREEN
    // buffer3[offset] = C3;   //RED
-    buff[offset+1]=C1& 0xff;
+   /* buff[offset+1]=C1& 0xff;
     buff[offset+2]=C2& 0xff;
-    buff[offset+3]=C3& 0xff;
+    buff[offset+3]=C3& 0xff;*/
 }
 
 void RectD(int x, int y, int width, int height, int C1,int C2, int C3)

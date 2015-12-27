@@ -138,6 +138,7 @@ void initialise_paging()
     // computed on-the-fly rather than once at the start.
     // Allocate a lil' bit extra so the kernel heap can be
     // initialised properly.
+    placement_address=4096*768;
     i = 0;
     while (i < placement_address+0x1000)
     {
@@ -305,9 +306,9 @@ u32int* PhyToVirtual(u32int* Phy)
     }
 }
 
-u32int ab=0x000A000;
+u32int ab=4096*1025;
 
-void* vmalloc(size_t pages)
+u32int vmalloc(size_t pages)
 {
     u32int temp=ab;
     for(int i=0;i<pages;i++)
@@ -316,6 +317,55 @@ void* vmalloc(size_t pages)
         memset((void*)ab,0,0x1000);
         ab=ab+0x1000;
     }
-    return (void*)temp;
+    return temp;
 }
 
+void* Map_Page (u32int phy,size_t pages)
+{
+    u32int temp=phy;
+    for(int i=0;i<pages;i++)
+    {
+        page_t* page=get_page(phy, 1, current_directory);
+            set_frame(phy*0x1000);
+            page->present = 1;
+            page->rw = 1;
+            page->user = 1;
+            page->frame = phy;
+        memset((void*)phy,0,0x1000);
+        phy=phy+0x1000;
+    }
+    return (u32int*)temp;
+}
+
+u32int bc=4096*1024;
+
+u32int vmalloc_id (size_t pages)
+{
+    u32int temp=bc;
+    for(int i=0;i<pages;i++)
+    {
+        page_t* page=get_page(bc, 1, current_directory);
+            set_frame((bc)*0x1000);
+            page->present = 1;
+            page->rw = 1;
+            page->user = 1;
+            page->frame = ab;
+        memset((void*)bc,0,0x1000);
+        bc=bc+0x1000;
+    }
+    return temp;
+}
+
+
+void map(u32int phy,size_t size)
+{
+    unsigned int i;
+    for (i = phy; i < phy+size*4096; i += 0x1000)
+    {
+        page_t *page = get_page(i, 1, kernel_directory); //get pointer on a page entry
+        page->frame=i;
+        page->present = 1;
+        page->rw = 1;
+        page->user = 1;
+    }
+}

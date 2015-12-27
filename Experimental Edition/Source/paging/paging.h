@@ -69,4 +69,8 @@ void page_fault(registers_t regs);
 **/
 page_directory_t *clone_directory(page_directory_t *src);
 
+u32int vmalloc(size_t pages);
+
+u32int vmalloc_id(size_t pages);
+
 #endif
