@@ -22,21 +22,28 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     init_descriptor_tables();
 
     initial_esp = initial_stack;
-	//setVesa(0x117);
-	initialise_paging();
 	console_init();
+	setVesa(0x117);
+	placement_address=vga;
+	//RectL(0,0,100,100,1000,1000,1000);
+	//int *abc=kmalloc(4096*10);
+    //abc=(int*)kmalloc(10*4096);
+	initialise_paging();
+	vga_mem=(u8int*)vga;
+	widthVESA=vga[0];
+	heightVESA=vga[1];
+	depthVESA=vga[2];
+	RectL(0,0,1024,768,90,90,90);
+	//abc=(int*)vmalloc(10);
 	//setVesa(0x117);
 	//buff=(u8int*)kmalloc(4096*768*2);
-	int *abc;
 	int b;
-	for(int i=0;i<100;i++)
+	/*for(int i=0;i<10*4096;i+=4096)
     {
-        abc=(int*)vmalloc_id(512);
-        *abc=*abc+10;
-        console_write_dec(*abc);
+        abc[i]=&abc[i]-&abc[0];
+        console_write_dec(abc[i]);
         console_writestring("  ");
-        b=abc;
-        console_write_dec(b);
+        console_write_dec(&abc[i]);
         console_writestring("  ");
     }
     console_writestring(" Just this much");
@@ -70,6 +77,7 @@ void kernel_start()
 
 void kernel_main()
 {
+    /*
     RectD(0,0,1023,767,150,150,150);
     while(1)
     {

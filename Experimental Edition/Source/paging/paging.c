@@ -9,7 +9,7 @@ page_directory_t *current_directory=0;
 
 // A bitset of frames - used or free.
 u32int *frames;
-u32int nframes;
+u32int nframes,ab,bc;
 
 // Defined in kheap.c
 extern u32int placement_address;
@@ -108,7 +108,7 @@ void initialise_paging()
 {
     // The size of physical memory. For the moment we
     // assume it is 16MB big.
-    u32int mem_end_page = 0xFFFFFFF;
+    u32int mem_end_page=0x5000000;
 
     nframes = mem_end_page / 0x1000;
     frames = (u32int*)kmalloc(INDEX_FROM_BIT(nframes));
@@ -138,12 +138,13 @@ void initialise_paging()
     // computed on-the-fly rather than once at the start.
     // Allocate a lil' bit extra so the kernel heap can be
     // initialised properly.
-    placement_address=4096*768;
+    ab=placement_address+4096*2;
+    bc=ab;
     i = 0;
     while (i < placement_address+0x1000)
     {
         // Kernel code is readable but not writeable from userspace.
-        alloc_frame( get_page(i, 1, kernel_directory), 1, 1);
+        alloc_frame( get_page(i, 1, kernel_directory), 0, 1);
         i += 0x1000;
     }
 
@@ -306,16 +307,13 @@ u32int* PhyToVirtual(u32int* Phy)
     }
 }
 
-u32int ab=4096*1025;
-
 u32int vmalloc(size_t pages)
 {
     u32int temp=ab;
-    for(int i=0;i<pages;i++)
+    for(;ab<pages*4096*4+temp;ab+=4096)
     {
         alloc_frame( get_page(ab, 1, current_directory), 0, 1);
-        memset((void*)ab,0,0x1000);
-        ab=ab+0x1000;
+        memset((void*)ab,0,4096);
     }
     return temp;
 }
@@ -337,12 +335,10 @@ void* Map_Page (u32int phy,size_t pages)
     return (u32int*)temp;
 }
 
-u32int bc=4096*1024;
-
 u32int vmalloc_id (size_t pages)
 {
     u32int temp=bc;
-    for(int i=0;i<pages;i++)
+    for(int i=0;i<pages*4;i++)
     {
         page_t* page=get_page(bc, 1, current_directory);
             set_frame((bc)*0x1000);
@@ -360,12 +356,8 @@ u32int vmalloc_id (size_t pages)
 void map(u32int phy,size_t size)
 {
     unsigned int i;
-    for (i = phy; i < phy+size*4096; i += 0x1000)
+    for (i = phy; i < phy+size; i += 0x1000)
     {
-        page_t *page = get_page(i, 1, kernel_directory); //get pointer on a page entry
-        page->frame=i;
-        page->present = 1;
-        page->rw = 1;
-        page->user = 1;
+        alloc_frame(get_page(i, 1, kernel_directory),0,1); //get pointer on a page entry
     }
 }
