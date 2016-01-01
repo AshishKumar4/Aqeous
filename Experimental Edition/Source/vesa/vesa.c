@@ -75,6 +75,7 @@ typedef struct VESA_INFO
   unsigned char  OemData[256];//         __attribute__ ((packed));
 } VESA_INFO;
 
+MODE_INFO *vbeModeInfo;
  void int32(u8int intnum, regs16_t *regs);
 
 void setBank(int bankNo)
@@ -90,8 +91,7 @@ void setBank(int bankNo)
 extern u32int placement_address;
 void setVesa(u32int mode)
 {
-  //VESA_INFO info; //VESA information
-  MODE_INFO *vbeModeInfo; //VESA mode information
+  //VESA_INFO info; //VESA information //VESA mode information
 
   regs16_t *regs;
 
@@ -121,11 +121,21 @@ void setVesa(u32int mode)
   regs->ax = 0x4f02;
   regs->bx = (mode | 0x4000);
   int32(0x10, regs);
-  vga = (u32int*)vbeModeInfo->PhysBasePtr;
-  vga[0]=vbeModeInfo->XResolution;
-  vga[1]=vbeModeInfo->YResolution;
-  vga[2]=vbeModeInfo->BitsPerPixel;
+  vga_mem = (u8int*)4244635648;//(u8int*)vbeModeInfo->PhysBasePtr;
+  widthVESA=vbeModeInfo->XResolution;
+  heightVESA=vbeModeInfo->YResolution;
+  depthVESA=vbeModeInfo->BitsPerPixel;
+  buff=(u8int*)kmalloc(1024*768*2);
   //paging();
   asm volatile("sti");
 
+}
+
+void vesa_lfb()
+{
+	vga_mem=(u8int*)vga;
+    widthVESA=vga[0];
+    heightVESA=vga[1];
+    depthVESA=vga[2];
+    buff=(u8int*)kmalloc(1024*768*4);
 }

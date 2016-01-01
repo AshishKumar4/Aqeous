@@ -23,17 +23,37 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 
     initial_esp = initial_stack;
 	console_init();
+	console_writestring("start: ");
+
 	setVesa(0x117);
-	placement_address=vga;
 	//RectL(0,0,100,100,1000,1000,1000);
-	//int *abc=kmalloc(4096*10);
+	int *abc=kmalloc(1);
     //abc=(int*)kmalloc(10*4096);
-	initialise_paging();
-	vga_mem=(u8int*)vga;
-	widthVESA=vga[0];
-	heightVESA=vga[1];
-	depthVESA=vga[2];
-	RectL(0,0,1024,768,90,90,90);
+    /*for(int i=0;i<409610;i++)
+    {
+        abc[i]=100;
+    }
+    //*/
+    placement_address=4096*768;
+    initialise_paging();
+    //buff=vmalloc(200);
+    vga_mem=map(4244635648,200);
+    //buff=vmalloc(10);
+    /*abc=map(4244635648,1);
+    for(int i=0;i<8392;i++)
+    {
+        abc[i]=100;
+    }
+    for(int i=8192;i<8292;i+=1)
+    {
+        console_write_dec(&abc[i]);
+        console_write_dec(abc[i]);
+        console_writestring("  ");
+    }
+    console_writestring("done");
+    //map(&vga,4096*400);*/
+	/*;
+	//RectL(0,0,1024,768,1000,1000,1000);
 	//abc=(int*)vmalloc(10);
 	//setVesa(0x117);
 	//buff=(u8int*)kmalloc(4096*768*2);
@@ -77,10 +97,11 @@ void kernel_start()
 
 void kernel_main()
 {
-    /*
-    RectD(0,0,1023,767,150,150,150);
+    RectD(0,0,1023,767,90,90,90);
     while(1)
     {
+        write_vesa(123456789,10,10);
+        write_vesa((placement_address/100)%1000000000,10,100);
         //RectD(500,500,10,20,1000,1000,1000);
         //mouse_handler();
         Mouse_Plot(mousex,mousey);

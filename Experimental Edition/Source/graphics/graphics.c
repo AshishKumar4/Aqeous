@@ -13,6 +13,7 @@ void Init()
     //RectL(0,0,1022,767,90,90,90);
 }
 
+
 //void Clear()
 //{
  //   for(int i=0;i<(1020*(depthVESA/8)+760*(widthVESA*(depthVESA/8)));i++)
@@ -42,7 +43,8 @@ void Pixel_VESA(int x, int y, int C1,int C2, int C3)
    // buffer3[offset] = C3;   //RED
    /* buff[offset+1]=C1& 0xff;
     buff[offset+2]=C2& 0xff;
-    buff[offset+3]=C3& 0xff;*/
+    buff[offset+3]=C3& 0xff;
+    //*/
 }
 
 void RectD(int x, int y, int width, int height, int C1,int C2, int C3)
@@ -111,3 +113,24 @@ void Mouse_Plot(int x,int y)
     }
 }
 
+
+inline void write_vesa(unsigned long int in,int x,int y)
+{
+    unsigned long int d=1,ln=0,b=in,arr[10];
+    char c[2],a[10];
+    for(unsigned long int i=0;b;i++)
+    {
+        b=b/10;
+        ++ln;
+    }
+    b=in;
+    for(unsigned long int i=0;i<ln;i++) d=d*10;
+    d=d/10;
+    unsigned long int i;
+    for(i=0;i<ln;i++)
+    {
+        RectL(x+40*i,y,20,20,1+100*(b/d),1+100*(b/d),1+100*(b/d));
+        b=b%d;
+        d=d/10;
+    }
+}

@@ -9,7 +9,7 @@ page_directory_t *current_directory=0;
 
 // A bitset of frames - used or free.
 u32int *frames;
-u32int nframes,ab,bc;
+u32int nframes,ab=4096*780,bc=0;
 
 // Defined in kheap.c
 extern u32int placement_address;
@@ -318,21 +318,38 @@ u32int vmalloc(size_t pages)
     return temp;
 }
 
-void* Map_Page (u32int phy,size_t pages)
+u32int Map_Page(u32int phy,size_t pages)
 {
-    u32int temp=phy;
-    for(int i=0;i<pages;i++)
+    if(!ab)
     {
-        page_t* page=get_page(phy, 1, current_directory);
-            set_frame(phy*0x1000);
+        u32int temp=ab;
+        for(int i=phy;i<pages+phy;i+=0x1000,ab+=0x1000)
+        {
+            page_t *page=get_page(ab, 1, current_directory);
+            //set_frame(phy*0x1000);
             page->present = 1;
             page->rw = 1;
             page->user = 1;
             page->frame = phy;
-        memset((void*)phy,0,0x1000);
-        phy=phy+0x1000;
+            //memset((void*)phy,0,0x1000);*/
+        }
+        return temp;
     }
-    return (u32int*)temp;
+    else
+    {
+        u32int temp=placement_address;
+        for(int i=phy;i<pages+phy;i+=0x1000,placement_address+=0x1000)
+        {
+            page_t* page=get_page(placement_address, 1, current_directory);
+                set_frame(phy*0x1000);
+                page->present = 1;
+                page->rw = 1;
+                page->user = 1;
+                page->frame = phy;
+                //memset((void*)phy,0,0x1000);
+        }
+        return temp;
+    }
 }
 
 u32int vmalloc_id (size_t pages)
@@ -345,7 +362,7 @@ u32int vmalloc_id (size_t pages)
             page->present = 1;
             page->rw = 1;
             page->user = 1;
-            page->frame = ab;
+            page->frame = bc;
         memset((void*)bc,0,0x1000);
         bc=bc+0x1000;
     }
@@ -353,11 +370,18 @@ u32int vmalloc_id (size_t pages)
 }
 
 
-void map(u32int phy,size_t size)
+u32int map(u32int phy,size_t size)
 {
-    unsigned int i;
-    for (i = phy; i < phy+size; i += 0x1000)
+    u32int temp=ab;
+    unsigned int i,j=phy;
+    for (i = phy; i < phy+size; i += 0x1000,j+=phy)
     {
-        alloc_frame(get_page(i, 1, kernel_directory),0,1); //get pointer on a page entry
+        page_t *page=get_page(i, 1, kernel_directory); //get pointer on a page entry
+
+        set_frame((j)*0x1000);
+        page->present = 1;
+        page->rw = 1;
+        page->user = 1;
+        page->frame = j;
     }
 }
