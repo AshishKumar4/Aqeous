@@ -313,7 +313,7 @@ u32int* PhyToVirtual(u32int* Phy)
 u32int vmalloc(size_t pages)
 {
     u32int temp=ab;
-    for(;ab<(pages*4096*4)+temp;ab+=4096)
+    for(;ab<(pages*4096)+temp;ab+=4096)
     {
         alloc_frame( get_page(ab, 1, current_directory), 0, 1);
     }
@@ -323,7 +323,7 @@ u32int vmalloc(size_t pages)
 u32int vmalloc_id (size_t pages)
 {
     u32int temp=bc;
-    for(int i=0;i<pages*4;i++)
+    for(int i=0;i<pages;i++)
     {
         page_t* page=get_page(bc, 1, current_directory);
             set_frame((bc)*0x1000);
