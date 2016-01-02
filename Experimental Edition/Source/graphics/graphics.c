@@ -41,7 +41,7 @@ void Pixel_VESA(int x, int y, int C1,int C2, int C3)
    // buffer1[offset] = C1;           //BLUE
   //  buffer2[offset] = C2;    //GREEN
    // buffer3[offset] = C3;   //RED
-   /* buff[offset+1]=C1& 0xff;
+    buff[offset+1]=C1& 0xff;
     buff[offset+2]=C2& 0xff;
     buff[offset+3]=C3& 0xff;
     //*/
@@ -129,7 +129,7 @@ inline void write_vesa(unsigned long int in,int x,int y)
     unsigned long int i;
     for(i=0;i<ln;i++)
     {
-        RectL(x+40*i,y,20,20,1+100*(b/d),1+100*(b/d),1+100*(b/d));
+        RectD(x+40*i,y,20,20,1+100*(b/d),1+100*(b/d),1+100*(b/d));
         b=b%d;
         d=d/10;
     }

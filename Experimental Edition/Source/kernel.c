@@ -27,26 +27,29 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 
 	setVesa(0x117);
 	//RectL(0,0,100,100,1000,1000,1000);
-	int *abc=kmalloc(1);
+	/*int *abc=4096*1024;
     //abc=(int*)kmalloc(10*4096);
-    /*for(int i=0;i<409610;i++)
+    for(int i=0;i<4096*1024*10;i++)
     {
         abc[i]=100;
     }
-    //*/
+    //
+    console_writestring("test ");*/
     placement_address=4096*768;
     initialise_paging();
+    map(0xFD000000,1024*768*2);
+    enable_paging();
+    buff=vmalloc(384);
     //buff=vmalloc(200);
-    vga_mem=map(4244635648,200);
-    //buff=vmalloc(10);
-    /*abc=map(4244635648,1);
-    for(int i=0;i<8392;i++)
-    {
-        abc[i]=100;
-    }
-    for(int i=8192;i<8292;i+=1)
+    //vbeModeInfo=map(vbeModeInfo,10);
+    /*vga_mem=map(vbeModeInfo->PhysBasePtr,200);
+   // buff=(u8int*)vmalloc(1024*768*2);
+    //buff=vmalloc(10);*/
+    /*abc=map(4096*1024,20);
+    for(int i=0;i<100;i+=1)
     {
         console_write_dec(&abc[i]);
+        console_writestring("  ");
         console_write_dec(abc[i]);
         console_writestring("  ");
     }
@@ -97,7 +100,6 @@ void kernel_start()
 
 void kernel_main()
 {
-    RectD(0,0,1023,767,90,90,90);
     while(1)
     {
         write_vesa(123456789,10,10);
@@ -107,6 +109,4 @@ void kernel_main()
         Mouse_Plot(mousex,mousey);
         DBuff();
     }
-   // u32int *ptr = (u32int*)0xA0000000;
-   // u32int do_page_fault = *ptr;*/
 }

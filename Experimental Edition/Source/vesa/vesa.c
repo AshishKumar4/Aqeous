@@ -121,21 +121,15 @@ void setVesa(u32int mode)
   regs->ax = 0x4f02;
   regs->bx = (mode | 0x4000);
   int32(0x10, regs);
-  vga_mem = (u8int*)4244635648;//(u8int*)vbeModeInfo->PhysBasePtr;
-  widthVESA=vbeModeInfo->XResolution;
-  heightVESA=vbeModeInfo->YResolution;
-  depthVESA=vbeModeInfo->BitsPerPixel;
-  buff=(u8int*)kmalloc(1024*768*2);
-  //paging();
+  vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
+    widthVESA=vbeModeInfo->XResolution;
+    heightVESA=vbeModeInfo->YResolution;
+    depthVESA=vbeModeInfo->BitsPerPixel;
   asm volatile("sti");
 
 }
 
 void vesa_lfb()
 {
-	vga_mem=(u8int*)vga;
-    widthVESA=vga[0];
-    heightVESA=vga[1];
-    depthVESA=vga[2];
-    buff=(u8int*)kmalloc(1024*768*4);
+    //buff=(u8int*)kmalloc(1024*768*4);
 }
