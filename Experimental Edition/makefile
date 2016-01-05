@@ -22,11 +22,12 @@ VFS:=$(SOURCE)/vfs
 MULTIBOOT:=$(SOURCE)/multiboot
 MULTITASK:=$(SOURCE)/multitask
 MEMMANAGEMENT:=$(SOURCE)/MemManagement
+ATA:=$(SOURCE)/ATA
 
 OBJS:= $(OBJ)/*.o
 INCLUDED:=-ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(KHEAP) -I$(PAGING) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I$(DRIVERS) -I./
-INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT)
+INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA)
 
 FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel

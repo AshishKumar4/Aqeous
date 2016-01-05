@@ -2,11 +2,13 @@
 #include "console.c"
 #include "interrupts.c"
 #include "multiboot.h"
-//#include "vfs.c"
-//#include "initrd.c"
+#include "vfs.c"
+#include "cmos.c"
+//#include "fat.c"
 #include "timer.c"
 #include "mem.c"
 #include "paging.c"
+#include "ata.c"
 #include "ordered_array.c"
 
 u32int initial_esp;
@@ -20,12 +22,12 @@ uint32_t kernelSize=4096;
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
     init_descriptor_tables();
-
-    initial_esp = initial_stack;
 	console_init();
+    initialise_ata();
+    initial_esp = initial_stack;
 	console_writestring("start: ");
 
-	setVesa(0x117);
+	//setVesa(0x117);
 	//RectL(0,0,100,100,1000,1000,1000);
 	/*int *abc=4096*1024;
     //abc=(int*)kmalloc(10*4096);
@@ -34,10 +36,10 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
         abc[i]=100;
     }
     //
-    console_writestring("test ");*/
+    console_writestring("test ");
     placement_address=4096*768;
     initialise_paging();
-    map(0xFD000000,1024*768*2);
+    map(vbeModeInfo->PhysBasePtr,1024*768*2);
     enable_paging();
     buff=vmalloc(384);
     //buff=vmalloc(200);
@@ -99,14 +101,13 @@ void kernel_start()
 }
 
 void kernel_main()
-{
+{/*
     while(1)
     {
         write_vesa(123456789,10,10);
         write_vesa((placement_address/100)%1000000000,10,100);
-        //RectD(500,500,10,20,1000,1000,1000);
         //mouse_handler();
         Mouse_Plot(mousex,mousey);
         DBuff();
-    }
+    }*/
 }

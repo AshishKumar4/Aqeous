@@ -1,1 +1,1 @@
-qemu-system-i386 -cdrom aqeous.iso -monitor stdio 
+qemu-system-i386 -hda hdd.img -cdrom aqeous.iso -monitor stdio 

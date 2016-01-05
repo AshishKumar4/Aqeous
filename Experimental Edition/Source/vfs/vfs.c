@@ -1,55 +1,89 @@
-#include "vfs.h"
+#include <vfs.h>
 
-fs_node_t *fs_root = 0; // The root of the filesystem.
+FILE volOpenFile (const char* fname) {
 
-u32int read_fs(fs_node_t *node, u32int offset, u32int size, u8int *buffer)
-{
-    // Has the node got a read callback?
-    if (node->read != 0)
-        return node->read(node, offset, size, buffer);
-    else
-        return 0;
+	if (fname) {
+
+		//! default to device 'a'
+		unsigned char device = 'a';
+
+		//! filename
+		char* filename = (char*) fname;
+
+		//! in all cases, if fname[1]==':' then the first character must be device letter
+		if (fname[1]==':') {
+
+			device = fname[0];
+			filename += 2; //strip it from pathname
+		}
+
+		//! call filesystem
+		if (_FileSystems [device - 'a']) {
+
+			//! set volume specific information and return file
+			FILE file = _FileSystems[device - 'a']->Open (filename);
+			file.deviceID = device;
+			return file;
+		}
+	}
+
+	FILE file;
+	file.flags = FS_INVALID;
+	return file;
 }
 
-u32int write_fs(fs_node_t *node, u32int offset, u32int size, u8int *buffer)
-{
-    // Has the node got a write callback?
-    if (node->write != 0)
-        return node->write(node, offset, size, buffer);
-    else
-        return 0;
+
+/**
+*	Reads file
+*/
+void volReadFile (PFILE file, unsigned char* Buffer, unsigned int Length) {
+
+	if (file)
+		if (_FileSystems [file->deviceID - 'a'])
+			_FileSystems[file->deviceID - 'a']->Read (file,Buffer,Length);
 }
 
-void open_fs(fs_node_t *node, u8int read, u8int write)
-{
-    // Has the node got an open callback?
-    if (node->open != 0)
-        return node->open(node);
+/**
+*	Close file
+*/
+void volCloseFile (PFILE file) {
+
+	if (file)
+		if (_FileSystems [file->deviceID - 'a'])
+			_FileSystems[file->deviceID - 'a']->Close (file);
 }
 
-void close_fs(fs_node_t *node)
-{
-    // Has the node got a close callback?
-    if (node->close != 0)
-        return node->close(node);
-}
-struct dirent *readdir_fs(fs_node_t *node, u32int index)
-{
-    // Is the node a directory, and does it have a callback?
-    if ( (node->flags&0x7) == FS_DIRECTORY &&
-         node->readdir != 0 )
-        return node->readdir(node, index);
-    else
-        return 0;
+
+/**
+*	Registers a filesystem
+*/
+void volRegisterFileSystem (PFILESYSTEM fsys, unsigned int deviceID) {
+
+	static int i=0;
+
+	if (i < DEVICE_MAX)
+		if (fsys) {
+
+			_FileSystems[ deviceID ] = fsys;
+			i++;
+		}
 }
 
-fs_node_t *finddir_fs(fs_node_t *node, char *name)
-{
-    // Is the node a directory, and does it have a callback?
-    if ( (node->flags&0x7) == FS_DIRECTORY &&
-         node->finddir != 0 )
-        return node->finddir(node, name);
-    else
-        return 0;
+/**
+*	Unregister file system
+*/
+void volUnregisterFileSystem (PFILESYSTEM fsys) {
+
+	for (int i=0;i < DEVICE_MAX; i++)
+		if (_FileSystems[i]==fsys)
+			_FileSystems[i]=0;
 }
 
+/**
+*	Unregister file system
+*/
+void volUnregisterFileSystemByID (unsigned int deviceID) {
+
+	if (deviceID < DEVICE_MAX)
+		_FileSystems [deviceID] = 0;
+}

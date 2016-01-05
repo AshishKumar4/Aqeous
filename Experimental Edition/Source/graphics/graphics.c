@@ -6,7 +6,9 @@
 extern int widthVESA, heightVESA, depthVESA;
 unsigned int background=90;
 unsigned char *tempbuff;
-unsigned char buffer=90& 0xff;
+unsigned char buffer1=90& 0xff;
+unsigned char buffer2=90& 0xff;
+unsigned char buffer3=90& 0xff;
 extern unsigned char *vga_mem; //pointer where we assign our vga address
 void Init()
 {
@@ -78,12 +80,12 @@ void DBuff()
         for(int j=0;j<width;j++)
     {
         offset = j * (depthVESA / 8) + i * (widthVESA * (depthVESA / 8));
-        if(buff[offset]!=buffer)
-           buff[offset]=buffer;
-        if(buff[offset+1]!=buffer)
-           buff[offset+1]=buffer;
-        if(buff[offset+2]!=buffer)
-           buff[offset+2]=buffer;
+        if(buff[offset]!=buffer1)
+           buff[offset]=buffer1;
+        if(buff[offset+1]!=buffer2)
+           buff[offset+1]=buffer2;
+        if(buff[offset+2]!=buffer3)
+           buff[offset+2]=buffer3;
     }
 }
 void RectL(int x, int y, int width, int height, int C1,int C2, int C3)
