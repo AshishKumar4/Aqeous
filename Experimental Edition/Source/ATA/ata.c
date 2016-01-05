@@ -25,7 +25,51 @@ inline void read_sector(unsigned int addr)
     outb(0x1F7, 0x20);
 }
 
-void initialise_ata()
+void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
+{
+    outb(0x1F7,0xA0);
+    outb(0x1F2,0);
+    outb(0x1F3,0);
+    outb(0x1F4,0);
+    outb(0x1F5,0);
+    outb(0x1F7,0xEC);
+    if(inb(0x1F7))
+    {
+        console_writestring(" Drive 0xA0 exists ");
+        if(inb(0x1F5)||inb(0x1F3))
+        {
+            console_writestring(" Drive 0xA0 not compatible with ATA SPECS ");
+            return;
+        }
+        console_writestring(" initialized ");
+
+    }
+    else
+    {
+        outb(0x1F7,0xB0);
+        outb(0x1F2,0);
+        outb(0x1F3,0);
+        outb(0x1F4,0);
+        outb(0x1F5,0);
+        outb(0x1F7,0xEC);
+        if(inb(0x1F7)>0)
+        {
+            console_writestring(" Drive 0xB0 exists ");
+            if(inb(0x1F5)||inb(0x1F3))
+            {
+                console_writestring(" Drive 0xB0 not compatible with ATA SPECS ");
+                return;
+            }
+            console_writestring(" initialized ");
+        }
+        else
+        {
+            return;
+        }
+    }
+}
+
+void initialise_ata() /** this 1 uses detection of controllers and non standard methods **/
 {
     unsigned short controller=0x1F3,tmpword;
     while(1)
@@ -33,7 +77,7 @@ void initialise_ata()
         outb(0x1F3, 0x88);
         if(inb(0x1F3)==0x88)
         {
-            console_writestring("controller: 0x176  ");
+            console_writestring("controller: 0x1F3  ");
             break;
         }
         else
