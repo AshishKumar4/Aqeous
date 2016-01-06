@@ -23,8 +23,6 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
     init_descriptor_tables();
 	console_init();
-	char ab[256];
-	for(int i=0;i<256;i++) ab[i]='b';
     init_ata();
 	//setVesa(0x117);
 	//RectL(0,0,100,100,1000,1000,1000);

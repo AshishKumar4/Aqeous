@@ -1,0 +1,1 @@
+qemu-system-i386 -cdrom aqeous.iso -monitor stdio -drive file=hdd.img,if=none,id=hdd -device ich9-ahci,id=ahci -device ide-drive,drive=hdd,bus=ahci.0 

@@ -1,8 +1,6 @@
 #include <console.h>
 #include <sys.h>
-
-unsigned short drive;
-
+#include <ata.h>
 inline void write_sector(unsigned int addr)
 {
     outb(0x1F1, 0x00);
@@ -12,6 +10,14 @@ inline void write_sector(unsigned int addr)
     outb(0x1F5, (unsigned char)(addr >> 16));
     outb(0x1F6, 0xE0 | (drive << 4) | ((addr >> 24) & 0x0F));
     outb(0x1F7, 0x30);
+}
+
+inline void sleep(int ms)
+{
+    for(int i=0;i<ms*100;i++)
+    {
+
+    }
 }
 
 inline void read_sector(unsigned int addr)
@@ -25,45 +31,116 @@ inline void read_sector(unsigned int addr)
     outb(0x1F7, 0x20);
 }
 
+int AHCI_test()
+{
+    if(inb(0x1F7)&0x01)
+    {
+        if(inb(0x1F4)||inb(0x1F5))
+        {
+            console_write_dec(inb(0x1F5));
+            console_writestring("  ");
+            console_write_dec(0x3C);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
 {
     outb(0x1F7,0xA0);
+    sleep(10);
     outb(0x1F2,0);
     outb(0x1F3,0);
     outb(0x1F4,0);
     outb(0x1F5,0);
     outb(0x1F7,0xEC);
-    if(inb(0x1F7))
+    sleep(10);
+    if(inb(0x1F7)&&!(inb(0x1F7)&0x01))
     {
         console_writestring(" Drive 0xA0 exists ");
+            int i;
+            for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0);i++)
+            {
+                if(i>=1000) //timeout
+                {
+                    return;
+                }
+            }
         if(inb(0x1F5)||inb(0x1F3))
         {
             console_writestring(" Drive 0xA0 not compatible with ATA SPECS ");
             return;
         }
-        console_writestring(" initialized ");
 
+        // wait for the data to arrive - but timeout if it doesn't
+        if( ( inb( 0x1F7 ) & 0x08 ) )
+        {
+            // counter
+            int idx;
+
+            // read in all the data
+            unsigned short* identdata = (unsigned short*) &ident;
+            for( idx = 0; idx < 255; idx++ )
+            {
+                identdata[idx] = inw( 0x1F0 );
+            }
+            HDD="P";
+            console_writestring(" initialized ");
+        }
     }
     else
     {
         outb(0x1F7,0xB0);
+        sleep(10);
         outb(0x1F2,0);
         outb(0x1F3,0);
         outb(0x1F4,0);
         outb(0x1F5,0);
         outb(0x1F7,0xEC);
-        if(inb(0x1F7)>0)
+        sleep(10);
+        if(inb(0x1F7)&&!(inb(0x1F7)&0x01))
         {
             console_writestring(" Drive 0xB0 exists ");
+            int i;
+            for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0)&&(inb(0x1F7)&0x01);i++)
+            {
+                if(i>=1000) //timeout
+                {
+                    return;
+                }
+            }
             if(inb(0x1F5)||inb(0x1F3))
             {
                 console_writestring(" Drive 0xB0 not compatible with ATA SPECS ");
                 return;
             }
-            console_writestring(" initialized ");
+            // wait for the data to arrive - but timeout if it doesn't
+            if( ( inb( 0x1F7 ) & 0x08 ) )
+            {
+                // counter
+                int idx;
+
+                // read in all the data
+                unsigned short* identdata = (unsigned short*) &ident;
+                for( idx = 0; idx < 255; idx++ )
+                {
+                    identdata[idx] = inw( 0x1F0 );
+                }
+                HDD="P";
+                console_writestring(" initialized ");
+            }
         }
         else
         {
+            sleep(1000);
+            if(0x147)
+            if(AHCI_test())
+            {
+                console_writestring(" SATA DISK FOUND, INITIALIZED ");
+            }
+            else console_writestring(" NO COMPATIBLE DISK FOUND, RETURNING ");
+            console_writestring(" NOT ATA COMPATIBLE ");
             return;
         }
     }
