@@ -1,6 +1,8 @@
 #include <console.h>
 #include <sys.h>
 #include <ata.h>
+#include <pci.h>
+#include <ahci.h>
 inline void write_sector(unsigned int addr)
 {
     outb(0x1F1, 0x00);
@@ -33,65 +35,23 @@ inline void read_sector(unsigned int addr)
 
 int AHCI_test()
 {
-    if(inb(0x1F7)&0x01)
-    {
-        if(inb(0x1F4)||inb(0x1F5))
-        {
-            console_write_dec(inb(0x1F5));
-            console_writestring("  ");
-            console_write_dec(0x3C);
-            return 1;
-        }
-    }
-    return 0;
+    FIS_REG_H2D fis;
+    memset(&fis, 0, sizeof(FIS_REG_H2D));
+    fis.fis_type = FIS_TYPE_REG_H2D;
+    fis.command = ATA_CMD_IDENTIFY;	// 0xEC
+    fis.device = 0;			// Master device
+    fis.c = 1;				// Write command register
+    probe_port(abar);
+    if(AHCI)
+        return 1;
+    else return 0;
 }
 
 void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
 {
-    outb(0x1F7,0xA0);
-    sleep(10);
-    outb(0x1F2,0);
-    outb(0x1F3,0);
-    outb(0x1F4,0);
-    outb(0x1F5,0);
-    outb(0x1F7,0xEC);
-    sleep(10);
-    if(inb(0x1F7)&&!(inb(0x1F7)&0x01))
+    if(!AHCI_test())
     {
-        console_writestring(" Drive 0xA0 exists ");
-            int i;
-            for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0);i++)
-            {
-                if(i>=1000) //timeout
-                {
-                    return;
-                }
-            }
-        if(inb(0x1F5)||inb(0x1F3))
-        {
-            console_writestring(" Drive 0xA0 not compatible with ATA SPECS ");
-            return;
-        }
-
-        // wait for the data to arrive - but timeout if it doesn't
-        if( ( inb( 0x1F7 ) & 0x08 ) )
-        {
-            // counter
-            int idx;
-
-            // read in all the data
-            unsigned short* identdata = (unsigned short*) &ident;
-            for( idx = 0; idx < 255; idx++ )
-            {
-                identdata[idx] = inw( 0x1F0 );
-            }
-            HDD="P";
-            console_writestring(" initialized ");
-        }
-    }
-    else
-    {
-        outb(0x1F7,0xB0);
+        outb(0x1F7,0xA0);
         sleep(10);
         outb(0x1F2,0);
         outb(0x1F3,0);
@@ -101,20 +61,21 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
         sleep(10);
         if(inb(0x1F7)&&!(inb(0x1F7)&0x01))
         {
-            console_writestring(" Drive 0xB0 exists ");
-            int i;
-            for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0)&&(inb(0x1F7)&0x01);i++)
-            {
-                if(i>=1000) //timeout
+            console_writestring(" Drive 0xA0 exists ");
+                int i;
+                for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0);i++)
                 {
-                    return;
+                    if(i>=1000) //timeout
+                    {
+                        return;
+                    }
                 }
-            }
             if(inb(0x1F5)||inb(0x1F3))
             {
-                console_writestring(" Drive 0xB0 not compatible with ATA SPECS ");
+                console_writestring(" Drive 0xA0 not compatible with ATA SPECS ");
                 return;
             }
+
             // wait for the data to arrive - but timeout if it doesn't
             if( ( inb( 0x1F7 ) & 0x08 ) )
             {
@@ -128,107 +89,69 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
                     identdata[idx] = inw( 0x1F0 );
                 }
                 HDD="P";
+                outb(0x1F0+ATA_REG_CONTROL,0x02);
                 console_writestring(" initialized ");
             }
         }
         else
         {
-            sleep(1000);
-            if(0x147)
-            if(AHCI_test())
+            outb(0x1F7,0xB0);
+            sleep(10);
+            outb(0x1F2,0);
+            outb(0x1F3,0);
+            outb(0x1F4,0);
+            outb(0x1F5,0);
+            outb(0x1F7,0xEC);
+            sleep(10);
+            if(inb(0x1F7)&&!(inb(0x1F7)&0x01))
             {
-                console_writestring(" SATA DISK FOUND, INITIALIZED ");
+                console_writestring(" Drive 0xB0 exists ");
+                int i;
+                for(i=0;(((inb(0x1F7)) & (1 << 7)) != 0)&&(inb(0x1F7)&0x01);i++)
+                {
+                    if(i>=1000) //timeout
+                    {
+                        return;
+                    }
+                }
+                if(inb(0x1F5)||inb(0x1F3))
+                {
+                    console_writestring(" Drive 0xB0 not compatible with ATA SPECS ");
+                    return;
+                }
+                // wait for the data to arrive - but timeout if it doesn't
+                if( ( inb( 0x1F7 ) & 0x08 ) )
+                {
+                    // counter
+                    int idx;
+
+                    // read in all the data
+                    unsigned short* identdata = (unsigned short*) &ident;
+                    for( idx = 0; idx < 255; idx++ )
+                    {
+                        identdata[idx] = inw( 0x1F0 );
+                    }
+                    HDD="P";
+                    outb(0x1F0+ATA_REG_CONTROL,0x02);
+                    console_writestring(" initialized ");
+                }
             }
-            else console_writestring(" NO COMPATIBLE DISK FOUND, RETURNING ");
-            console_writestring(" NOT ATA COMPATIBLE ");
-            return;
+            else
+            {
+                return;
+            }
         }
+    }
+    else
+    {
+        HDD='S';
     }
 }
 
-void initialise_ata() /** this 1 uses detection of controllers and non standard methods **/
-{
-    unsigned short controller=0x1F3,tmpword;
-    while(1)
-    {
-        outb(0x1F3, 0x88);
-        if(inb(0x1F3)==0x88)
-        {
-            console_writestring("controller: 0x1F3  ");
-            break;
-        }
-        else
-        {
-            outb(0x176, 0x88);
-            if(inb(0x176)==0x88)
-            {
-                controller=0x176;
-                console_writestring("controller: 0x176  ");
-                break;
-            }
-        }
-    }
-    if(controller==0x1F3)
-    {
-        outb(0x1F6, 0xA0); // use 0xB0 instead of 0xA0 to test the second drive on the controller
-        for(int i=0;i<10000;i++){} // wait 1/250th of a second
-        tmpword = inb(0x1F7); // read the status port
-        if (tmpword & 0x40) // see if the busy bit is set
-        {
-            drive=0xA0;
-            console_writestring("drive: 0xA0  ");
-            goto init;
-        }
-        else
-        {
-            outb(0x1F6, 0xB0); // use 0xB0 instead of 0xA0 to test the second drive on the controller
-            for(int i=0;i<10000;i++){} // wait 1/250th of a second
-            tmpword = inb(0x1F7); // read the status port
-            if (tmpword & 0x40) // see if the busy bit is set
-            {
-                drive=0xB0;
-                console_writestring("drive: 0xB0  ");
-                goto init;
-            }
-            else goto out;
-        }
-    }
-    else if(controller==0x176)
-    {
-        outb(0x176, 0xA0); // use 0xB0 instead of 0xA0 to test the second drive on the controller
-        for(int i=0;i<10000;i++){} // wait 1/250th of a second
-        tmpword = inb(0x1F7); // read the status port
-        if (tmpword & 0x40) // see if the busy bit is set
-        {
-            drive=0xA0;
-            console_writestring("drive: 0xA0  ");
-            goto init;
-        }
-        else
-        {
-            outb(0x1F6, 0xB0); // use 0xB0 instead of 0xA0 to test the second drive on the controller
-            for(int i=0;i<10000;i++){} // wait 1/250th of a second
-            tmpword = inb(0x1F7); // read the status port
-            if (tmpword & 0x40) // see if the busy bit is set
-            {
-                drive=0xB0;
-                console_writestring("drive: 0xB0  ");
-                goto init;
-            }
-            else goto out;
-        }
-    }
-    init:
-    return;
-    out:
-        return;
-}
-
-char *read_ata(unsigned int addr)
+void read_ata(unsigned int addr,u8int *buffer)
 {
     read_sector(addr);
     while (!(inb(0x1F7) & 0x08)) {}
-    char *buffer;
     unsigned char tmpword;
     for (int idx = 0; idx < 256; idx++)
     {
@@ -236,7 +159,6 @@ char *read_ata(unsigned int addr)
         buffer[idx * 2] = (unsigned char)tmpword;
         buffer[idx * 2 + 1] = (unsigned char)(tmpword >> 8);
     }
-    return buffer;
 }
 
 void write_ata(char *buffer,unsigned int addr)
@@ -249,5 +171,94 @@ void write_ata(char *buffer,unsigned int addr)
         tmpword = buffer[8 + idx * 2] | (buffer[8 + idx * 2 + 1] << 8);
         outw(0x1F0, tmpword);
     }
+}
+
+#define SECTORSIZE		512
+#define DISK_PORT		0x1F0
+
+typedef struct {
+	uint8_t  status;
+	uint8_t  chs_first_sector[3];
+	uint8_t  type;
+	uint8_t  chs_last_sector[3];
+	uint32_t lba_first_sector;
+	uint32_t sector_count;
+} partition_t;
+
+typedef struct {
+	uint16_t flags;
+	uint16_t unused1[9];
+	char     serial[20];
+	uint16_t unused2[3];
+	char     firmware[8];
+	char     model[40];
+	uint16_t sectors_per_int;
+	uint16_t unused3;
+	uint16_t capabilities[2];
+	uint16_t unused4[2];
+	uint16_t valid_ext_data;
+	uint16_t unused5[5];
+	uint16_t size_of_rw_mult;
+	uint32_t sectors_28;
+	uint16_t unused6[38];
+	uint64_t sectors_48;
+	uint16_t unused7[152];
+} __attribute__((packed)) ata_identify_t;
+
+typedef struct {
+	uint8_t     boostrap[446];
+	partition_t partitions[4];
+	uint8_t     signature[2];
+} __attribute__((packed)) mbr_t;
+mbr_t mbr;
+
+
+mbr_t mbr;
+
+int read_partition_map()
+{
+	read_ata(0,(u8int*)&mbr);
+
+	if (mbr.signature[0] == 0x55 && mbr.signature[1] == 0xAA) {
+		console_writestring("Partition table found.");
+
+		for (int i = 0; i < 4; ++i) {
+			if (mbr.partitions[i].status & 0x80) {
+				console_writestring("Partition #%d: @%d+%d");
+			} else {
+				console_writestring("Partition #%d: inactive");
+			}
+		}
+
+		return 0;
+	}
+	else
+    {
+		console_writestring("Did not find partition table ");
+		console_write_dec(mbr.signature[0]);
+		console_writestring(" ");
+		console_write_dec(mbr.signature[1]);
+
+		console_writestring("Parsing anyone yields:");
+
+		for (int i = 0; i < 4; ++i) {
+			if (mbr.partitions[i].status & 0x80) {
+				console_writestring(" Partition ");
+                console_write_dec(i+1);
+                console_writestring(" : ");
+                console_write_dec(mbr.partitions[i].lba_first_sector);
+                console_writestring(" ");
+                console_write_dec(mbr.partitions[i].sector_count);
+			} else {
+				console_writestring("Partition inactive:");
+                console_write_dec(i+1);
+                console_writestring(" ");
+			}
+		}
+
+
+	}
+
+	return 1;
 }
 

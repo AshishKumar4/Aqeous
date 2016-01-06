@@ -3,10 +3,72 @@
 #include <sys.h>
 #include <system.h>
 
-typedef unsigned char BYTE;
-typedef unsigned short DWORD;
-typedef unsigned long QWORD;
-typedef unsigned short WORD;
+#define ATA_SR_BSY     0x80
+#define ATA_SR_DRDY    0x40
+#define ATA_SR_DF      0x20
+#define ATA_SR_DSC     0x10
+#define ATA_SR_DRQ     0x08
+#define ATA_SR_CORR    0x04
+#define ATA_SR_IDX     0x02
+#define ATA_SR_ERR     0x01
+
+#define ATA_ER_BBK      0x80
+#define ATA_ER_UNC      0x40
+#define ATA_ER_MC       0x20
+#define ATA_ER_IDNF     0x10
+#define ATA_ER_MCR      0x08
+#define ATA_ER_ABRT     0x04
+#define ATA_ER_TK0NF    0x02
+#define ATA_ER_AMNF     0x01
+
+#define ATA_CMD_READ_PIO          0x20
+#define ATA_CMD_READ_PIO_EXT      0x24
+#define ATA_CMD_READ_DMA          0xC8
+#define ATA_CMD_READ_DMA_EXT      0x25
+#define ATA_CMD_WRITE_PIO         0x30
+#define ATA_CMD_WRITE_PIO_EXT     0x34
+#define ATA_CMD_WRITE_DMA         0xCA
+#define ATA_CMD_WRITE_DMA_EXT     0x35
+#define ATA_CMD_CACHE_FLUSH       0xE7
+#define ATA_CMD_CACHE_FLUSH_EXT   0xEA
+#define ATA_CMD_PACKET            0xA0
+#define ATA_CMD_IDENTIFY_PACKET   0xA1
+#define ATA_CMD_IDENTIFY          0xEC
+
+#define ATAPI_CMD_READ       0xA8
+#define ATAPI_CMD_EJECT      0x1B
+
+#define IDE_ATA        0x00
+#define IDE_ATAPI      0x01
+
+#define ATA_MASTER     0x00
+#define ATA_SLAVE      0x01
+
+#define ATA_REG_DATA       0x00
+#define ATA_REG_ERROR      0x01
+#define ATA_REG_FEATURES   0x01
+#define ATA_REG_SECCOUNT0  0x02
+#define ATA_REG_LBA0       0x03
+#define ATA_REG_LBA1       0x04
+#define ATA_REG_LBA2       0x05
+#define ATA_REG_HDDEVSEL   0x06
+#define ATA_REG_COMMAND    0x07
+#define ATA_REG_STATUS     0x07
+#define ATA_REG_SECCOUNT1  0x08
+#define ATA_REG_LBA3       0x09
+#define ATA_REG_LBA4       0x0A
+#define ATA_REG_LBA5       0x0B
+#define ATA_REG_CONTROL    0x0C
+#define ATA_REG_ALTSTATUS  0x0C
+#define ATA_REG_DEVADDRESS 0x0D
+
+// Channels:
+#define ATA_PRIMARY      0x00
+#define ATA_SECONDARY    0x01
+
+// Directions:
+#define ATA_READ      0x00
+#define ATA_WRITE     0x01
 
 typedef struct ident_device_t {
 	unsigned short	config;		/* lots of obsolete bit flags */
@@ -97,172 +159,6 @@ typedef struct ident_device_t {
 } IDENTIFYDEVICE;
 
 IDENTIFYDEVICE ident;
-
-typedef enum
-{
-	FIS_TYPE_REG_H2D	= 0x27,	// Register FIS - host to device
-	FIS_TYPE_REG_D2H	= 0x34,	// Register FIS - device to host
-	FIS_TYPE_DMA_ACT	= 0x39,	// DMA activate FIS - device to host
-	FIS_TYPE_DMA_SETUP	= 0x41,	// DMA setup FIS - bidirectional
-	FIS_TYPE_DATA		= 0x46,	// Data FIS - bidirectional
-	FIS_TYPE_BIST		= 0x58,	// BIST activate FIS - bidirectional
-	FIS_TYPE_PIO_SETUP	= 0x5F,	// PIO setup FIS - device to host
-	FIS_TYPE_DEV_BITS	= 0xA1,	// Set device bits FIS - device to host
-} FIS_TYPE;
-
-typedef struct tagFIS_REG_H2D
-{
-	// DWORD 0
-	BYTE	fis_type;	// FIS_TYPE_REG_H2D
-
-	BYTE	pmport:4;	// Port multiplier
-	BYTE	rsv0:3;		// Reserved
-	BYTE	c:1;		// 1: Command, 0: Control
-
-	BYTE	command;	// Command register
-	BYTE	featurel;	// Feature register, 7:0
-
-	// DWORD 1
-	BYTE	lba0;		// LBA low register, 7:0
-	BYTE	lba1;		// LBA mid register, 15:8
-	BYTE	lba2;		// LBA high register, 23:16
-	BYTE	device;		// Device register
-
-	// DWORD 2
-	BYTE	lba3;		// LBA register, 31:24
-	BYTE	lba4;		// LBA register, 39:32
-	BYTE	lba5;		// LBA register, 47:40
-	BYTE	featureh;	// Feature register, 15:8
-
-	// DWORD 3
-	BYTE	countl;		// Count register, 7:0
-	BYTE	counth;		// Count register, 15:8
-	BYTE	icc;		// Isochronous command completion
-	BYTE	control;	// Control register
-
-	// DWORD 4
-	BYTE	rsv1[4];	// Reserved
-} FIS_REG_H2D;
-
-typedef struct tagFIS_REG_D2H
-{
-	// DWORD 0
-	BYTE	fis_type;    // FIS_TYPE_REG_D2H
-
-	BYTE	pmport:4;    // Port multiplier
-	BYTE	rsv0:2;      // Reserved
-	BYTE	i:1;         // Interrupt bit
-	BYTE	rsv1:1;      // Reserved
-
-	BYTE	status;      // Status register
-	BYTE	error;       // Error register
-
-	// DWORD 1
-	BYTE	lba0;        // LBA low register, 7:0
-	BYTE	lba1;        // LBA mid register, 15:8
-	BYTE	lba2;        // LBA high register, 23:16
-	BYTE	device;      // Device register
-
-	// DWORD 2
-	BYTE	lba3;        // LBA register, 31:24
-	BYTE	lba4;        // LBA register, 39:32
-	BYTE	lba5;        // LBA register, 47:40
-	BYTE	rsv2;        // Reserved
-
-	// DWORD 3
-	BYTE	countl;      // Count register, 7:0
-	BYTE	counth;      // Count register, 15:8
-	BYTE	rsv3[2];     // Reserved
-
-	// DWORD 4
-	BYTE	rsv4[4];     // Reserved
-} FIS_REG_D2H;
-
-typedef struct tagFIS_DATA
-{
-	// DWORD 0
-	BYTE	fis_type;	// FIS_TYPE_DATA
-
-	BYTE	pmport:4;	// Port multiplier
-	BYTE	rsv0:4;		// Reserved
-
-	BYTE	rsv1[2];	// Reserved
-
-	// DWORD 1 ~ N
-	DWORD	data[1];	// Payload
-} FIS_DATA;
-
-typedef struct tagFIS_PIO_SETUP
-{
-	// DWORD 0
-	BYTE	fis_type;	// FIS_TYPE_PIO_SETUP
-
-	BYTE	pmport:4;	// Port multiplier
-	BYTE	rsv0:1;		// Reserved
-	BYTE	d:1;		// Data transfer direction, 1 - device to host
-	BYTE	i:1;		// Interrupt bit
-	BYTE	rsv1:1;
-
-	BYTE	status;		// Status register
-	BYTE	error;		// Error register
-
-	// DWORD 1
-	BYTE	lba0;		// LBA low register, 7:0
-	BYTE	lba1;		// LBA mid register, 15:8
-	BYTE	lba2;		// LBA high register, 23:16
-	BYTE	device;		// Device register
-
-	// DWORD 2
-	BYTE	lba3;		// LBA register, 31:24
-	BYTE	lba4;		// LBA register, 39:32
-	BYTE	lba5;		// LBA register, 47:40
-	BYTE	rsv2;		// Reserved
-
-	// DWORD 3
-	BYTE	countl;		// Count register, 7:0
-	BYTE	counth;		// Count register, 15:8
-	BYTE	rsv3;		// Reserved
-	BYTE	e_status;	// New value of status register
-
-	// DWORD 4
-	WORD	tc;		// Transfer count
-	BYTE	rsv4[2];	// Reserved
-} FIS_PIO_SETUP;
-
-
-
-
-typedef struct tagFIS_DMA_SETUP
-{
-	// DWORD 0
-	BYTE	fis_type;	// FIS_TYPE_DMA_SETUP
-
-	BYTE	pmport:4;	// Port multiplier
-	BYTE	rsv0:1;		// Reserved
-	BYTE	d:1;		// Data transfer direction, 1 - device to host
-	BYTE	i:1;		// Interrupt bit
-	BYTE	a:1;            // Auto-activate. Specifies if DMA Activate FIS is needed
-
-        BYTE    rsved[2];       // Reserved
-
-	//DWORD 1&2
-
-        QWORD   DMAbufferID;    // DMA Buffer Identifier. Used to Identify DMA buffer in host memory. SATA Spec says host specific and not in Spec. Trying AHCI spec might work.
-
-        //DWORD 3
-        DWORD   rsvd;           //More reserved
-
-        //DWORD 4
-        DWORD   DMAbufOffset;   //Byte offset into buffer. First 2 bits must be 0
-
-        //DWORD 5
-        DWORD   TransferCount;  //Number of bytes to transfer. Bit 0 must be 0
-
-        //DWORD 6
-        DWORD   resvd;          //Reserved
-
-} FIS_DMA_SETUP;
-
 
  char HDD;
 unsigned short drive;

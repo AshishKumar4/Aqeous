@@ -168,5 +168,23 @@ char *strcat(char *_dest, const char *_src)
    return _dest;
 }
 
+int strcmpy(const char *c1, const char *c2)
+{
+    int buff=0;
+    for(int i=0;i<=strlen(c1);i++)
+    {
+        for(int j=0;j<strlen(c2);j++)
+        {
+            if(c1[i+j]==c2[j])
+            {
+                buff+=1;
+            }
+        }
+        if(buff==strlen(c2))
+            return 0;
+        else buff=0;
+    }
+    return 1;
+}
 
 #endif // STRING_H

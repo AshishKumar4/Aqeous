@@ -4,7 +4,8 @@
 #include "multiboot.h"
 #include "vfs.c"
 #include "cmos.c"
-//#include "fat.c"
+#include "pci.c"
+#include "ahci.c"
 #include "timer.c"
 #include "mem.c"
 #include "paging.c"
@@ -24,6 +25,19 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     init_descriptor_tables();
 	console_init();
     init_ata();
+    /*
+    console_writestring(" PATA Info: Heads: ");
+    console_write_dec(ident.heads);
+    console_writestring(" Sectors: ");
+    console_write_dec(ident.sectors);
+    console_writestring(" Cylinders: ");
+    console_write_dec(ident.cyls);
+    console_writestring(" Bytes per Sector ");
+    console_write_dec(ident.sector_bytes);
+    console_writestring(" Bytes per Track ");
+    console_write_dec(ident.track_bytes);
+    console_writestring(" Serial No: ");
+    console_writestring(ident.serial_no);
 	//setVesa(0x117);
 	//RectL(0,0,100,100,1000,1000,1000);
 	/*int *abc=4096*1024;
