@@ -1,7 +1,8 @@
-
 #ifndef SYS_H
 #define SYS_H
 #include <common.h>
+#include <acpi.h>
+
 inline void outb(u16int port, u8int val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
@@ -56,6 +57,16 @@ inline void io_wait(void)
     /* The Linux kernel seems to think it is free for use :-/ */
     asm volatile ( "outb %%al, $0x80" : : "a"(0) );
     /* TODO: Is there any reason why al is forced? */
+}
+
+inline void sysManager(unsigned int todo) // 1 : reboot; 2 : shutdown; 3 : reserved
+{
+    if(todo==1)
+        outb(0x64, 0xFE);
+    else if(todo==2)
+        acpiPowerOff();
+    else if(todo==3)
+        return;
 }
 
 #endif // SYS_H

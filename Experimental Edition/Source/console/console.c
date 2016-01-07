@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <console.h>
 
 #include <vga.h>
@@ -39,15 +40,44 @@ void console_putentryat(char c, uint8_t color, size_t x, size_t y)
 
 void console_putchar(char c)
 {
+    char a=c;
+    if(c=='\n') c=' ';
+    else if(c=='\t') c=' ';
 	console_putentryat(c, console_color, consolecolumn, consolerow);
-	if ( ++consolecolumn == VGA_WIDTH )
+	if ( ++consolecolumn == VGA_WIDTH||a=='\n')
 	{
 		consolecolumn = 0;
 		if ( ++consolerow == VGA_HEIGHT )
 		{
-			consolerow = 0;
+		    --consolerow;
+		    uint16_t buff[((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1];
+		    for(int x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
+            {
+                buff[x] = 0;
+            }
+		    for ( size_t y = 0; y < VGA_HEIGHT; y++ )
+            {
+                for ( size_t x = 0; x < VGA_WIDTH; x++ )
+                {
+                    const size_t index = y * VGA_WIDTH + x;
+                    buff[index] = console_buffer[index];
+                }
+            }
+            for ( size_t y = 0; y < VGA_HEIGHT; y++ )
+            {
+                for ( size_t x = 0; x < VGA_WIDTH; x++ )
+                {
+                    const size_t index = y * VGA_WIDTH + x;
+                    const size_t backindex = (y+1) * VGA_WIDTH + x;
+                    console_buffer[index] = buff[backindex];
+                }
+            }
 		}
 	}
+	else if(a=='\t')
+    {
+        consolecolumn+=5;
+    }
 }
 
 void console_write(const char* data, size_t size)
@@ -58,7 +88,8 @@ void console_write(const char* data, size_t size)
 
 void console_writestring(const char* data)
 {
-	console_write(data, strlen(data));
+    printf(data);
+	//console_write(data, strlen(data));
 }
 int putchar(int ic)
 {

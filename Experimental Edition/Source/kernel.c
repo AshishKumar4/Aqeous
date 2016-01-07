@@ -10,6 +10,7 @@
 #include "mem.c"
 #include "paging.c"
 #include "ata.c"
+#include "acpi.c"
 #include "ordered_array.c"
 
 u32int initial_esp;
@@ -22,9 +23,17 @@ uint32_t kernelSize=4096;
 
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
-    init_descriptor_tables();
 	console_init();
+    init_descriptor_tables();
+    printf("DESCRIPTOR TABLES INITIALIZED \n");
+    printf("Enumerating all devices on PCI BUS:\n");
+    checkAllBuses();
     init_ata();
+    printf("\nHard Disk Initialized\n");
+    initAcpi();
+    if(!acpiEnable())
+        printf("ACPI Initialized\n");
+    else printf("ACPI CANT BE INITIALIZED\n");
     /*
     console_writestring(" PATA Info: Heads: ");
     console_write_dec(ident.heads);
@@ -37,7 +46,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     console_writestring(" Bytes per Track ");
     console_write_dec(ident.track_bytes);
     console_writestring(" Serial No: ");
-    console_writestring(ident.serial_no);
+    console_writestring(ident.serial_no);*/
 	//setVesa(0x117);
 	//RectL(0,0,100,100,1000,1000,1000);
 	/*int *abc=4096*1024;
@@ -47,13 +56,13 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
         abc[i]=100;
     }
     //
-    console_writestring("test ");
+    console_writestring("test ");*/
     placement_address=4096*768;
     initialise_paging();
     map(vbeModeInfo->PhysBasePtr,1024*768*2);
     enable_paging();
-    buff=vmalloc(384);
-    //buff=vmalloc(200);
+    printf("Paging Initialized\n");
+    buff=vmalloc(400);
     //vbeModeInfo=map(vbeModeInfo,10);
     /*vga_mem=map(vbeModeInfo->PhysBasePtr,200);
    // buff=(u8int*)vmalloc(1024*768*2);
@@ -102,9 +111,12 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     console_write_dec(pmmngr_is_paging());//*/
     asm volatile("sti");
     init_timer(50); //PIT WORKING
+    printf("PIT TIMER Initialized\n");
     //setVesa(0x117);
    // init_timer_RTC();
    mouseinit();
+   printf("Mouse Drivers initialized\n");
+   printf("LOADING MAIN KERNEL...\n");
 }
 
 void kernel_start()
@@ -112,13 +124,13 @@ void kernel_start()
 }
 
 void kernel_main()
-{/*
-    while(1)
+{
+   /* while(1)
     {
         write_vesa(123456789,10,10);
         write_vesa((placement_address/100)%1000000000,10,100);
         //mouse_handler();
         Mouse_Plot(mousex,mousey);
         DBuff();
-    }*/
+    }//*/
 }
