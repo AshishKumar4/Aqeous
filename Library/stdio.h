@@ -59,6 +59,18 @@ int printf(const char* restrict format, ...)
 			const char* s = va_arg(parameters, const char*);
 			print(s, strlen(s));
 		}
+        else if(*format == 'i' ||*format == 'd')
+        {
+            format++;
+            int c = va_arg (parameters, int);
+            printint(c);
+        }
+        else if(*format == 'l') //uint32_t
+        {
+            format++;
+            uint32_t c = va_arg (parameters, uint32_t);
+            printint(c);
+        }
 		else
 		{
 			goto incomprehensible_conversion;
@@ -70,27 +82,30 @@ int printf(const char* restrict format, ...)
 	return written;
 }
 
-void printint(int in)
-{
-    int d=1,ln=0,b=in,arr[10];
-    char c[2],a[10];
-    for(int i=0;b;i++)
-    {
-        b=b/10;
-        ++ln;
-    }
-    b=in;
-    for(int i=0;i<ln;i++) d=d*10;
-    d=d/10;
-    int i;
-    for(i=0;i<ln;i++)
-    {
-        a[i]=48+b/d;
-        b=b%d;
-        d=d/10;
-    }
-    a[i]='\0';
-    printf(a);
+char tbuf[32];
+char bchars[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+void itoa(unsigned i,unsigned base,char* buf) {
+   int pos = 0;
+   int opos = 0;
+   int top = 0;
+
+   if (i == 0 || base > 16) {
+      buf[0] = '0';
+      buf[1] = '\0';
+      return;
+   }
+
+   while (i != 0) {
+      tbuf[pos] = bchars[i % base];
+      pos++;
+      i /= base;
+   }
+   top=pos--;
+   for (opos=0; opos<top; pos--,opos++) {
+      buf[opos] = tbuf[pos];
+   }
+   buf[opos] = 0;
 }
 
 int puts(const char* string)

@@ -40,6 +40,7 @@ typedef struct page_directory
     u32int physicalAddr;
 } page_directory_t;
 
+static inline void flush_tlb(unsigned long addr);
 /**
    Sets up the environment, page directories etc and
    enables paging.
@@ -69,8 +70,12 @@ void page_fault(registers_t regs);
 **/
 page_directory_t *clone_directory(page_directory_t *src);
 
-u32int vmalloc(size_t pages);
+uint32_t vmalloc(size_t pages);
 
-u32int vmalloc_id(size_t pages);
+uint32_t vmalloc_id(size_t pages);
+
+void* gmalloc(size_t size);
+
+void gfree(void *ptr,size_t pages);
 
 #endif

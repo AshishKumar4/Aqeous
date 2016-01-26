@@ -3,6 +3,20 @@
 #include <common.h>
 #include <acpi.h>
 
+void delay(uint32_t delay)
+{
+    float k=0;
+    for(int i=0;i<delay;i++)
+    {
+      for(int j=0;j<delay;j++)
+      {
+        if(k)
+          k=0;
+        else k=1;
+      }
+    }
+}
+
 inline void outb(u16int port, u8int val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
@@ -34,6 +48,23 @@ inline u16int inw(u16int port)
     /* TODO: Should %1 be %w1? */
     return ret;
 }
+
+inline void outpd(u16int port, u16int val)
+{
+    asm volatile ( "outpd %0, %1" : : "a"(val), "Nd"(port) );
+    /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
+    /* TODO: Should %1 be %w1? */
+}
+
+inline u16int inpd(u16int port)
+{
+    u16int ret;
+    asm volatile ( "inpd %1, %0" : "=a"(ret) : "Nd"(port) );
+    /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
+    /* TODO: Should %1 be %w1? */
+    return ret;
+}
+
 
 inline void outl(u16int port, u32int val)
 {

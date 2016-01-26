@@ -98,19 +98,19 @@ int putchar(int ic)
 	return ic;
 }
 
-void console_write_dec(unsigned int in)
+void console_write_dec(uint32_t in)
 {
-    unsigned int d=1,ln=0,b=in,arr[10];
-    char c[2],a[10];
-    for(int i=0;b;i++)
+    uint32_t d=1,ln=0,b=in;
+    char a[40];
+    for(uint32_t i=0;b;i++)
     {
         b=b/10;
         ++ln;
     }
     b=in;
-    for(int i=0;i<ln;i++) d=d*10;
+    for(uint32_t i=0;i<ln;i++) d=d*10;
     d=d/10;
-    int i;
+    uint32_t i;
     for(i=0;i<ln;i++)
     {
         a[i]=48+b/d;
@@ -119,4 +119,29 @@ void console_write_dec(unsigned int in)
     }
     a[i]='\0';
     console_writestring(a);
+}
+
+void printint(uint32_t in)
+{
+    if(in<=999999999)
+        console_write_dec(in);
+    else
+    {
+        uint32_t d=1,b=in,c=0;
+        for(uint32_t i=0;b;i++)
+        {
+            b=b/10;
+            ++c;
+        }
+        c=c-9;
+        for(uint32_t i=0;i<c;i++) d=d*10;
+        console_write_dec(in/d);
+        console_write_dec(in%d);
+    }
+}
+
+void backspace()
+{
+		--consolecolumn;
+		console_putentryat(' ', console_color, consolecolumn, consolerow);
 }

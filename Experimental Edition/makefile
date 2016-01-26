@@ -27,11 +27,13 @@ PCI:=$(DRIVERS)/PCI
 AHCI:=$(DRIVERS)/AHCI
 ACPI:=$(DRIVERS)/ACPI
 MOUSE:=$(DRIVERS)/mouse
+KEYBOARD:=$(DRIVERS)/keyboard
 
 OBJS:= $(OBJ)/*.o
 INCLUDED:=-ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(KHEAP) -I$(PAGING) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I./
-INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE) -I$(DRIVERS)
+INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
+INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS)
 
 FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel

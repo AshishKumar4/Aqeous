@@ -6,12 +6,15 @@
 extern int widthVESA, heightVESA, depthVESA;
 unsigned int background=90;
 unsigned char *tempbuff;
-unsigned char buffer=90& 0xff;
+unsigned char buffer1=90& 0xff;
+unsigned char buffer2=90& 0xff;
+unsigned char buffer3=90& 0xff;
 extern unsigned char *vga_mem; //pointer where we assign our vga address
 void Init()
 {
     //RectL(0,0,1022,767,90,90,90);
 }
+
 
 //void Clear()
 //{
@@ -43,6 +46,7 @@ void Pixel_VESA(int x, int y, int C1,int C2, int C3)
     buff[offset+1]=C1& 0xff;
     buff[offset+2]=C2& 0xff;
     buff[offset+3]=C3& 0xff;
+    //*/
 }
 
 void RectD(int x, int y, int width, int height, int C1,int C2, int C3)
@@ -76,12 +80,12 @@ void DBuff()
         for(int j=0;j<width;j++)
     {
         offset = j * (depthVESA / 8) + i * (widthVESA * (depthVESA / 8));
-        if(buff[offset]!=buffer)
-           buff[offset]=buffer;
-        if(buff[offset+1]!=buffer)
-           buff[offset+1]=buffer;
-        if(buff[offset+2]!=buffer)
-           buff[offset+2]=buffer;
+        if(buff[offset]!=buffer1)
+           buff[offset]=buffer1;
+        if(buff[offset+1]!=buffer2)
+           buff[offset+1]=buffer2;
+        if(buff[offset+2]!=buffer3)
+           buff[offset+2]=buffer3;
     }
 }
 void RectL(int x, int y, int width, int height, int C1,int C2, int C3)
@@ -110,9 +114,25 @@ void Mouse_Plot(int x,int y)
             }
     }
 }
-//the vga identifiers
-u32int VGA_width=768;
-u32int VGA_height=1024;
-u32int VGA_bpp=64;
 
 
+inline void write_vesa(unsigned long int in,int x,int y)
+{
+    unsigned long int d=1,ln=0,b=in,arr[10];
+    char c[2],a[10];
+    for(unsigned long int i=0;b;i++)
+    {
+        b=b/10;
+        ++ln;
+    }
+    b=in;
+    for(unsigned long int i=0;i<ln;i++) d=d*10;
+    d=d/10;
+    unsigned long int i;
+    for(i=0;i<ln;i++)
+    {
+        RectD(x+40*i,y,20,20,1+100*(b/d),1+100*(b/d),1+100*(b/d));
+        b=b%d;
+        d=d/10;
+    }
+}

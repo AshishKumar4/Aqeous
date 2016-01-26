@@ -9,16 +9,18 @@ page_directory_t *current_directory=0;
 
 // A bitset of frames - used or free.
 u32int *frames;
-u32int nframes,ab=4096*2048,bc=0;
+u32int nframes;
 
 // Defined in kheap.c
 extern u32int placement_address;
-extern heap_t *kheap;
 
 // Macros used in the bitset algorithms.
 #define INDEX_FROM_BIT(a) (a/(8*4))
 #define OFFSET_FROM_BIT(a) (a%(8*4))
-
+static inline void flush_tlb(unsigned long addr)
+{
+   asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
+}
 // Static function to set a bit in the frames bitset
 static void set_frame(u32int frame_addr)
 {
@@ -46,10 +48,16 @@ static u32int test_frame(u32int frame_addr)
     return (frames[idx] & (0x1 << off));
 }
 
+uint32_t mem=1024*1024*2;
+
+uint32_t fframe=0;
 // Static function to find the first free frame.
 static u32int first_frame()
-{
-    u32int i, j;
+{/*
+    uint32_t tmp=fframe;
+    ++fframe;
+    return tmp;
+    /*/uint32_t i,j;
     for (i = 0; i < INDEX_FROM_BIT(nframes); i++)
     {
         if (frames[i] != 0xFFFFFFFF) // nothing free, exit early.
@@ -66,19 +74,14 @@ static u32int first_frame()
         }
     }
 }
-
+uint32_t phyaddr=0;
 // Function to allocate a frame.
 void alloc_frame(page_t *page, int is_kernel, int is_writeable)
 {
-    if (page->frame != 0)
-    {
-        return;
-    }
-    else
-    {
         u32int idx = first_frame();
         if (idx == (u32int)-1)
         {
+            printf("No space left\n");
             // PANIC! no free frames!!
         }
         set_frame(idx*0x1000);
@@ -86,7 +89,6 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
         page->rw = (is_writeable==1)?1:0;
         page->user = (is_kernel==1)?0:1;
         page->frame = idx;
-    }
 }
 
 // Function to deallocate a frame.
@@ -108,12 +110,11 @@ void initialise_paging()
 {
     // The size of physical memory. For the moment we
     // assume it is 16MB big.
-    u32int mem_end_page=0x5000000;
-
+    u32int mem_end_page=(0xFFFFFFFF);
+/**/
     nframes = mem_end_page / 0x1000;
-    frames = (u32int*)kmalloc(INDEX_FROM_BIT(nframes));
-    memset(frames, 0, INDEX_FROM_BIT(nframes));
-
+    frames = (u32int*)kmalloc(nframes/8);
+    memset(frames, 0, nframes/8);
     // Let's make a page directory.
     u32int phys;
     kernel_directory = (page_directory_t*)kmalloc_a(sizeof(page_directory_t));
@@ -123,49 +124,47 @@ void initialise_paging()
 
 void enable_paging()
 {
-        // Map some pages in the kernel heap area.
-    // Here we call get_page but not alloc_frame. This causes page_table_t's
-    // to be created where necessary. We can't allocate frames yet because they
-    // they need to be identity mapped first below, and yet we can't increase
-    // placement_address between identity mapping and enabling the heap!
-    int i = 0;
-    for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
-        get_page(i, 1, kernel_directory);
-
-    // We need to identity map (phys addr = virt addr) from
-    // 0x0 to the end of used memory, so we can access this
-    // transparently, as if paging wasn't enabled.
-    // NOTE that we use a while loop here deliberately.
-    // inside the loop body we actually change placement_address
-    // by calling kmalloc(). A while loop causes this to be
-    // computed on-the-fly rather than once at the start.
-    // Allocate a lil' bit extra so the kernel heap can be
-    // initialised properly.
-    ab=placement_address+4096*2;
-    bc=ab;
-    i = 0;
-    while (i < placement_address+0x1000)
+    printf("Allocating Pages and Page tables, This may take a while\n");
+    tempBlock3=Mblock;
+    uint32_t *lastPage;
+    for(uint32_t i=0;i<(1024*1024*100);i+=4096) //Make the pages and page tables for the whole usable memory
     {
-        // Kernel code is readable but not writeable from userspace.
-        alloc_frame( get_page(i, 1, kernel_directory), 0, 1);
-        i += 0x1000;
+        page_t* page=get_page(i,1,kernel_directory); //kernel Pages.
+        page->present=1;
+        page->rw=1;
+        page->user=0;
+        page->frame=i/4096;
+        set_frame(i);
+        tempBlock3->page=page;
+        tempBlock3=tempBlock3->link;
     }
-
-    // Now allocate those pages we mapped earlier.
-    for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
-        alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
-
-    // Before we enable paging, we must register our page fault handler.
-    register_interrupt_handler(14, page_fault);
-
-    // Now, enable paging!
+    for(uint32_t i=1024*1024*100;i<(1024*maxmem);i+=4096) //Make the pages and page tables for the usable memory
+    {
+        page_t* page=get_page(i,1,kernel_directory); //user Pages.
+        page->present=1;
+        page->rw=1;
+        page->user=1;
+        page->frame=1024*1024*70/4096;
+        tempBlock3->page=page;
+        tempBlock3=tempBlock3->link;
+    }
+    for(uint32_t i=1024*maxmem;i<(1024*1024*4);i+=4096) //Make the pages and page tables for the restof the memory as Identity
+    {
+        page_t* page=get_page(i,1,kernel_directory); //user Pages.
+        page->present=1;
+        page->rw=1;
+        page->user=1;
+        page->frame=i/4096;
+        set_frame(i);
+        tempBlock3->page=page;
+        tempBlock3=tempBlock3->link;
+    }
     switch_page_directory(kernel_directory);
-
-    // Initialise the kernel heap.
-    kheap = create_heap(KHEAP_START, KHEAP_START+KHEAP_INITIAL_SIZE, 0xCFFFF000, 0, 0);
-
-    current_directory = clone_directory(kernel_directory);
-    switch_page_directory(current_directory);
+    register_interrupt_handler(14, page_fault);
+    pag=1;
+    printf("\nenabled paging\n");
+    /*current_directory = clone_directory(kernel_directory);
+    switch_page_directory(current_directory);*/
 }
 
 void switch_page_directory(page_directory_t *dir)
@@ -199,6 +198,7 @@ page_t *get_page(u32int address, int make, page_directory_t *dir)
     }
     else
     {
+        printf(" Cant get the Page! ");
         return 0;
     }
 }
@@ -221,14 +221,18 @@ void page_fault(registers_t regs)
     // Output an error message.
     console_writestring("Page fault! ( ");
     if (present) {console_writestring("present ");}
-    if (rw) {console_writestring("read-only ");}
+    if (rw)
+    {
+        console_writestring("read-only ");
+    }
     if (us) {console_writestring("user-mode ");}
     if (reserved) {console_writestring("reserved ");}
     console_writestring(") at 0x");
     console_write_dec(faulting_address);
     console_writestring(" - EIP: ");
-   // monitor_write_hex(regs.eip);
+    console_write_dec(regs.eip);
     console_writestring("\n");
+    return;
    // PANIC("Page fault");
 }
 
@@ -309,34 +313,6 @@ u32int* PhyToVirtual(u32int* Phy)
         }
     }
 }
-
-u32int vmalloc(size_t pages)
-{
-    u32int temp=ab;
-    for(;ab<(pages*4096)+temp;ab+=4096)
-    {
-        alloc_frame( get_page(ab, 1, current_directory), 0, 1);
-    }
-    return temp;
-}
-
-u32int vmalloc_id (size_t pages)
-{
-    u32int temp=bc;
-    for(int i=0;i<pages;i++)
-    {
-        page_t* page=get_page(bc, 1, current_directory);
-            set_frame((bc)*0x1000);
-            page->present = 1;
-            page->rw = 1;
-            page->user = 1;
-            page->frame = bc;
-        memset((void*)bc,0,0x1000);
-        bc=bc+0x1000;
-    }
-    return temp;
-}
-
 
 void map(u32int phy,size_t size)
 {

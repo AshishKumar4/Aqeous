@@ -20,8 +20,6 @@ unsigned char *vga_mem;
 
 unsigned char *buff;
 
-u32int *vga;
-
 typedef struct MODE_INFO
 {
   unsigned short ModeAttributes       __attribute__ ((packed));
@@ -122,14 +120,14 @@ void setVesa(u32int mode)
   regs->bx = (mode | 0x4000);
   int32(0x10, regs);
   vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
-    widthVESA=vbeModeInfo->XResolution;
-    heightVESA=vbeModeInfo->YResolution;
-    depthVESA=vbeModeInfo->BitsPerPixel;
+  widthVESA=vbeModeInfo->XResolution;
+  heightVESA=vbeModeInfo->YResolution;
+  depthVESA=vbeModeInfo->BitsPerPixel;
   asm volatile("sti");
 
 }
 
 void vesa_lfb()
 {
-    //buff=(u8int*)kmalloc(1024*768*4);
+    buff=(u8int*)kmalloc(1024*768*4);
 }

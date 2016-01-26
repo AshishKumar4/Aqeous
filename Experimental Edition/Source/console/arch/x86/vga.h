@@ -1,3 +1,6 @@
+#ifndef VGA_h
+#define VGA_h
+
 enum vga_color
 {
 	COLOR_BLACK = 0,
@@ -34,3 +37,5 @@ static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
 static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;
+
+#endif

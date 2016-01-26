@@ -1,6 +1,8 @@
 
 #include <common.h>
-#include <kheap.h>
+#include <mem.h>
+#include <console.h>
+#include <paging.h>
 
 #define wVESA     1024
 #define hVESA     768
@@ -71,6 +73,7 @@ typedef struct VESA_INFO
   unsigned char  OemData[256];//         __attribute__ ((packed));
 } VESA_INFO;
 
+MODE_INFO *vbeModeInfo;
  void int32(u8int intnum, regs16_t *regs);
 
 void setBank(int bankNo)
@@ -83,17 +86,16 @@ void setBank(int bankNo)
 
   int32(0x10, &regs);
 }
+extern u32int placement_address;
 void setVesa(u32int mode)
 {
+  //VESA_INFO info; //VESA information //VESA mode information
 
-  VESA_INFO info; //VESA information
-  MODE_INFO vbeModeInfo; //VESA mode information
-
-  regs16_t regs;
+  regs16_t *regs;
 
   /**Gets VESA information**/
-
-  u32int buffer = kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
+/*
+  u32int buffer = (u32int)kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
 
   memcpy(buffer, "VBE2", 4);
   memset(&regs, 0, sizeof(regs));
@@ -103,26 +105,29 @@ void setVesa(u32int mode)
   regs.es = (buffer>>4) & 0xFFFF;
   int32(0x10, &regs);
   memcpy(&info, buffer, sizeof(VESA_INFO));
-
-  u32int modeBuffer = kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
-
-  memset(&regs, 0, sizeof(regs));
-  regs.ax = 0x4f01;
-  regs.di = modeBuffer & 0xF;
-  regs.es = (modeBuffer>>4) & 0xFFFF;
-  regs.cx = mode;
-  int32(0x10, &regs);
-  memcpy(&vbeModeInfo, modeBuffer, sizeof(MODE_INFO));
-
-  widthVESA = vbeModeInfo.XResolution;
-  heightVESA = vbeModeInfo.YResolution;
-  depthVESA = vbeModeInfo.BitsPerPixel;
-  vga_mem = (u8int*)vbeModeInfo.PhysBasePtr;
-  buff=(u8int*)kmalloc(1024*768*2); //buffer for double buffering
-  u32int lfb = (u32int)vbeModeInfo.PhysBasePtr;
-  regs.ax = 0x4f02;
-  regs.bx = (mode | 0x4000);
-  int32(0x10, &regs);
+//*/
+  vbeModeInfo=kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
+  u32int modeBuffer = vbeModeInfo;
+  regs=kmalloc(sizeof(regs)) & 0xFFFFF;
+  //memset(&regs, 0, sizeof(regs));
+  regs->ax = 0x4f01;
+  regs->di = modeBuffer & 0xF;
+  regs->es = (modeBuffer>>4) & 0xFFFF;
+  regs->cx = mode;
+  int32(0x10, regs);
+  //memcpy(vbeModeInfo, modeBuffer, sizeof(MODE_INFO));
+  regs->ax = 0x4f02;
+  regs->bx = (mode | 0x4000);
+  int32(0x10, regs);
+  vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
+  widthVESA=vbeModeInfo->XResolution;
+  heightVESA=vbeModeInfo->YResolution;
+  depthVESA=vbeModeInfo->BitsPerPixel;
   asm volatile("sti");
 
+}
+
+void vesa_lfb()
+{
+    buff=(u8int*)kmalloc(1024*768*4);
 }
