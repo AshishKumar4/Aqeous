@@ -46,7 +46,8 @@ int keyboard_scancodes(int key)
       key += 32;
 
 		if (_shift)
-			if (key >= '0' && key <= '9')
+			{
+				if (key >= '0' && key <= '9')
 				switch (key)
         {
 
@@ -130,7 +131,8 @@ int keyboard_scancodes(int key)
 						break;
 				}
 			}
-      return key;
+		}
+    return key;
 }
 /* Handles the keyboard interrupt */
 void keyboard_handler()//(struct regs *r)
@@ -229,7 +231,6 @@ int checker(int i)
 uint8_t getch()
 {
 	asm volatile("sti");
-  int i=0;
   while(1)
   {
     if(checker(call)) break;
@@ -244,7 +245,6 @@ uint8_t getchar()
 {
   back:
 	asm volatile("sti");
-  int i=0;
   while(1)
   {
     if(checker(call)) break;

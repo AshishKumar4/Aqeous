@@ -59,23 +59,6 @@ int width=1022,height=766;
 void DBuff()
 {
     memcpy(vga_mem,buff,1024*768*2);
-   /* for(int i = 0; i < height; i++)
-    for(int j = 0; j < width; j++)
-    {
-        offset = j * (depthVESA / 8) + i * (widthVESA * (depthVESA / 8));
-        if(buff[offset]!=vga_mem[offset])
-        {
-            vga_mem[offset + 0] = buff[offset];
-        }
-        if(buff[offset+1]!=vga_mem[offset+1])
-        {
-            vga_mem[offset + 1] = buff[offset+1];
-        }
-        if(buff[offset+2]!=vga_mem[offset+2])
-        {
-            vga_mem[offset + 2] = buff[offset+2];
-        }
-    }*/
     for(int i=0;i<height;i++)
         for(int j=0;j<width;j++)
     {
@@ -118,8 +101,7 @@ void Mouse_Plot(int x,int y)
 
 inline void write_vesa(unsigned long int in,int x,int y)
 {
-    unsigned long int d=1,ln=0,b=in,arr[10];
-    char c[2],a[10];
+    unsigned long int d=1,ln=0,b=in;
     for(unsigned long int i=0;b;i++)
     {
         b=b/10;

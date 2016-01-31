@@ -52,7 +52,7 @@ void console_putchar(char c)
 		{
 		    --consolerow;
 		    uint16_t buff[((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1];
-		    for(int x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
+		    for(size_t x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
             {
                 buff[x] = 0;
             }
@@ -147,7 +147,7 @@ void backspace()
 		console_putentryat(' ', console_color, consolecolumn, consolerow);
 }
 
-void console_manager(uint8_t *inst)
+void console_manager(char *inst)
 {
 	if(!strcmp(inst,"shutdown"))
 	{

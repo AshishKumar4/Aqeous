@@ -6,14 +6,14 @@ extern page_directory_t *kernel_directory;
 
 uint32_t BlockFinder(uint32_t addr)
 {
-    return (addr/4096)+Mblock;
+    return (addr/4096)+(uint32_t)Mblock;
 }
 
 uint32_t processID=10; //id 4 for paging, rest reserved
 
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int kernel,int packed,int processId)
 {
-    int mb=0,used=0;
+    uint32_t mb=0;
     if(kernel) mb=40;
     else mb=100;
     tempBlock1=Kblock;
@@ -92,7 +92,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int kernel,int packe
         *phys=addr;
     uint32_t size=sz;
     if(pag==0) //If paging not enabled
-        for(int i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
+        for(uint32_t i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
         {
           if(!processId)
             tempBlock1->used=processID;
@@ -101,13 +101,13 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int kernel,int packe
         }
     else
     {
-        for(int i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
+        for(uint32_t i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
         {
             if(!processId)
               tempBlock1->used=processID;
             else tempBlock1->used=processId;
             tempBlock1->map+=(size);
-            page_t* page=tempBlock1->page;
+            page_t* page=(page_t*)tempBlock1->page;
             page->present=1;
             page->rw=1;
             page->user=1;
@@ -121,7 +121,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int kernel,int packe
 
 void kfree(uint32_t p)
 {
-    tempBlock1=BlockFinder(p);
+    tempBlock1=(MemMap_t*)BlockFinder(p);
     uint32_t id=tempBlock1->used;
     if(!id)
       return; //Block Already Free
@@ -134,7 +134,7 @@ void kfree(uint32_t p)
     {
       memset((void*)tempBlock1->addr,0,4096); //clear the memory it points to
       tempBlock1->used=0;
-      page_t *page=tempBlock1->page;
+      page_t *page=(page_t*)tempBlock1->page;
       page->frame=1024*1024*70/4096; //destroy the pages
       ++tempBlock1;
     }

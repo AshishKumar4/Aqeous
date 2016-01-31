@@ -88,9 +88,21 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
                 {
                     identdata[idx] = inw( 0x1F0 );
                 }
-                HDD="P";
+                HDD='P';
                 outb(0x1F0+ATA_REG_CONTROL,0x02);
-                console_writestring(" initialized ");
+                printf("\nHard Disk Initialized\n");
+                console_writestring(" PATA Info: Heads: ");
+                console_write_dec(ident.heads);
+                console_writestring(" Sectors: ");
+                console_write_dec(ident.sectors);
+                console_writestring(" Cylinders: ");
+                console_write_dec(ident.cyls);
+                console_writestring(" Bytes per Sector ");
+                console_write_dec(ident.sector_bytes);
+                console_writestring(" Bytes per Track ");
+                console_write_dec(ident.track_bytes);
+                console_writestring(" Serial No: ");
+                console_writestring((char*)ident.serial_no);
             }
         }
         else
@@ -131,9 +143,21 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
                     {
                         identdata[idx] = inw( 0x1F0 );
                     }
-                    HDD="P";
+                    HDD='P';
                     outb(0x1F0+ATA_REG_CONTROL,0x02);
-                    console_writestring(" initialized ");
+                    printf("\nHard Disk Initialized\n");
+                    console_writestring(" PATA Info: Heads: ");
+                    console_write_dec(ident.heads);
+                    console_writestring(" Sectors: ");
+                    console_write_dec(ident.sectors);
+                    console_writestring(" Cylinders: ");
+                    console_write_dec(ident.cyls);
+                    console_writestring(" Bytes per Sector ");
+                    console_write_dec(ident.sector_bytes);
+                    console_writestring(" Bytes per Track ");
+                    console_write_dec(ident.track_bytes);
+                    console_writestring(" Serial No: ");
+                    console_writestring((char*)ident.serial_no);
                 }
             }
             else

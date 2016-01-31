@@ -6,9 +6,9 @@
 void delay(uint32_t delay)
 {
     float k=0;
-    for(int i=0;i<delay;i++)
+    for(uint32_t i=0;i<delay;i++)
     {
-      for(int j=0;j<delay;j++)
+      for(uint32_t j=0;j<delay;j++)
       {
         if(k)
           k=0;

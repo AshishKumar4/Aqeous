@@ -5,7 +5,6 @@
 #include <sys.h>
 #include <string.h>
 #include <stdio.h>
-#include <ordered_array.h>
 
 #define KHEAP_START         0xC0000000
 #define KHEAP_INITIAL_SIZE  0x100000

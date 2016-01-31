@@ -95,20 +95,20 @@ void setVesa(u32int mode)
 
   /**Gets VESA information**/
 
-  vbeInfo= kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
-  u32int buffer = vbeInfo;
-  regs=kmalloc(sizeof(regs)) & 0xFFFFF;
+  vbeInfo = (VESA_INFO*)(kmalloc(sizeof(VESA_INFO)) & 0xFFFFF);
+  u32int buffer = (uint32_t)vbeInfo;
+  regs = (regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
 
-  memcpy(buffer, "VBE2", 4);
+  memcpy((void*)buffer, "VBE2", 4);
 
   regs->ax = 0x4f00;
   regs->di = buffer & 0xF;
   regs->es = (buffer>>4) & 0xFFFF;
-  int32(0x10, &regs);
+  int32(0x10, regs);
 //*/
-  vbeModeInfo=kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
-  u32int modeBuffer = vbeModeInfo;
-  regs=kmalloc(sizeof(regs)) & 0xFFFFF;
+  vbeModeInfo=(MODE_INFO*)(kmalloc(sizeof(MODE_INFO)) & 0xFFFFF);
+  u32int modeBuffer = (uint32_t)vbeModeInfo;
+  regs=(regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
   //memset(&regs, 0, sizeof(regs));
   regs->ax = 0x4f01;
   regs->di = modeBuffer & 0xF;

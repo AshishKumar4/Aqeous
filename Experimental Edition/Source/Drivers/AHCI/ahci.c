@@ -1,9 +1,7 @@
-#include<ahci.h>
-#include<string.h>
-#include<sys.h>
-#include<blockdev.c>
-#include <list.c>
-#include<mem.h>
+#include <ahci.h>
+#include <string.h>
+#include <sys.h>
+#include <mem.h>
 ahci_t *test1;
 /**
  * AHCI controller data.
@@ -106,9 +104,9 @@ uint8_t ahci_found=0;
 
 int checkAHCI()
 {
-    ahci=kmalloc(4096);
+    ahci=(ahci_t*)kmalloc(4096);
     ahci_start=ahci;
-    Disk_dev=kmalloc(4096);
+    Disk_dev=(Disk_dev_t*)kmalloc(4096);
     Disk_dev_start=Disk_dev;
     for(int bus=0;bus<255;bus++)
     {
@@ -142,7 +140,7 @@ int checkAHCI()
 
 void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 {
-  abar=ahci_c->ahci.Header->Bar5;
+  abar=(HBA_MEM*)ahci_c->ahci.Header->Bar5;
 	// Search disk in impelemented ports
 	DWORD pi = abar->pi;
 	int i = 0;
@@ -160,7 +158,7 @@ void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
           ahci_c->Disks=disks;
           ++Disk_dev;
           ++disks;
-          test1=&abar->ports[i];
+          test1->Disk[i].port=&abar->ports[i];
 				console_writestring("\n\t\tSATA drive found \n");
 			}
 			else if (dt == AHCI_DEV_SATAPI)
@@ -310,125 +308,106 @@ int initAHCI(PciDevice_t *dev)
 
 
 
-int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
+int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, WORD buf)
 {
-    //   buf = KERNBASE + buf;
-        port->is = 0xffff;              // Clear pending interrupt bits
-       // int spin = 0;           // Spin lock timeout counter
-        int slot = find_cmdslot(port);
-        if (slot == -1)
-                return 0;
-        uint64_t addr = 0;
-        printf("\n clb %x clbu %x", port->clb, port->clbu);
-        addr = (((addr | port->clbu) << 32) | port->clb);
-        HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(KERNBASE + addr);
+  port->is = (DWORD)-1;		// Clear pending interrupt bits
+	int spin = 0; // Spin lock timeout counter
+	int slot = find_cmdslot(port);
+	if (slot == -1)
+		return 0;
 
-        //HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(port->clb);
-        cmdheader += slot;
-       cmdheader->cfl = sizeof(FIS_REG_H2D)/sizeof(DWORD);     // Command FIS size
-        cmdheader->w = 0;               // Read from device
-        cmdheader->c = 1;               // Read from device
-        cmdheader->p = 1;               // Read from device
-        // 8K bytes (16 sectors) per PRDT
-        cmdheader->prdtl = (WORD)((count-1)>>4) + 1;    // PRDT entries count
+	HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)port->clb;
+	cmdheader += slot;
+	cmdheader->cfl = sizeof(FIS_REG_H2D)/sizeof(DWORD);	// Command FIS size
+	cmdheader->w = 0;		// Read from device
+	cmdheader->prdtl = (WORD)((count-1)>>4) + 1;	// PRDT entries count
 
-        addr=0;
-        addr=(((addr | cmdheader->ctbau)<<32)|cmdheader->ctba);
-        HBA_CMD_TBL *cmdtbl = (HBA_CMD_TBL*)(KERNBASE + addr);
+	HBA_CMD_TBL *cmdtbl = (HBA_CMD_TBL*)(cmdheader->ctba);
+	memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) +
+ 		(cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
+  int i;
+	// 8K bytes (16 sectors) per PRDT
+	for (i=0; i<cmdheader->prdtl-1; i++)
+	{
+		cmdtbl->prdt_entry[i].dba = (DWORD)buf;
+		cmdtbl->prdt_entry[i].dbc = 8*1024;	// 8K bytes
+		cmdtbl->prdt_entry[i].i = 1;
+		buf += 4*1024;	// 4K words
+		count -= 16;	// 16 sectors
+	}
+	// Last entry
+	cmdtbl->prdt_entry[i].dba = (DWORD)buf;
+	cmdtbl->prdt_entry[i].dbc = count<<9;	// 512 bytes per sector
+	cmdtbl->prdt_entry[i].i = 1;
 
-        //memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
-        int i = 0;
-        printf("[PRDTL][%d]", cmdheader->prdtl);
-        // 8K bytes (16 sectors) per PRDT
-        for (i=0; i<cmdheader->prdtl-1; i++)
-        {
-               cmdtbl->prdt_entry[i].dba = (DWORD)(buf & 0xFFFFFFFF);
-                cmdtbl->prdt_entry[i].dbau = (DWORD)((buf << 32) & 0xFFFFFFFF);
-                cmdtbl->prdt_entry[i].dbc = 8*1024-1;     // 8K bytes
-                cmdtbl->prdt_entry[i].i = 0;
-                buf += 4*1024;  // 4K words
-                count -= 16;    // 16 sectors
-       }
-        /**If the final Data FIS transfer in a command is for an odd number of 16-bit words, the transmitter�s
-Transport layer is responsible for padding the final Dword of a FIS with zeros. If the HBA receives one
-more word than is indicated in the PRD table due to this padding requirement, the HBA shall not signal
-this as an overflow condition. In addition, if the HBA inserts padding as required in a FIS it is transmitting,
-an overflow error shall not be indicated. The PRD Byte Count field shall be updated based on the
-number of words specified in the PRD table, ignoring any additional padding.**/
+	// Setup command
+	FIS_REG_H2D *cmdfis = (FIS_REG_H2D*)(&cmdtbl->cfis);
 
-        // Last entry
+	cmdfis->fis_type = FIS_TYPE_REG_H2D;
+	cmdfis->c = 1;	// Command
+	cmdfis->command = ATA_CMD_READ_DMA_EX;
 
-        cmdtbl->prdt_entry[i].dba = (DWORD)(buf & 0xFFFFFFFF);
-        cmdtbl->prdt_entry[i].dbau = (DWORD)((buf << 32) & 0xFFFFFFFF);
-        cmdtbl->prdt_entry[i].dbc = count<<9;   // 512 bytes per sector
-        cmdtbl->prdt_entry[i].i = 0;
+	cmdfis->lba0 = (BYTE)startl;
+	cmdfis->lba1 = (BYTE)(startl>>8);
+	cmdfis->lba2 = (BYTE)(startl>>16);
+	cmdfis->device = 1<<6;	// LBA mode
 
+	cmdfis->lba3 = (BYTE)(startl>>24);
+	cmdfis->lba4 = (BYTE)starth;
+	cmdfis->lba5 = (BYTE)(starth>>8);
 
-        // Setup command
-        FIS_REG_H2D *cmdfis = (FIS_REG_H2D*)(&cmdtbl->cfis);
+	cmdfis->countl = count & 0xff;
+	cmdfis->counth = count>>8;
 
-        cmdfis->fis_type = FIS_TYPE_REG_H2D;
-        cmdfis->c = 1;  // Command
-        cmdfis->command = ATA_CMD_READ_DMA_EX;
+	// The below loop waits until the port is no longer busy before issuing a new command
+	while ((port->tfd & (ATA_DEV_BUSY | ATA_DEV_DRQ)) && spin < 1000000)
+	{
+		spin++;
+	}
+	if (spin == 1000000)
+	{
+		printf("Port is hung\n");
+		return 0;
+	}
 
-        cmdfis->lba0 = (BYTE)startl;
-        cmdfis->lba1 = (BYTE)(startl>>8);
-        cmdfis->lba2 = (BYTE)(startl>>16);
-        cmdfis->device = 1<<6;  // LBA mode
+	port->ci = 1<<slot;	// Issue command
 
-        cmdfis->lba3 = (BYTE)(startl>>24);
-        cmdfis->lba4 = (BYTE)starth;
-        cmdfis->lba5 = (BYTE)(starth>>8);
+	// Wait for completion
+	while (1)
+	{
+		// In some longer duration reads, it may be helpful to spin on the DPS bit
+		// in the PxIS port field as well (1 << 5)
+		if ((port->ci & (1<<slot)) == 0)
+			break;
+		if (port->is & HBA_PxIS_TFES)	// Task file error
+		{
+			printf("Read disk error\n");
+			return 0;
+		}
+	}
 
-        cmdfis->countl = count & 0xff;
-        cmdfis->counth = count>>8;
+	// Check again
+	if (port->is & HBA_PxIS_TFES)
+	{
+		printf("Read disk error\n");
+		return 0;
+	}
 
-        printf("[slot]{%d}", slot);
-        port->ci = 1;    // Issue command
-       // Wait for completion
-        while (1)
-        {
-                // In some longer duration reads, it may be helpful to spin on the DPS bit
-                // in the PxIS port field as well (1 << 5)
-                if ((port->ci & (1<<slot)) == 0)
-                        break;
-                if (port->is & HBA_PxIS_TFES)   // Task file error
-                {
-                        printf("Read disk error\n");
-                        return 0;
-                }
-        }
-        printf("\n after while 1");
-        printf("\nafter issue : %d" , port->tfd);
-        // Check again
-        if (port->is & HBA_PxIS_TFES)
-        {
-                printf("Read disk error\n");
-                return 0;
-        }
+	return 1;
 
-        printf("\n[Port ci ][%d]", port->ci);
-        int k = 0;
-        while(port->ci != 0)
-        {
-            printf("[%d]", k++);
-        }
-        return 1;
 }
 
-int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
+int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, WORD buf)
 {
        port->is = 0xffff;              // Clear pending interrupt bits
        // int spin = 0;           // Spin lock timeout counter
         int slot = find_cmdslot(port);
         if (slot == -1)
                 return 0;
-        uint64_t addr = 0;
         printf("\n clb %x clbu %x", port->clb, port->clbu);
-        addr = (((addr | port->clbu) << 32) | port->clb);
-        HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(KERNBASE + addr);
+        //HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(KERNBASE + addr);
 
-        //HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(port->clb);
+        HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(port->clb);
         cmdheader += slot;
        cmdheader->cfl = sizeof(FIS_REG_H2D)/sizeof(DWORD);     // Command FIS size
         cmdheader->w = 1;               // Read from device
@@ -437,23 +416,19 @@ int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
         // 8K bytes (16 sectors) per PRDT
         cmdheader->prdtl = (WORD)((count-1)>>4) + 1;    // PRDT entries count
 
-        addr=0;
-        addr=(((addr | cmdheader->ctbau)<<32)|cmdheader->ctba);
-        HBA_CMD_TBL *cmdtbl = (HBA_CMD_TBL*)(KERNBASE + addr);
+        HBA_CMD_TBL *cmdtbl = (HBA_CMD_TBL*)(cmdheader->ctba);
 
-        //memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
+        memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
         int i = 0;
         printf("[PRDTL][%d]", cmdheader->prdtl);
-        // 8K bytes (16 sectors) per PRDT
-        for (i=0; i<cmdheader->prdtl-1; i++)
-        {
-               cmdtbl->prdt_entry[i].dba = (DWORD)(buf & 0xFFFFFFFF);
-                cmdtbl->prdt_entry[i].dbau = (DWORD)((buf << 32) & 0xFFFFFFFF);
-                cmdtbl->prdt_entry[i].dbc = 8*1024-1;     // 8K bytes
-                cmdtbl->prdt_entry[i].i = 0;
-                buf += 4*1024;  // 4K words
-                count -= 16;    // 16 sectors
-       }
+       	for (i=0; i<cmdheader->prdtl-1; i++)
+       	{
+       		cmdtbl->prdt_entry[i].dba = (DWORD)buf;
+       		cmdtbl->prdt_entry[i].dbc = 8*1024;	// 8K bytes
+       		cmdtbl->prdt_entry[i].i = 1;
+       		buf += 4*1024;	// 4K words
+       		count -= 16;	// 16 sectors
+       	}
         /**If the final Data FIS transfer in a command is for an odd number of 16-bit words, the transmitter�s
 Transport layer is responsible for padding the final Dword of a FIS with zeros. If the HBA receives one
 more word than is indicated in the PRD table due to this padding requirement, the HBA shall not signal
@@ -463,12 +438,10 @@ number of words specified in the PRD table, ignoring any additional padding.**/
 
         // Last entry
 
-        cmdtbl->prdt_entry[i].dba = (DWORD)(buf & 0xFFFFFFFF);
-        cmdtbl->prdt_entry[i].dbau = (DWORD)((buf << 32) & 0xFFFFFFFF);
-        cmdtbl->prdt_entry[i].dbc = count << 9 ;   // 512 bytes per sector
-        cmdtbl->prdt_entry[i].i = 0;
-
-
+        cmdtbl->prdt_entry[i].dba = (DWORD)buf;
+        cmdtbl->prdt_entry[i].dbc = count<<9;	// 512 bytes per sector
+        cmdtbl->prdt_entry[i].i = 1;
+        
         // Setup command
         FIS_REG_H2D *cmdfis = (FIS_REG_H2D*)(&cmdtbl->cfis);
 
@@ -530,7 +503,7 @@ int find_cmdslot(HBA_PORT *port)
 {
     // An empty command slot has its respective bit cleared to �0� in both the PxCI and PxSACT registers.
         // If not set in SACT and CI, the slot is free // Checked
-        DWORD slots = (port->sact | port->ci);
+        /*DWORD slots = (port->sact | port->ci);
         int num_of_slots= (abar->cap & 0x0f00)>>8 ; // Bit 8-12
         int i;
         for (i=0; i<num_of_slots; i++)
@@ -545,5 +518,15 @@ int find_cmdslot(HBA_PORT *port)
                 slots >>= 1;
         }
                 printf("Cannot find free command list entry\n");
-        return -1;
+        return -1;*/
+        DWORD slots = (port->sact | port->ci);
+        int cmdslots= (abar->cap & 0x0f00)>>8 ; // Bit 8-12
+      	for (int i=0; i<cmdslots; i++)
+      	{
+      		if ((slots&1) == 0)
+      			return i;
+      		slots >>= 1;
+      	}
+      	printf("Cannot find free command list entry\n");
+      	return -1;
 }

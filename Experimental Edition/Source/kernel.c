@@ -12,7 +12,6 @@
 #include "ata.c"
 #include "acpi.c"
 #include "vmem.c"
-#include "ordered_array.c"
 #include "keyboard.c"
 
 u32int initial_esp;
@@ -27,9 +26,9 @@ void timertest()
 
 void dbug()
 {
-	uint32_t *temp1=malloc(5000),*temp2=temp1,*test1=malloc(100),*test2=test1;
+	uint32_t *temp1=(uint32_t*)malloc(5000),*temp2=temp1,*test1=(uint32_t*)malloc(100),*test2=test1;
 	printf("\n\tLocation of var 1: %x, var 2: %x \n",temp1,test1);
-	printf("Putting Values into the addresses\n");
+	printf("\n\tPutting Values into the addresses\n");
 	for(int i=0;i<1000;i++)
 	{
 		*temp1=4284;
@@ -41,6 +40,7 @@ void dbug()
 		*test1=100;
 		++test1;
 	}
+	printf("\n\tDone, Now Reading what we just wrote, 4284 on first few memory, 100 on others\n\n");
 	test1=test2;
 	for(int i=0;i<1000;i+=50)
 	{
@@ -52,7 +52,7 @@ void dbug()
 		printf(" %x ",*test1);
 		++test1;
 	}
-	printf("\ndone\n");
+	printf("\n\nIf you just saw few 4284's and 100's and nothing else, no space; everything worked fine!\n\n");
 }
 
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
@@ -71,8 +71,8 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     printint(mboot_ptr->mem_upper);
     printf("\nMemory Map:");
     maxmem=mboot_ptr->mem_upper;
-    uint32_t *mmap=mboot_ptr->mmap_addr;
-    mmap_info=mmap;//+mboot_ptr->size;
+    uint32_t *mmap=(uint32_t*)mboot_ptr->mmap_addr;
+    mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
     for(int i=0;i<15;i++)
     {
         if(mmap_info->startLo==0) break;
@@ -81,7 +81,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
         mmap_info++;
     }
 		printf("\nInitializing Memory Manager!\n");
-    mmap_info=mmap;//+mboot_ptr->size;
+    mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
     Mapper();
 		printf("\nEnabling ACPI!\n");
     initAcpi();
@@ -104,21 +104,6 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
   	printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
 
-    /*init_ata();
-    printf("\nHard Disk Initialized\n");
-    console_writestring(" PATA Info: Heads: ");
-    console_write_dec(ident.heads);
-    console_writestring(" Sectors: ");
-    console_write_dec(ident.sectors);
-    console_writestring(" Cylinders: ");
-    console_write_dec(ident.cyls);
-    console_writestring(" Bytes per Sector ");
-    console_write_dec(ident.sector_bytes);
-    console_writestring(" Bytes per Track ");
-    console_write_dec(ident.track_bytes);
-    console_writestring(" Serial No: ");
-    console_writestring(ident.serial_no);//*/
-
     asm volatile("sti");
     init_timer(50); //PIT WORKING
     printf("\nPIT TIMER Initialized\n");
@@ -126,7 +111,8 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
    // init_timer_RTC()
    printf("LOADING MAIN KERNEL...\n");//*/
 	 mdbug=dbug;
-	 mdbug();
+	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
+	 printf("\n\tType mdbug to test the Memory Manager");
 }
 
 void kernel_start()
@@ -136,13 +122,13 @@ void kernel_start()
 void kernel_main()
 {
 		printf("\n");
-		uint8_t *inst;
+		char *inst;
     while(1)
     {
-				/*printf("\ncmd>");
+				printf("\ncmd>");
 				getline(inst);
 				console_manager(inst);//*/
-				Mouse_Plot(mousex,mousey);
+				/*Mouse_Plot(mousex,mousey);
 				DBuff();//*/
     }
 }

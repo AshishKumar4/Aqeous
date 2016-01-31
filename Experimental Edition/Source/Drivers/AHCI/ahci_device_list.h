@@ -123,7 +123,5 @@ const device_info kSupportedDevices[] = {
 	{ 0x8086, 0x3a05, "Intel ICH10" },
 	{ 0x8086, 0x3a22, "Intel ICH10" },
 	{ 0x8086, 0x3a25, "Intel ICH10" },
-	{}
+	{ 0, 0, "UnKnown Device" }
 };
-
-

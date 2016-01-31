@@ -1,11 +1,10 @@
 #ifndef AHCI_h
 #define AHCI_h
 
-#include<common.h>
+#include <common.h>
 #include <mem.h>
 #include <ahci_device_list.h>
 #include <ata.h>
-#include <blockdev.h>
 #include <pci.h>
 
 
@@ -189,20 +188,6 @@ typedef struct AhciIoPort {
 	void *rx_fis;
 	int index;
 } AhciIoPort;
-
-typedef struct AhciCtrlr {
-	BlockDevCtrlr ctrlr;
-
-	PciDevice_t dev;
-	AhciIoPort ports[AHCI_MAX_PORTS];
-	uint32_t n_ports;
-	void *mmio_base;
-	uint32_t cap;		// cache of HOST_CAP register
-	uint32_t port_map;	// cache of HOST_PORTS_IMPL reg
-	uint32_t link_port_map;	// linkup port map
-} AhciCtrlr;
-
-AhciCtrlr *new_ahci_ctrlr(PciDevice_t dev);
 
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
@@ -516,9 +501,9 @@ typedef struct tagHBA_CMD_TBL
 
 extern HBA_MEM *abar;
 
-int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf);
-int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf);
+int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, WORD buf);
+int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, WORD buf);
 char fs_buf[1024];
-void checkAllBuses(void) ;
+int check_type(HBA_PORT *port);
 
 #endif

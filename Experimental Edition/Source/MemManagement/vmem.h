@@ -16,14 +16,7 @@ typedef struct MemMap
 
 MemMap_t *Mblock,*tempBlock1,*tempBlock2,*lastBlock,*tempBlock3,*lastBlockAddr,mblock,*Kblock; //6mb of memory map as linked lists of Blocks
 
-struct Multiboot_mmap
-{
-    uint64_t base;
-    uint64_t length;
-    uint8_t type;
-};
-
-struct memory_region {
+typedef struct memory_region {
 
 	uint32_t	startLo;
 	uint32_t	startHi;
@@ -31,15 +24,17 @@ struct memory_region {
 	uint32_t	sizeHi;
 	uint32_t	reservedt;
 	uint32_t	type;
-}*mmap_info;
+}MemRegion_t;
+
+MemRegion_t *mmap_info;
 
 //! different memory regions (in memory_region.type)
 char* strMemoryTypes[] = {
 
-	{"Available"},			//memory_region.type==0
-	{"Reserved"},			//memory_region.type==1
-	{"ACPI Reclaim"},		//memory_region.type==2
-	{"ACPI NVS Memory"}		//memory_region.type==3
+	"Available",			//memory_region.type==0
+	"Reserved",			//memory_region.type==1
+	"ACPI Reclaim",		//memory_region.type==2
+	"ACPI NVS Memory"		//memory_region.type==3
 };
 
 

@@ -71,6 +71,7 @@ void pci_scan_func(pci_func_t f, int type, int bus, int slot, int func, void * e
 void pci_scan_slot(pci_func_t f, int type, int bus, int slot, void * extra);
 void pci_scan_bus(pci_func_t f, int type, int bus, void * extra);
 void pci_scan(pci_func_t f, int type, void * extra);
+void checkAllBuses(void);
 
 /* Structures */
 typedef struct _PciNativeHeader
@@ -137,7 +138,7 @@ typedef struct _PciDevice
 	uint32_t Type;
 
 	/* Location */
-	uint32_t Bus;
+ 	s32int Bus;
 	uint32_t Device;
 	uint32_t Function;
 

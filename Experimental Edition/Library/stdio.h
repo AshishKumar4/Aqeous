@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <string.h>
 extern int putchar(int ic);
+extern void printint(uint32_t in);
+
 static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )

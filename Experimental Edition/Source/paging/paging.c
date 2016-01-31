@@ -1,6 +1,7 @@
 #include "paging.h"
 #include "mem.h"
 
+extern void copy_page_physical(uint32_t,uint32_t);
 // The kernel's page directory
 page_directory_t *kernel_directory=0;
 
@@ -38,7 +39,7 @@ static void clear_frame(u32int frame_addr)
     u32int off = OFFSET_FROM_BIT(frame);
     frames[idx] &= ~(0x1 << off);
 }
-
+/*
 // Static function to test if a bit is set.
 static u32int test_frame(u32int frame_addr)
 {
@@ -46,7 +47,7 @@ static u32int test_frame(u32int frame_addr)
     u32int idx = INDEX_FROM_BIT(frame);
     u32int off = OFFSET_FROM_BIT(frame);
     return (frames[idx] & (0x1 << off));
-}
+}*/
 
 uint32_t mem=1024*1024*2;
 
@@ -114,7 +115,6 @@ void initialise_paging()
     frames = (u32int*)kmalloc(nframes/8);
     memset(frames, 0, nframes/8);
     // Let's make a page directory.
-    u32int phys;
     kernel_directory = (page_directory_t*)kmalloc_a(sizeof(page_directory_t));
     memset(kernel_directory, 0, sizeof(page_directory_t));
     kernel_directory->physicalAddr = (u32int)kernel_directory->tablesPhysical;
@@ -124,7 +124,6 @@ void enable_paging()
 {
     printf("Allocating Pages and Page tables, This may take a while\n");
     tempBlock3=Mblock;
-    uint32_t *lastPage;
     for(uint32_t i=0;i<(1024*1024*100);i+=4096) //Make the pages and page tables for the whole usable memory
     {
         page_t* page=get_page(i,1,kernel_directory); //kernel Pages.
@@ -133,8 +132,8 @@ void enable_paging()
         page->user=0;
         page->frame=i/4096;
         set_frame(i);
-        tempBlock3->page=page;
-        tempBlock3=tempBlock3->link;
+        tempBlock3->page=(uint32_t*)page;
+        tempBlock3=(MemMap_t*)tempBlock3->link;
     }
     for(uint32_t i=1024*1024*100;i<(1024*maxmem);i+=4096) //Make the pages and page tables for the usable memory
     {
@@ -143,8 +142,8 @@ void enable_paging()
         page->rw=1;
         page->user=1;
         page->frame=1024*1024*70/4096; //make the page point to 70th mb. If in case some un-allocated memory is used, it would go here.
-        tempBlock3->page=page;
-        tempBlock3=tempBlock3->link;
+        tempBlock3->page=(uint32_t*)page;
+        tempBlock3=(MemMap_t*)tempBlock3->link;
     }
     for(uint32_t i=1024*maxmem;i<(1024*1024*4);i+=4096) //Make the pages and page tables for the restof the memory as Identity
     {
@@ -159,8 +158,8 @@ void enable_paging()
           page->frame=i/4096; //the address is reserved, make it identity mapped
           set_frame(i);
         }
-        tempBlock3->page=page;
-        tempBlock3=tempBlock3->link;
+        tempBlock3->page=(uint32_t*)page;
+        tempBlock3=(MemMap_t*)tempBlock3->link;
     }//*/
     switch_page_directory(kernel_directory);
     register_interrupt_handler(14, page_fault);
@@ -180,12 +179,12 @@ void switch_page_directory(page_directory_t *dir)
     asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 
-page_t *get_page(u32int address, int make, page_directory_t *dir)
+page_t *get_page(uint32_t address, int make, page_directory_t *dir)
 {
     // Turn the address into an index.
     address /= 0x1000;
     // Find the page table containing this address.
-    u32int table_idx = address / 1024;
+    uint32_t table_idx = address / 1024;
 
     if (dir->tables[table_idx]) // If this table is already assigned
     {
@@ -193,7 +192,7 @@ page_t *get_page(u32int address, int make, page_directory_t *dir)
     }
     else if(make)
     {
-        u32int tmp;
+        uint32_t tmp;
         dir->tables[table_idx] = (page_table_t*)pmalloc(sizeof(page_table_t), &tmp);
         memset(dir->tables[table_idx], 0, 0x1000);
         dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, US.
@@ -211,7 +210,7 @@ void page_fault(registers_t regs)
 {
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
-    u32int faulting_address;
+    uint32_t faulting_address;
     asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
 
     // The error code gives us details of what happened.
@@ -230,6 +229,8 @@ void page_fault(registers_t regs)
     }
     if (us) {console_writestring("user-mode ");}
     if (reserved) {console_writestring("reserved ");}
+
+    if (id) {console_writestring("id "); console_write_dec(id);}
     console_writestring(") at 0x");
     console_write_dec(faulting_address);
     console_writestring(" - EIP: ");

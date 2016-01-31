@@ -2,6 +2,7 @@
 #include <graphics.c>
 #include <common.h>
 #include <sys.h>
+#include <interrupts.h>
 
 void mouse_wait(unsigned char type)
 {

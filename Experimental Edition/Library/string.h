@@ -49,6 +49,80 @@ void memset(void *_s, int _c, size_t _n)
 		*temp++ = _c;
 	}
 }
+
+size_t strlen(const char *_s)
+{
+   size_t n;
+   for(n=0; _s[n] != '\0'; n++) {
+	   ;
+   }
+   return n;
+}
+
+int strcmp(const char *_s1, const char *_s2)
+{
+    for(; *_s1 == *_s2; ++_s1, ++_s2) {
+        if(*_s1 == 0) {
+            return 0;
+		}
+	}
+    return *(unsigned char *)_s1 < *(unsigned char *)_s2 ? -1 : 1;
+}
+
+int strncmp(const char *_s1, const char *_s2, size_t _n)
+{
+	unsigned char uc1, uc2;
+	if (_n==0)
+		return 0;
+	while (_n-- > 0 && *_s1 == *_s2) {
+		if (_n==0 || *_s1 == '\0' ) {
+			return 0;
+		}
+		_s1++;
+		_s2++;
+	}
+	uc1 = (*(unsigned char *) _s1);
+	uc2 = (*(unsigned char *) _s2);
+	return ((uc1 < uc2) ? -1 : (uc1 > uc2));
+}
+
+char *strcpy(char *_dest, const char *_src)
+{
+    do {
+      *_dest++ = *_src++;
+    } while (*_src != 0);
+	return _dest;
+}
+
+char *strcat(char *_dest, const char *_src)
+{
+   size_t n;
+
+   n = strlen(_dest);
+   strcpy(_dest + n, _src);
+
+   return _dest;
+}
+
+int strcmpy(const char *c1, const char *c2)
+{
+    uint32_t buff=0;
+    for(uint32_t i=0;i<=strlen(c1);i++)
+    {
+        for(uint32_t j=0;j<strlen(c2);j++)
+        {
+            if(c1[i+j]==c2[j])
+            {
+                buff+=1;
+            }
+        }
+        if(buff==strlen(c2))
+            return 0;
+        else buff=0;
+    }
+    return 1;
+}
+
 char *strchr(const char *_s, int _c)
 {
 	while (*_s != (char)_c) {
@@ -98,14 +172,6 @@ char *strtok(char *_s, const char *_delim)
 	return _s;
 }
 
-size_t strlen(const char *_s)
-{
-   size_t n;
-   for(n=0; _s[n] != '\0'; n++) {
-	   ;
-   }
-   return n;
-}
 char *strstr(const char *_haystack, const char *_needle)
 {
 	size_t needleLen;
@@ -120,71 +186,6 @@ char *strstr(const char *_haystack, const char *_needle)
 		}
 	}
 	return NULL;
-}
-
-
-int strcmp(const char *_s1, const char *_s2)
-{
-    for(; *_s1 == *_s2; ++_s1, ++_s2) {
-        if(*_s1 == 0) {
-            return 0;
-		}
-	}
-    return *(unsigned char *)_s1 < *(unsigned char *)_s2 ? -1 : 1;
-}
-
-int strncmp(const char *_s1, const char *_s2, size_t _n)
-{
-	unsigned char uc1, uc2;
-	if (_n==0)
-		return 0;
-	while (_n-- > 0 && *_s1 == *_s2) {
-		if (_n==0 || *_s1 == '\0' ) {
-			return 0;
-		}
-		_s1++;
-		_s2++;
-	}
-	uc1 = (*(unsigned char *) _s1);
-	uc2 = (*(unsigned char *) _s2);
-	return ((uc1 < uc2) ? -1 : (uc1 > uc2));
-}
-
-char *strcpy(char *_dest, const char *_src)
-{
-    do {
-      *_dest++ = *_src++;
-    } while (*_src != 0);
-	return _dest;
-}
-
-char *strcat(char *_dest, const char *_src)
-{
-   size_t n;
-
-   n = strlen(_dest);
-   strcpy(_dest + n, _src);
-
-   return _dest;
-}
-
-int strcmpy(const char *c1, const char *c2)
-{
-    int buff=0;
-    for(int i=0;i<=strlen(c1);i++)
-    {
-        for(int j=0;j<strlen(c2);j++)
-        {
-            if(c1[i+j]==c2[j])
-            {
-                buff+=1;
-            }
-        }
-        if(buff==strlen(c2))
-            return 0;
-        else buff=0;
-    }
-    return 1;
 }
 
 #endif // STRING_H

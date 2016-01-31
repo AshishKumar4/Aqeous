@@ -103,7 +103,7 @@ enum KEYCODE {
 	KEY_LEFTCURL          = '{',
 	KEY_RIGHTCURL         = '}',
 	KEY_DOLLAR            = '$',
-	KEY_POUND             = '£',
+	KEY_POUND             = 156,
 	KEY_EURO              = '$',
 	KEY_LESS              = '<',
 	KEY_GREATER           = '>',
