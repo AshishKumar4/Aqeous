@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <console.h>
+#include <acpi.h>
 
 #include <vga.h>
 
@@ -144,4 +145,18 @@ void backspace()
 {
 		--consolecolumn;
 		console_putentryat(' ', console_color, consolecolumn, consolerow);
+}
+
+void console_manager(uint8_t *inst)
+{
+	if(!strcmp(inst,"shutdown"))
+	{
+			printf("\n Turning Power off");
+			acpiPowerOff();
+	}
+	else if(!strcmp(inst,"mdbug"))
+	{
+			printf("\n Testing Virtual Memory Manager");
+			mdbug();
+	}
 }

@@ -25,6 +25,36 @@ void timertest()
     DBuff();*/
 }
 
+void dbug()
+{
+	uint32_t *temp1=malloc(5000),*temp2=temp1,*test1=malloc(100),*test2=test1;
+	printf("\n\tLocation of var 1: %x, var 2: %x \n",temp1,test1);
+	printf("Putting Values into the addresses\n");
+	for(int i=0;i<1000;i++)
+	{
+		*temp1=4284;
+		++temp1;
+	}
+	temp1=temp2;
+	for(int i=0;i<100;i++)
+	{
+		*test1=100;
+		++test1;
+	}
+	test1=test2;
+	for(int i=0;i<1000;i+=50)
+	{
+		printf(" %x ",*temp1);
+		++temp1;
+	}
+	for(int i=0;i<100;i+=5)
+	{
+		printf(" %x ",*test1);
+		++test1;
+	}
+	printf("\ndone\n");
+}
+
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
 		console_init();
@@ -46,27 +76,34 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     for(int i=0;i<15;i++)
     {
         if(mmap_info->startLo==0) break;
-        printf("region %i address: %l size: %l Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
+        printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
                mmap_info->type,strMemoryTypes[mmap_info->type-1]);
         mmap_info++;
     }
+		printf("\nInitializing Memory Manager!\n");
+    mmap_info=mmap;//+mboot_ptr->size;
+    Mapper();
 		printf("\nEnabling ACPI!\n");
     initAcpi();
     if(!acpiEnable())
         printf("\nACPI Initialized\n");
     else printf("\nACPI CANT BE INITIALIZED\n");
 
-    printf("\nEnabling Paging\n");
-    mmap_info=mmap;//+mboot_ptr->size;
-    Mapper();
+		printf("\n\nEnumerating all devices on PCI BUS:\n");
+    checkAllBuses();
+
+		checkAHCI();
+		if(!ahci_found) init_ata();
+
 		//setVesa(0x117);
+	  printf("\nEnabling Paging\n");
     initialise_paging();
     //map(vbeModeInfo->PhysBasePtr,1024*768*2);
     enable_paging();
 
-  	printf("\n Paging Has been Enabled Successfully! \n");
-    /*printf("Enumerating all devices on PCI BUS:\n");
-    checkAllBuses();
+  	printf("\n Paging Has been Enabled Successfully!");
+		printf("\n Available Memory: %x KB\n",maxmem);
+
     /*init_ata();
     printf("\nHard Disk Initialized\n");
     console_writestring(" PATA Info: Heads: ");
@@ -81,17 +118,15 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     console_write_dec(ident.track_bytes);
     console_writestring(" Serial No: ");
     console_writestring(ident.serial_no);//*/
+
     asm volatile("sti");
     init_timer(50); //PIT WORKING
     printf("\nPIT TIMER Initialized\n");
     //setVesa(0x117);
-   // init_timer_RTC();
-   printf("LOADING MAIN KERNEL...\n");
-	 printf("\n\n\n User Space: \n\n\n");
-	 printf("Type Something: ");
-	 uint8_t *c;
-	 getline(c);
-	 printf("You entered this: %s",c);
+   // init_timer_RTC()
+   printf("LOADING MAIN KERNEL...\n");//*/
+	 mdbug=dbug;
+	 mdbug();
 }
 
 void kernel_start()
@@ -100,11 +135,14 @@ void kernel_start()
 
 void kernel_main()
 {
+		printf("\n");
+		uint8_t *inst;
     while(1)
     {
-        /*
-        Mouse_Plot(mousex,mousey);
-        DBuff();
-        //*/
+				/*printf("\ncmd>");
+				getline(inst);
+				console_manager(inst);//*/
+				Mouse_Plot(mousex,mousey);
+				DBuff();//*/
     }
 }

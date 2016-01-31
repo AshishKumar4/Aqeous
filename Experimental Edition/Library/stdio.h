@@ -65,7 +65,7 @@ int printf(const char* restrict format, ...)
             int c = va_arg (parameters, int);
             printint(c);
         }
-        else if(*format == 'l') //uint32_t
+        else if(*format == 'l'||*format == 'x') //uint32_t
         {
             format++;
             uint32_t c = va_arg (parameters, uint32_t);

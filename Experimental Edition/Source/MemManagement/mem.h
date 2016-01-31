@@ -21,7 +21,7 @@ uint32_t vga;
 
 uint32_t BlockFinder(uint32_t addr);
 
-uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys, int kernel);
+uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys, int kernel,int packed,int processId);
 
 /**
    Allocate a chunk of memory, sz in size. The chunk must be
@@ -49,7 +49,7 @@ uint32_t kmalloc(uint32_t sz);
 /**
    General deallocation function.
 **/
-void kfree(void *p);
+void kfree(uint32_t p);
 
 uint32_t malloc(uint32_t sz);
 

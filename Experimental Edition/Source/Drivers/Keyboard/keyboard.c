@@ -133,7 +133,7 @@ int keyboard_scancodes(int key)
       return key;
 }
 /* Handles the keyboard interrupt */
-void keyboard_handler(struct regs *r)
+void keyboard_handler()//(struct regs *r)
 {
   asm volatile("cli");
   if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
@@ -217,7 +217,6 @@ void keyboard_handler(struct regs *r)
       }
   }
   asm volatile("sti");
-  //printf("It Works till here\n");
 }
 
 int checker(int i)
@@ -229,6 +228,22 @@ int checker(int i)
 
 uint8_t getch()
 {
+	asm volatile("sti");
+  int i=0;
+  while(1)
+  {
+    if(checker(call)) break;
+  }
+  uint8_t key=keyboard_scancodes(call);
+  call=0;
+	asm volatile("cli");
+  return key;
+}
+
+uint8_t getchar()
+{
+  back:
+	asm volatile("sti");
   int i=0;
   while(1)
   {
@@ -236,22 +251,15 @@ uint8_t getch()
   }
   uint8_t key=keyboard_scancodes(call);
   if(key!='\r' && key!='\0' && key!='\b')
-    printf("%c %i",key,call);
+    printf("%c",key);
   call=0;
-  return key;
-}
-
-uint8_t getchar()
-{
-  uint8_t ch;
-  back:
-  ch=getch();
-  if(ch=='\b')
+	asm volatile("cli");
+  if(key=='\b')
   {
     backspace();
     goto back;
   }
-  return ch;
+  return key;
 }
 
 void getline(char* string)
@@ -259,7 +267,7 @@ void getline(char* string)
   uint8_t buff;
   for(int i=0;;i++)
   {
-    buff=getch();
+    buff=getchar();
     if(buff=='\r')
     {
       string[i]='\0';

@@ -3,28 +3,8 @@
 #include<sys.h>
 #include<blockdev.c>
 #include <list.c>
-
-typedef struct _ahci
-{
-    PciDevice_t ahci;
-    unsigned int diskID;
-}ahci_t;
-
-ahci_t ahci[];
-
-typedef struct ahci_dev_
-{
-
-};
-
-typedef struct
-{
-    uint32_t    phys_addr;
-    uint32_t    something;
-    uint32_t    reserved;
-    uint32_t    len;
-} ahci_prdt;
-
+#include<mem.h>
+ahci_t *test1;
 /**
  * AHCI controller data.
  */
@@ -99,6 +79,7 @@ typedef struct
     AHCI_READ_REG((iobase), AHCI_PORT_REG((port), (reg)), val)
 
 unsigned int disks;
+unsigned int controllers;
 
 void start_cmd(HBA_PORT *port);
 void stop_cmd(HBA_PORT *port);
@@ -121,48 +102,47 @@ char *get_device_info(u16int vendorID, u16int deviceID)
 	return 0;
 }
 
+uint8_t ahci_found=0;
 
 int checkAHCI()
 {
-    for(int bus=0;bus<2;bus++)
+    ahci=kmalloc(4096);
+    ahci_start=ahci;
+    Disk_dev=kmalloc(4096);
+    Disk_dev_start=Disk_dev;
+    for(int bus=0;bus<255;bus++)
     {
         for(int slot=0;slot<32;slot++)
         {
             if(devices[bus][slot].Header->Class==1)
             {
-                console_writestring("Mass Storage Media found!\n");
+                console_writestring("\nMass Storage Media Controller found!\n");
                 if(devices[bus][slot].Header->Subclass==6)
                 {
-                    ++disks;
-                    ahci[disks].ahci=devices[bus][slot];
-                    console_writestring(get_device_info(ahci[disks].ahci.Header->VendorId,ahci[disks].ahci.Header->DeviceId));
-                    console_writestring("\n\tSATA DISK #");
-                    console_write_dec(disks);
-                    console_writestring(" FOUND, INITIALIZING AHCI CONTROLLER and Disk\n");
-                    if(initAHCI(&ahci[disks].ahci))
-                    {
-                        console_writestring("\t\tSATA Disk Initialized\n");
-                        ahci[disks].diskID=disks;
-                    }
-                    else
-                    {
-                        console_writestring("\t\tCouldn't Initialize SATA DISK #");
-                        console_write_dec(disks);
-                        console_writestring("\n");
-                        --disks;
-                    }
+                    ++controllers;
+                    ahci->ahci=devices[bus][slot];
+                    console_writestring(get_device_info(ahci->ahci.Header->VendorId,ahci->ahci.Header->DeviceId));
+                    console_writestring("\n\tAHCI CONTROLLER #");
+                    console_write_dec(controllers);
+                    console_writestring(" FOUND, INITIALIZING AHCI CONTROLLER and Disks");
+                    probe_port(ahci);
+                    console_writestring("\n\tAHCI CONTROLLER Initialized\n");
+                    ahci->ControllerID=controllers;
+                    ahci_found=1;
+                    ++ahci;
                 }
                 else
-                    console_writestring("\tNOT AHCI/SATA Disk\n");
+                    console_writestring("\tNOT AHCI/SATA\n");
             }
         }
     }
     console_writestring("\n");
-    return disks;
+    return controllers;
  }
 
-void probe_port(HBA_MEM *abar)
+void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 {
+  abar=ahci_c->ahci.Header->Bar5;
 	// Search disk in impelemented ports
 	DWORD pi = abar->pi;
 	int i = 0;
@@ -174,27 +154,51 @@ void probe_port(HBA_MEM *abar)
 			if (dt == AHCI_DEV_SATA)
 			{
 			    AHCI=1;
-				console_writestring("SATA drive found ");
+          Disk_dev->type=1; //1=SATA
+          Disk_dev->port=&abar->ports[i];
+          ahci_c->Disk[i]=*Disk_dev;
+          ahci_c->Disks=disks;
+          ++Disk_dev;
+          ++disks;
+          test1=&abar->ports[i];
+				console_writestring("\n\t\tSATA drive found \n");
 			}
 			else if (dt == AHCI_DEV_SATAPI)
 			{
 			    AHCI=1;
-				console_writestring("SATAPI drive found ");
+          Disk_dev->type=2; //2=SATAPI
+          Disk_dev->port=&abar->ports[i];
+          ahci_c->Disk[i]=*Disk_dev;
+          ahci_c->Disks=disks;
+          ++Disk_dev;
+          ++disks;
+				console_writestring("\n\t\tSATAPI drive found \n");
 			}
 			else if (dt == AHCI_DEV_SEMB)
 			{
 			    AHCI=1;
-				console_writestring("SEMB drive found ");
+          Disk_dev->type=3; //3=SEMB
+          Disk_dev->port=&abar->ports[i];
+          ahci_c->Disk[i]=*Disk_dev;
+          ahci_c->Disks=disks;
+          ++Disk_dev;
+          ++disks;
+				console_writestring("\n\t\tSEMB drive found \n");
 			}
 			else if (dt == AHCI_DEV_PM)
 			{
 			    AHCI=1;
-				console_writestring("PM drive found ");
+          Disk_dev->type=4; //4=PM
+          Disk_dev->port=&abar->ports[i];
+          ahci_c->Disk[i]=*Disk_dev;
+          ahci_c->Disks=disks;
+          ++Disk_dev;
+          ++disks;
+				console_writestring("\n\t\tPM drive found \n");
 			}
 			else
 			{
 			    AHCI=0;
-				console_writestring("No drive found ");
 			}
 		}
 
@@ -301,8 +305,6 @@ int initAHCI(PciDevice_t *dev)
         printf("\nUnsupported SATA Interface\n");
         return -1;
     }
-    HBA_MEM *h=dev->Header->Bar5;
-
     return 1;
 }
 
@@ -317,7 +319,7 @@ int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
         if (slot == -1)
                 return 0;
         uint64_t addr = 0;
-//        print("\n clb %x clbu %x", port->clb, port->clbu);
+        printf("\n clb %x clbu %x", port->clb, port->clbu);
         addr = (((addr | port->clbu) << 32) | port->clb);
         HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(KERNBASE + addr);
 
@@ -336,7 +338,7 @@ int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
 
         //memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
         int i = 0;
-  //      print("[PRDTL][%d]", cmdheader->prdtl);
+        printf("[PRDTL][%d]", cmdheader->prdtl);
         // 8K bytes (16 sectors) per PRDT
         for (i=0; i<cmdheader->prdtl-1; i++)
         {
@@ -381,7 +383,7 @@ number of words specified in the PRD table, ignoring any additional padding.**/
         cmdfis->countl = count & 0xff;
         cmdfis->counth = count>>8;
 
-    //    print("[slot]{%d}", slot);
+        printf("[slot]{%d}", slot);
         port->ci = 1;    // Issue command
        // Wait for completion
         while (1)
@@ -392,20 +394,20 @@ number of words specified in the PRD table, ignoring any additional padding.**/
                         break;
                 if (port->is & HBA_PxIS_TFES)   // Task file error
                 {
-                        //print("Read disk error\n");
+                        printf("Read disk error\n");
                         return 0;
                 }
         }
-     //   print("\n after while 1");
-     //   print("\nafter issue : %d" , port->tfd);
+        printf("\n after while 1");
+        printf("\nafter issue : %d" , port->tfd);
         // Check again
         if (port->is & HBA_PxIS_TFES)
         {
-                //print("Read disk error\n");
+                printf("Read disk error\n");
                 return 0;
         }
 
-    //    print("\n[Port ci ][%d]", port->ci);
+        printf("\n[Port ci ][%d]", port->ci);
         int k = 0;
         while(port->ci != 0)
         {
@@ -422,7 +424,7 @@ int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
         if (slot == -1)
                 return 0;
         uint64_t addr = 0;
-     //   print("\n clb %x clbu %x", port->clb, port->clbu);
+        printf("\n clb %x clbu %x", port->clb, port->clbu);
         addr = (((addr | port->clbu) << 32) | port->clb);
         HBA_CMD_HEADER *cmdheader = (HBA_CMD_HEADER*)(KERNBASE + addr);
 
@@ -441,7 +443,7 @@ int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, QWORD buf)
 
         //memset(cmdtbl, 0, sizeof(HBA_CMD_TBL) + (cmdheader->prdtl-1)*sizeof(HBA_PRDT_ENTRY));
         int i = 0;
-    //    print("[PRDTL][%d]", cmdheader->prdtl);
+        printf("[PRDTL][%d]", cmdheader->prdtl);
         // 8K bytes (16 sectors) per PRDT
         for (i=0; i<cmdheader->prdtl-1; i++)
         {
@@ -486,13 +488,13 @@ number of words specified in the PRD table, ignoring any additional padding.**/
         cmdfis->countl = count & 0xff;
         cmdfis->counth = count>>8;
 
-    //    print("[slot]{%d}", slot);
+        printf("[slot]{%d}", slot);
         port->ci = 1;    // Issue command
-    //    print("\n[Port ci ][%d]", port->ci);
-   //     print("\nafter issue : %d" , port->tfd);
-    //    print("\nafter issue : %d" , port->tfd);
+        printf("\n[Port ci ][%d]", port->ci);
+        printf("\nafter issue : %d" , port->tfd);
+        printf("\nafter issue : %d" , port->tfd);
 
-    //    print("\nbefore while 1--> %d", slot);
+        printf("\nbefore while 1--> %d", slot);
         // Wait for completion
         while (1)
         {
@@ -506,8 +508,8 @@ number of words specified in the PRD table, ignoring any additional padding.**/
                         return 0;
                 }
         }
-     //   print("\n after while 1");
-     //   print("\nafter issue : %d" , port->tfd);
+        printf("\n after while 1");
+        printf("\nafter issue : %d" , port->tfd);
         // Check again
         if (port->is & HBA_PxIS_TFES)
         {
@@ -515,11 +517,11 @@ number of words specified in the PRD table, ignoring any additional padding.**/
                 return 0;
         }
 
-     //   print("\n[Port ci ][%d]", port->ci);
-       // int k = 0;
+        printf("\n[Port ci ][%d]", port->ci);
+        int k = 0;
         while(port->ci != 0)
         {
-       //     print("[%d]", k++);
+            printf("[%d]", k++);
         }
         return 1;
 }
@@ -536,7 +538,7 @@ int find_cmdslot(HBA_PORT *port)
 
                 if ((slots&1) == 0)
                 {
-                       // print("\n[command slot is : %d]", i);
+                        printf("\n[command slot is : %d]", i);
                         return i;
 
                 }
@@ -545,4 +547,3 @@ int find_cmdslot(HBA_PORT *port)
                 printf("Cannot find free command list entry\n");
         return -1;
 }
-

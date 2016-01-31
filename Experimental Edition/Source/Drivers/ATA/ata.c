@@ -138,6 +138,7 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
             }
             else
             {
+                printf("\nNO HARDDISK FOUND!!!\n");
                 return;
             }
         }
@@ -261,4 +262,3 @@ int read_partition_map()
 
 	return 1;
 }
-

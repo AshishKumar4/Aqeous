@@ -421,7 +421,7 @@ typedef volatile struct tagHBA_MEM
     BYTE    vendor[0x100-0xA0];
 
     // 0x100 - 0x10FF, Port control registers
-    HBA_PORT    ports[10];   // 1 ~ 32
+    HBA_PORT    ports[32];   // 1 ~ 32
 } HBA_MEM;
 
 typedef struct tagHBA_CMD_HEADER
@@ -452,7 +452,37 @@ typedef struct tagHBA_CMD_HEADER
     DWORD   rsv1[4];    // Reserved
 } HBA_CMD_HEADER;
 
- void probe_port(HBA_MEM *abar);
+typedef struct Disk_dev_
+{
+    uint8_t type;
+		// Port control registers
+		HBA_PORT *port;
+		uint32_t next;
+}Disk_dev_t;
+
+Disk_dev_t *Disk_dev,*Disk_dev_start;
+
+
+typedef struct _ahci
+{
+    PciDevice_t ahci;
+    unsigned short ControllerID;
+    unsigned short Disks;
+		uint32_t next;
+    Disk_dev_t Disk[];
+}ahci_t;
+
+ahci_t *ahci,*ahci_start;
+
+typedef struct
+{
+    uint32_t    phys_addr;
+    uint32_t    something;
+    uint32_t    reserved;
+    uint32_t    len;
+} ahci_prdt;
+
+ void probe_port(ahci_t *ahci_c);
 
 typedef struct tagHBA_PRDT_ENTRY
 {

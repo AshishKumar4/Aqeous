@@ -1,7 +1,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 #include <stddef.h>
-
+void (*mdbug)();
 void console_init(void);
 void console_putch(char c);
 void console_write(const char* data, size_t size);

@@ -1,5 +1,6 @@
 #include <descriptors.h>
 #include <sys.h>
+#include <string.h>
 extern void gdt_flush(u32int);
 extern void idt_flush(u32int);
 /**Sorry less comments, no time, will explain later**/

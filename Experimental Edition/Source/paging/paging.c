@@ -53,11 +53,8 @@ uint32_t mem=1024*1024*2;
 uint32_t fframe=0;
 // Static function to find the first free frame.
 static u32int first_frame()
-{/*
-    uint32_t tmp=fframe;
-    ++fframe;
-    return tmp;
-    /*/uint32_t i,j;
+{
+    uint32_t i,j;
     for (i = 0; i < INDEX_FROM_BIT(nframes); i++)
     {
         if (frames[i] != 0xFFFFFFFF) // nothing free, exit early.
@@ -73,6 +70,7 @@ static u32int first_frame()
             }
         }
     }
+    return 0;
 }
 uint32_t phyaddr=0;
 // Function to allocate a frame.
@@ -144,7 +142,7 @@ void enable_paging()
         page->present=1;
         page->rw=1;
         page->user=1;
-        page->frame=1024*1024*70/4096;
+        page->frame=1024*1024*70/4096; //make the page point to 70th mb. If in case some un-allocated memory is used, it would go here.
         tempBlock3->page=page;
         tempBlock3=tempBlock3->link;
     }
@@ -153,12 +151,17 @@ void enable_paging()
         page_t* page=get_page(i,1,kernel_directory); //user Pages.
         page->present=1;
         page->rw=1;
-        page->user=1;
-        page->frame=i/4096;
-        set_frame(i);
+        page->user=0;
+        if(tempBlock3->used==0) //if the address is in available memory
+          page->frame=1024*1024*70/4096; //make the page point to 70th mb. If in case some un-allocated memory is used, it would go here.
+        else
+        {
+          page->frame=i/4096; //the address is reserved, make it identity mapped
+          set_frame(i);
+        }
         tempBlock3->page=page;
         tempBlock3=tempBlock3->link;
-    }
+    }//*/
     switch_page_directory(kernel_directory);
     register_interrupt_handler(14, page_fault);
     pag=1;
@@ -191,7 +194,7 @@ page_t *get_page(u32int address, int make, page_directory_t *dir)
     else if(make)
     {
         u32int tmp;
-        dir->tables[table_idx] = (page_table_t*)kmalloc_ap(sizeof(page_table_t), &tmp);
+        dir->tables[table_idx] = (page_table_t*)pmalloc(sizeof(page_table_t), &tmp);
         memset(dir->tables[table_idx], 0, 0x1000);
         dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, US.
         return &dir->tables[table_idx]->pages[address%1024];
@@ -301,17 +304,6 @@ page_directory_t *clone_directory(page_directory_t *src)
         }
     }
     return dir;
-}
-
-u32int* PhyToVirtual(u32int* Phy)
-{
-    for(int i=0;i<1024;i++)
-    {
-        if(Phy==kernel_directory->tablesPhysical[i])
-        {
-            console_writestring("FOUND");
-        }
-    }
 }
 
 void map(u32int phy,size_t size)
