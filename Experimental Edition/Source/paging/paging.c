@@ -124,30 +124,36 @@ void enable_paging()
 {
     printf("Allocating Pages and Page tables, This may take a while\n");
     tempBlock3=Mblock;
+    page_t* page;
     for(uint32_t i=0;i<(1024*1024*100);i+=4096) //Make the pages and page tables for the whole usable memory
     {
-        page_t* page=get_page(i,1,kernel_directory); //kernel Pages.
+        //if(!i%1024)
+        page=get_page(i,1,kernel_directory); //kernel Pages; create new page table
         page->present=1;
         page->rw=1;
         page->user=0;
         page->frame=i/4096;
         set_frame(i);
-        tempBlock3->page=(uint32_t*)page;
-        tempBlock3=(MemMap_t*)tempBlock3->link;
+        tempBlock3->page=page;
+        tempBlock3++;
+        //page++;
     }
     for(uint32_t i=1024*1024*100;i<(1024*maxmem);i+=4096) //Make the pages and page tables for the usable memory
     {
-        page_t* page=get_page(i,1,kernel_directory); //user Pages.
+        //if(!i%1024)
+        page=get_page(i,1,kernel_directory); //user Pages.
         page->present=1;
         page->rw=1;
         page->user=1;
         page->frame=1024*1024*70/4096; //make the page point to 70th mb. If in case some un-allocated memory is used, it would go here.
-        tempBlock3->page=(uint32_t*)page;
-        tempBlock3=(MemMap_t*)tempBlock3->link;
+        tempBlock3->page=page;
+        tempBlock3++;
+        //page++;
     }
     for(uint32_t i=1024*maxmem;i<(1024*1024*4);i+=4096) //Make the pages and page tables for the restof the memory as Identity
     {
-        page_t* page=get_page(i,1,kernel_directory); //user Pages.
+        //if(!i%1024)
+        page=get_page(i,1,kernel_directory); //user Pages.
         page->present=1;
         page->rw=1;
         page->user=0;
@@ -158,8 +164,9 @@ void enable_paging()
           page->frame=i/4096; //the address is reserved, make it identity mapped
           set_frame(i);
         }
-        tempBlock3->page=(uint32_t*)page;
-        tempBlock3=(MemMap_t*)tempBlock3->link;
+        tempBlock3->page=page;
+        tempBlock3++;
+        //page++;
     }//*/
     switch_page_directory(kernel_directory);
     register_interrupt_handler(14, page_fault);

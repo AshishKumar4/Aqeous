@@ -151,5 +151,6 @@ typedef struct _PciDevice
 
 } PciDevice_t;
 
+PciDevice_t null;
 
 #endif // SATA_h

@@ -20,7 +20,9 @@ uint32_t vga;
 
 uint32_t BlockFinder(uint32_t addr);
 
-uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys, int kernel,int packed,int processId);
+inline int clearBits(uint32_t tmp,uint32_t sz);
+
+uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys, int purpose,int packed,int processId);
 
 /**
    Allocate a chunk of memory, sz in size. The chunk must be

@@ -1,6 +1,8 @@
 #ifndef VMEM_h
 #define VMEM_h
 
+#include <paging.h>
+
 int pag=0;
 int status=0;
 uint32_t maxmem=0;
@@ -10,11 +12,10 @@ typedef struct MemMap
     uint16_t used;
     uint32_t map;
     uint32_t addr;
-    uint32_t* page;
-    uint32_t* link;
+    page_t* page;
 }MemMap_t;
 
-MemMap_t *Mblock,*tempBlock1,*tempBlock2,*lastBlock,*tempBlock3,*lastBlockAddr,mblock,*Kblock; //6mb of memory map as linked lists of Blocks
+MemMap_t *Mblock,*tempBlock1,*tempBlock2,*lastBlock,*tempBlock3,*lastBlockAddr,mblock,*Kblock;
 
 typedef struct memory_region {
 

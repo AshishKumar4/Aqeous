@@ -284,6 +284,32 @@ void getline(char* string)
   printf("\n");
 }
 
+uint32_t StrToInt(char *str)
+{
+    uint32_t in=0;
+    char b[2];
+    int ln=strlen(str);
+    int arr[999],a=1;
+    for(int i=0;i<=ln;i++) a=a*10;
+    a=a/100;
+    for(int i=0;i<=ln;i++)
+    {
+        arr[i]=str[i]-48;
+        in=in+arr[i]*a;
+        a=a/10;
+    }
+		return in;
+}
+
+uint32_t getint()
+{
+	uint32_t var=0;
+	char *temp=" ";
+	getline(temp);
+	var=StrToInt(temp);
+	return var;
+}
+
 void keyboard_init()
 {
   register_interrupt_handler(IRQ1,keyboard_handler);

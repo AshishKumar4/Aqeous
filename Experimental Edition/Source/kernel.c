@@ -26,9 +26,21 @@ void timertest()
 
 void dbug()
 {
-	uint32_t *temp1=(uint32_t*)malloc(5000),*temp2=temp1,*test1=(uint32_t*)malloc(100),*test2=test1;
-	printf("\n\tLocation of var 1: %x, var 2: %x \n",temp1,test1);
-	printf("\n\tPutting Values into the addresses\n");
+	int a[4];
+	printf("\n\tEnter the size of: ");
+	for(int i=0;i<4;i++)
+	{
+		printf("\n\t\tvar %x: ",i+1);
+		a[i]=getint();
+	}
+	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
+	//malloc(4096);
+	uint32_t *test1=(uint32_t*)malloc(a[1]),*test2=test1;
+	uint32_t *test3=(uint32_t*)malloc(a[2]),*test32=test3;
+	uint32_t *test4=(uint32_t*)malloc(a[3]),*test42=test4;
+	uint32_t *test5=(uint32_t*)malloc(500),*test52=test5;
+	printf("\n\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
+	printf("\n\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<1000;i++)
 	{
 		*temp1=4284;
@@ -42,6 +54,8 @@ void dbug()
 	}
 	printf("\n\tDone, Now Reading what we just wrote, 4284 on first few memory, 100 on others\n\n");
 	test1=test2;
+	//*test1=3/2;
+	//printf("\n test: %x ",*test1);
 	for(int i=0;i<1000;i+=50)
 	{
 		printf(" %x ",*temp1);
@@ -52,11 +66,12 @@ void dbug()
 		printf(" %x ",*test1);
 		++test1;
 	}
-	printf("\n\nIf you just saw few 4284's and 100's and nothing else, no space; everything worked fine!\n\n");
+	printf("\n\nIf you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n\n");
 }
 
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
+    initial_esp = initial_stack;
 		console_init();
 		mouseinit();
 		printf("\nMouse Drivers initialized\n");
@@ -91,16 +106,18 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 
 		printf("\n\nEnumerating all devices on PCI BUS:\n");
     checkAllBuses();
-
+		printf("\nEnabling Hard Disk");
 		checkAHCI();
 		if(!ahci_found) init_ata();
-
+		printf("\n sizeof pcinativeheader_t %x ",sizeof(PciNativeHeader_t));
+		//getch();
 		//setVesa(0x117);
+		//while(1)
+		//{};
 	  printf("\nEnabling Paging\n");
     initialise_paging();
     //map(vbeModeInfo->PhysBasePtr,1024*768*2);
     enable_paging();
-
   	printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
 
@@ -109,7 +126,8 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     printf("\nPIT TIMER Initialized\n");
     //setVesa(0x117);
    // init_timer_RTC()
-   printf("LOADING MAIN KERNEL...\n");//*/
+	 //printf("\n Sizeof : uint32_t* %x, page_t %x ",sizeof(uint32_t*),sizeof(page_table_t));
+   printf("\nLOADING MAIN KERNEL...\n");//*/
 	 mdbug=dbug;
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
@@ -122,7 +140,7 @@ void kernel_start()
 void kernel_main()
 {
 		printf("\n");
-		char *inst;
+		char *inst=" ";
     while(1)
     {
 				printf("\ncmd>");

@@ -146,27 +146,20 @@ void PciDeviceWrite(PciDevice_t *Device, uint32_t Register, uint32_t Value, uint
 		PciWrite32(Device->Bus, Device->Device, Device->Function, Register, Value);
 }
 
+PciNativeHeader_t *tempPCS;
 
 PciDevice_t checkDevice(uint8_t bus, uint8_t device)
 {
      uint8_t function = 0;
-     PciNativeHeader_t *pcs=(PciNativeHeader_t*)kmalloc(sizeof(PciNativeHeader_t));
-        for(int i=0;i<64;i+=16)
-		{
-			*(uint32_t*)((uint32_t)pcs + i) = PciRead32(bus, device, function, i);
-			*(uint32_t*)((uint32_t)pcs + i + 4) = PciRead32(bus, device, function, i + 4);
-			*(uint32_t*)((uint32_t)pcs + i + 8) = PciRead32(bus, device, function, i + 8);
-			*(uint32_t*)((uint32_t)pcs + i + 12) = PciRead32(bus, device, function, i + 12);
-		}
-     PciDevice_t dev;
-     dev.Header=pcs;
-     dev.Bus=bus;
-     dev.Device=device;
-     /*unsigned short vendorID = dev.Header->VendorId;
-     unsigned short deviceID = dev.Header->DeviceId;
-     unsigned char classcode = dev.Header->Class;
-     unsigned char subclasscode = dev.Header->Subclass;*/
-     if(dev.Header->VendorId == 0xFFFF)     // Device doesn't exist
+		 memset((void*)tempPCS,0,sizeof(PciNativeHeader_t));
+	    for(int i=0;i<64;i+=16)
+			{
+				*(uint32_t*)((uint32_t)tempPCS + i) = PciRead32(bus, device, function, i);
+				*(uint32_t*)((uint32_t)tempPCS + i + 4) = PciRead32(bus, device, function, i + 4);
+				*(uint32_t*)((uint32_t)tempPCS + i + 8) = PciRead32(bus, device, function, i + 8);
+				*(uint32_t*)((uint32_t)tempPCS + i + 12) = PciRead32(bus, device, function, i + 12);
+			}
+     if(tempPCS->VendorId == 0xFFFF)     // Device doesn't exist
      {
          PciDevice_t null;
          null.Bus=-1;
@@ -176,6 +169,20 @@ PciDevice_t checkDevice(uint8_t bus, uint8_t device)
          null.Header=(PciNativeHeader_t*)NULL;
          return null;
      }
+
+     PciNativeHeader_t *pcs=(PciNativeHeader_t*)kmalloc(sizeof(PciNativeHeader_t));
+	    for(int i=0;i<64;i+=16)
+			{
+				*(uint32_t*)((uint32_t)pcs + i) = PciRead32(bus, device, function, i);
+				*(uint32_t*)((uint32_t)pcs + i + 4) = PciRead32(bus, device, function, i + 4);
+				*(uint32_t*)((uint32_t)pcs + i + 8) = PciRead32(bus, device, function, i + 8);
+				*(uint32_t*)((uint32_t)pcs + i + 12) = PciRead32(bus, device, function, i + 12);
+			}
+	   PciDevice_t dev;
+	 	 dev.Header=pcs;
+		 dev.Bus=bus;
+		 dev.Device=device;
+		 //pcs=tempPCS;
      /*console_writestring("\n\tDEVICE: ");
      console_writestring(pci_device_lookup(vendorID,deviceID));
      console_writestring(" CLASS: ");
@@ -191,6 +198,7 @@ void checkAllBuses(void)
      uint8_t bus;
      uint8_t device;
      uint8_t flag=0;
+		 tempPCS=(PciNativeHeader_t*)kmalloc(sizeof(PciNativeHeader_t));
      for(bus = 0; bus <255 ; bus++)
      {
          for(device = 0; device < 32; device++)

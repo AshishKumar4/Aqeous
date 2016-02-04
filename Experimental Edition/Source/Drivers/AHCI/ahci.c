@@ -441,7 +441,7 @@ number of words specified in the PRD table, ignoring any additional padding.**/
         cmdtbl->prdt_entry[i].dba = (DWORD)buf;
         cmdtbl->prdt_entry[i].dbc = count<<9;	// 512 bytes per sector
         cmdtbl->prdt_entry[i].i = 1;
-        
+
         // Setup command
         FIS_REG_H2D *cmdfis = (FIS_REG_H2D*)(&cmdtbl->cfis);
 
