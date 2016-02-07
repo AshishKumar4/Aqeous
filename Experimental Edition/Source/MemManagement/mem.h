@@ -20,7 +20,7 @@ uint32_t vga;
 
 uint32_t BlockFinder(uint32_t addr);
 
-inline int clearBits(uint32_t tmp,uint32_t sz);
+inline int clearBits(uint32_t map[],uint32_t sz);
 
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys, int purpose,int packed,int processId);
 
@@ -50,7 +50,7 @@ uint32_t kmalloc(uint32_t sz);
 /**
    General deallocation function.
 **/
-void kfree(uint32_t p);
+void free(uint32_t* ptr);
 
 uint32_t malloc(uint32_t sz);
 

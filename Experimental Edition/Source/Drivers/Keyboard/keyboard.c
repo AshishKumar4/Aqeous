@@ -287,7 +287,6 @@ void getline(char* string)
 uint32_t StrToInt(char *str)
 {
     uint32_t in=0;
-    char b[2];
     int ln=strlen(str);
     int arr[999],a=1;
     for(int i=0;i<=ln;i++) a=a*10;

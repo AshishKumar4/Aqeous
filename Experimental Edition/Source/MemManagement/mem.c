@@ -2,39 +2,39 @@
 #include "paging.h"
 #include "vmem.h"
 // end is defined in the linker script.
-extern page_directory_t *kernel_directory;
+//extern page_directory_t *kernel_directory;
 
 uint32_t BlockFinder(uint32_t addr)
 {
-    return (addr/4096)+(uint32_t)Mblock;
+    MemMap_t *Block;
+    addr/=4096;
+    Block=(MemMap_t*)((uint32_t)Mblock + sizeof(MemMap_t)*(addr));
+    Block++; //there was an offset in blocks from the start; first block is at Mblock+sizeof(MemMap_t)
+    return (uint32_t)Block;
 }
 
-inline int clearBits(uint32_t map,uint32_t sz) //gives the output as number of continuous clear bits
+inline int clearBits(uint32_t map[],uint32_t sz) //gives the output as number of continuous clear bits
 {
-  //uint32_t map=tmp->map;
-
-  //sz/=32; //convert to index of 128 byte chunks
-
   uint8_t count=0;
 
-  for(int i=0;i<32;i++)
+  for(int i=0;i<128;i++)
   {
-      if(count*128>=sz)
+      if(count*32>=sz)
       {
         //printf(" 1 ");
-        return i; //our job is done!
+        return i-(sz/32); //our job is done!
       }
-      else if(!(map & (1<<i)))
+      else if(!(map[i/32] & (1<<(i%32))))
       {
-        count++;
+        ++count;
       }
       else
       {
         count=0;
-        i++;
+        //++i;
       }
   }
-  return 0;
+  return -1;
 }
 
 uint32_t processID=10; //id 4 for paging, rest reserved
@@ -45,198 +45,232 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
     if(purpose==1) mb=40; //for kernel
     else if(purpose==2) mb=21;
     else mb=100;
-    tempBlock1=Kblock;
+    MemMap_t* Block=(MemMap_t*)BlockFinder(mb*1024*1024);
     uint32_t addr;
     uint32_t sz4096=sz/4096;
-    uint32_t sz128=sz/128;
-    if(!sz128) sz128=1;
-    uint32_t tsz128=(sz%4096)/128;
+    uint32_t sz32=sz/32;
+    if(!sz32)//if size if less then 32 bytes, roundof it to 32 which is the least memory allocable
+    {
+      sz=33;
+      sz32=1;
+    }
+    uint32_t tsz32=(sz%4096)/32;
     while(1)
     {
-        addr=tempBlock1->addr;
+        addr=Block->addr;
         if(addr>=(mb*1024*1024)+32) //If the block is in user memory; +32 for buffer
         {
           out:
-          if(tempBlock1->used==0)
+          if(Block->used==0)
           {
-            in:
-              if (align == 1 && (addr & 0xFFFFF000)) //if alignment required
+              if (align == 1 && (addr & 0xFFFFF000)) //if 4k alignment required
               {
-                addr&=0xFFFFF000; //get an aligned address.
-                addr+=0x1000;
-                while(addr<=tempBlock1->addr) //check if the aligned address is in some block.
-                {
-                    ++tempBlock1;
-                }
+                while(Block->used) ++Block; //Simply get a comlpetely unused block!
+                //Because Natively,Every Block's starting addr is 4k aligned!
               }
-              if(tempBlock1->used==0) //if that block is unused, return the address.
+              MemMap_t* tm=Block;
+              if(sz>4096)
               {
-                MemMap_t* tm=tempBlock1;
-                if(sz>4096)
-                {
                   for(uint32_t i=0;i<sz4096+1;i++) //check if adjacent blocks are empty too!
                   {
                     ++tm;
                     if(tm->used) //cant fit here!
                     {
-                      tempBlock1=tm;
-                      //printf(" 1");
+                      Block=tm;
                       goto out;
                     }
                   }
-                  tm=tempBlock1;
+                  tm=Block;
                   for(uint32_t j=0;j<sz4096;j++)
                   {
-                    //for(uint32_t i=0;i<4096;i++)
-                    tm->map=0xFFFFFFFF;//|=(1<<(i/128)); //set the bit;
+                    tm->map[0]=0xFFFFFFFF; //set the bits to full
+                    tm->map[1]=0xFFFFFFFF;
+                    tm->map[2]=0xFFFFFFFF;
+                    tm->map[3]=0xFFFFFFFF;
                     ++tm;
                   }
-                  //sz%=4096;
-                  for(uint32_t i=0; i<tsz128;i++)
+                  for(uint32_t i=0; i<tsz32;i++)
                   {
-                    tm->map|=(1<<(i));
+                    tm->map[i/32]|=(1<<(i%32));
                   }
-                  addr=tempBlock1->addr;
+                  addr=Block->addr;
                   break;
                 }
-                MemMap_t* tm2=tempBlock1;
+                MemMap_t* tm2=Block;
                 //If you reach here, you are lucky!
-                for(uint32_t i=0; i<sz128;i++)
+                for(uint32_t i=0; i<sz32;i++)
                 {
-                  tm2->map|=(1<<(i));
+                  tm2->map[i/32]|=(1<<(i%32));
                 }
+                //printf("map1-> %x ",tm2->map[0]);
                 //just get out now!
-                addr=tempBlock1->addr;
-                //tempBlock1=tm2;
+                addr=Block->addr;
                 break;
-              }
-              else
-              {
-                //++tempBlock1;
-                goto in;
-              }
             }
             else if(!packed) //if packing required (0=required, 1=not)
             {
-              if(sz<4096-10) //if memory can be accomodated in single block.
+              if(sz<4096-8) //if memory can be accomodated in single block.
               {
                 int tm;
                 out2:
-                if(tempBlock1->map==0xFFFFFFFF) //block already full, no space
+                if(Block->map[0]==0xFFFFFFFF &&
+                  Block->map[1]==0xFFFFFFFF &&
+                  Block->map[2]==0xFFFFFFFF &&
+                  Block->map[3]==0xFFFFFFFF) //block already full, no space
                 {
-                  ++tempBlock1;
+                  ++Block;
                   goto out;
                 }
-                tm=clearBits(tempBlock1->map,sz);
-                if(tm) //if enough memory is in the region
+                tm=clearBits(Block->map,sz);
+                //printf("Clear Bits-> %x ",tm);
+                if(tm>=0) //if enough memory is in the region
                 {
-                  tm-=sz128;
                   //tm++;
-                  for(uint32_t i=tm;i<sz128+tm;i++)
-                    tempBlock1->map|=(1<<(i)); //set the bit;
-                  addr=tempBlock1->addr + (128*tm);
+                  //if(tsz<14) //allocating for some variable probably :/
+                  //  tm--; //dont leave a blank bit for it!
+                  for(uint32_t i=tm;i<sz32+tm;i++)
+                    Block->map[i/32]|=(1<<(i%32)); //set the bit;
+                  //printf("map2-> %x ",Block->map[0]);
+                  addr=Block->addr + (32*tm);
                   break;
                 }
                 else
-                { 
+                {
                   //printf(" 1 ");
-                  ++tempBlock1; //search in some other block for the same
+                  ++Block; //search in some other block for the same
                   goto out2;
                 }
               }
               else
               {
                 out3:
-                while(tempBlock1->used)
-                  ++tempBlock1; //find a completely empty block
-                MemMap_t* tm=tempBlock1;
+                while(Block->used)
+                  ++Block; //find a completely empty block
+                MemMap_t* tm=Block;
                 for(uint32_t i=0;i<sz4096+1;i++) //check if adjacent blocks are empty too!
                 {
                   ++tm;
                   if(tm->used) //cant fit here!
                   {
-                    tempBlock1=tm;
+                    Block=tm;
                     goto out3;
                   }
                 }
-                MemMap_t* tm2=tempBlock1;
+                MemMap_t* tm2=Block;
                 //If you reach here, you are lucky!
                 for(uint32_t j=0;j<sz4096;j++)
                 {
-                    tempBlock1->map=0xFFFFFFFF;// //set the whole block as used
-                  ++tempBlock1;
+                    tm2->map[0]=0xFFFFFFFF; //set the bits
+                    tm2->map[1]=0xFFFFFFFF;
+                    tm2->map[2]=0xFFFFFFFF;
+                    tm2->map[3]=0xFFFFFFFF;
+                    ++tm2;
                 }
-                for(uint32_t i=0; i<tsz128;i++)
+                for(uint32_t i=0; i<tsz32;i++)
                 {
-                  tm->map|=(1<<(i));
+                  tm->map[i/32]|=(1<<(i%32));
                 }
                 //just get out now!
-                addr=tm2->addr;
-                tempBlock1=tm2;
+                addr=Block->addr;
                 break;
               }
             }
-            if(tempBlock1->addr>=maxmem*1024)
+            if(Block->addr>=maxmem*1024)
             {
                 printf("\nNo memory");
                 return 0;
             }
           }
-        ++tempBlock1;
+        ++Block;
     }
-    final:
     if(phys)
         *phys=addr;
     uint32_t size=sz;
     uint32_t tid=processID;
     if(pag==0) //If paging not enabled
-        for(uint32_t i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
+        for(uint32_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
         {
-          if(!processId)
-            tempBlock1->used=tid;
-          else tempBlock1->used=processId;
+          if(!processId && !Block->used)
+              Block->used=tid;
+          else Block->used=processId;
           //tempBlock1->map+=size;
         }
     else
     {
-        for(uint32_t i=0;i<=(sz-1)/4096;i++,tempBlock1++,size-=4096)
+      if(sz>4096||Block->used==0)
+        for(uint32_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
         {
-            if(!processId)
-              tempBlock1->used=tid;
-            else tempBlock1->used=processId;
-            //tempBlock1->map+=(size);
-            page_t* page=(page_t*)tempBlock1->page;
-            page->present=1;
-            page->rw=1;
-            page->user=1;
-            page->frame=tempBlock1->addr/4096;
+            if(!processId && !Block->used)
+                Block->used=tid;
+            else Block->used=processId;
+            Block->page=MapPage((void*)Block->addr,(void*)Block->addr);
         }
-        switch_page_directory(kernel_directory);
     }
     ++processID;
     return addr;
 }
 
-void kfree(uint32_t p)
+void free(uint32_t* ptr)
 {
-    tempBlock1=(MemMap_t*)BlockFinder(p);
-    uint32_t id=tempBlock1->used;
-    if(!id)
-      return; //Block Already Free
-    if(id<=3) //memory is reserved?
+    uint32_t addr=(uint32_t)ptr;
+    MemMap_t* Block=(MemMap_t*)BlockFinder(addr);
+    uint32_t tsz=addr%4096;
+    uint32_t bitOff=tsz/32;
+    if(!bitOff) bitOff=1;
+    if(!(Block->map[3] & (1<<(31)))) //Check if the last bit is unset
     {
-      printf("\nCant free reserved memory!!!\n");
-      return;
+      for(int i=bitOff;;i++)
+      {
+        if(Block->map[i/32] & (1<<(i%32)))
+        {
+          Block->map[i/32]^=(1<<(i%32));
+        }
+        else
+        {
+          ++i;
+          memset((void*)addr,0,(i-bitOff)*32);
+          break;
+        }
+      }
     }
-    while(tempBlock1->used==id) //Destroy all the blocks with the same processID
+    else //it can only happen if the block is solely for a single process
     {
-      memset((void*)tempBlock1->addr,0,4096); //clear the memory it points to
-      tempBlock1->used=0;
-      page_t *page=(page_t*)tempBlock1->page;
-      page->frame=1024*1024*70/4096; //destroy the pages
-      ++tempBlock1;
+      uint16_t pid=Block->used; //get the process id in this case!
+      MemMap_t* tm=Block,*tm2=Block;
+      tm2++;
+      while(tm2->used==pid)
+      {
+        tm->used=0;
+        tm->map[0]=0;
+        tm->map[1]=0;
+        tm->map[2]=0;
+        tm->map[3]=0;
+        //tm->page->frame=17920;
+        ++tm;
+        ++tm2;
+      }
+      for(uint32_t i=0;;i++)
+      {
+        if(Block->map[i/32] & (1<<(i%32)))
+        {
+          Block->map[i/32]^=(1<<(i%32));
+        }
+        else
+        {
+          ++i;
+          memset((void*)addr,0,(i)*32);
+          break;
+        }
+      }
     }
-    switch_page_directory(kernel_directory); //re enable paging
+    if(Block->used && !Block->map[0]
+      && !Block->map[1]
+      && !Block->map[2]
+      && !Block->map[3])
+      {
+        Block->used=0;
+        free_page(Block->page);
+      }
     printf("\nMemory Freed\n");
 }
 
@@ -255,9 +289,9 @@ uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys)
     return kmalloc_int(sz, 1, phys,1,1,0);
 }
 
-uint32_t pmalloc(uint32_t sz, uint32_t *phys)
+uint32_t pmalloc(uint32_t sz)
 {
-    return kmalloc_int(sz, 1, phys,2,1,4);
+    return kmalloc_int(sz, 1, 0,2,1,4);
 }
 
 uint32_t kmalloc(uint32_t sz)

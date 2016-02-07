@@ -10,12 +10,12 @@ uint32_t maxmem=0;
 typedef struct MemMap
 {
     uint16_t used;
-    uint32_t map;
+    uint32_t map[4];
     uint32_t addr;
     page_t* page;
 }MemMap_t;
 
-MemMap_t *Mblock,*tempBlock1,*tempBlock2,*lastBlock,*tempBlock3,*lastBlockAddr,mblock,*Kblock;
+MemMap_t *Mblock,*lastBlock,*lastBlockAddr,mblock,*Kblock;
 
 typedef struct memory_region {
 
