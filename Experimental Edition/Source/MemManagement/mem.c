@@ -245,7 +245,6 @@ void free(uint32_t* ptr)
         tm->map[1]=0;
         tm->map[2]=0;
         tm->map[3]=0;
-        //tm->page->frame=17920;
         ++tm;
         ++tm2;
       }

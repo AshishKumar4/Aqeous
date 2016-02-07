@@ -43,8 +43,9 @@ enum PAGE_PDE_FLAGS
 typedef uint32_t page_t;
 
 void page_fault(registers_t regs);
-
 page_t* MapPage(void* phys, void* virt);
+void map(uint32_t phy,size_t size);
+void free_page (page_t* e);
 
 //! i86 architecture defines 1024 entries per table--do not change
 #define PAGES_PER_TABLE 1024

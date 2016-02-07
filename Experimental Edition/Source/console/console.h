@@ -2,6 +2,7 @@
 #define CONSOLE_H
 #include <stddef.h>
 void (*mdbug)();
+void (*vesa)(uint32_t mode);
 void console_init(void);
 void console_putch(char c);
 void console_write(const char* data, size_t size);

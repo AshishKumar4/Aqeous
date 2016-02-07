@@ -111,6 +111,16 @@ page_t* MapPage (void* phys, void* virt)
    return page;
 }
 
+void map(uint32_t phy,size_t size)
+{
+    uint32_t j=phy;
+    for (; j < phy+size;j+=0x1000)
+    {
+      MapPage((void*)j,(void*)j);
+    }
+}
+
+
 page_t* get_page(uint32_t addr,int make, pdirectory* dir)
 {
 

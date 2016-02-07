@@ -128,16 +128,11 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 		printf("\nEnabling Hard Disk");
 		checkAHCI();
 		if(!ahci_found) init_ata();
-		//getch();
-		//setVesa(0x117);
-		//while(1)
-		//{};
 	  printf("\nEnabling Paging\n");
     initialise_paging();
-    //map(vbeModeInfo->PhysBasePtr,1024*768*2);
     enable_paging();
   	printf("\n Paging Has been Enabled Successfully!");
-		printf("\n Available Memory: %x KB\n",maxmem);/*
+		printf("\n Available Memory: %x KB\n",maxmem);
     asm volatile("sti");
     init_timer(50); //PIT WORKING
     printf("\nPIT TIMER Initialized\n");
@@ -161,6 +156,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 	 tmp1=clearBits(abc,200);
 	 printf(" %x",tmp1);*/
 	 mdbug=dbug;
+	 vesa=setVesa;
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
 }
@@ -173,12 +169,16 @@ void kernel_main()
 {
 		printf("\n");
 		char *inst=" ";
-    while(1)
+		uint8_t flg=0;
+    while(!flg)
     {
 				printf("\ncmd>");
 				getline(inst);
-				console_manager(inst);//*/
-				/*Mouse_Plot(mousex,mousey);
-				DBuff();//*/
+				flg=console_manager(inst);//*/
     }
+		while(1)
+		{
+			Mouse_Plot(mousex,mousey);
+			DBuff();//*/
+		}
 }

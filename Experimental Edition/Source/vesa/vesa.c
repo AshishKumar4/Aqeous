@@ -1,6 +1,7 @@
 
 #include <common.h>
 #include <mem.h>
+#include <paging.h>
 
 #define wVESA     1024
 #define hVESA     768
@@ -86,7 +87,7 @@ void setBank(int bankNo)
   int32(0x10, &regs);
 }
 
-void setVesa(u32int mode)
+void setVesa(uint32_t mode)
 {
   asm volatile("cli");
   //VESA_INFO info; //VESA information //VESA mode information
@@ -124,6 +125,7 @@ void setVesa(u32int mode)
   heightVESA=vbeModeInfo->YResolution;
   depthVESA=vbeModeInfo->BitsPerPixel;
   buff=(u8int*)kmalloc(1024*768*2);
+  map(vbeModeInfo->PhysBasePtr,1024*768*2);
   asm volatile("sti");
 }
 

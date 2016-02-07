@@ -147,16 +147,36 @@ void backspace()
 		console_putentryat(' ', console_color, consolecolumn, consolerow);
 }
 
-void console_manager(char *inst)
+uint8_t console_manager(char *inst)
 {
-	if(!strcmp(inst,"shutdown"))
+	if(!strcmp(inst,"help"))
+	{
+		printf("\nAvialable Commands are:\n");
+		printf("\n\thelp         To get all the available commands");
+		printf("\n\tmdbug        To test the Memory Managment System");
+		printf("\n\tshutdown     To ACPI Power off the system (may not work on few machines)");
+		printf("\n\tstart vesa   To enter VESA Super VGA Mode");
+		printf("\n\tother commands\n");
+		return 0;
+	}
+	else if(!strcmp(inst,"shutdown"))
 	{
 			printf("\n Turning Power off");
 			acpiPowerOff();
+			return 0;
 	}
 	else if(!strcmp(inst,"mdbug"))
 	{
 			printf("\n Testing Virtual Memory Manager");
 			mdbug();
+			return 0;
 	}
+	else if(!strcmp(inst,"start vesa"))
+	{
+		printf("\nEntering VESA SVGA mode 1024*768");
+		vesa(0x117);
+		return 1;
+	}
+	printf("\nCommand Not Recognized! type help for help\n");
+	return 0;
 }
