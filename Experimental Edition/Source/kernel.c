@@ -144,13 +144,10 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 		printf("\n Available Memory: %x KB\n",maxmem);
 
 		initTasking();
-		timer_task=scheduler;
-		//schedule();
+		asm volatile("sti");
+
     printf("\nPIT TIMER Initialized\n");
-		//doIt();
-    //setVesa(0x117);
-   // init_timer_RTC()
-	 //printf("\n Sizeof : uint32_t* %x, page_t %x ",sizeof(uint32_t*),sizeof(page_table_t));
+
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
 	 vesa=setVesa;
@@ -168,7 +165,6 @@ void kernel_start()
 void kernel_main()
 {
 		Scheduler_exec();
-		//init_timer(10);
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
@@ -236,9 +232,9 @@ uint8_t console_manager(char *inst)
 	else if(!strcmp(inst,"test multi"))
 	{
 		//schedule=switch_task;
-		printf("\n\tEnter the timer Value:");
-		uint32_t timer=getint();
-    init_timer(timer); //PIT WORKING
+		//printf("\n\tEnter the timer Value:");
+		//uint32_t timer=getint();
+		Scheduler_exec();
 		return 0;
 	}
 	printf("\n Command Not Recognized! type help for help\n");

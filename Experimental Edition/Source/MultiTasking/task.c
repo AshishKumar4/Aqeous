@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "task.h"
+#include "timer.h"
 
 task_t* current_task,*lastMade_task;
 // Some externs are needed to access members in paging.c...
@@ -170,19 +171,19 @@ void initTasking()
    StartTask=(task_t*)kmalloc(sizeof(task_t));
    lastMade_task=StartTask;
    current_task=StartTask;
-   createTask(StartTask,idle,"Idle System Task",0x202,main_dir);
+   createTask(StartTask,idle,"Idle System Task",0x202,10,main_dir);
 
    task_t* new_task=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task,idle2,"Another System Task",0x202,main_dir);
+   createTask(new_task,idle2,"Another System Task",0x202,10,main_dir);
 
    task_t* new_task2=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task2,idle3,"another System Task",0x202,main_dir);
+   createTask(new_task2,idle3,"another System Task",0x202,10,main_dir);
 
    task_t* new_task3=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task3,idle4,"another System Task",0x202,main_dir);
+   createTask(new_task3,idle4,"another System Task",0x202,10,main_dir);
 
    task_t* last_task=(task_t*)kmalloc(sizeof(task_t));
-   createTask(last_task,idle5,"another System Task",0x202,main_dir);
+   createTask(last_task,idle5,"another System Task",0x202,10,main_dir);
    //last_task->regs.esp=initial_esp;
    printf("\nMultiTasking Initialized");
    // Reenable interrupts.
@@ -191,7 +192,7 @@ void initTasking()
 
 uint32_t *stack;
 
-void createTask(task_t* task,void (*func)(), char *name, uint32_t flags, pdirectory *pagedir)
+void createTask(task_t* task,void (*func)(), char *name, uint32_t flags,uint32_t priority, pdirectory *pagedir)
 {
   task_t* NewTask=task;
   NewTask->pdir = pagedir;
@@ -237,92 +238,89 @@ void createTask(task_t* task,void (*func)(), char *name, uint32_t flags, pdirect
 //  printf(" %x ",NewTask->regs.esp);
   NewTask->next = StartTask->next;
   NewTask->id=next_pid;
+  NewTask->priority=priority;
   NewTask->name=name;
   lastMade_task->next=NewTask;
   lastMade_task=NewTask;
-  NewTask->used=0;
   next_pid++;
 }
 
-void Scheduler_exec()
+void Scheduler_exec() //Enable Multitasking !!!
 {
+		timer_task=(uint32_t)scheduler;
+    init_timer(10000);
     printf("\n\nEntering Scheduling Mode!!!\nNEW EIP: %x\n",current_task->regs.eip);
     asm volatile("sti");
 }
 
 task_t *old_task;
 
-uint32_t eflags,cs,eip;
+uint32_t timer_tick=5;
 
 void scheduler()
 {
-  asm volatile("cli");
-  old_task=current_task;
-  current_task=current_task->next;
-  asm volatile("pop %%eax":"=a"(old_task->regs.eip));
+  if(timer_tick)
+  {
+    --timer_tick;
+  }
+  else
+  {
+    old_task=current_task;
+    current_task=current_task->next;
+    timer_tick=(current_task->priority)/2;
+    asm volatile("pop %%eax":"=a"(old_task->regs.eip));
 
-  asm volatile("movl %%ebx, %0;":"=r"(old_task->regs.ebx));
-  asm volatile("movl %%ecx, %0;":"=r"(old_task->regs.ecx));
-  asm volatile("movl %%edx, %0;":"=r"(old_task->regs.edx));
-  asm volatile("movl %%esi, %0;":"=r"(old_task->regs.esi));
-  asm volatile("movl %%edi, %0;":"=r"(old_task->regs.edi));
-  asm volatile("movl %%ebp, %0;":"=r"(old_task->regs.ebp));
-//
-  asm volatile("pushl %eax");
-  asm volatile("pushl %ebx");
-  asm volatile("pushl %ecx");
-  asm volatile("pushl %edx");
-  asm volatile("pushl %esi");
-  asm volatile("pushl %edi");
-  asm volatile("pushl %ebp");
-  asm volatile("pushl %ds");
-  asm volatile("pushl %es");
-  asm volatile("pushl %fs");
-  asm volatile("pushl %gs");
+    asm volatile("movl %%ebx, %0;":"=r"(old_task->regs.ebx));
+    asm volatile("movl %%ecx, %0;":"=r"(old_task->regs.ecx));
+    asm volatile("movl %%edx, %0;":"=r"(old_task->regs.edx));
+    asm volatile("movl %%esi, %0;":"=r"(old_task->regs.esi));
+    asm volatile("movl %%edi, %0;":"=r"(old_task->regs.edi));
+    asm volatile("movl %%ebp, %0;":"=r"(old_task->regs.ebp));
 
-  asm volatile("    movw    $16, %ax		"); // Kernel data segment (Ring 0)
-  asm volatile("    movw    %ax, %ds		");
-  asm volatile("    movw    %ax, %es		");
-  asm volatile("    movw    %ax, %fs		");
-  asm volatile("    movw    %ax, %gs		");
+    asm volatile("    movw    $16, %ax		"); // Kernel data segment (Ring 0)
+    asm volatile("    movw    %ax, %ds		");
+    asm volatile("    movw    %ax, %es		");
+    asm volatile("    movw    %ax, %fs		");
+    asm volatile("    movw    %ax, %gs		");
 
-  asm volatile("movl %%ds, %0;":"=r"(old_task->ds));
-  asm volatile("movl %%es, %0;":"=r"(old_task->es));
-  asm volatile("movl %%fs, %0;":"=r"(old_task->fs));
-  asm volatile("movl %%gs, %0;":"=r"(old_task->gs));
-  asm volatile("movl %%ss, %0;":"=r"(old_task->ss));
+    asm volatile("movl %%ds, %0;":"=r"(old_task->ds));
+    asm volatile("movl %%es, %0;":"=r"(old_task->es));
+    asm volatile("movl %%fs, %0;":"=r"(old_task->fs));
+    asm volatile("movl %%gs, %0;":"=r"(old_task->gs));
+    asm volatile("movl %%ss, %0;":"=r"(old_task->ss));
 
-  stack=(uint32_t*)current_task->StackTop;
-  *--stack = current_task->regs.eflags; // eflags
-  *--stack = current_task->regs.cs; // cs
-  *--stack = current_task->regs.eip; // eip
-  *--stack = current_task->regs.eax; // eax
-  *--stack = current_task->regs.ebx; // ebx
-  *--stack = current_task->regs.ecx; // ecx
-  *--stack = current_task->regs.edx; //edx
-  *--stack = current_task->regs.esi; //esi
-  *--stack = current_task->regs.edi; //edi
-  *--stack = current_task->regs.ebp; //ebp
-  *--stack = current_task->ds; // ds
-  *--stack = current_task->fs; // fs
-  *--stack = current_task->es; // es
-  *--stack = current_task->gs; // gs
+    stack=(uint32_t*)current_task->StackTop;
+    *--stack = current_task->regs.eflags; // eflags
+    *--stack = current_task->regs.cs; // cs
+    *--stack = current_task->regs.eip; // eip
+    *--stack = current_task->regs.eax; // eax
+    *--stack = current_task->regs.ebx; // ebx
+    *--stack = current_task->regs.ecx; // ecx
+    *--stack = current_task->regs.edx; //edx
+    *--stack = current_task->regs.esi; //esi
+    *--stack = current_task->regs.edi; //edi
+    *--stack = current_task->regs.ebp; //ebp
+    *--stack = current_task->ds; // ds
+    *--stack = current_task->fs; // fs
+    *--stack = current_task->es; // es
+    *--stack = current_task->gs; // gs
 
-  asm volatile("movl %%eax, %%esp;": :"a"(current_task->regs.esp));
-  asm volatile("movl %%eax, %%ss;": :"a"(current_task->ss));
+    asm volatile("movl %%eax, %%esp;": :"a"(current_task->regs.esp));
+    asm volatile("movl %%eax, %%ss;": :"a"(current_task->ss));
 
-  asm volatile("popl %gs");
-  asm volatile("popl %fs");
-  asm volatile("popl %es");
-  asm volatile("popl %ds");
-  asm volatile("popl %ebp");
-  asm volatile("popl %edi");
-  asm volatile("popl %esi");
-  asm volatile("popl %edx");
-  asm volatile("popl %ecx");
-  asm volatile("popl %ebx");
-  asm volatile("popl %eax");
-  asm volatile("out %%al, %%dx": :"d"(0x20), "a"(0x20)); // send EoI to master PIC
+    asm volatile("popl %gs");
+    asm volatile("popl %fs");
+    asm volatile("popl %es");
+    asm volatile("popl %ds");
+    asm volatile("popl %ebp");
+    asm volatile("popl %edi");
+    asm volatile("popl %esi");
+    asm volatile("popl %edx");
+    asm volatile("popl %ecx");
+    asm volatile("popl %ebx");
+    asm volatile("popl %eax");
+  }
+  outb(0x20, 0x20); // send EoI to master PIC
   asm volatile("sti");
   asm volatile("iret");
 }

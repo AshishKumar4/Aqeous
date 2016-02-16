@@ -1,4 +1,4 @@
-
+section text:
 ; This macro creates a stub for an ISR which does NOT pass it's own
 ; error code (adds a dummy errcode byte).
 %macro ISR_NOERRCODE 1
@@ -79,15 +79,13 @@ IRQ  13,    45
 IRQ  14,    46
 IRQ  15,    47
 
-extern scheduler
-
-global timer_stub;
+extern timer_stub
 
 global irq0
 
 irq0:
   cli;
-  jmp scheduler;
+  jmp timer_stub;
 
 extern isr_handler
 

@@ -79,6 +79,8 @@ typedef struct registers
 
 typedef void (*isr_t)(registers_t);
 
+typedef void (*irq_t)();
+
 #define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
 
 

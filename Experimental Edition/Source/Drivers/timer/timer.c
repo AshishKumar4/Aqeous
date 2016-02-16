@@ -1,8 +1,22 @@
 #include "timer.h"
 #include "console.h"
+#include "sys.h"
 
 uint32_t tick = 0;
-void (*timer_task)();
+
+void timer_idle_task()
+{
+  outb(0x20, 0x20);
+  asm volatile("sti");
+  asm volatile("iret");
+}
+
+uint32_t timer_task=timer_idle_task;
+
+void timer_stub()
+{
+  asm volatile("jmp *%0"::"r"(timer_task));
+}
 
 void timer_callback()
  {
@@ -28,17 +42,10 @@ void timer_callback()
      asm volatile("sti");
     register_interrupt_handler(IRQ8,timer_task);
  }
-
-void timer_handler()
-{
-  scheduler();
-}
  /**PIT TIMER, working**/
 void init_timer(uint32_t frequency)
  {
-    // Firstly, register our timer callback.
-    //register_interrupt_handler(IRQ0, timer_task);
-
+    //Our PIT timer handler is already especially hard coded in asm in interrupts.s
     // The value we send to the PIT is the value to divide it's input clock
     // (1193180 Hz) by, to get our required frequency. Important to note is
     // that the divisor must be small enough to fit into 16-bits.

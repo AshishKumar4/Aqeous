@@ -217,7 +217,7 @@ void keyboard_handler()//(struct regs *r)
         }
       }
   }
-  //asm volatile("sti");
+  asm volatile("sti");
   //asm volatile("iret");
 }
 

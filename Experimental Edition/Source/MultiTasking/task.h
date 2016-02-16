@@ -3,30 +3,23 @@
 
 #include <common.h>
 #include <mem.h>
+#include <sys.h>
 #include <paging.h>
 
 #define MAX_TASKS 100;
-typedef struct {
-    uint32_t eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags, cr3;
-} Registers;
-
 typedef struct
 {
-    uint32_t eflags;
-    uint32_t cs;
-    uint32_t eip;
-    uint32_t error_code;
-}irqregs_t;
+    uint32_t eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags, cr3;
+} Registers;
 
 // This structure defines a 'task' - a process.
 typedef struct task
  {
-    uint32_t esp;
     int id;                // Process ID.
     char* name; // Process name
     registers_t regs;
     uint32_t StackTop,ds,es,fs,gs;
-    char used;
+    uint16_t priority;
     uint32_t ss; //stack segment registers
     pdirectory *pdir; // Page directory.
     struct task *next;     // The next task in a linked list.
@@ -40,10 +33,10 @@ uint32_t NumberOfTasks;
 // Initialises the tasking system.
 void initTasking();
 
-void createTask(task_t* task,void (*func)(), char *name, uint32_t flags, pdirectory *pagedir);
+void createTask(task_t* task,void (*func)(), char *name, uint32_t flags, uint32_t priority, pdirectory *pagedir);
 
 // Called by the timer hook, this changes the running process.
-void switch_task();
+void scheduler();
 
 // Forks the current process, spawning a new one with a different
 // memory space.
