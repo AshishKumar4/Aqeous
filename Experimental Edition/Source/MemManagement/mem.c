@@ -4,15 +4,6 @@
 // end is defined in the linker script.
 //extern page_directory_t *kernel_directory;
 
-uint32_t BlockFinder(uint32_t addr)
-{
-    MemMap_t *Block;
-    addr/=4096;
-    Block=(MemMap_t*)((uint32_t)Mblock + sizeof(MemMap_t)*(addr));
-    Block++; //there was an offset in blocks from the start; first block is at Mblock+sizeof(MemMap_t)
-    return (uint32_t)Block;
-}
-
 inline int clearBits(uint32_t map[],uint32_t sz) //gives the output as number of continuous clear bits
 {
   uint8_t count=0;
@@ -42,14 +33,14 @@ uint32_t processID=10; //id 4 for paging, rest reserved
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int packed,int processId)
 {
     uint32_t mb=0;
-    if(purpose==1) mb=40; //for kernel
-    else if(purpose==2) mb=21;
-    else mb=100;
+    if(purpose==1) mb=170; //for kernel
+    else if(purpose==2) mb=49;
+    else mb=250;
     MemMap_t* Block=(MemMap_t*)BlockFinder(mb*1024*1024);
     uint32_t addr;
     uint32_t sz4096=sz/4096;
     uint32_t sz32=sz/32;
-    if(!sz32)//if size if less then 32 bytes, roundof it to 32 which is the least memory allocable
+    if(!sz32)//if size is less then 32 bytes, roundof it to 32 which is the least memory allocable
     {
       sz=33;
       sz32=1;
@@ -228,7 +219,7 @@ void free(uint32_t* ptr)
         else
         {
           ++i;
-          memset((void*)addr,0,(i-bitOff)*32);
+          memset((void*)addr,0,(i-bitOff+1)*32);
           break;
         }
       }

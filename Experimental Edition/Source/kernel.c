@@ -13,16 +13,11 @@
 #include "acpi.c"
 #include "vmem.c"
 #include "keyboard.c"
+#include "task.c"
 
 u32int initial_esp;
+uint32_t initial_ebp;
 u8int calle=0;
-
-void timertest()
-{
-   /* RectD(0,0,500,500,700,700,700);
-    Mouse_Plot(mousex,mousey);
-    DBuff();*/
-}
 
 void dbug()
 {
@@ -36,9 +31,9 @@ void dbug()
 	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
 	//malloc(4096);
 	uint32_t *test1=(uint32_t*)malloc(a[1]),*test2=test1;
-	uint32_t *test3=(uint32_t*)malloc(a[2]),*test32=test3;
-	uint32_t *test4=(uint32_t*)malloc(a[3]),*test42=test4;
-	uint32_t *test5=(uint32_t*)malloc(1),*test52=test5;
+	uint32_t *test3=(uint32_t*)malloc(a[2]);
+	uint32_t *test4=(uint32_t*)malloc(a[3]);
+	uint32_t *test5=(uint32_t*)malloc(1);
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
 	printf("\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<32;i++)
@@ -87,9 +82,16 @@ void dbug()
 	printf("\tLocation of var 1: %x, var 2: %x \n",tmp1,tst1);
 }
 
+uint32_t initial_eip;
+
+void kernel_main();
+
+tss_struct_t *TSS;
+
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
-    initial_esp = initial_stack;
+	 //Kernel stack located at 60th mb to 70th mb
+    initial_esp = 0x3C00000;
 		console_init();
 		mouseinit();
 		printf("\nMouse Drivers initialized\n");
@@ -97,17 +99,22 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 		printf("\nKeyboard Drivers Initialized\n");
     init_descriptor_tables();
     printf("DESCRIPTOR TABLES INITIALIZED \n");
-    printint(mboot_ptr->mmap_addr);
-    printf("\n");
-    printint(mboot_ptr->mmap_length);
+		tss_struct_t tss;
+		TSS=&tss;
+		gdt_set_gate(5,(uint32_t)&tss,sizeof(tss_struct_t),0x89,0x40);
+	  gdt_flush((u32int)&gdt_ptr);
+		tss.ss0=0x10;
+		tss.esp0=initial_esp;
+		tss.iomap=sizeof(tss_struct_t);
+		printf("TSS setuped\n");
     printf("\nAvailable memory: ");
     printint(mboot_ptr->mem_upper);
     printf("\nMemory Map:");
-    maxmem=mboot_ptr->mem_upper;
+    memAvailable=mboot_ptr->mem_upper;
     uint32_t *mmap=(uint32_t*)mboot_ptr->mmap_addr;
     mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
-
-    for(int i=0;i<15;i++)
+		maxmem=memAvailable;
+    for(int i=0;i<20;i++)
     {
         if(mmap_info->startLo==0) break;
         printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
@@ -124,41 +131,34 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     else printf("\nACPI CANT BE INITIALIZED\n");
 
 		printf("\n\nEnumerating all devices on PCI BUS:\n");
-    checkAllBuses();
+		checkAllBuses();
 		printf("\nEnabling Hard Disk");
 		checkAHCI();
 		if(!ahci_found) init_ata();
-	  printf("\nEnabling Paging\n");
-    initialise_paging();
-    enable_paging();
-  	printf("\n Paging Has been Enabled Successfully!");
+
+		printf("\nEnabling Paging\n");
+		initialise_paging();
+		enable_paging();
+		MapPage((void*)mmap_info,(void*)mmap_info);
+		printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
-    asm volatile("sti");
-    init_timer(50); //PIT WORKING
+
+		initTasking();
+		timer_task=scheduler;
+		//schedule();
     printf("\nPIT TIMER Initialized\n");
+		//doIt();
     //setVesa(0x117);
    // init_timer_RTC()
 	 //printf("\n Sizeof : uint32_t* %x, page_t %x ",sizeof(uint32_t*),sizeof(page_table_t));
-   printf("\nLOADING MAIN KERNEL...\n");//
-	 /*
-	 uint32_t abc[4]={0,0,0,0};
-	 for(int i=0;i<32*4;)
-	 {
-		 abc[i/32]|=(1<<(i%32));
-		 if(i<32) i+=2;
-		 else if(i<64) i+=3;
-		else i+=6;
-	 }
-	 uint32_t tmp1=clearBits(abc,32);
-	 printf("\n Test %x %x %x %x %x",abc[0],abc[1],abc[2],abc[3],tmp1);
-	 tmp1=clearBits(abc,100);
-	 printf(" %x",tmp1);
-	 tmp1=clearBits(abc,200);
-	 printf(" %x",tmp1);*/
+   printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
 	 vesa=setVesa;
+	 //printf("\nsize of FrameMap_t: %x",sizeof(FrameMap_t));
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
+	 printf("\n location of kernel_main: %x ",kernel_main);
+	 //idle2();
 }
 
 void kernel_start()
@@ -167,12 +167,16 @@ void kernel_start()
 
 void kernel_main()
 {
+		Scheduler_exec();
+		//init_timer(10);
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
     while(!flg)
     {
 				printf("\ncmd>");
+				//asm volatile("popl %%eax;": "=a"(initial_eip));
+				//printf("eip %x ",initial_eip);
 				getline(inst);
 				flg=console_manager(inst);//*/
     }
@@ -181,4 +185,62 @@ void kernel_main()
 			Mouse_Plot(mousex,mousey);
 			DBuff();//*/
 		}
+}
+
+uint8_t console_manager(char *inst)
+{
+	if(!strcmp(inst,"help"))
+	{
+		printf("\nAvialable Commands are:\n");
+		printf("\n\thelp         To get all the available commands");
+		printf("\n\tmdbug        To test the Memory Managment System");
+		printf("\n\tshutdown     To ACPI Power off the system (may not work on few machines)");
+		printf("\n\tstart vesa   To enter VESA Super VGA Mode");
+		printf("\n\tmemmap       To view the Physical Memory Map of the system");
+		printf("\n\ttest multi   To Test multitasking");
+		printf("\n\tother commands\n");
+		return 0;
+	}
+	else if(!strcmp(inst,"shutdown"))
+	{
+			printf("\n Turning Power off");
+			acpiPowerOff();
+			return 0;
+	}
+	else if(!strcmp(inst,"mdbug"))
+	{
+			printf("\n Testing Virtual Memory Manager");
+			mdbug();
+			return 0;
+	}
+	else if(!strcmp(inst,"start vesa"))
+	{
+		printf("\n Entering VESA SVGA mode 1024*768");
+		vesa(0x117);
+		return 1;
+	}
+	else if(!strcmp(inst,"memmap"))
+	{
+    printf("\nMemory Map:");
+    MemRegion_t* memmap_info=mmap_info;
+
+    for(int i=0;i<15;i++)
+    {
+        if(memmap_info->startLo==0) break;
+        printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,memmap_info->startHi,memmap_info->sizeHi,
+               memmap_info->type,strMemoryTypes[memmap_info->type-1]);
+        memmap_info++;
+    }
+		return 0;
+	}
+	else if(!strcmp(inst,"test multi"))
+	{
+		//schedule=switch_task;
+		printf("\n\tEnter the timer Value:");
+		uint32_t timer=getint();
+    init_timer(timer); //PIT WORKING
+		return 0;
+	}
+	printf("\n Command Not Recognized! type help for help\n");
+	return 0;
 }

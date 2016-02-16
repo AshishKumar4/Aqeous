@@ -1,5 +1,7 @@
 #include <pci.h>
 #include <mem.h>
+#include <sys.h>
+
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA    0xCFC
 PciDevice_t devices[256][32];

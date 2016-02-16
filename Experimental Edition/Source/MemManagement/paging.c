@@ -156,7 +156,7 @@ page_t* get_page(uint32_t addr,int make, pdirectory* dir)
 
 void initialise_paging()
 {
-  main_dir = (pdirectory*) kmalloc_a (sizeof(pdirectory));
+  main_dir = (pdirectory*) pmalloc (sizeof(pdirectory));
   //! clear directory table and set it as current
   memset (main_dir, 0, sizeof (pdirectory));
 }
@@ -166,7 +166,7 @@ void enable_paging()
 
       printf("Allocating Pages and Page tables, This may take a while\n");
       MemMap_t* tempBlock3=Mblock;
-      for(uint32_t i=0;i<(1024*1024*100);i+=4096) //Make the pages and page tables for the whole kernel memory (100mb)
+      for(uint32_t i=0;i<(1024*1024*200);i+=4096) //Make the pages and page tables for the whole kernel memory (100mb)
       {
           page_t* page;
           page=get_page(i,1,main_dir); //kernel Pages;
@@ -176,6 +176,31 @@ void enable_paging()
           pt_entry_add_attrib ( page, I86_PTE_USER);
           tempBlock3->page=page;
           tempBlock3++;
+          //page++;
+      }
+      for(uint32_t i=200*1024*1024;i<(1024*maxmem);i+=4096) //For the rest reserved memory!
+      {
+          if(tempBlock3->used==1) // memory is reserved, identity map it, i dont want any issues!
+          {
+            page_t* page;
+            page=get_page(i,1,main_dir); //kernel Pages;
+            pt_entry_set_frame ( page, i);
+            pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+            pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+            pt_entry_add_attrib ( page, I86_PTE_USER);
+            tempBlock3->page=page;
+          }
+          ++tempBlock3;
+          //page++;
+      }
+      for(uint32_t i=maxmem*1024;i<(1020*1024*4096);i+=4096) //For the rest reserved memory!
+      {
+          page_t* page;
+          page=get_page(i,1,main_dir); //kernel Pages;
+          pt_entry_set_frame ( page, i);
+          pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+          pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+          pt_entry_add_attrib ( page, I86_PTE_USER);
           //page++;
       }
    //! switch to our page directory
@@ -190,6 +215,7 @@ void enable_paging()
 
 void page_fault(registers_t regs)
 {
+  asm volatile("cli");
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
@@ -203,8 +229,12 @@ void page_fault(registers_t regs)
     int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
 
     // Output an error message.
-    console_writestring("Page fault! ( ");
-    if (present) {console_writestring("present ");}
+    console_writestring("\nPage fault! ( ");
+    if (present)
+    {
+      console_writestring("present, Allocating page for it ");
+      MapPage((void*)faulting_address,(void*)faulting_address);
+    }
     if (rw)
     {
         console_writestring("read-only ");
@@ -218,6 +248,15 @@ void page_fault(registers_t regs)
     console_writestring(" - EIP: ");
     console_write_dec(regs.eip);
     console_writestring("\n");
-    return;
+    asm volatile("         \
+     cli;                 \
+     mov %0, %%ecx;       \
+     mov %1, %%esp;       \
+     mov %2, %%ebp;       \
+     sti;                 \
+     jmp *%%ecx           "
+                 : : "r"(regs.eip), "r"(regs.esp), "r"(regs.ebp));
+    asm volatile("sti");
+    asm volatile("iret");
    // PANIC("Page fault");
 }

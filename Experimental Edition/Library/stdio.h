@@ -1,5 +1,6 @@
 #ifndef STDIO_H
 #define STDIO_H
+#include <stdio.h>
 #include <sys/cdefs.h>
 #include <stdbool.h>
 #include <stdarg.h>

@@ -5,7 +5,6 @@ CONSOLEVGA:=$(CONSOLE)/arch/x86
 NASM:=nasm/
 NASMARCH:=$(NASM)/arch/x86
 GRAPHICS:=$(SOURCE)/graphics
-MALLOC:=$(SOURCE)/malloc
 OBJ:=objs
 CC:=i686-elf-gcc
 KERNEL:=$(SOURCE)/kernel.o
@@ -16,11 +15,9 @@ DESCRIPTORS:=$(SOURCE)/GDT_IDT
 INTERRUPTS:=$(SOURCE)/Interrupts
 DRIVERS:=$(SOURCE)/Drivers
 TIMER:=$(DRIVERS)/timer
-PAGING:=$(SOURCE)/paging
-KHEAP:=$(SOURCE)/kheap
 VFS:=$(SOURCE)/vfs
 MULTIBOOT:=$(SOURCE)/multiboot
-MULTITASK:=$(SOURCE)/multitask
+MULTITASK:=$(SOURCE)/multitasking
 MEMMANAGEMENT:=$(SOURCE)/MemManagement
 ATA:=$(DRIVERS)/ATA
 PCI:=$(DRIVERS)/PCI
@@ -30,12 +27,12 @@ MOUSE:=$(DRIVERS)/mouse
 KEYBOARD:=$(DRIVERS)/keyboard
 
 OBJS:= $(OBJ)/*.o
-INCLUDED:=-ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(MALLOC) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
+INCLUDED:=-ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I./
 INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
 INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS)
 
-FLAGS:= -O2 -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -Og -g -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:
@@ -44,7 +41,9 @@ clean:
 build-nasm:
 	mkdir -p objs
 	nasm -f elf $(ARCH)/process.s -o $(OBJ)/process.o
-	nasm -f elf $(NASMARCH)/*.asm -o $(OBJ)/arch.o
+	nasm -f elf $(NASMARCH)/v86.asm -o $(OBJ)/v86.o
+	nasm -f elf $(NASMARCH)/switch.asm -o $(OBJ)/switch.o
+	i686-elf-as $(SOURCE)/arch/x86/switchTask.s -o $(OBJ)/switchTask.o
 	nasm -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
 	nasm -f elf $(ARCH)/interrupts.s -o $(OBJ)/interrupts.o
 	i686-elf-as $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o

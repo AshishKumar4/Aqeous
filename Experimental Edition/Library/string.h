@@ -1,5 +1,6 @@
 #ifndef STRING_H
 #define STRING_H
+#include <string.h>
 #include <sys/cdefs.h>
 
 #include <stddef.h>

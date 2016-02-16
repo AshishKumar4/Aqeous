@@ -2,6 +2,9 @@
 #define SYS_H
 #include <common.h>
 #include <acpi.h>
+#include <string.h>
+#include <common.h>
+#include <acpi.h>
 
 void delay(uint32_t delay)
 {

@@ -2,6 +2,7 @@
 #include <common.h>
 #include <mem.h>
 #include <paging.h>
+#include <string.h>
 
 #define wVESA     1024
 #define hVESA     768

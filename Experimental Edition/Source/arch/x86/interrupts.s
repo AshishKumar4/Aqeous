@@ -63,7 +63,6 @@ ISR_NOERRCODE 28
 ISR_NOERRCODE 29
 ISR_NOERRCODE 30
 ISR_NOERRCODE 31
-IRQ   0,    32
 IRQ   1,    33
 IRQ   2,    34
 IRQ   3,    35
@@ -80,7 +79,16 @@ IRQ  13,    45
 IRQ  14,    46
 IRQ  15,    47
 
-; In isr.c
+extern scheduler
+
+global timer_stub;
+
+global irq0
+
+irq0:
+  cli;
+  jmp scheduler;
+
 extern isr_handler
 
 ; This is our common ISR stub. It saves the processor state, sets
@@ -111,7 +119,6 @@ isr_common_stub:
     sti
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
-; In isr.c
 extern irq_handler
 
 ; This is our common IRQ stub. It saves the processor state, sets
@@ -141,6 +148,3 @@ irq_common_stub:
     add esp, 8     ; Cleans up the pushed error code and pushed ISR number
     sti
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
-
-
-

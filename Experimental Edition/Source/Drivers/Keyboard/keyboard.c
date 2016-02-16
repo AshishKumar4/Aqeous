@@ -137,7 +137,6 @@ int keyboard_scancodes(int key)
 /* Handles the keyboard interrupt */
 void keyboard_handler()//(struct regs *r)
 {
-  asm volatile("cli");
   if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
@@ -218,7 +217,8 @@ void keyboard_handler()//(struct regs *r)
         }
       }
   }
-  asm volatile("sti");
+  //asm volatile("sti");
+  //asm volatile("iret");
 }
 
 int checker(int i)

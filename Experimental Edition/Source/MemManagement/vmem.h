@@ -6,19 +6,29 @@
 int pag=0;
 int status=0;
 uint32_t maxmem=0;
+uint32_t memAvailable=0;
 
-typedef struct MemMap
+typedef struct __attribute__ ((packed)) __attribute__ ((aligned (8))) PageFrameMap
 {
-    uint16_t used;
+    uint32_t used;
+    uint32_t frame;
+}FrameMap_t;
+
+FrameMap_t* StartFrame;
+
+typedef struct __attribute__ ((packed)) __attribute__ ((aligned (32))) MemMap
+{
+    uint32_t used;
     uint32_t map[4];
     uint32_t addr;
+    uint32_t reserved;
     page_t* page;
 }MemMap_t;
 
 MemMap_t *Mblock,*lastBlock,*lastBlockAddr,mblock,*Kblock;
 
-typedef struct memory_region {
-
+typedef struct memory_region
+{
 	uint32_t	startLo;
 	uint32_t	startHi;
 	uint32_t	sizeLo;
