@@ -33,23 +33,9 @@ inline void read_sector(unsigned int addr)
     outb(0x1F7, 0x20);
 }
 
-int AHCI_test()
-{
-    FIS_REG_H2D fis;
-    memset(&fis, 0, sizeof(FIS_REG_H2D));
-    fis.fis_type = FIS_TYPE_REG_H2D;
-    fis.command = ATA_CMD_IDENTIFY;	// 0xEC
-    fis.device = 0;			// Master device
-    fis.c = 1;				// Write command register
-    AHCI=checkAHCI();
-    if(AHCI)
-        return 1;
-    else return 0;
-}
-
 void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
 {
-    if(!AHCI_test())
+    if(1)
     {
         outb(0x1F7,0xA0);
         sleep(10);

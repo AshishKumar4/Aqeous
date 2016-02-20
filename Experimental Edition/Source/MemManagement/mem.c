@@ -33,7 +33,7 @@ uint32_t processID=10; //id 4 for paging, rest reserved
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int packed,int processId)
 {
     uint32_t mb=0;
-    if(purpose==1) mb=170; //for kernel
+    if(purpose==1) mb=200; //for kernel
     else if(purpose==2) mb=49;
     else mb=250;
     MemMap_t* Block=(MemMap_t*)BlockFinder(mb*1024*1024);
@@ -179,6 +179,8 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
     uint32_t size=sz;
     uint32_t tid=processID;
     if(pag==0) //If paging not enabled
+      {
+        if(sz>4096||Block->used==0)
         for(uint32_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
         {
           if(!processId && !Block->used)
@@ -186,6 +188,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
           else Block->used=processId;
           //tempBlock1->map+=size;
         }
+      }
     else
     {
       if(sz>4096||Block->used==0)
@@ -261,7 +264,6 @@ void free(uint32_t* ptr)
         Block->used=0;
         free_page(Block->page);
       }
-    printf("\nMemory Freed\n");
 }
 
 uint32_t kmalloc_a(uint32_t sz)

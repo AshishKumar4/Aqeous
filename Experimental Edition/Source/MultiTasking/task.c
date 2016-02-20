@@ -2,6 +2,7 @@
 #include <string.h>
 #include "task.h"
 #include "timer.h"
+#include "rand.h"
 
 task_t* current_task,*lastMade_task;
 // Some externs are needed to access members in paging.c...
@@ -32,25 +33,9 @@ void idle()
   while(1)
   {
     asm volatile("cli");
-    printf("11 ");
+    printf(" ");
     asm volatile("sti");
   }
-  scheduler();
-  //while(1)
-  {
-    printf("12 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("13 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("14 ");
-  }
-  scheduler();
 }
 
 void idle2()
@@ -60,107 +45,93 @@ void idle2()
   while(1)
   {
     asm volatile("cli");
-    printf("21 ");
+    printf("2");
     asm volatile("sti");
   }
-  scheduler();
-  //while(1)
-  {
-    printf("22 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("23 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("24 ");
-  }
-  scheduler();
 }
 
 void idle3()
 {
   printf("\nNew Task 3");
   //scheduler();
+  uint32_t i=0;
   while(1)
   {
     asm volatile("cli");
-    printf("31 ");
+    if(i>1024*100) break;
+    i++;
+    printf("3");
     asm volatile("sti");
   }
-  scheduler();
-  //while(1)
+  while(1)
   {
-    printf("32 ");
+    asm volatile("cli");
+    printf("--3--");
+    asm volatile("sti");
   }
-  scheduler();
-  //while(1)
-  {
-    printf("33 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("34 ");
-  }
-  scheduler();
 }
 
 void idle4()
 {
   printf("\nNew Task 4");
   //scheduler();
+  uint32_t i=0;
   while(1)
   {
     asm volatile("cli");
-    printf("41 ");
+    if(i>1024*100) break;
+    i++;
+    printf("4");
     asm volatile("sti");
   }
-  scheduler();
-  //while(1)
+  while(1)
   {
-    printf("42 ");
+    asm volatile("cli");
+    printf("--4--");
+    asm volatile("sti");
   }
-  scheduler();
-  //while(1)
-  {
-    printf("43 ");
-  }
-  scheduler();
-  //while(1)
-  {
-    printf("44 ");
-  }
-  scheduler();
 }
 
 void idle5()
 {
   printf("\nNew Task 5");
   //scheduler();
+  uint32_t i=0;
   while(1)
   {
     asm volatile("cli");
-    printf("51 ");
+    if(i>1024*100) break;
+    i++;
+    printf("5");
     asm volatile("sti");
   }
-  scheduler();
-  //while(1)
+  while(1)
   {
-    printf("52 ");
+    asm volatile("cli");
+    printf("--5--");
+    asm volatile("sti");
   }
-  scheduler();
-  //while(1)
+  printf("\neverything worked fine :D MULTITASKING WORKS :D \n");
+}
+
+void idle6()
+{
+  printf("\nNew Task 6");
+  //scheduler();
+  uint32_t i=0;
+  while(1)
   {
-    printf("53 ");
+    asm volatile("cli");
+    if(i>1024*100) break;
+    i++;
+    printf("6");
+    asm volatile("sti");
   }
-  scheduler();
-  //while(1)
+  while(1)
   {
-    printf("54 ");
+    asm volatile("cli");
+    printf("--6--");
+    asm volatile("sti");
   }
   printf("\neverything worked fine :D MULTITASKING WORKS :D \n");
 }
@@ -171,19 +142,23 @@ void initTasking()
    StartTask=(task_t*)kmalloc(sizeof(task_t));
    lastMade_task=StartTask;
    current_task=StartTask;
-   createTask(StartTask,idle,"Idle System Task",0x202,10,main_dir);
+   srandInit();
+   createTask(StartTask,idle,"Idle System Task",0x202,3,main_dir);
 
    task_t* new_task=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task,idle2,"Another System Task",0x202,10,main_dir);
+   createTask(new_task,idle2,"Another System Task",0x202,2,main_dir);
 
    task_t* new_task2=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task2,idle3,"another System Task",0x202,10,main_dir);
+   createTask(new_task2,idle3,"another System Task",0x202,1,main_dir);
 
    task_t* new_task3=(task_t*)kmalloc(sizeof(task_t));
-   createTask(new_task3,idle4,"another System Task",0x202,10,main_dir);
+   createTask(new_task3,idle4,"another System Task",0x202,5,main_dir);
+
+   task_t* new_task4=(task_t*)kmalloc(sizeof(task_t));
+   createTask(new_task4,idle5,"another System Task",0x202,4,main_dir);
 
    task_t* last_task=(task_t*)kmalloc(sizeof(task_t));
-   createTask(last_task,idle5,"another System Task",0x202,10,main_dir);
+   createTask(last_task,idle6,"another System Task",0x202,3,main_dir);
    //last_task->regs.esp=initial_esp;
    printf("\nMultiTasking Initialized");
    // Reenable interrupts.
@@ -207,13 +182,15 @@ void createTask(task_t* task,void (*func)(), char *name, uint32_t flags,uint32_t
   *--stack = flags; // eflags
 	*--stack = 0x8; // cs
 	*--stack = (uint32_t)func; // eip
+  uint32_t stacktop=stack;
 	*--stack = 0; // eax
-	*--stack = 0; // ebx
-	*--stack = 0; // ecx;
-	*--stack = 0; //edx
+	*--stack = 0; // ecx
+	*--stack = 0; // edx;
+	*--stack = 0; //ebx
+	*--stack = stacktop; //esp
+	*--stack = base; //ebp
 	*--stack = 0; //esi
 	*--stack = 0; //edi
-	*--stack = base; //ebp
 	*--stack = 0x10; // ds
 	*--stack = 0x10; // fs
 	*--stack = 0x10; // es
@@ -235,92 +212,117 @@ void createTask(task_t* task,void (*func)(), char *name, uint32_t flags,uint32_t
 
   NewTask->ss=0x10;
   NewTask->regs.esp = (uint32_t)stack; // Just initialize the stack :D
-//  printf(" %x ",NewTask->regs.esp);
+
   NewTask->next = StartTask->next;
+
   NewTask->id=next_pid;
   NewTask->priority=priority;
+
   NewTask->name=name;
+
   lastMade_task->next=NewTask;
   lastMade_task=NewTask;
-  next_pid++;
-}
 
-void Scheduler_exec() //Enable Multitasking !!!
-{
-		timer_task=(uint32_t)scheduler;
-    init_timer(10000);
-    printf("\n\nEntering Scheduling Mode!!!\nNEW EIP: %x\n",current_task->regs.eip);
-    asm volatile("sti");
+  next_pid++;
 }
 
 task_t *old_task;
 
-uint32_t timer_tick=5;
-
-void scheduler()
+void Scheduler_exec() //Enable Multitasking !!!
 {
-  if(timer_tick)
-  {
-    --timer_tick;
-  }
-  else
-  {
+		timer_task=(uint32_t)scheduler;
+    init_timer(20000);
+    srandInit();
+    printf("\n\nEntering Scheduling Mode!!!\nNEW EIP: %x\n",current_task->regs.eip);
+    asm volatile("sti");
+}
+
+inline void scheduler()
+{
+    if(timer_tick)
+    {
+      --timer_tick;
+      outb(0x20, 0x20); // send EoI to master PIC
+      asm volatile("sti;\
+        iret");
+    }
     old_task=current_task;
-    current_task=current_task->next;
-    timer_tick=(current_task->priority)/2;
     asm volatile("pop %%eax":"=a"(old_task->regs.eip));
+    current_task=current_task->next;
+    //current_task=(task_t*)tasks[(rn%(next_pid-2))+1];
+    timer_tick=10;
+    asm volatile("jmp *%0"::"r"((uint32_t)switch_task));
+}
 
-    asm volatile("movl %%ebx, %0;":"=r"(old_task->regs.ebx));
-    asm volatile("movl %%ecx, %0;":"=r"(old_task->regs.ecx));
-    asm volatile("movl %%edx, %0;":"=r"(old_task->regs.edx));
-    asm volatile("movl %%esi, %0;":"=r"(old_task->regs.esi));
-    asm volatile("movl %%edi, %0;":"=r"(old_task->regs.edi));
-    asm volatile("movl %%ebp, %0;":"=r"(old_task->regs.ebp));
+static void switch_task()
+{/*
+    asm volatile("movl %%ebx, %0;\
+      movl %%ecx, %1;\
+      movl %%edx, %2;\
+      movl %%esi, %3;\
+      movl %%edi, %4;\
+      movl %%ebp, %5;":
+      "=r"(old_task->regs.ebx),
+      "=r"(old_task->regs.ecx),
+      "=r"(old_task->regs.edx),
+      "=r"(old_task->regs.esi),
+      "=r"(old_task->regs.edi),
+      "=r"(old_task->regs.ebp));
+/*
+    asm volatile("    movw    $16, %ax;\
+      movw    %ax, %ds;\
+      movw    %ax, %es;\
+      movw    %ax, %fs;\
+      movw    %ax, %gs;"); //16=kernel data segemnt
 
-    asm volatile("    movw    $16, %ax		"); // Kernel data segment (Ring 0)
-    asm volatile("    movw    %ax, %ds		");
-    asm volatile("    movw    %ax, %es		");
-    asm volatile("    movw    %ax, %fs		");
-    asm volatile("    movw    %ax, %gs		");
-
-    asm volatile("movl %%ds, %0;":"=r"(old_task->ds));
-    asm volatile("movl %%es, %0;":"=r"(old_task->es));
-    asm volatile("movl %%fs, %0;":"=r"(old_task->fs));
-    asm volatile("movl %%gs, %0;":"=r"(old_task->gs));
-    asm volatile("movl %%ss, %0;":"=r"(old_task->ss));
-
+    asm volatile("movl %%ds, %0;\
+      movl %%es, %1;\
+      movl %%fs, %2;\
+      movl %%gs, %3;\
+      movl %%ss, %4;":"=r"(old_task->ds),
+      "=r"(old_task->es),
+      "=r"(old_task->fs),
+      "=r"(old_task->gs),
+      "=r"(old_task->ss));
+*/
+  //  asm volatile("movl %%esp, %0":"=r"(old_task->regs.esp));
     stack=(uint32_t*)current_task->StackTop;
     *--stack = current_task->regs.eflags; // eflags
     *--stack = current_task->regs.cs; // cs
     *--stack = current_task->regs.eip; // eip
     *--stack = current_task->regs.eax; // eax
-    *--stack = current_task->regs.ebx; // ebx
     *--stack = current_task->regs.ecx; // ecx
-    *--stack = current_task->regs.edx; //edx
+    *--stack = current_task->regs.edx; // edx
+    *--stack = current_task->regs.ebx; //ebx
+    *--stack = current_task->StackTop-3; //original esp
+    *--stack = current_task->regs.ebp; //ebp
     *--stack = current_task->regs.esi; //esi
     *--stack = current_task->regs.edi; //edi
-    *--stack = current_task->regs.ebp; //ebp
     *--stack = current_task->ds; // ds
     *--stack = current_task->fs; // fs
     *--stack = current_task->es; // es
     *--stack = current_task->gs; // gs
 
-    asm volatile("movl %%eax, %%esp;": :"a"(current_task->regs.esp));
-    asm volatile("movl %%eax, %%ss;": :"a"(current_task->ss));
+    asm volatile("movl %0, %%esp;\
+      movl %1, %%ss;": :"r"(current_task->regs.esp),"r"(current_task->ss));
 
-    asm volatile("popl %gs");
-    asm volatile("popl %fs");
-    asm volatile("popl %es");
-    asm volatile("popl %ds");
-    asm volatile("popl %ebp");
-    asm volatile("popl %edi");
-    asm volatile("popl %esi");
-    asm volatile("popl %edx");
-    asm volatile("popl %ecx");
-    asm volatile("popl %ebx");
-    asm volatile("popl %eax");
+    asm volatile("popl %gs;\
+      popl %fs;\
+      popl %es;\
+      popl %ds;\
+      popa");
+    asm volatile("sti;");
+    outb(0x20, 0x20); // send EoI to master PIC
+    asm volatile("iret");
+}
+
+void rand_test()
+{
+  printf("\nTesting our Random Number Generator \n\tOutputing a Stream of random Numbers: \n");
+  srandInit();
+  for(int i=0;i<300;i++)
+  {
+    uint32_t rn=(rand()%(next_pid-1))+1;
+    printf("%x ",rn);
   }
-  outb(0x20, 0x20); // send EoI to master PIC
-  asm volatile("sti");
-  asm volatile("iret");
 }

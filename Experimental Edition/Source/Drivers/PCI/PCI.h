@@ -151,6 +151,9 @@ typedef struct _PciDevice
 
 } PciDevice_t;
 
-PciDevice_t null;
+static PciDevice_t null;
+static PciDevice_t devices[256][32];
+static PciDevice_t AHCI_Devices[32];
+static uint32_t TotalAHCIDevices=0;
 
 #endif // SATA_h

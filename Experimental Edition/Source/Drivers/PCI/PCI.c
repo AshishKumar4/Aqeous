@@ -4,7 +4,6 @@
 
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA    0xCFC
-PciDevice_t devices[256][32];
 
 const char * pci_vendor_lookup(unsigned short vendor_id) {
 	for (unsigned int i = 0; i < PCI_VENTABLE_LEN; ++i) {
@@ -212,7 +211,12 @@ void checkAllBuses(void)
              unsigned char classcode = dev.Header->Class;
              unsigned char subclasscode = dev.Header->Subclass;
              if(devices[bus][device].Bus!=-1&&devices[bus][device].Header->Class!=255)
-             {
+		          {
+								 if(classcode==1&&subclasscode==6)
+								 {
+									 AHCI_Devices[TotalAHCIDevices]=dev;
+									 ++TotalAHCIDevices;
+								 }
                  if(!flag)
                  {
                      flag=1;

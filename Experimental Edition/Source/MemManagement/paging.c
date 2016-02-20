@@ -166,7 +166,7 @@ void enable_paging()
 
       printf("Allocating Pages and Page tables, This may take a while\n");
       MemMap_t* tempBlock3=Mblock;
-      for(uint32_t i=0;i<(1024*1024*200);i+=4096) //Make the pages and page tables for the whole kernel memory (100mb)
+      for(uint32_t i=0;i<(1024*1024*300);i+=4096) //Make the pages and page tables for the whole kernel memory (100mb)
       {
           page_t* page;
           page=get_page(i,1,main_dir); //kernel Pages;
@@ -178,7 +178,7 @@ void enable_paging()
           tempBlock3++;
           //page++;
       }
-      for(uint32_t i=200*1024*1024;i<(1024*maxmem);i+=4096) //For the rest reserved memory!
+      for(uint32_t i=300*1024*1024;i<(1024*maxmem);i+=4096) //For the rest reserved memory!
       {
           if(tempBlock3->used==1) // memory is reserved, identity map it, i dont want any issues!
           {

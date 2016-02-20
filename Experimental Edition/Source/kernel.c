@@ -22,12 +22,16 @@ u8int calle=0;
 void dbug()
 {
 	int a[4];
-	printf("\n\tEnter the size of: ");
+	/*printf("\n\tEnter the size of: ");
 	for(int i=0;i<4;i++)
 	{
 		printf("\n\t\tvar %x: ",i+1);
 		a[i]=getint();
-	}
+	}*/
+	a[0] = 10;
+	a[1] = 512;
+	a[2] = 514;
+	a[3] = 100;
 	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
 	//malloc(4096);
 	uint32_t *test1=(uint32_t*)malloc(a[1]),*test2=test1;
@@ -132,21 +136,24 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 
 		printf("\n\nEnumerating all devices on PCI BUS:\n");
 		checkAllBuses();
-		printf("\nEnabling Hard Disk");
+		printf("\nEnabling Hard Disk\n");
 		checkAHCI();
-		if(!ahci_found) init_ata();
-
+		if(!ahci_found)
+			init_ata();
+		//printf(" %x %x ",satatest,abcd);
+		//printf(" %x %x %x  ",sizeof(unsigned short),sizeof(unsigned long),sizeof(unsigned long int));s
+		while(1);
 		printf("\nEnabling Paging\n");
 		initialise_paging();
 		enable_paging();
 		MapPage((void*)mmap_info,(void*)mmap_info);
 		printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
-
 		initTasking();
 		asm volatile("sti");
 
-    printf("\nPIT TIMER Initialized\n");
+		init_cmos();
+		printf("\nCMOS Clock Initialized\n");
 
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
@@ -164,7 +171,8 @@ void kernel_start()
 
 void kernel_main()
 {
-		Scheduler_exec();
+		//Scheduler_exec();
+		//rand_test();
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
@@ -235,6 +243,11 @@ uint8_t console_manager(char *inst)
 		//printf("\n\tEnter the timer Value:");
 		//uint32_t timer=getint();
 		Scheduler_exec();
+		return 0;
+	}
+	else if(!strcmp(inst,"rand-gen"))
+	{
+		rand_test();
 		return 0;
 	}
 	printf("\n Command Not Recognized! type help for help\n");

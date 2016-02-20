@@ -6,7 +6,8 @@
 #include <sys.h>
 #include <paging.h>
 
-#define MAX_TASKS 100;
+#define MAX_TASKS 10000
+
 typedef struct
 {
     uint32_t eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags, cr3;
@@ -19,17 +20,29 @@ typedef struct task
     char* name; // Process name
     registers_t regs;
     uint32_t StackTop,ds,es,fs,gs;
-    uint16_t priority;
+    uint16_t priority,level;
     uint32_t ss; //stack segment registers
     pdirectory *pdir; // Page directory.
     struct task *next;     // The next task in a linked list.
  } task_t;
+
+ typedef struct queues
+ {
+     uint32_t usage,ticks;
+     task_t* task;
+     struct queues* next;
+ }*queue_t;
+
+queue_t queue[10],last_queue_member[10],current_queue_member[10];
+
+uint32_t timer_tick=5,rn=0,higher_tick=4,current_queue=0,max_priority=0,queue_serials[10];
 
 task_t* StartTask,*currentTask;
 
 uint32_t old_esp,current_esp;
 
 uint32_t NumberOfTasks;
+
 // Initialises the tasking system.
 void initTasking();
 
@@ -40,10 +53,7 @@ void scheduler();
 
 // Forks the current process, spawning a new one with a different
 // memory space.
-int fork();
-
-// Causes the current process' stack to be forcibly moved to a new location.
-void move_stack(void *new_stack_start, u32int size);
+static void switch_task();
 
 // Returns the pid of the current process.
 int getpid();
