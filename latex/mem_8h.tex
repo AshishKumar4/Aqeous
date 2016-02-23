@@ -1,0 +1,635 @@
+\hypertarget{mem_8h}{}\section{Experimental Edition/\+Source/\+Mem\+Management/mem.h File Reference}
+\label{mem_8h}\index{Experimental Edition/\+Source/\+Mem\+Management/mem.\+h@{Experimental Edition/\+Source/\+Mem\+Management/mem.\+h}}
+{\ttfamily \#include $<$common.\+h$>$}\\*
+{\ttfamily \#include $<$sys.\+h$>$}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+Include dependency graph for mem.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{mem_8h_a56a5170fccf0d04bf9851626f3173ab0}{K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}~0x\+C0000000
+\item 
+\#define \hyperlink{mem_8h_a5ee9206c33d7499f6a85ee7ed3c27272}{K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}~0x100000
+\item 
+\#define \hyperlink{mem_8h_a75dff8b3a47ea9eef961fb4a96e8104a}{U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}~0x3000000
+\item 
+\#define \hyperlink{mem_8h_a2b9506231d31649b9ff1e2f72989d873}{U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}~0x7000000
+\item 
+\#define \hyperlink{mem_8h_af1a449a1cd9f28cdda2327efd3517d95}{H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE}~0x20000
+\item 
+\#define \hyperlink{mem_8h_a604474f5c0892ea2c6c16b5e45c59f59}{H\+E\+A\+P\+\_\+\+M\+A\+G\+IC}~0x123890\+AB
+\item 
+\#define \hyperlink{mem_8h_a6000da6aee6de14d187fec34f0648279}{H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE}~0x70000
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_ac2bc8a6ea9783c848eabff245617fe5d}{Block\+Finder} (uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+int \hyperlink{mem_8h_a64f5519763de905b098a8b8760bd41df}{clear\+Bits} (uint32\+\_\+t \hyperlink{paging_8h_a6080e9390b1c9b1d3a42bf0790cbfd0d}{map}\mbox{[}$\,$\mbox{]}, uint32\+\_\+t sz)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\+\_\+int} (uint32\+\_\+t sz, int align, uint32\+\_\+t $\ast$phys, int purpose, int packed, int process\+Id)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a3aa34aa2a8a9c7ac4bf8a315e7f85f18}{kmalloc\+\_\+a} (uint32\+\_\+t sz)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a4187792e75c2799aaa1bbda74a44dfe5}{kmalloc\+\_\+p} (uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_afe18a0630147a1797857d59d23d72f4f}{kmalloc\+\_\+ap} (uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a289ed80726a2c8adc2fa154f442eaad7}{kmalloc} (uint32\+\_\+t sz)
+\item 
+void \hyperlink{mem_8h_a88aa6b479b05e673cbb8e79d8692830d}{free} (uint32\+\_\+t $\ast$ptr)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a078d20da53d088938d806e26395534b8}{malloc} (uint32\+\_\+t sz)
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a2a4a7c78cd58f1e475f6de542b334c55}{pmalloc\+\_\+ap} (uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \hyperlink{mem_8h_a2f36c0bd1bd33ef3a0e54218ef6e20e8}{vga}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{mem.\+h@{mem.\+h}!H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE@{H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE}}
+\index{H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE@{H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE}{HEAP_INDEX_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define H\+E\+A\+P\+\_\+\+I\+N\+D\+E\+X\+\_\+\+S\+I\+ZE~0x20000}\hypertarget{mem_8h_af1a449a1cd9f28cdda2327efd3517d95}{}\label{mem_8h_af1a449a1cd9f28cdda2327efd3517d95}
+
+
+Definition at line 15 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!H\+E\+A\+P\+\_\+\+M\+A\+G\+IC@{H\+E\+A\+P\+\_\+\+M\+A\+G\+IC}}
+\index{H\+E\+A\+P\+\_\+\+M\+A\+G\+IC@{H\+E\+A\+P\+\_\+\+M\+A\+G\+IC}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{H\+E\+A\+P\+\_\+\+M\+A\+G\+IC}{HEAP_MAGIC}}]{\setlength{\rightskip}{0pt plus 5cm}\#define H\+E\+A\+P\+\_\+\+M\+A\+G\+IC~0x123890\+AB}\hypertarget{mem_8h_a604474f5c0892ea2c6c16b5e45c59f59}{}\label{mem_8h_a604474f5c0892ea2c6c16b5e45c59f59}
+
+
+Definition at line 16 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE@{H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE}}
+\index{H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE@{H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE}{HEAP_MIN_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define H\+E\+A\+P\+\_\+\+M\+I\+N\+\_\+\+S\+I\+ZE~0x70000}\hypertarget{mem_8h_a6000da6aee6de14d187fec34f0648279}{}\label{mem_8h_a6000da6aee6de14d187fec34f0648279}
+
+
+Definition at line 17 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE@{K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}}
+\index{K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE@{K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}{KHEAP_INITIAL_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define K\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE~0x100000}\hypertarget{mem_8h_a5ee9206c33d7499f6a85ee7ed3c27272}{}\label{mem_8h_a5ee9206c33d7499f6a85ee7ed3c27272}
+
+
+Definition at line 10 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT@{K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}}
+\index{K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT@{K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}{KHEAP_START}}]{\setlength{\rightskip}{0pt plus 5cm}\#define K\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT~0x\+C0000000}\hypertarget{mem_8h_a56a5170fccf0d04bf9851626f3173ab0}{}\label{mem_8h_a56a5170fccf0d04bf9851626f3173ab0}
+
+
+Definition at line 9 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE@{U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}}
+\index{U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE@{U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE}{UHEAP_INITIAL_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\+H\+E\+A\+P\+\_\+\+I\+N\+I\+T\+I\+A\+L\+\_\+\+S\+I\+ZE~0x7000000}\hypertarget{mem_8h_a2b9506231d31649b9ff1e2f72989d873}{}\label{mem_8h_a2b9506231d31649b9ff1e2f72989d873}
+
+
+Definition at line 13 of file mem.\+h.
+
+\index{mem.\+h@{mem.\+h}!U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT@{U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}}
+\index{U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT@{U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT}{UHEAP_START}}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\+H\+E\+A\+P\+\_\+\+S\+T\+A\+RT~0x3000000}\hypertarget{mem_8h_a75dff8b3a47ea9eef961fb4a96e8104a}{}\label{mem_8h_a75dff8b3a47ea9eef961fb4a96e8104a}
+
+
+Definition at line 12 of file mem.\+h.
+
+
+
+\subsection{Function Documentation}
+\index{mem.\+h@{mem.\+h}!Block\+Finder@{Block\+Finder}}
+\index{Block\+Finder@{Block\+Finder}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{Block\+Finder(uint32\+\_\+t addr)}{BlockFinder(uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Block\+Finder (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_ac2bc8a6ea9783c848eabff245617fe5d}{}\label{mem_8h_ac2bc8a6ea9783c848eabff245617fe5d}
+
+
+Definition at line 7 of file vmem.\+c.
+
+
+\begin{DoxyCode}
+8 \{
+9     \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t} *Block;
+10     \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}/=4096;
+11     Block=(\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}*)((uint32\_t)\hyperlink{vmem_8h_a23fb7e1107b26858b1e5e6451f2f4ad4}{Mblock} + \textcolor{keyword}{sizeof}(\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t})*(
+      \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}));
+12     Block++; \textcolor{comment}{//there was an offset in blocks from the start; first block is at Mblock+sizeof(MemMap\_t)}
+13     \textcolor{keywordflow}{return} (uint32\_t)Block;
+14 \}
+\end{DoxyCode}
+\index{mem.\+h@{mem.\+h}!clear\+Bits@{clear\+Bits}}
+\index{clear\+Bits@{clear\+Bits}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{clear\+Bits(uint32\+\_\+t map[], uint32\+\_\+t sz)}{clearBits(uint32_t map[], uint32_t sz)}}]{\setlength{\rightskip}{0pt plus 5cm}int clear\+Bits (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{map\mbox{[}$\,$\mbox{]}, }
+\item[{uint32\+\_\+t}]{sz}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{mem_8h_a64f5519763de905b098a8b8760bd41df}{}\label{mem_8h_a64f5519763de905b098a8b8760bd41df}
+
+
+Definition at line 7 of file mem.\+c.
+
+
+\begin{DoxyCode}
+8 \{
+9   uint8\_t count=0;
+10 
+11   \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<128;i++)
+12   \{
+13       \textcolor{keywordflow}{if}(count*32>=sz)
+14       \{
+15         \textcolor{comment}{//printf(" 1 ");}
+16         \textcolor{keywordflow}{return} i-(sz/32); \textcolor{comment}{//our job is done!}
+17       \}
+18       \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!(\hyperlink{paging_8c_a6080e9390b1c9b1d3a42bf0790cbfd0d}{map}[i/32] & (1<<(i%32))))
+19       \{
+20         ++count;
+21       \}
+22       \textcolor{keywordflow}{else}
+23       \{
+24         count=0;
+25         \textcolor{comment}{//++i;}
+26       \}
+27   \}
+28   \textcolor{keywordflow}{return} -1;
+29 \}
+\end{DoxyCode}
+\index{mem.\+h@{mem.\+h}!free@{free}}
+\index{free@{free}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{free(uint32\+\_\+t $\ast$ptr)}{free(uint32_t *ptr)}}]{\setlength{\rightskip}{0pt plus 5cm}void free (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a88aa6b479b05e673cbb8e79d8692830d}{}\label{mem_8h_a88aa6b479b05e673cbb8e79d8692830d}
+General deallocation function. 
+
+Definition at line 207 of file mem.\+c.
+
+
+\begin{DoxyCode}
+208 \{
+209     uint32\_t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}=(uint32\_t)ptr;
+210     \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* Block=(\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}*)\hyperlink{mem_8h_ac2bc8a6ea9783c848eabff245617fe5d}{BlockFinder}(addr);
+211     uint32\_t tsz=addr%4096;
+212     uint32\_t bitOff=tsz/32;
+213     \textcolor{keywordflow}{if}(!bitOff) bitOff=1;
+214     \textcolor{keywordflow}{if}(!(Block->map[3] & (1<<(31)))) \textcolor{comment}{//Check if the last bit is unset}
+215     \{
+216       \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=bitOff;;i++)
+217       \{
+218         \textcolor{keywordflow}{if}(Block->map[i/32] & (1<<(i%32)))
+219         \{
+220           Block->map[i/32]^=(1<<(i%32));
+221         \}
+222         \textcolor{keywordflow}{else}
+223         \{
+224           ++i;
+225           \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset}((\textcolor{keywordtype}{void}*)addr,0,(i-bitOff+1)*32);
+226           \textcolor{keywordflow}{break};
+227         \}
+228       \}
+229     \}
+230     \textcolor{keywordflow}{else} \textcolor{comment}{//it can only happen if the block is solely for a single process}
+231     \{
+232       uint16\_t pid=Block->used; \textcolor{comment}{//get the process id in this case!}
+233       \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tm=Block,*tm2=Block;
+234       tm2++;
+235       \textcolor{keywordflow}{while}(tm2->used==pid)
+236       \{
+237         tm->used=0;
+238         tm->map[0]=0;
+239         tm->map[1]=0;
+240         tm->map[2]=0;
+241         tm->map[3]=0;
+242         ++tm;
+243         ++tm2;
+244       \}
+245       \textcolor{keywordflow}{for}(uint32\_t i=0;;i++)
+246       \{
+247         \textcolor{keywordflow}{if}(Block->map[i/32] & (1<<(i%32)))
+248         \{
+249           Block->map[i/32]^=(1<<(i%32));
+250         \}
+251         \textcolor{keywordflow}{else}
+252         \{
+253           ++i;
+254           \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset}((\textcolor{keywordtype}{void}*)addr,0,(i)*32);
+255           \textcolor{keywordflow}{break};
+256         \}
+257       \}
+258     \}
+259     \textcolor{keywordflow}{if}(Block->used && !Block->map[0]
+260       && !Block->map[1]
+261       && !Block->map[2]
+262       && !Block->map[3])
+263       \{
+264         Block->used=0;
+265         \hyperlink{paging_8c_a7077dda14170b0967709669e4d1fe615}{free\_page}(Block->page);
+266       \}
+267 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a88aa6b479b05e673cbb8e79d8692830d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!kmalloc@{kmalloc}}
+\index{kmalloc@{kmalloc}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{kmalloc(uint32\+\_\+t sz)}{kmalloc(uint32_t sz)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t kmalloc (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a289ed80726a2c8adc2fa154f442eaad7}{}\label{mem_8h_a289ed80726a2c8adc2fa154f442eaad7}
+General allocation function. 
+
+Definition at line 289 of file mem.\+c.
+
+
+\begin{DoxyCode}
+290 \{
+291     \textcolor{keywordflow}{return} \hyperlink{mem_8c_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\_int}(sz, 0, 0,1,0,0);
+292 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a289ed80726a2c8adc2fa154f442eaad7_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!kmalloc\+\_\+a@{kmalloc\+\_\+a}}
+\index{kmalloc\+\_\+a@{kmalloc\+\_\+a}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{kmalloc\+\_\+a(uint32\+\_\+t sz)}{kmalloc_a(uint32_t sz)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t kmalloc\+\_\+a (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a3aa34aa2a8a9c7ac4bf8a315e7f85f18}{}\label{mem_8h_a3aa34aa2a8a9c7ac4bf8a315e7f85f18}
+Allocate a chunk of memory, sz in size. The chunk must be page aligned. 
+
+Definition at line 269 of file mem.\+c.
+
+
+\begin{DoxyCode}
+270 \{
+271     \textcolor{keywordflow}{return} \hyperlink{mem_8c_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\_int}(sz, 1, 0,1,1,0);
+272 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a3aa34aa2a8a9c7ac4bf8a315e7f85f18_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!kmalloc\+\_\+ap@{kmalloc\+\_\+ap}}
+\index{kmalloc\+\_\+ap@{kmalloc\+\_\+ap}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{kmalloc\+\_\+ap(uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)}{kmalloc_ap(uint32_t sz, uint32_t *phys)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t kmalloc\+\_\+ap (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz, }
+\item[{uint32\+\_\+t $\ast$}]{phys}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_afe18a0630147a1797857d59d23d72f4f}{}\label{mem_8h_afe18a0630147a1797857d59d23d72f4f}
+Allocate a chunk of memory, sz in size. The physical address is returned in phys. It must be page-\/aligned. 
+
+Definition at line 279 of file mem.\+c.
+
+
+\begin{DoxyCode}
+280 \{
+281     \textcolor{keywordflow}{return} \hyperlink{mem_8c_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\_int}(sz, 1, phys,1,1,0);
+282 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_afe18a0630147a1797857d59d23d72f4f_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!kmalloc\+\_\+int@{kmalloc\+\_\+int}}
+\index{kmalloc\+\_\+int@{kmalloc\+\_\+int}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{kmalloc\+\_\+int(uint32\+\_\+t sz, int align, uint32\+\_\+t $\ast$phys, int purpose, int packed, int process\+Id)}{kmalloc_int(uint32_t sz, int align, uint32_t *phys, int purpose, int packed, int processId)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t kmalloc\+\_\+int (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz, }
+\item[{int}]{align, }
+\item[{uint32\+\_\+t $\ast$}]{phys, }
+\item[{int}]{purpose, }
+\item[{int}]{packed, }
+\item[{int}]{process\+Id}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a5a85f1828b9d6da51c5793e0fbecada4}{}\label{mem_8h_a5a85f1828b9d6da51c5793e0fbecada4}
+
+
+Definition at line 33 of file mem.\+c.
+
+
+\begin{DoxyCode}
+34 \{
+35     uint32\_t mb=0;
+36     \textcolor{keywordflow}{if}(purpose==1) mb=200; \textcolor{comment}{//for kernel}
+37     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(purpose==2) mb=49;
+38     \textcolor{keywordflow}{else} mb=250;
+39     \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* Block=(\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}*)\hyperlink{mem_8h_ac2bc8a6ea9783c848eabff245617fe5d}{BlockFinder}(mb*1024*1024);
+40     uint32\_t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr};
+41     uint32\_t sz4096=sz/4096;
+42     uint32\_t sz32=sz/32;
+43     \textcolor{keywordflow}{if}(!sz32)\textcolor{comment}{//if size is less then 32 bytes, roundof it to 32 which is the least memory allocable}
+44     \{
+45       sz=33;
+46       sz32=1;
+47     \}
+48     uint32\_t tsz32=(sz%4096)/32;
+49     \textcolor{keywordflow}{while}(1)
+50     \{
+51         addr=Block->addr;
+52         \textcolor{keywordflow}{if}(addr>=(mb*1024*1024)+32) \textcolor{comment}{//If the block is in user memory; +32 for buffer}
+53         \{
+54           out:
+55           \textcolor{keywordflow}{if}(Block->used==0)
+56           \{
+57               \textcolor{keywordflow}{if} (align == 1 && (addr & 0xFFFFF000)) \textcolor{comment}{//if 4k alignment required}
+58               \{
+59                 \textcolor{keywordflow}{while}(Block->used) ++Block; \textcolor{comment}{//Simply get a comlpetely unused block!}
+60                 \textcolor{comment}{//Because Natively,Every Block's starting addr is 4k aligned!}
+61               \}
+62               \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tm=Block;
+63               \textcolor{keywordflow}{if}(sz>4096)
+64               \{
+65                   \textcolor{keywordflow}{for}(uint32\_t i=0;i<sz4096+1;i++) \textcolor{comment}{//check if adjacent blocks are empty too!}
+66                   \{
+67                     ++tm;
+68                     \textcolor{keywordflow}{if}(tm->used) \textcolor{comment}{//cant fit here!}
+69                     \{
+70                       Block=tm;
+71                       \textcolor{keywordflow}{goto} out;
+72                     \}
+73                   \}
+74                   tm=Block;
+75                   \textcolor{keywordflow}{for}(uint32\_t j=0;j<sz4096;j++)
+76                   \{
+77                     tm->map[0]=0xFFFFFFFF; \textcolor{comment}{//set the bits to full}
+78                     tm->map[1]=0xFFFFFFFF;
+79                     tm->map[2]=0xFFFFFFFF;
+80                     tm->map[3]=0xFFFFFFFF;
+81                     ++tm;
+82                   \}
+83                   \textcolor{keywordflow}{for}(uint32\_t i=0; i<tsz32;i++)
+84                   \{
+85                     tm->map[i/32]|=(1<<(i%32));
+86                   \}
+87                   addr=Block->addr;
+88                   \textcolor{keywordflow}{break};
+89                 \}
+90                 \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tm2=Block;
+91                 \textcolor{comment}{//If you reach here, you are lucky!}
+92                 \textcolor{keywordflow}{for}(uint32\_t i=0; i<sz32;i++)
+93                 \{
+94                   tm2->map[i/32]|=(1<<(i%32));
+95                 \}
+96                 \textcolor{comment}{//printf("map1-> %x ",tm2->map[0]);}
+97                 \textcolor{comment}{//just get out now!}
+98                 addr=Block->addr;
+99                 \textcolor{keywordflow}{break};
+100             \}
+101             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!packed) \textcolor{comment}{//if packing required (0=required, 1=not)}
+102             \{
+103               \textcolor{keywordflow}{if}(sz<4096-8) \textcolor{comment}{//if memory can be accomodated in single block.}
+104               \{
+105                 \textcolor{keywordtype}{int} tm;
+106                 out2:
+107                 \textcolor{keywordflow}{if}(Block->map[0]==0xFFFFFFFF &&
+108                   Block->map[1]==0xFFFFFFFF &&
+109                   Block->map[2]==0xFFFFFFFF &&
+110                   Block->map[3]==0xFFFFFFFF) \textcolor{comment}{//block already full, no space}
+111                 \{
+112                   ++Block;
+113                   \textcolor{keywordflow}{goto} out;
+114                 \}
+115                 tm=\hyperlink{mem_8c_a64f5519763de905b098a8b8760bd41df}{clearBits}(Block->map,sz);
+116                 \textcolor{comment}{//printf("Clear Bits-> %x ",tm);}
+117                 \textcolor{keywordflow}{if}(tm>=0) \textcolor{comment}{//if enough memory is in the region}
+118                 \{
+119                   \textcolor{comment}{//tm++;}
+120                   \textcolor{comment}{//if(tsz<14) //allocating for some variable probably :/}
+121                   \textcolor{comment}{//  tm--; //dont leave a blank bit for it!}
+122                   \textcolor{keywordflow}{for}(uint32\_t i=tm;i<sz32+tm;i++)
+123                     Block->map[i/32]|=(1<<(i%32)); \textcolor{comment}{//set the bit;}
+124                   \textcolor{comment}{//printf("map2-> %x ",Block->map[0]);}
+125                   addr=Block->addr + (32*tm);
+126                   \textcolor{keywordflow}{break};
+127                 \}
+128                 \textcolor{keywordflow}{else}
+129                 \{
+130                   \textcolor{comment}{//printf(" 1 ");}
+131                   ++Block; \textcolor{comment}{//search in some other block for the same}
+132                   \textcolor{keywordflow}{goto} out2;
+133                 \}
+134               \}
+135               \textcolor{keywordflow}{else}
+136               \{
+137                 out3:
+138                 \textcolor{keywordflow}{while}(Block->used)
+139                   ++Block; \textcolor{comment}{//find a completely empty block}
+140                 \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tm=Block;
+141                 \textcolor{keywordflow}{for}(uint32\_t i=0;i<sz4096+1;i++) \textcolor{comment}{//check if adjacent blocks are empty too!}
+142                 \{
+143                   ++tm;
+144                   \textcolor{keywordflow}{if}(tm->used) \textcolor{comment}{//cant fit here!}
+145                   \{
+146                     Block=tm;
+147                     \textcolor{keywordflow}{goto} out3;
+148                   \}
+149                 \}
+150                 \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tm2=Block;
+151                 \textcolor{comment}{//If you reach here, you are lucky!}
+152                 \textcolor{keywordflow}{for}(uint32\_t j=0;j<sz4096;j++)
+153                 \{
+154                     tm2->map[0]=0xFFFFFFFF; \textcolor{comment}{//set the bits}
+155                     tm2->map[1]=0xFFFFFFFF;
+156                     tm2->map[2]=0xFFFFFFFF;
+157                     tm2->map[3]=0xFFFFFFFF;
+158                     ++tm2;
+159                 \}
+160                 \textcolor{keywordflow}{for}(uint32\_t i=0; i<tsz32;i++)
+161                 \{
+162                   tm->map[i/32]|=(1<<(i%32));
+163                 \}
+164                 \textcolor{comment}{//just get out now!}
+165                 addr=Block->addr;
+166                 \textcolor{keywordflow}{break};
+167               \}
+168             \}
+169             \textcolor{keywordflow}{if}(Block->addr>=\hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem}*1024)
+170             \{
+171                 \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nNo memory"});
+172                 \textcolor{keywordflow}{return} 0;
+173             \}
+174           \}
+175         ++Block;
+176     \}
+177     \textcolor{keywordflow}{if}(phys)
+178         *phys=\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr};
+179     uint32\_t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size}=sz;
+180     uint32\_t tid=\hyperlink{mem_8c_a631114325ef3e4ad5f334a2ec07b4c14}{processID};
+181     \textcolor{keywordflow}{if}(\hyperlink{vmem_8h_a7782aec3b2c89efea6a3a16432380a0f}{pag}==0) \textcolor{comment}{//If paging not enabled}
+182       \{
+183         \textcolor{keywordflow}{if}(sz>4096||Block->used==0)
+184         \textcolor{keywordflow}{for}(uint32\_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
+185         \{
+186           \textcolor{keywordflow}{if}(!processId && !Block->used)
+187               Block->used=tid;
+188           \textcolor{keywordflow}{else} Block->used=processId;
+189           \textcolor{comment}{//tempBlock1->map+=size;}
+190         \}
+191       \}
+192     \textcolor{keywordflow}{else}
+193     \{
+194       \textcolor{keywordflow}{if}(sz>4096||Block->used==0)
+195         \textcolor{keywordflow}{for}(uint32\_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
+196         \{
+197             \textcolor{keywordflow}{if}(!processId && !Block->used)
+198                 Block->used=tid;
+199             \textcolor{keywordflow}{else} Block->used=processId;
+200             Block->page=\hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)Block->addr,(\textcolor{keywordtype}{void}*)Block->addr);
+201         \}
+202     \}
+203     ++\hyperlink{mem_8c_a631114325ef3e4ad5f334a2ec07b4c14}{processID};
+204     \textcolor{keywordflow}{return} \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr};
+205 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a5a85f1828b9d6da51c5793e0fbecada4_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!kmalloc\+\_\+p@{kmalloc\+\_\+p}}
+\index{kmalloc\+\_\+p@{kmalloc\+\_\+p}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{kmalloc\+\_\+p(uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)}{kmalloc_p(uint32_t sz, uint32_t *phys)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t kmalloc\+\_\+p (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz, }
+\item[{uint32\+\_\+t $\ast$}]{phys}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a4187792e75c2799aaa1bbda74a44dfe5}{}\label{mem_8h_a4187792e75c2799aaa1bbda74a44dfe5}
+Allocate a chunk of memory, sz in size. The physical address is returned in phys. Phys M\+U\+ST be a valid pointer to u32int! 
+
+Definition at line 274 of file mem.\+c.
+
+
+\begin{DoxyCode}
+275 \{
+276     \textcolor{keywordflow}{return} \hyperlink{mem_8c_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\_int}(sz, 0, phys,1,0,0);
+277 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a4187792e75c2799aaa1bbda74a44dfe5_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!malloc@{malloc}}
+\index{malloc@{malloc}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{malloc(uint32\+\_\+t sz)}{malloc(uint32_t sz)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t malloc (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a078d20da53d088938d806e26395534b8}{}\label{mem_8h_a078d20da53d088938d806e26395534b8}
+
+
+Definition at line 294 of file mem.\+c.
+
+
+\begin{DoxyCode}
+295 \{
+296     \textcolor{keywordflow}{return} \hyperlink{mem_8c_a5a85f1828b9d6da51c5793e0fbecada4}{kmalloc\_int}(sz, 0, 0,0,0,0);
+297 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mem_8h_a078d20da53d088938d806e26395534b8_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{mem.\+h@{mem.\+h}!pmalloc\+\_\+ap@{pmalloc\+\_\+ap}}
+\index{pmalloc\+\_\+ap@{pmalloc\+\_\+ap}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{pmalloc\+\_\+ap(uint32\+\_\+t sz, uint32\+\_\+t $\ast$phys)}{pmalloc_ap(uint32_t sz, uint32_t *phys)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t pmalloc\+\_\+ap (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{sz, }
+\item[{uint32\+\_\+t $\ast$}]{phys}
+\end{DoxyParamCaption}
+)}\hypertarget{mem_8h_a2a4a7c78cd58f1e475f6de542b334c55}{}\label{mem_8h_a2a4a7c78cd58f1e475f6de542b334c55}
+
+
+\subsection{Variable Documentation}
+\index{mem.\+h@{mem.\+h}!vga@{vga}}
+\index{vga@{vga}!mem.\+h@{mem.\+h}}
+\subsubsection[{\texorpdfstring{vga}{vga}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t vga}\hypertarget{mem_8h_a2f36c0bd1bd33ef3a0e54218ef6e20e8}{}\label{mem_8h_a2f36c0bd1bd33ef3a0e54218ef6e20e8}
+
+
+Definition at line 19 of file mem.\+h.
+

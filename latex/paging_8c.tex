@@ -1,0 +1,631 @@
+\hypertarget{paging_8c}{}\section{Experimental Edition/\+Source/\+Mem\+Management/paging.c File Reference}
+\label{paging_8c}\index{Experimental Edition/\+Source/\+Mem\+Management/paging.\+c@{Experimental Edition/\+Source/\+Mem\+Management/paging.\+c}}
+{\ttfamily \#include $<$paging.\+h$>$}\\*
+{\ttfamily \#include $<$mem.\+h$>$}\\*
+Include dependency graph for paging.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=211pt]{paging_8c__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{paging_8c_a4dce082b63b92eaaad720557dca0500c}{switch\+\_\+directory} (\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$dir)
+\item 
+int \hyperlink{paging_8c_a1edcc2e56bafded6cb9b551fce74dc6c}{alloc\+\_\+page} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e)
+\item 
+void \hyperlink{paging_8c_a7077dda14170b0967709669e4d1fe615}{free\+\_\+page} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e)
+\item 
+\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$ \hyperlink{paging_8c_af809a82d9e827a89bc8739dd62416d2b}{ptable\+\_\+lookup\+\_\+entry} (\hyperlink{paging_8h_ad6fc9cfaf6c7630b9a3201e8442e3a81}{ptable} $\ast$p, uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$ \hyperlink{paging_8c_a63f77f99d9825b0c7dc2ec85f942f9fe}{pdirectory\+\_\+lookup\+\_\+entry} (\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$p, uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+int \hyperlink{paging_8c_a8aaeac04662ca972c1b8f4fdb424712e}{switch\+\_\+pdirectory} (\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$dir)
+\item 
+\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$ \hyperlink{paging_8c_a381aef29f9394bab7873923e2d552f1f}{get\+\_\+directory} ()
+\item 
+void \hyperlink{paging_8c_acb64ec22f2f6f301af58fa50f9dd7e0d}{flush\+\_\+tlb\+\_\+entry} (uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$ \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{Map\+Page} (void $\ast$phys, void $\ast$virt)
+\item 
+void \hyperlink{paging_8c_a6080e9390b1c9b1d3a42bf0790cbfd0d}{map} (uint32\+\_\+t phy, size\+\_\+t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$ \hyperlink{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}{get\+\_\+page} (uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}, int make, \hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$dir)
+\item 
+void \hyperlink{paging_8c_ad05c453b13c69ecf5c7963798704cc18}{initialise\+\_\+paging} ()
+\item 
+void \hyperlink{paging_8c_ae62af42af2d4cb211a64978ff1ef060e}{enable\+\_\+paging} ()
+\item 
+void \hyperlink{paging_8c_a6293af8e675059a566216be86660854b}{page\+\_\+fault} (\hyperlink{common_8h_adf58dbaf6139b4957c348711f2026957}{registers\+\_\+t} \hyperlink{structregs}{regs})
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$ \hyperlink{paging_8c_a05bf6c69d84446e4c34559fe6728c6e0}{\+\_\+cur\+\_\+directory} =0
+\begin{DoxyCompactList}\small\item\em current directory table (global) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{paging.\+c@{paging.\+c}!alloc\+\_\+page@{alloc\+\_\+page}}
+\index{alloc\+\_\+page@{alloc\+\_\+page}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{alloc\+\_\+page(page\+\_\+t $\ast$e)}{alloc_page(page_t *e)}}]{\setlength{\rightskip}{0pt plus 5cm}int alloc\+\_\+page (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a1edcc2e56bafded6cb9b551fce74dc6c}{}\label{paging_8c_a1edcc2e56bafded6cb9b551fce74dc6c}
+allocate a free physical frame
+
+map it to the page 
+
+Definition at line 15 of file paging.\+c.
+
+
+\begin{DoxyCode}
+16 \{\textcolor{comment}{}
+17 \textcolor{comment}{    //! allocate a free physical frame}
+18 \textcolor{comment}{}    \textcolor{keywordtype}{void}* p = (\textcolor{keywordtype}{void}*)\hyperlink{mem_8c_a1f58e286674c0527a087f9560d8c491d}{pmalloc}(4096);
+19     \textcolor{keywordflow}{if} (!p)
+20         \textcolor{keywordflow}{return} 0;
+21 \textcolor{comment}{}
+22 \textcolor{comment}{    //! map it to the page}
+23 \textcolor{comment}{}    \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} (e, (uint32\_t)p);
+24     \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} (e, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+25 
+26     \textcolor{keywordflow}{return} 1;
+27 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_a1edcc2e56bafded6cb9b551fce74dc6c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!enable\+\_\+paging@{enable\+\_\+paging}}
+\index{enable\+\_\+paging@{enable\+\_\+paging}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{enable\+\_\+paging()}{enable_paging()}}]{\setlength{\rightskip}{0pt plus 5cm}void enable\+\_\+paging (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_ae62af42af2d4cb211a64978ff1ef060e}{}\label{paging_8c_ae62af42af2d4cb211a64978ff1ef060e}
+switch to our page directory 
+
+Definition at line 164 of file paging.\+c.
+
+
+\begin{DoxyCode}
+165 \{
+166 
+167       \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"Allocating Pages and Page tables, This may take a while\(\backslash\)n"});
+168       \hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{MemMap\_t}* tempBlock3=\hyperlink{vmem_8h_a23fb7e1107b26858b1e5e6451f2f4ad4}{Mblock};
+169       \textcolor{keywordflow}{for}(uint32\_t i=0;i<(1024*1024*300);i+=4096) \textcolor{comment}{//Make the pages and page tables for the whole kernel
+       memory (100mb)}
+170       \{
+171           \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\_t}* page;
+172           page=\hyperlink{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}{get\_page}(i,1,\hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir}); \textcolor{comment}{//kernel Pages;}
+173           \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} ( page, i);
+174           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+175           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\_PTE\_WRITABLE});
+176           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{I86\_PTE\_USER});
+177           tempBlock3->page=page;
+178           tempBlock3++;
+179           \textcolor{comment}{//page++;}
+180       \}
+181       \textcolor{keywordflow}{for}(uint32\_t i=300*1024*1024;i<(1024*\hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem});i+=4096) \textcolor{comment}{//For the rest reserved memory!}
+182       \{
+183           \textcolor{keywordflow}{if}(tempBlock3->used==1) \textcolor{comment}{// memory is reserved, identity map it, i dont want any issues!}
+184           \{
+185             \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\_t}* page;
+186             page=\hyperlink{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}{get\_page}(i,1,\hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir}); \textcolor{comment}{//kernel Pages;}
+187             \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} ( page, i);
+188             \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+189             \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\_PTE\_WRITABLE});
+190             \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{I86\_PTE\_USER});
+191             tempBlock3->page=page;
+192           \}
+193           ++tempBlock3;
+194           \textcolor{comment}{//page++;}
+195       \}
+196       \textcolor{keywordflow}{for}(uint32\_t i=\hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem}*1024;i<(1020*1024*4096);i+=4096) \textcolor{comment}{//For the rest reserved memory!}
+197       \{
+198           \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\_t}* page;
+199           page=\hyperlink{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}{get\_page}(i,1,\hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir}); \textcolor{comment}{//kernel Pages;}
+200           \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} ( page, i);
+201           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+202           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\_PTE\_WRITABLE});
+203           \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{I86\_PTE\_USER});
+204           \textcolor{comment}{//page++;}
+205       \}\textcolor{comment}{}
+206 \textcolor{comment}{   //! switch to our page directory}
+207 \textcolor{comment}{}   \hyperlink{paging_8c_a8aaeac04662ca972c1b8f4fdb424712e}{switch\_pdirectory} (\hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir});
+208 
+209    \hyperlink{interrupts_8c_ad7e285600239a8df8341de1cc39548f1}{register\_interrupt\_handler}(14, \hyperlink{paging_8c_a6293af8e675059a566216be86660854b}{page\_fault});
+210    \hyperlink{vmem_8h_a7782aec3b2c89efea6a3a16432380a0f}{pag}=1;
+211    \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nEnabled paging\(\backslash\)n"});
+212    \textcolor{comment}{//pmmngr\_paging\_enable (true);}
+213 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_ae62af42af2d4cb211a64978ff1ef060e_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!flush\+\_\+tlb\+\_\+entry@{flush\+\_\+tlb\+\_\+entry}}
+\index{flush\+\_\+tlb\+\_\+entry@{flush\+\_\+tlb\+\_\+entry}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{flush\+\_\+tlb\+\_\+entry(uint32\+\_\+t addr)}{flush_tlb_entry(uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void flush\+\_\+tlb\+\_\+entry (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_acb64ec22f2f6f301af58fa50f9dd7e0d}{}\label{paging_8c_acb64ec22f2f6f301af58fa50f9dd7e0d}
+
+
+Definition at line 68 of file paging.\+c.
+
+
+\begin{DoxyCode}
+69 \{
+70   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+71   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"invlpg (%0)"} ::\textcolor{stringliteral}{"r"} (\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}) : \textcolor{stringliteral}{"memory"});
+72   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+73 \}
+\end{DoxyCode}
+\index{paging.\+c@{paging.\+c}!free\+\_\+page@{free\+\_\+page}}
+\index{free\+\_\+page@{free\+\_\+page}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{free\+\_\+page(page\+\_\+t $\ast$e)}{free_page(page_t *e)}}]{\setlength{\rightskip}{0pt plus 5cm}void free\+\_\+page (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a7077dda14170b0967709669e4d1fe615}{}\label{paging_8c_a7077dda14170b0967709669e4d1fe615}
+
+
+Definition at line 29 of file paging.\+c.
+
+
+\begin{DoxyCode}
+30 \{
+31     \textcolor{keywordtype}{void}* p = (\textcolor{keywordtype}{void}*)\hyperlink{paging_8h_a97203e0effac91dc856ff4f28b3d6b79}{pt\_entry\_pfn} (*e);
+32     \textcolor{keywordflow}{if} (p)
+33         \hyperlink{mem_8c_a88aa6b479b05e673cbb8e79d8692830d}{free} (p);
+34 
+35     \hyperlink{paging_8h_ad06738f925b4ecff695aac009cde9b60}{pt\_entry\_del\_attrib} (e, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+36 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_a7077dda14170b0967709669e4d1fe615_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!get\+\_\+directory@{get\+\_\+directory}}
+\index{get\+\_\+directory@{get\+\_\+directory}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{get\+\_\+directory()}{get_directory()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf pdirectory}$\ast$ get\+\_\+directory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a381aef29f9394bab7873923e2d552f1f}{}\label{paging_8c_a381aef29f9394bab7873923e2d552f1f}
+
+
+Definition at line 63 of file paging.\+c.
+
+
+\begin{DoxyCode}
+64 \{
+65     \textcolor{keywordflow}{return} \hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir};
+66 \}
+\end{DoxyCode}
+\index{paging.\+c@{paging.\+c}!get\+\_\+page@{get\+\_\+page}}
+\index{get\+\_\+page@{get\+\_\+page}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{get\+\_\+page(uint32\+\_\+t addr, int make, pdirectory $\ast$dir)}{get_page(uint32_t addr, int make, pdirectory *dir)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf page\+\_\+t}$\ast$ get\+\_\+page (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{addr, }
+\item[{int}]{make, }
+\item[{{\bf pdirectory} $\ast$}]{dir}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}{}\label{paging_8c_ab342f7cd556219febede87b9ef0f9b2e}
+
+
+Definition at line 124 of file paging.\+c.
+
+
+\begin{DoxyCode}
+125 \{
+126 
+127       \textcolor{comment}{// Turn the address into an index.}
+128       \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} /= 0x1000;
+129       \textcolor{comment}{// Find the page table containing this address.}
+130       uint32\_t table\_idx = \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} / 1024;
+131 
+132       \textcolor{keywordflow}{if} (dir->m\_entries[table\_idx]) \textcolor{comment}{// If this table is already assigned}
+133       \{
+134           \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* entry = &dir->m\_entries [table\_idx];
+135           \hyperlink{structptable__t}{ptable}* table=(\hyperlink{structptable__t}{ptable}*)\hyperlink{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{PAGE\_GET\_PHYSICAL\_ADDRESS}(entry);
+136           \textcolor{keywordflow}{return} &table->m\_entries[\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}%1024];
+137       \}
+138       \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(make)
+139       \{
+140           dir->m\_entries[table\_idx] = (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t})\hyperlink{mem_8c_a1f58e286674c0527a087f9560d8c491d}{pmalloc}(\textcolor{keyword}{sizeof}(
+      \hyperlink{structptable__t}{ptable}));
+141           \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset}((\textcolor{keywordtype}{void}*)dir->m\_entries[table\_idx], 0, 0x1000);
+142           \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* entry = &dir->m\_entries [table\_idx];
+143           \hyperlink{structptable__t}{ptable}* table=(\hyperlink{structptable__t}{ptable}*)\hyperlink{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{PAGE\_GET\_PHYSICAL\_ADDRESS}(entry);
+144           \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\_PDE\_PRESENT});
+145           \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\_PDE\_WRITABLE});
+146           \hyperlink{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}{pd\_entry\_set\_frame} (entry, (uint32\_t)dir->m\_entries[table\_idx]);
+147           \textcolor{comment}{//dir->tablesPhysical[table\_idx] = tmp | 0x7; // PRESENT, RW, US.}
+148           \textcolor{keywordflow}{return} &table->m\_entries[\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}%1024];
+149       \}
+150       \textcolor{keywordflow}{else}
+151       \{
+152           \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" Cant get the Page! "});
+153           \textcolor{keywordflow}{return} 0;
+154       \}
+155 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_ab342f7cd556219febede87b9ef0f9b2e_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!initialise\+\_\+paging@{initialise\+\_\+paging}}
+\index{initialise\+\_\+paging@{initialise\+\_\+paging}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{initialise\+\_\+paging()}{initialise_paging()}}]{\setlength{\rightskip}{0pt plus 5cm}void initialise\+\_\+paging (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_ad05c453b13c69ecf5c7963798704cc18}{}\label{paging_8c_ad05c453b13c69ecf5c7963798704cc18}
+clear directory table and set it as current 
+
+Definition at line 157 of file paging.\+c.
+
+
+\begin{DoxyCode}
+158 \{
+159   \hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir} = (\hyperlink{structpdirectory__t}{pdirectory}*) \hyperlink{mem_8c_a1f58e286674c0527a087f9560d8c491d}{pmalloc} (\textcolor{keyword}{sizeof}(\hyperlink{structpdirectory__t}{pdirectory}));\textcolor{comment}{}
+160 \textcolor{comment}{  //! clear directory table and set it as current}
+161 \textcolor{comment}{}  \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset} (\hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir}, 0, \textcolor{keyword}{sizeof} (\hyperlink{structpdirectory__t}{pdirectory}));
+162 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_ad05c453b13c69ecf5c7963798704cc18_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!map@{map}}
+\index{map@{map}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{map(uint32\+\_\+t phy, size\+\_\+t size)}{map(uint32_t phy, size_t size)}}]{\setlength{\rightskip}{0pt plus 5cm}void map (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{phy, }
+\item[{size\+\_\+t}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a6080e9390b1c9b1d3a42bf0790cbfd0d}{}\label{paging_8c_a6080e9390b1c9b1d3a42bf0790cbfd0d}
+
+
+Definition at line 114 of file paging.\+c.
+
+
+\begin{DoxyCode}
+115 \{
+116     uint32\_t j=phy;
+117     \textcolor{keywordflow}{for} (; j < phy+\hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size};j+=0x1000)
+118     \{
+119       \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)j,(\textcolor{keywordtype}{void}*)j);
+120     \}
+121 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_a6080e9390b1c9b1d3a42bf0790cbfd0d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!Map\+Page@{Map\+Page}}
+\index{Map\+Page@{Map\+Page}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{Map\+Page(void $\ast$phys, void $\ast$virt)}{MapPage(void *phys, void *virt)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf page\+\_\+t}$\ast$ Map\+Page (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{phys, }
+\item[{void $\ast$}]{virt}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{}\label{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}
+get page directory
+
+get page table
+
+page table not present, allocate it
+
+clear page table
+
+create a new entry
+
+map in the table (Can also just do $\ast$entry $\vert$= 3) to enable these bits
+
+get table
+
+get page
+
+map it in (Can also do ($\ast$page $\vert$= 3 to enable..) 
+
+Definition at line 75 of file paging.\+c.
+
+
+\begin{DoxyCode}
+76 \{\textcolor{comment}{}
+77 \textcolor{comment}{   //! get page directory}
+78 \textcolor{comment}{}   \hyperlink{structpdirectory__t}{pdirectory}* pageDirectory = \hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir};
+79 \textcolor{comment}{}
+80 \textcolor{comment}{   //! get page table}
+81 \textcolor{comment}{}   \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* e = &pageDirectory->m\_entries [\hyperlink{paging_8h_a877752f604817d711c82889f7ded52b8}{PAGE\_DIRECTORY\_INDEX} ((uint32\_t) virt
+      ) ];
+82    \textcolor{keywordflow}{if} ( (*e & \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT}) != I86\_PTE\_PRESENT)
+83    \{\textcolor{comment}{}
+84 \textcolor{comment}{      //! page table not present, allocate it}
+85 \textcolor{comment}{}      \hyperlink{structptable__t}{ptable}* table = (\hyperlink{structptable__t}{ptable}*) \hyperlink{mem_8c_a1f58e286674c0527a087f9560d8c491d}{pmalloc}(4096);
+86       \textcolor{keywordflow}{if} (!table)
+87          \textcolor{keywordflow}{return} 0;
+88 \textcolor{comment}{}
+89 \textcolor{comment}{      //! clear page table}
+90 \textcolor{comment}{}      \textcolor{comment}{//memset (table, 0, sizeof(ptable));}
+91 \textcolor{comment}{}
+92 \textcolor{comment}{      //! create a new entry}
+93 \textcolor{comment}{}      \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* entry =
+94          &pageDirectory->m\_entries [\hyperlink{paging_8h_a877752f604817d711c82889f7ded52b8}{PAGE\_DIRECTORY\_INDEX} ( (uint32\_t) virt) ];
+95 \textcolor{comment}{}
+96 \textcolor{comment}{      //! map in the table (Can also just do *entry |= 3) to enable these bits}
+97 \textcolor{comment}{}      \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\_PDE\_PRESENT});
+98       \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\_PDE\_WRITABLE});
+99       \hyperlink{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}{pd\_entry\_set\_frame} (entry, (uint32\_t)table);
+100    \}
+101 \textcolor{comment}{}
+102 \textcolor{comment}{   //! get table}
+103 \textcolor{comment}{}   \hyperlink{structptable__t}{ptable}* table = (\hyperlink{structptable__t}{ptable}*) \hyperlink{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{PAGE\_GET\_PHYSICAL\_ADDRESS} ( e );
+104 \textcolor{comment}{}
+105 \textcolor{comment}{   //! get page}
+106 \textcolor{comment}{}   \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\_t}* page = &table->m\_entries [ \hyperlink{paging_8h_a9a736011ad6043805b1e3db9e889b149}{PAGE\_TABLE\_INDEX} ( (uint32\_t) virt) ];
+107 \textcolor{comment}{}
+108 \textcolor{comment}{   //! map it in (Can also do (*page |= 3 to enable..)}
+109 \textcolor{comment}{}   \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} ( page, (uint32\_t) phys);
+110    \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, I86\_PTE\_PRESENT);
+111    \textcolor{keywordflow}{return} page;
+112 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_a3bbb55b579c39bc711aeac29c03710b8_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!page\+\_\+fault@{page\+\_\+fault}}
+\index{page\+\_\+fault@{page\+\_\+fault}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{page\+\_\+fault(registers\+\_\+t regs)}{page_fault(registers_t regs)}}]{\setlength{\rightskip}{0pt plus 5cm}void page\+\_\+fault (
+\begin{DoxyParamCaption}
+\item[{{\bf registers\+\_\+t}}]{regs}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a6293af8e675059a566216be86660854b}{}\label{paging_8c_a6293af8e675059a566216be86660854b}
+
+
+Definition at line 216 of file paging.\+c.
+
+
+\begin{DoxyCode}
+217 \{
+218   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+219     \textcolor{comment}{// A page fault has occurred.}
+220     \textcolor{comment}{// The faulting address is stored in the CR2 register.}
+221     uint32\_t faulting\_address;
+222     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"mov %%cr2, %0"} : \textcolor{stringliteral}{"=r"} (faulting\_address));
+223 
+224     \textcolor{comment}{// The error code gives us details of what happened.}
+225     \textcolor{keywordtype}{int} present   = !(regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x1); \textcolor{comment}{// Page not present}
+226     \textcolor{keywordtype}{int} rw = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x2;           \textcolor{comment}{// Write operation?}
+227     \textcolor{keywordtype}{int} us = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x4;           \textcolor{comment}{// Processor was in user-mode?}
+228     \textcolor{keywordtype}{int} reserved = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x8;     \textcolor{comment}{// Overwritten CPU-reserved bits of page entry?}
+229     \textcolor{keywordtype}{int} \textcolor{keywordtype}{id} = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x10;          \textcolor{comment}{// Caused by an instruction fetch?}
+230 
+231     \textcolor{comment}{// Output an error message.}
+232     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)nPage fault! ( "});
+233     \textcolor{keywordflow}{if} (present)
+234     \{
+235       \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"present, Allocating page for it "});
+236       \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)faulting\_address,(\textcolor{keywordtype}{void}*)faulting\_address);
+237     \}
+238     \textcolor{keywordflow}{if} (rw)
+239     \{
+240         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"read-only "});
+241     \}
+242     \textcolor{keywordflow}{if} (us) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"user-mode "});\}
+243     \textcolor{keywordflow}{if} (reserved) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"reserved "});\}
+244 
+245     \textcolor{keywordflow}{if} (\textcolor{keywordtype}{id}) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"id "}); \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\textcolor{keywordtype}{id});\}
+246     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{") at 0x"});
+247     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(faulting\_address);
+248     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" - EIP: "});
+249     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(regs.\hyperlink{structregisters_aaeedf83509826a731e436025aeb53576}{eip});
+250     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n"});
+251     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"         \(\backslash\)}
+252 \textcolor{stringliteral}{     cli;                 \(\backslash\)}
+253 \textcolor{stringliteral}{     mov %0, %%ecx;       \(\backslash\)}
+254 \textcolor{stringliteral}{     mov %1, %%esp;       \(\backslash\)}
+255 \textcolor{stringliteral}{     mov %2, %%ebp;       \(\backslash\)}
+256 \textcolor{stringliteral}{     sti;                 \(\backslash\)}
+257 \textcolor{stringliteral}{     jmp *%%ecx           "}
+258                  : : \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_aaeedf83509826a731e436025aeb53576}{eip}), \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_a9cc3091e4c0f25d142ac74443dc8d384}{esp}), \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_a8d156d1d27fcb1c2f2bbcce1a784431f}{ebp}));
+259     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+260     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"iret"});
+261    \textcolor{comment}{// PANIC("Page fault");}
+262 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8c_a6293af8e675059a566216be86660854b_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+c@{paging.\+c}!pdirectory\+\_\+lookup\+\_\+entry@{pdirectory\+\_\+lookup\+\_\+entry}}
+\index{pdirectory\+\_\+lookup\+\_\+entry@{pdirectory\+\_\+lookup\+\_\+entry}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{pdirectory\+\_\+lookup\+\_\+entry(pdirectory $\ast$p, uint32\+\_\+t addr)}{pdirectory_lookup_entry(pdirectory *p, uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf page\+\_\+t}$\ast$ pdirectory\+\_\+lookup\+\_\+entry (
+\begin{DoxyParamCaption}
+\item[{{\bf pdirectory} $\ast$}]{p, }
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8c_a63f77f99d9825b0c7dc2ec85f942f9fe}{}\label{paging_8c_a63f77f99d9825b0c7dc2ec85f942f9fe}
+
+
+Definition at line 45 of file paging.\+c.
+
+
+\begin{DoxyCode}
+46 \{
+47     \textcolor{keywordflow}{if} (p)
+48         \textcolor{keywordflow}{return} &p->m\_entries[ \hyperlink{paging_8h_a9a736011ad6043805b1e3db9e889b149}{PAGE\_TABLE\_INDEX} (\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}) ];
+49     \textcolor{keywordflow}{return} 0;
+50 \}
+\end{DoxyCode}
+\index{paging.\+c@{paging.\+c}!ptable\+\_\+lookup\+\_\+entry@{ptable\+\_\+lookup\+\_\+entry}}
+\index{ptable\+\_\+lookup\+\_\+entry@{ptable\+\_\+lookup\+\_\+entry}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{ptable\+\_\+lookup\+\_\+entry(ptable $\ast$p, uint32\+\_\+t addr)}{ptable_lookup_entry(ptable *p, uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf page\+\_\+t}$\ast$ ptable\+\_\+lookup\+\_\+entry (
+\begin{DoxyParamCaption}
+\item[{{\bf ptable} $\ast$}]{p, }
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8c_af809a82d9e827a89bc8739dd62416d2b}{}\label{paging_8c_af809a82d9e827a89bc8739dd62416d2b}
+
+
+Definition at line 38 of file paging.\+c.
+
+
+\begin{DoxyCode}
+39 \{
+40     \textcolor{keywordflow}{if} (p)
+41         \textcolor{keywordflow}{return} &p->m\_entries[ \hyperlink{paging_8h_a9a736011ad6043805b1e3db9e889b149}{PAGE\_TABLE\_INDEX} (\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}) ];
+42     \textcolor{keywordflow}{return} 0;
+43 \}
+\end{DoxyCode}
+\index{paging.\+c@{paging.\+c}!switch\+\_\+directory@{switch\+\_\+directory}}
+\index{switch\+\_\+directory@{switch\+\_\+directory}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{switch\+\_\+directory(pdirectory $\ast$dir)}{switch_directory(pdirectory *dir)}}]{\setlength{\rightskip}{0pt plus 5cm}void switch\+\_\+directory (
+\begin{DoxyParamCaption}
+\item[{{\bf pdirectory} $\ast$}]{dir}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8c_a4dce082b63b92eaaad720557dca0500c}{}\label{paging_8c_a4dce082b63b92eaaad720557dca0500c}
+
+
+Definition at line 5 of file paging.\+c.
+
+
+\begin{DoxyCode}
+6 \{
+7     \textcolor{comment}{//asm volatile ("movl %%eax, %%cr3" :: "a" (&dir->m\_entries[0])); // load PDPT into CR3}
+8     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"mov %0, %%cr3"}:: \textcolor{stringliteral}{"r"}((uint32\_t)dir));
+9     \hyperlink{common_8h_a7ae3a26c17ddfe117c6291739780801d}{u32int} cr0=0;
+10     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"mov %%cr0, %0"}: \textcolor{stringliteral}{"=r"}(cr0));
+11     cr0 |= 0x80000000; \textcolor{comment}{// Enable paging!}
+12     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"mov %0, %%cr0"}:: \textcolor{stringliteral}{"r"}(cr0));
+13 \}
+\end{DoxyCode}
+\index{paging.\+c@{paging.\+c}!switch\+\_\+pdirectory@{switch\+\_\+pdirectory}}
+\index{switch\+\_\+pdirectory@{switch\+\_\+pdirectory}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{switch\+\_\+pdirectory(pdirectory $\ast$dir)}{switch_pdirectory(pdirectory *dir)}}]{\setlength{\rightskip}{0pt plus 5cm}int switch\+\_\+pdirectory (
+\begin{DoxyParamCaption}
+\item[{{\bf pdirectory} $\ast$}]{dir}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8c_a8aaeac04662ca972c1b8f4fdb424712e}{}\label{paging_8c_a8aaeac04662ca972c1b8f4fdb424712e}
+
+
+Definition at line 54 of file paging.\+c.
+
+
+\begin{DoxyCode}
+55 \{
+56     \textcolor{keywordflow}{if} (!dir)
+57         \textcolor{keywordflow}{return} 0;
+58     \hyperlink{paging_8c_a05bf6c69d84446e4c34559fe6728c6e0}{\_cur\_directory} = dir;
+59   \hyperlink{paging_8c_a4dce082b63b92eaaad720557dca0500c}{switch\_directory}(dir);
+60     \textcolor{keywordflow}{return} 1;
+61 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=297pt]{paging_8c_a8aaeac04662ca972c1b8f4fdb424712e_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{paging.\+c@{paging.\+c}!\+\_\+cur\+\_\+directory@{\+\_\+cur\+\_\+directory}}
+\index{\+\_\+cur\+\_\+directory@{\+\_\+cur\+\_\+directory}!paging.\+c@{paging.\+c}}
+\subsubsection[{\texorpdfstring{\+\_\+cur\+\_\+directory}{_cur_directory}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf pdirectory}$\ast$ \+\_\+cur\+\_\+directory =0}\hypertarget{paging_8c_a05bf6c69d84446e4c34559fe6728c6e0}{}\label{paging_8c_a05bf6c69d84446e4c34559fe6728c6e0}
+
+
+current directory table (global) 
+
+
+
+Definition at line 52 of file paging.\+c.
+

@@ -1,0 +1,14 @@
+<map id="Experimental Edition/Source/Drivers/ATA/ata.c" name="Experimental Edition/Source/Drivers/ATA/ata.c">
+<area shape="rect" id="node2" href="$console_8h.html" title="console.h" alt="" coords="5,95,84,121"/>
+<area shape="rect" id="node4" href="$sys_8h.html" title="sys.h" alt="" coords="215,244,269,271"/>
+<area shape="rect" id="node11" href="$ata_8h.html" title="ata.h" alt="" coords="85,169,135,196"/>
+<area shape="rect" id="node13" href="$ahci_8h.html" title="ahci.h" alt="" coords="292,95,349,121"/>
+<area shape="rect" id="node5" href="$common_8h.html" title="common.h" alt="" coords="249,319,331,345"/>
+<area shape="rect" id="node8" href="$acpi_8h.html" title="acpi.h" alt="" coords="167,319,224,345"/>
+<area shape="rect" id="node9" href="$string_8h.html" title="string.h" alt="" coords="359,319,424,345"/>
+<area shape="rect" id="node6" href="$system_8h.html" title="system.h" alt="" coords="109,393,185,420"/>
+<area shape="rect" id="node10" href="$cdefs_8h.html" title="sys/cdefs.h" alt="" coords="491,393,582,420"/>
+<area shape="rect" id="node14" href="$mem_8h.html" title="mem.h" alt="" coords="413,169,476,196"/>
+<area shape="rect" id="node18" href="$ahci__device__list_8h.html" title="ahci_device_list.h" alt="" coords="211,169,337,196"/>
+<area shape="rect" id="node15" href="$stdio_8h.html" title="stdio.h" alt="" coords="498,244,559,271"/>
+</map>

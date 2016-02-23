@@ -1,0 +1,16 @@
+<map id="malloc" name="malloc">
+<area shape="rect" id="node2" href="$mem_8c.html#a5a85f1828b9d6da51c5793e0fbecada4" title="kmalloc_int" alt="" coords="113,107,201,133"/>
+<area shape="rect" id="node3" href="$mem_8h.html#ac2bc8a6ea9783c848eabff245617fe5d" title="BlockFinder" alt="" coords="249,5,340,32"/>
+<area shape="rect" id="node4" href="$mem_8c.html#a64f5519763de905b098a8b8760bd41df" title="clearBits" alt="" coords="258,56,331,83"/>
+<area shape="rect" id="node5" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="269,107,320,133"/>
+<area shape="rect" id="node10" href="$paging_8c.html#a3bbb55b579c39bc711aeac29c03710b8" title="MapPage" alt="" coords="256,233,333,260"/>
+<area shape="rect" id="node6" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="429,5,484,32"/>
+<area shape="rect" id="node7" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="426,56,487,83"/>
+<area shape="rect" id="node8" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="573,56,704,83"/>
+<area shape="rect" id="node9" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="752,81,887,108"/>
+<area shape="rect" id="node11" href="$mem_8c.html#a1f58e286674c0527a087f9560d8c491d" title="pmalloc" alt="" coords="423,157,490,184"/>
+<area shape="rect" id="node12" href="$paging_8h.html#aa02323457572c726a13d8222a9d7587e" title="pd_entry_add_attrib" alt="" coords="389,208,525,235"/>
+<area shape="rect" id="node13" href="$paging_8h.html#ac7af7b87f7e6dafd44054b69245cc0e4" title="pd_entry_set_frame" alt="" coords="388,259,525,285"/>
+<area shape="rect" id="node14" href="$paging_8h.html#a73074448fb8439a820a3a22f37c1c9c2" title="pt_entry_set_frame" alt="" coords="389,309,524,336"/>
+<area shape="rect" id="node15" href="$paging_8h.html#a6417ed10a34bf0b789fb321828215b43" title="pt_entry_add_attrib" alt="" coords="390,360,523,387"/>
+</map>

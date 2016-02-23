@@ -1,0 +1,12 @@
+<map id="acpiPowerOff" name="acpiPowerOff">
+<area shape="rect" id="node2" href="$acpi_8c.html#a7785e47ec7c5a61c43890af2581da359" title="acpiEnable" alt="" coords="155,107,241,133"/>
+<area shape="rect" id="node6" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="289,157,424,184"/>
+<area shape="rect" id="node11" href="$sys_8h.html#aab8bf5abe19006ff9a80654d87f98908" title="outw" alt="" coords="173,208,223,235"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a3dcbb9e13203beb0e38956999e8ae61d" title="inw" alt="" coords="335,5,378,32"/>
+<area shape="rect" id="node4" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="333,56,380,83"/>
+<area shape="rect" id="node5" href="$ata_8c.html#ab24cd262423caf1599380572e83824fa" title="sleep" alt="" coords="330,107,383,133"/>
+<area shape="rect" id="node7" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="472,132,523,159"/>
+<area shape="rect" id="node8" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="574,81,629,108"/>
+<area shape="rect" id="node9" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="571,132,632,159"/>
+<area shape="rect" id="node10" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="680,157,811,184"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="getint" name="getint">
+<area shape="rect" id="node2" href="$keyboard_8c.html#a3b0a0dd71bca58f7eec23991e11ce6d3" title="getline" alt="" coords="108,259,168,285"/>
+<area shape="rect" id="node13" href="$keyboard_8c.html#ada79ee5c754077262a178f47cefadda2" title="StrToInt" alt="" coords="216,309,285,336"/>
+<area shape="rect" id="node3" href="$keyboard_8c.html#a668644c144dda2deede41fde5aab613f" title="getchar" alt="" coords="218,157,283,184"/>
+<area shape="rect" id="node8" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="1068,107,1119,133"/>
+<area shape="rect" id="node11" href="$console_8c.html#aae14f26f524b8163e88dc1d54cae9697" title="backspace" alt="" coords="363,208,449,235"/>
+<area shape="rect" id="node4" href="$keyboard_8c.html#af7fe296231d14e4b806c25ee4f144ba7" title="checker" alt="" coords="372,56,440,83"/>
+<area shape="rect" id="node10" href="$keyboard_8c.html#a0db64b3e5910f815c0a2c1708ee594c6" title="keyboard_scancodes" alt="" coords="333,157,479,184"/>
+<area shape="rect" id="node5" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="562,56,623,83"/>
+<area shape="rect" id="node6" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="707,5,837,32"/>
+<area shape="rect" id="node7" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="885,5,1020,32"/>
+<area shape="rect" id="node9" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="1167,208,1221,235"/>
+<area shape="rect" id="node12" href="$console_8c.html#ace5f5cd3a88b2f24cafd88827e5f6322" title="console_putentryat" alt="" coords="527,208,659,235"/>
+</map>

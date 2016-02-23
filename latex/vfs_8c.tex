@@ -1,0 +1,198 @@
+\hypertarget{vfs_8c}{}\section{Experimental Edition/\+Source/vfs/vfs.c File Reference}
+\label{vfs_8c}\index{Experimental Edition/\+Source/vfs/vfs.\+c@{Experimental Edition/\+Source/vfs/vfs.\+c}}
+{\ttfamily \#include $<$vfs.\+h$>$}\\*
+Include dependency graph for vfs.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{vfs_8c__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{vfs_8c__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{vfs_8h_a175abb747ea3b78aa8da87355dcec473}{F\+I\+LE} \hyperlink{vfs_8c_a5fddb7f70ecafc8ce01512baa13326c7}{vol\+Open\+File} (const char $\ast$fname)
+\item 
+void \hyperlink{vfs_8c_a64d2071eb8adf684053ff53c7426ecad}{vol\+Read\+File} (\hyperlink{vfs_8h_ad326c846895d1e06bc4c2228bf864968}{P\+F\+I\+LE} \hyperlink{structfile}{file}, unsigned char $\ast$Buffer, unsigned int Length)
+\item 
+void \hyperlink{vfs_8c_a5ed489e743e90c3ec0bb8e1282d04f3e}{vol\+Close\+File} (\hyperlink{vfs_8h_ad326c846895d1e06bc4c2228bf864968}{P\+F\+I\+LE} \hyperlink{structfile}{file})
+\item 
+void \hyperlink{vfs_8c_ad2fdcfdd1fc9e1f8a9f216334bd0c05b}{vol\+Register\+File\+System} (\hyperlink{vfs_8h_a215bd595bfd71179f6a9160aee84296a}{P\+F\+I\+L\+E\+S\+Y\+S\+T\+EM} fsys, unsigned int device\+ID)
+\item 
+void \hyperlink{vfs_8c_a388428885a9182f2438c6d8a2cff08a2}{vol\+Unregister\+File\+System} (\hyperlink{vfs_8h_a215bd595bfd71179f6a9160aee84296a}{P\+F\+I\+L\+E\+S\+Y\+S\+T\+EM} fsys)
+\item 
+void \hyperlink{vfs_8c_ad82141b4dee3273a5f423fcf653e6b0f}{vol\+Unregister\+File\+System\+By\+ID} (unsigned int device\+ID)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{vfs.\+c@{vfs.\+c}!vol\+Close\+File@{vol\+Close\+File}}
+\index{vol\+Close\+File@{vol\+Close\+File}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Close\+File(\+P\+F\+I\+L\+E file)}{volCloseFile(PFILE file)}}]{\setlength{\rightskip}{0pt plus 5cm}void vol\+Close\+File (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+F\+I\+LE}}]{file}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_a5ed489e743e90c3ec0bb8e1282d04f3e}{}\label{vfs_8c_a5ed489e743e90c3ec0bb8e1282d04f3e}
+Close file 
+
+Definition at line 49 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+49                                \{
+50 
+51     \textcolor{keywordflow}{if} (file)
+52         \textcolor{keywordflow}{if} (\hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems} [file->\hyperlink{struct__FILE_a81958585561000f4b18409bf81c06755}{deviceID} - \textcolor{charliteral}{'a'}])
+53             \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[file->\hyperlink{struct__FILE_a81958585561000f4b18409bf81c06755}{deviceID} - \textcolor{charliteral}{'a'}]->\hyperlink{struct__FILE__SYSTEM_a5595fce92d628028705b1ddd25d21e6f}{Close} (file);
+54 \}
+\end{DoxyCode}
+\index{vfs.\+c@{vfs.\+c}!vol\+Open\+File@{vol\+Open\+File}}
+\index{vol\+Open\+File@{vol\+Open\+File}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Open\+File(const char $\ast$fname)}{volOpenFile(const char *fname)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf F\+I\+LE} vol\+Open\+File (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{fname}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_a5fddb7f70ecafc8ce01512baa13326c7}{}\label{vfs_8c_a5fddb7f70ecafc8ce01512baa13326c7}
+default to device \textquotesingle{}a\textquotesingle{}
+
+filename
+
+in all cases, if fname\mbox{[}1\mbox{]}==\textquotesingle{}\+:\textquotesingle{} then the first character must be device letter
+
+call filesystem
+
+set volume specific information and return file 
+
+Definition at line 3 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+3                                      \{
+4 
+5     \textcolor{keywordflow}{if} (fname) \{
+6 \textcolor{comment}{}
+7 \textcolor{comment}{        //! default to device 'a'}
+8 \textcolor{comment}{}        \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device} = \textcolor{charliteral}{'a'};
+9 \textcolor{comment}{}
+10 \textcolor{comment}{        //! filename}
+11 \textcolor{comment}{}        \textcolor{keywordtype}{char}* filename = (\textcolor{keywordtype}{char}*) fname;
+12 \textcolor{comment}{}
+13 \textcolor{comment}{        //! in all cases, if fname[1]==':' then the first character must be device letter}
+14 \textcolor{comment}{}        \textcolor{keywordflow}{if} (fname[1]==\textcolor{charliteral}{':'}) \{
+15 
+16             device = fname[0];
+17             filename += 2; \textcolor{comment}{//strip it from pathname}
+18         \}
+19 \textcolor{comment}{}
+20 \textcolor{comment}{        //! call filesystem}
+21 \textcolor{comment}{}        \textcolor{keywordflow}{if} (\hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems} [device - \textcolor{charliteral}{'a'}]) \{
+22 \textcolor{comment}{}
+23 \textcolor{comment}{            //! set volume specific information and return file}
+24 \textcolor{comment}{}            \hyperlink{struct__FILE}{FILE} \hyperlink{structfile}{file} = \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[device - \textcolor{charliteral}{'a'}]->\hyperlink{struct__FILE__SYSTEM_ae7183a7cfc938bbf1ed51aab2462b991}{Open} (filename);
+25             file.\hyperlink{struct__FILE_a81958585561000f4b18409bf81c06755}{deviceID} = \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device};
+26             \textcolor{keywordflow}{return} file;
+27         \}
+28     \}
+29 
+30     \hyperlink{struct__FILE}{FILE} \hyperlink{structfile}{file};
+31     file.\hyperlink{struct__FILE_a04f8186df85989c0b4bcdb010c1f5bb6}{flags} = \hyperlink{vfs_8h_a48368ff8647905d8be3aff007908c35a}{FS\_INVALID};
+32     \textcolor{keywordflow}{return} file;
+33 \}
+\end{DoxyCode}
+\index{vfs.\+c@{vfs.\+c}!vol\+Read\+File@{vol\+Read\+File}}
+\index{vol\+Read\+File@{vol\+Read\+File}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Read\+File(\+P\+F\+I\+L\+E file, unsigned char $\ast$\+Buffer, unsigned int Length)}{volReadFile(PFILE file, unsigned char *Buffer, unsigned int Length)}}]{\setlength{\rightskip}{0pt plus 5cm}void vol\+Read\+File (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+F\+I\+LE}}]{file, }
+\item[{unsigned char $\ast$}]{Buffer, }
+\item[{unsigned int}]{Length}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_a64d2071eb8adf684053ff53c7426ecad}{}\label{vfs_8c_a64d2071eb8adf684053ff53c7426ecad}
+Reads file 
+
+Definition at line 39 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+39                                                                           \{
+40 
+41     \textcolor{keywordflow}{if} (file)
+42         \textcolor{keywordflow}{if} (\hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems} [file->\hyperlink{struct__FILE_a81958585561000f4b18409bf81c06755}{deviceID} - \textcolor{charliteral}{'a'}])
+43             \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[file->\hyperlink{struct__FILE_a81958585561000f4b18409bf81c06755}{deviceID} - \textcolor{charliteral}{'a'}]->\hyperlink{struct__FILE__SYSTEM_a24dcbcc9b82e7395aa6b15ef3e36413c}{Read} (file,Buffer,
+      \hyperlink{structFACP_ad27e676e94e75e3d8140a2a8c9fd6bfd}{Length});
+44 \}
+\end{DoxyCode}
+\index{vfs.\+c@{vfs.\+c}!vol\+Register\+File\+System@{vol\+Register\+File\+System}}
+\index{vol\+Register\+File\+System@{vol\+Register\+File\+System}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Register\+File\+System(\+P\+F\+I\+L\+E\+S\+Y\+S\+T\+E\+M fsys, unsigned int device\+I\+D)}{volRegisterFileSystem(PFILESYSTEM fsys, unsigned int deviceID)}}]{\setlength{\rightskip}{0pt plus 5cm}void vol\+Register\+File\+System (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+F\+I\+L\+E\+S\+Y\+S\+T\+EM}}]{fsys, }
+\item[{unsigned int}]{device\+ID}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_ad2fdcfdd1fc9e1f8a9f216334bd0c05b}{}\label{vfs_8c_ad2fdcfdd1fc9e1f8a9f216334bd0c05b}
+\hyperlink{structRegisters}{Registers} a filesystem 
+
+Definition at line 60 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+60                                                                      \{
+61 
+62     \textcolor{keyword}{static} \textcolor{keywordtype}{int} i=0;
+63 
+64     \textcolor{keywordflow}{if} (i < \hyperlink{vfs_8h_aa73324f5c6c406f1da29ca53d93020ad}{DEVICE\_MAX})
+65         \textcolor{keywordflow}{if} (fsys) \{
+66 
+67             \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[ deviceID ] = fsys;
+68             i++;
+69         \}
+70 \}
+\end{DoxyCode}
+\index{vfs.\+c@{vfs.\+c}!vol\+Unregister\+File\+System@{vol\+Unregister\+File\+System}}
+\index{vol\+Unregister\+File\+System@{vol\+Unregister\+File\+System}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Unregister\+File\+System(\+P\+F\+I\+L\+E\+S\+Y\+S\+T\+E\+M fsys)}{volUnregisterFileSystem(PFILESYSTEM fsys)}}]{\setlength{\rightskip}{0pt plus 5cm}void vol\+Unregister\+File\+System (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+F\+I\+L\+E\+S\+Y\+S\+T\+EM}}]{fsys}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_a388428885a9182f2438c6d8a2cff08a2}{}\label{vfs_8c_a388428885a9182f2438c6d8a2cff08a2}
+Unregister file system 
+
+Definition at line 75 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+75                                                 \{
+76 
+77     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i=0;i < \hyperlink{vfs_8h_aa73324f5c6c406f1da29ca53d93020ad}{DEVICE\_MAX}; i++)
+78         \textcolor{keywordflow}{if} (\hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[i]==fsys)
+79             \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems}[i]=0;
+80 \}
+\end{DoxyCode}
+\index{vfs.\+c@{vfs.\+c}!vol\+Unregister\+File\+System\+By\+ID@{vol\+Unregister\+File\+System\+By\+ID}}
+\index{vol\+Unregister\+File\+System\+By\+ID@{vol\+Unregister\+File\+System\+By\+ID}!vfs.\+c@{vfs.\+c}}
+\subsubsection[{\texorpdfstring{vol\+Unregister\+File\+System\+By\+I\+D(unsigned int device\+I\+D)}{volUnregisterFileSystemByID(unsigned int deviceID)}}]{\setlength{\rightskip}{0pt plus 5cm}void vol\+Unregister\+File\+System\+By\+ID (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{device\+ID}
+\end{DoxyParamCaption}
+)}\hypertarget{vfs_8c_ad82141b4dee3273a5f423fcf653e6b0f}{}\label{vfs_8c_ad82141b4dee3273a5f423fcf653e6b0f}
+Unregister file system 
+
+Definition at line 85 of file vfs.\+c.
+
+
+\begin{DoxyCode}
+85                                                          \{
+86 
+87     \textcolor{keywordflow}{if} (deviceID < \hyperlink{vfs_8h_aa73324f5c6c406f1da29ca53d93020ad}{DEVICE\_MAX})
+88         \hyperlink{vfs_8h_a7952be235cc888bd38a04e473012d87a}{\_FileSystems} [deviceID] = 0;
+89 \}
+\end{DoxyCode}

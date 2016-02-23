@@ -1,0 +1,60 @@
+\hypertarget{stdlib_8h}{}\section{Experimental Edition/\+Library/stdlib.h File Reference}
+\label{stdlib_8h}\index{Experimental Edition/\+Library/stdlib.\+h@{Experimental Edition/\+Library/stdlib.\+h}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+Include dependency graph for stdlib.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{stdlib_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=205pt]{stdlib_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{stdlib_8h_a342b9cd31607a848b169a5dcca6cc149}{\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((\+\_\+\+\_\+noreturn\+\_\+\+\_\+)) void abort(void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{stdlib.\+h@{stdlib.\+h}!\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}!stdlib.\+h@{stdlib.\+h}}
+\subsubsection[{\texorpdfstring{\+\_\+\+\_\+attribute\+\_\+\+\_\+((\+\_\+\+\_\+noreturn\+\_\+\+\_\+)) void abort(void)}{__attribute__((__noreturn__)) void abort(void)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \+\_\+\+\_\+attribute\+\_\+\+\_\+} (
+\begin{DoxyParamCaption}
+\item[{(\+\_\+\+\_\+noreturn\+\_\+\+\_\+)}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{stdlib_8h_a342b9cd31607a848b169a5dcca6cc149}{}\label{stdlib_8h_a342b9cd31607a848b169a5dcca6cc149}
+
+
+Definition at line 5 of file stdlib.\+h.
+
+
+\begin{DoxyCode}
+7 \{
+8     \textcolor{comment}{// TODO: Add proper kernel panic.}
+9     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"Kernel Panic: abort()\(\backslash\)n"});
+10     \textcolor{keywordflow}{while} ( 1 ) \{ \}
+11     \_\_builtin\_unreachable();
+12 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{stdlib_8h_a342b9cd31607a848b169a5dcca6cc149_cgraph}
+\end{center}
+\end{figure}
+
+

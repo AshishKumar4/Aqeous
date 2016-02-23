@@ -1,0 +1,175 @@
+\hypertarget{Shell_8h}{}\section{Experimental Edition/\+Source/\+Shell/\+Shell.h File Reference}
+\label{Shell_8h}\index{Experimental Edition/\+Source/\+Shell/\+Shell.\+h@{Experimental Edition/\+Source/\+Shell/\+Shell.\+h}}
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$console.\+h$>$}\\*
+Include dependency graph for Shell.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Shell_8h__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structCommand}{Command}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}~100
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structCommand}{Command} \hyperlink{Shell_8h_a95cd7d3ba32e4b1c26b64090ab111c15}{Command\+\_\+t}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{Shell_8h_a3a5b33cdd8fb591704c9adfcf908a273}{init\+\_\+shell} ()
+\item 
+void \hyperlink{Shell_8h_a97dde9d5e0b018feddac600897f80308}{shell} ()
+\item 
+void \hyperlink{Shell_8h_aee70f4f39fc40aa0ae6f38de5971a878}{Add\+\_\+command} (char $\ast$name, char $\ast$discription, void $\ast$function)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Shell_8h_a95cd7d3ba32e4b1c26b64090ab111c15}{Command\+\_\+t} \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\+\_\+table} \mbox{[}\hyperlink{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}\mbox{]}
+\item 
+uint32\+\_\+t \hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\+\_\+of\+\_\+commands} =0
+\item 
+char $\ast$ \hyperlink{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{Input}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{Shell.\+h@{Shell.\+h}!M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS@{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}}
+\index{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS@{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}{MAX_COMMANDS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS~100}\hypertarget{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}{}\label{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}
+
+
+Definition at line 8 of file Shell.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{Shell.\+h@{Shell.\+h}!Command\+\_\+t@{Command\+\_\+t}}
+\index{Command\+\_\+t@{Command\+\_\+t}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{Command\+\_\+t}{Command_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Command} {\bf Command\+\_\+t}}\hypertarget{Shell_8h_a95cd7d3ba32e4b1c26b64090ab111c15}{}\label{Shell_8h_a95cd7d3ba32e4b1c26b64090ab111c15}
+
+
+\subsection{Function Documentation}
+\index{Shell.\+h@{Shell.\+h}!Add\+\_\+command@{Add\+\_\+command}}
+\index{Add\+\_\+command@{Add\+\_\+command}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{Add\+\_\+command(char $\ast$name, char $\ast$discription, void $\ast$function)}{Add_command(char *name, char *discription, void *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void Add\+\_\+command (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{name, }
+\item[{char $\ast$}]{discription, }
+\item[{void $\ast$}]{function}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8h_aee70f4f39fc40aa0ae6f38de5971a878}{}\label{Shell_8h_aee70f4f39fc40aa0ae6f38de5971a878}
+
+
+Definition at line 27 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+28 \{
+29   \textcolor{keywordflow}{if}(!(\hyperlink{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}{MAX\_COMMANDS}-\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}-1))
+30   \{
+31     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].\hyperlink{structCommand_aac61810b8e87055d1648ec142086eb0e}{name}=name;
+32     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].discription=discription;
+33     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].\hyperlink{structCommand_a3012bc63b47f3e5606ee1ccafb5fb3ae}{function}=\textcolor{keyword}{function};
+34     ++\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands};
+35   \}
+36   \textcolor{keywordflow}{return};
+37 \}
+\end{DoxyCode}
+\index{Shell.\+h@{Shell.\+h}!init\+\_\+shell@{init\+\_\+shell}}
+\index{init\+\_\+shell@{init\+\_\+shell}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{init\+\_\+shell()}{init_shell()}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+shell (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8h_a3a5b33cdd8fb591704c9adfcf908a273}{}\label{Shell_8h_a3a5b33cdd8fb591704c9adfcf908a273}
+
+
+Definition at line 3 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+4 \{
+5 
+6 \}
+\end{DoxyCode}
+\index{Shell.\+h@{Shell.\+h}!shell@{shell}}
+\index{shell@{shell}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{shell()}{shell()}}]{\setlength{\rightskip}{0pt plus 5cm}void shell (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8h_a97dde9d5e0b018feddac600897f80308}{}\label{Shell_8h_a97dde9d5e0b018feddac600897f80308}
+
+
+Definition at line 8 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+9 \{
+10   \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"cmd>"});
+11   \hyperlink{keyboard_8c_a3b0a0dd71bca58f7eec23991e11ce6d3}{getline}(\hyperlink{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{Input});
+12   void (*\hyperlink{structCommand}{Command})(void);
+13   \textcolor{keywordtype}{int} i = \hyperlink{Shell_8c_a9110982da26623b34bd538c6e699a01a}{findCommand}(\hyperlink{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{Input});
+14   \textcolor{keywordflow}{if}(i >= 0)
+15   \{
+16       \hyperlink{structCommand}{Command} = \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[i].\hyperlink{structCommand_a3012bc63b47f3e5606ee1ccafb5fb3ae}{function};
+17       \hyperlink{structCommand}{Command}();
+18   \}
+19   \textcolor{keywordflow}{else}
+20   \{
+21       \textcolor{keywordflow}{return};
+22   \}
+23 
+24   \textcolor{keywordflow}{return};
+25 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Shell_8h_a97dde9d5e0b018feddac600897f80308_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{Shell.\+h@{Shell.\+h}!Command\+\_\+table@{Command\+\_\+table}}
+\index{Command\+\_\+table@{Command\+\_\+table}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{Command\+\_\+table}{Command_table}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command\+\_\+t} Command\+\_\+table\mbox{[}{\bf M\+A\+X\+\_\+\+C\+O\+M\+M\+A\+N\+DS}\mbox{]}}\hypertarget{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{}\label{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}
+
+
+Definition at line 22 of file Shell.\+h.
+
+\index{Shell.\+h@{Shell.\+h}!Input@{Input}}
+\index{Input@{Input}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{Input}{Input}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ Input}\hypertarget{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{}\label{Shell_8h_a62cd437edd97679443762efe3b9e94a7}
+
+
+Definition at line 26 of file Shell.\+h.
+
+\index{Shell.\+h@{Shell.\+h}!Number\+\_\+of\+\_\+commands@{Number\+\_\+of\+\_\+commands}}
+\index{Number\+\_\+of\+\_\+commands@{Number\+\_\+of\+\_\+commands}!Shell.\+h@{Shell.\+h}}
+\subsubsection[{\texorpdfstring{Number\+\_\+of\+\_\+commands}{Number_of_commands}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Number\+\_\+of\+\_\+commands =0}\hypertarget{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{}\label{Shell_8h_a519c0278df2b482f57914c046c8a3d23}
+
+
+Definition at line 24 of file Shell.\+h.
+

@@ -1,0 +1,17 @@
+<map id="get_page" name="get_page">
+<area shape="rect" id="node2" href="$mem_8c.html#a1f58e286674c0527a087f9560d8c491d" title="pmalloc" alt="" coords="129,120,196,147"/>
+<area shape="rect" id="node6" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="401,284,452,311"/>
+<area shape="rect" id="node12" href="$paging_8h.html#aa02323457572c726a13d8222a9d7587e" title="pd_entry_add_attrib" alt="" coords="521,113,657,140"/>
+<area shape="rect" id="node13" href="$paging_8h.html#ac7af7b87f7e6dafd44054b69245cc0e4" title="pd_entry_set_frame" alt="" coords="520,176,657,203"/>
+<area shape="rect" id="node16" href="$string_8h.html#ab70ae7ba054fd55023ccf5b7ceae875a" title="memset" alt="" coords="128,335,197,361"/>
+<area shape="rect" id="node3" href="$mem_8c.html#a5a85f1828b9d6da51c5793e0fbecada4" title="kmalloc_int" alt="" coords="245,120,333,147"/>
+<area shape="rect" id="node4" href="$mem_8h.html#ac2bc8a6ea9783c848eabff245617fe5d" title="BlockFinder" alt="" coords="381,81,472,108"/>
+<area shape="rect" id="node5" href="$mem_8c.html#a64f5519763de905b098a8b8760bd41df" title="clearBits" alt="" coords="390,132,463,159"/>
+<area shape="rect" id="node11" href="$paging_8c.html#a3bbb55b579c39bc711aeac29c03710b8" title="MapPage" alt="" coords="388,31,465,57"/>
+<area shape="rect" id="node7" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="561,335,616,361"/>
+<area shape="rect" id="node8" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="558,233,619,260"/>
+<area shape="rect" id="node9" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="705,233,836,260"/>
+<area shape="rect" id="node10" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="884,259,1019,285"/>
+<area shape="rect" id="node14" href="$paging_8h.html#a73074448fb8439a820a3a22f37c1c9c2" title="pt_entry_set_frame" alt="" coords="521,56,656,83"/>
+<area shape="rect" id="node15" href="$paging_8h.html#a6417ed10a34bf0b789fb321828215b43" title="pt_entry_add_attrib" alt="" coords="522,5,655,32"/>
+</map>

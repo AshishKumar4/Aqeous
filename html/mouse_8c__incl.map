@@ -1,0 +1,14 @@
+<map id="Experimental Edition/Source/Drivers/mouse/mouse.c" name="Experimental Edition/Source/Drivers/mouse/mouse.c">
+<area shape="rect" id="node2" href="$graphics_8c.html" title="graphics.c" alt="" coords="472,109,555,136"/>
+<area shape="rect" id="node4" href="$common_8h.html" title="common.h" alt="" coords="72,408,155,435"/>
+<area shape="rect" id="node8" href="$sys_8h.html" title="sys.h" alt="" coords="307,333,362,360"/>
+<area shape="rect" id="node17" href="$interrupts_8h.html" title="interrupts.h" alt="" coords="43,333,130,360"/>
+<area shape="rect" id="node3" href="$vesa_8c.html" title="vesa.c" alt="" coords="345,184,407,211"/>
+<area shape="rect" id="node7" href="$mem_8h.html" title="mem.h" alt="" coords="345,259,407,285"/>
+<area shape="rect" id="node10" href="$string_8h.html" title="string.h" alt="" coords="505,408,570,435"/>
+<area shape="rect" id="node16" href="$paging_8h.html" title="paging.h" alt="" coords="99,259,170,285"/>
+<area shape="rect" id="node5" href="$system_8h.html" title="system.h" alt="" coords="22,483,98,509"/>
+<area shape="rect" id="node13" href="$stdio_8h.html" title="stdio.h" alt="" coords="387,333,448,360"/>
+<area shape="rect" id="node9" href="$acpi_8h.html" title="acpi.h" alt="" coords="179,408,237,435"/>
+<area shape="rect" id="node11" href="$cdefs_8h.html" title="sys/cdefs.h" alt="" coords="379,483,469,509"/>
+</map>

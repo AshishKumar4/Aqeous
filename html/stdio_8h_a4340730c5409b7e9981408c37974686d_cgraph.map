@@ -1,0 +1,6 @@
+<map id="printint" name="printint">
+<area shape="rect" id="node2" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="115,5,245,32"/>
+<area shape="rect" id="node3" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="293,5,428,32"/>
+<area shape="rect" id="node4" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="476,31,527,57"/>
+<area shape="rect" id="node5" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="575,31,629,57"/>
+</map>

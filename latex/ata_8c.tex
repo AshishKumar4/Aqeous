@@ -1,0 +1,479 @@
+\hypertarget{ata_8c}{}\section{Experimental Edition/\+Source/\+Drivers/\+A\+T\+A/ata.c File Reference}
+\label{ata_8c}\index{Experimental Edition/\+Source/\+Drivers/\+A\+T\+A/ata.\+c@{Experimental Edition/\+Source/\+Drivers/\+A\+T\+A/ata.\+c}}
+{\ttfamily \#include $<$console.\+h$>$}\\*
+{\ttfamily \#include $<$sys.\+h$>$}\\*
+{\ttfamily \#include $<$ata.\+h$>$}\\*
+{\ttfamily \#include $<$pci.\+h$>$}\\*
+{\ttfamily \#include $<$ahci.\+h$>$}\\*
+Include dependency graph for ata.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{ata_8c__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{ata_8c__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structpartition__t}{partition\+\_\+t}
+\item 
+struct \hyperlink{struct____attribute____}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}
+\item 
+struct \hyperlink{struct____attribute____}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ata_8c_a8230adff64fe581cfdf04be6d8e91bcd}{S\+E\+C\+T\+O\+R\+S\+I\+ZE}~512
+\item 
+\#define \hyperlink{ata_8c_acac025bce44aad37bf03a5c05770c88f}{D\+I\+S\+K\+\_\+\+P\+O\+RT}~0x1\+F0
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{ata_8c_ad401554817438cc3bcbf7aa8f894598a}{write\+\_\+sector} (unsigned int \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+void \hyperlink{ata_8c_ab24cd262423caf1599380572e83824fa}{sleep} (int ms)
+\item 
+void \hyperlink{ata_8c_a749bcef1772dea8b9db54d233cd69a0d}{read\+\_\+sector} (unsigned int \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+void \hyperlink{ata_8c_a43278fa663983ddcfb2d1bbb78dbf618}{init\+\_\+ata} ()
+\item 
+void \hyperlink{ata_8c_abb3d1641aefa4f94fc20f0689c80cca2}{read\+\_\+ata} (unsigned int \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr}, \hyperlink{common_8h_a27a416e6606c138f2d33233142a5593e}{u8int} $\ast$buffer)
+\item 
+void \hyperlink{ata_8c_ad1e1555b235d2d80a2086940aa71feed}{write\+\_\+ata} (char $\ast$buffer, unsigned int \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+int \hyperlink{ata_8c_a1adb8fca6578f91d7a6ca37ac3f7a73a}{read\+\_\+partition\+\_\+map} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+mbr\+\_\+t \hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{ata.\+c@{ata.\+c}!D\+I\+S\+K\+\_\+\+P\+O\+RT@{D\+I\+S\+K\+\_\+\+P\+O\+RT}}
+\index{D\+I\+S\+K\+\_\+\+P\+O\+RT@{D\+I\+S\+K\+\_\+\+P\+O\+RT}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{D\+I\+S\+K\+\_\+\+P\+O\+RT}{DISK_PORT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+I\+S\+K\+\_\+\+P\+O\+RT~0x1\+F0}\hypertarget{ata_8c_acac025bce44aad37bf03a5c05770c88f}{}\label{ata_8c_acac025bce44aad37bf03a5c05770c88f}
+
+
+Definition at line 188 of file ata.\+c.
+
+\index{ata.\+c@{ata.\+c}!S\+E\+C\+T\+O\+R\+S\+I\+ZE@{S\+E\+C\+T\+O\+R\+S\+I\+ZE}}
+\index{S\+E\+C\+T\+O\+R\+S\+I\+ZE@{S\+E\+C\+T\+O\+R\+S\+I\+ZE}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{S\+E\+C\+T\+O\+R\+S\+I\+ZE}{SECTORSIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+C\+T\+O\+R\+S\+I\+ZE~512}\hypertarget{ata_8c_a8230adff64fe581cfdf04be6d8e91bcd}{}\label{ata_8c_a8230adff64fe581cfdf04be6d8e91bcd}
+
+
+Definition at line 187 of file ata.\+c.
+
+
+
+\subsection{Function Documentation}
+\index{ata.\+c@{ata.\+c}!init\+\_\+ata@{init\+\_\+ata}}
+\index{init\+\_\+ata@{init\+\_\+ata}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{init\+\_\+ata()}{init_ata()}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+ata (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{ata_8c_a43278fa663983ddcfb2d1bbb78dbf618}{}\label{ata_8c_a43278fa663983ddcfb2d1bbb78dbf618}
+this 1 uses I\+D\+E\+N\+T\+I\+TY C\+O\+M\+M\+A\+ND to detect drives 
+
+Definition at line 36 of file ata.\+c.
+
+
+\begin{DoxyCode}
+37 \{
+38     \textcolor{keywordflow}{if}(1)
+39     \{
+40         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7,0xA0);
+41         \hyperlink{ata_8c_ab24cd262423caf1599380572e83824fa}{sleep}(10);
+42         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F2,0);
+43         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F3,0);
+44         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F4,0);
+45         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F5,0);
+46         \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7,0xEC);
+47         \hyperlink{ata_8c_ab24cd262423caf1599380572e83824fa}{sleep}(10);
+48         \textcolor{keywordflow}{if}(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)&&!(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)&0x01))
+49         \{
+50             \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Drive 0xA0 exists "});
+51                 \textcolor{keywordtype}{int} i;
+52                 \textcolor{keywordflow}{for}(i=0;(((\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)) & (1 << 7)) != 0);i++)
+53                 \{
+54                     \textcolor{keywordflow}{if}(i>=1000) \textcolor{comment}{//timeout}
+55                     \{
+56                         \textcolor{keywordflow}{return};
+57                     \}
+58                 \}
+59             \textcolor{keywordflow}{if}(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F5)||\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F3))
+60             \{
+61                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Drive 0xA0 not compatible with ATA SPECS "});
+62                 \textcolor{keywordflow}{return};
+63             \}
+64 
+65             \textcolor{comment}{// wait for the data to arrive - but timeout if it doesn't}
+66             \textcolor{keywordflow}{if}( ( \hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}( 0x1F7 ) & 0x08 ) )
+67             \{
+68                 \textcolor{comment}{// counter}
+69                 \textcolor{keywordtype}{int} idx;
+70 
+71                 \textcolor{comment}{// read in all the data}
+72                 \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short}* identdata = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short}*) &\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident};
+73                 \textcolor{keywordflow}{for}( idx = 0; idx < 255; idx++ )
+74                 \{
+75                     identdata[idx] = \hyperlink{sys_8h_a3dcbb9e13203beb0e38956999e8ae61d}{inw}( 0x1F0 );
+76                 \}
+77                 \hyperlink{ata_8h_a91fd765e8a2d13c251c52a3dba139f20}{HDD}=\textcolor{charliteral}{'P'};
+78                 \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F0+\hyperlink{ata_8h_acd25672516342decdb4acb14b13dfa03}{ATA\_REG\_CONTROL},0x02);
+79                 \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nHard Disk Initialized\(\backslash\)n"});
+80                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" PATA Info: Heads: "});
+81                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_abe75fc82f62aeb25eeeaebc14832cee5}{heads});
+82                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Sectors: "});
+83                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a0936bf38dc570c2117003696aef259ab}{sectors});
+84                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Cylinders: "});
+85                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a99303affca63361d7b97f40fd29b1028}{cyls});
+86                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Bytes per Sector "});
+87                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a65aac348597065dd666c8d17d5436cfe}{sector\_bytes});
+88                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Bytes per Track "});
+89                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_ac5bfb23af07632fcb7ab55872b7e8839}{track\_bytes});
+90                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Serial No: "});
+91                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}((\textcolor{keywordtype}{char}*)\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.
+      \hyperlink{structident__device__t_aa2f154afca4db0b73806e565ecf79bfb}{serial\_no});
+92             \}
+93         \}
+94         \textcolor{keywordflow}{else}
+95         \{
+96             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7,0xB0);
+97             \hyperlink{ata_8c_ab24cd262423caf1599380572e83824fa}{sleep}(10);
+98             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F2,0);
+99             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F3,0);
+100             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F4,0);
+101             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F5,0);
+102             \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7,0xEC);
+103             \hyperlink{ata_8c_ab24cd262423caf1599380572e83824fa}{sleep}(10);
+104             \textcolor{keywordflow}{if}(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)&&!(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)&0x01))
+105             \{
+106                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Drive 0xB0 exists "});
+107                 \textcolor{keywordtype}{int} i;
+108                 \textcolor{keywordflow}{for}(i=0;(((\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)) & (1 << 7)) != 0)&&(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7)&0x01);i++)
+109                 \{
+110                     \textcolor{keywordflow}{if}(i>=1000) \textcolor{comment}{//timeout}
+111                     \{
+112                         \textcolor{keywordflow}{return};
+113                     \}
+114                 \}
+115                 \textcolor{keywordflow}{if}(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F5)||\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F3))
+116                 \{
+117                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Drive 0xB0 not compatible with ATA SPECS "});
+118                     \textcolor{keywordflow}{return};
+119                 \}
+120                 \textcolor{comment}{// wait for the data to arrive - but timeout if it doesn't}
+121                 \textcolor{keywordflow}{if}( ( \hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}( 0x1F7 ) & 0x08 ) )
+122                 \{
+123                     \textcolor{comment}{// counter}
+124                     \textcolor{keywordtype}{int} idx;
+125 
+126                     \textcolor{comment}{// read in all the data}
+127                     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short}* identdata = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short}*) &\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident};
+128                     \textcolor{keywordflow}{for}( idx = 0; idx < 255; idx++ )
+129                     \{
+130                         identdata[idx] = \hyperlink{sys_8h_a3dcbb9e13203beb0e38956999e8ae61d}{inw}( 0x1F0 );
+131                     \}
+132                     \hyperlink{ata_8h_a91fd765e8a2d13c251c52a3dba139f20}{HDD}=\textcolor{charliteral}{'P'};
+133                     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F0+\hyperlink{ata_8h_acd25672516342decdb4acb14b13dfa03}{ATA\_REG\_CONTROL},0x02);
+134                     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nHard Disk Initialized\(\backslash\)n"});
+135                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" PATA Info: Heads: "});
+136                     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_abe75fc82f62aeb25eeeaebc14832cee5}{heads});
+137                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Sectors: "});
+138                     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a0936bf38dc570c2117003696aef259ab}{sectors});
+139                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Cylinders: "});
+140                     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a99303affca63361d7b97f40fd29b1028}{cyls});
+141                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Bytes per Sector "});
+142                     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_a65aac348597065dd666c8d17d5436cfe}{sector\_bytes});
+143                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Bytes per Track "});
+144                     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.\hyperlink{structident__device__t_ac5bfb23af07632fcb7ab55872b7e8839}{track\_bytes});
+145                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Serial No: "});
+146                     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}((\textcolor{keywordtype}{char}*)\hyperlink{ata_8h_ab8329b5e45577f14207988da4cc2ac85}{ident}.
+      \hyperlink{structident__device__t_aa2f154afca4db0b73806e565ecf79bfb}{serial\_no});
+147                 \}
+148             \}
+149             \textcolor{keywordflow}{else}
+150             \{
+151                 \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nNO HARDDISK FOUND!!!\(\backslash\)n"});
+152                 \textcolor{keywordflow}{return};
+153             \}
+154         \}
+155     \}
+156     \textcolor{keywordflow}{else}
+157     \{
+158         \hyperlink{ata_8h_a91fd765e8a2d13c251c52a3dba139f20}{HDD}=\textcolor{charliteral}{'S'};
+159     \}
+160 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{ata_8c_a43278fa663983ddcfb2d1bbb78dbf618_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{ata.\+c@{ata.\+c}!read\+\_\+ata@{read\+\_\+ata}}
+\index{read\+\_\+ata@{read\+\_\+ata}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{read\+\_\+ata(unsigned int addr, u8int $\ast$buffer)}{read_ata(unsigned int addr, u8int *buffer)}}]{\setlength{\rightskip}{0pt plus 5cm}void read\+\_\+ata (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{addr, }
+\item[{{\bf u8int} $\ast$}]{buffer}
+\end{DoxyParamCaption}
+)}\hypertarget{ata_8c_abb3d1641aefa4f94fc20f0689c80cca2}{}\label{ata_8c_abb3d1641aefa4f94fc20f0689c80cca2}
+
+
+Definition at line 162 of file ata.\+c.
+
+
+\begin{DoxyCode}
+163 \{
+164     \hyperlink{ata_8c_a749bcef1772dea8b9db54d233cd69a0d}{read\_sector}(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr});
+165     \textcolor{keywordflow}{while} (!(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7) & 0x08)) \{\}
+166     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} tmpword;
+167     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} idx = 0; idx < 256; idx++)
+168     \{
+169         tmpword = \hyperlink{sys_8h_a3dcbb9e13203beb0e38956999e8ae61d}{inw}(0x1F0);
+170         buffer[idx * 2] = (\textcolor{keywordtype}{unsigned} char)tmpword;
+171         buffer[idx * 2 + 1] = (\textcolor{keywordtype}{unsigned} char)(tmpword >> 8);
+172     \}
+173 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=309pt]{ata_8c_abb3d1641aefa4f94fc20f0689c80cca2_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{ata.\+c@{ata.\+c}!read\+\_\+partition\+\_\+map@{read\+\_\+partition\+\_\+map}}
+\index{read\+\_\+partition\+\_\+map@{read\+\_\+partition\+\_\+map}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{read\+\_\+partition\+\_\+map()}{read_partition_map()}}]{\setlength{\rightskip}{0pt plus 5cm}int read\+\_\+partition\+\_\+map (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{ata_8c_a1adb8fca6578f91d7a6ca37ac3f7a73a}{}\label{ata_8c_a1adb8fca6578f91d7a6ca37ac3f7a73a}
+
+
+Definition at line 229 of file ata.\+c.
+
+
+\begin{DoxyCode}
+230 \{
+231     \hyperlink{ata_8c_abb3d1641aefa4f94fc20f0689c80cca2}{read\_ata}(0,(\hyperlink{common_8h_a27a416e6606c138f2d33233142a5593e}{u8int}*)&\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr});
+232 
+233     \textcolor{keywordflow}{if} (\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.signature[0] == 0x55 && \hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.signature[1] == 0xAA) \{
+234         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Partition table found."});
+235 
+236         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 4; ++i) \{
+237             \textcolor{keywordflow}{if} (\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.partitions[i].status & 0x80) \{
+238                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Partition #%d: @%d+%d"});
+239             \} \textcolor{keywordflow}{else} \{
+240                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Partition #%d: inactive"});
+241             \}
+242         \}
+243 
+244         \textcolor{keywordflow}{return} 0;
+245     \}
+246     \textcolor{keywordflow}{else}
+247     \{
+248         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Did not find partition table "});
+249         \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.signature[0]);
+250         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" "});
+251         \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.signature[1]);
+252 
+253         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Parsing anyone yields:"});
+254 
+255         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 4; ++i) \{
+256             \textcolor{keywordflow}{if} (\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.partitions[i].status & 0x80) \{
+257                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" Partition "});
+258                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(i+1);
+259                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" : "});
+260                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.partitions[i].lba\_first\_sector);
+261                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" "});
+262                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\hyperlink{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{mbr}.partitions[i].sector\_count);
+263             \} \textcolor{keywordflow}{else} \{
+264                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"Partition inactive:"});
+265                 \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(i+1);
+266                 \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" "});
+267             \}
+268         \}
+269 
+270 
+271     \}
+272 
+273     \textcolor{keywordflow}{return} 1;
+274 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{ata_8c_a1adb8fca6578f91d7a6ca37ac3f7a73a_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{ata.\+c@{ata.\+c}!read\+\_\+sector@{read\+\_\+sector}}
+\index{read\+\_\+sector@{read\+\_\+sector}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{read\+\_\+sector(unsigned int addr)}{read_sector(unsigned int addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void read\+\_\+sector (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{ata_8c_a749bcef1772dea8b9db54d233cd69a0d}{}\label{ata_8c_a749bcef1772dea8b9db54d233cd69a0d}
+
+
+Definition at line 25 of file ata.\+c.
+
+
+\begin{DoxyCode}
+26 \{
+27     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F1, 0x00);
+28     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F2, 0x01);
+29     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F3, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr});
+30     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F4, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 8));
+31     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F5, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 16));
+32     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F6, 0xE0 | (\hyperlink{ata_8h_ab13f3654d2ec5c1c5573f64073bf2be1}{drive} << 4) | ((\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 24) & 0x0F));
+33     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7, 0x20);
+34 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=219pt]{ata_8c_a749bcef1772dea8b9db54d233cd69a0d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{ata.\+c@{ata.\+c}!sleep@{sleep}}
+\index{sleep@{sleep}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{sleep(int ms)}{sleep(int ms)}}]{\setlength{\rightskip}{0pt plus 5cm}void sleep (
+\begin{DoxyParamCaption}
+\item[{int}]{ms}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{ata_8c_ab24cd262423caf1599380572e83824fa}{}\label{ata_8c_ab24cd262423caf1599380572e83824fa}
+
+
+Definition at line 17 of file ata.\+c.
+
+
+\begin{DoxyCode}
+18 \{
+19     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<ms*100;i++)
+20     \{
+21 
+22     \}
+23 \}
+\end{DoxyCode}
+\index{ata.\+c@{ata.\+c}!write\+\_\+ata@{write\+\_\+ata}}
+\index{write\+\_\+ata@{write\+\_\+ata}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{write\+\_\+ata(char $\ast$buffer, unsigned int addr)}{write_ata(char *buffer, unsigned int addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void write\+\_\+ata (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{buffer, }
+\item[{unsigned int}]{addr}
+\end{DoxyParamCaption}
+)}\hypertarget{ata_8c_ad1e1555b235d2d80a2086940aa71feed}{}\label{ata_8c_ad1e1555b235d2d80a2086940aa71feed}
+
+
+Definition at line 175 of file ata.\+c.
+
+
+\begin{DoxyCode}
+176 \{
+177     \hyperlink{ata_8c_ad401554817438cc3bcbf7aa8f894598a}{write\_sector}(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr});
+178     \textcolor{keywordflow}{while} (!(\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x1F7) & 0x08)) \{\}
+179     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} tmpword;
+180     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} idx = 0; idx < 256; idx++)
+181     \{
+182         tmpword = buffer[8 + idx * 2] | (buffer[8 + idx * 2 + 1] << 8);
+183         \hyperlink{sys_8h_aab8bf5abe19006ff9a80654d87f98908}{outw}(0x1F0, tmpword);
+184     \}
+185 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=313pt]{ata_8c_ad1e1555b235d2d80a2086940aa71feed_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{ata.\+c@{ata.\+c}!write\+\_\+sector@{write\+\_\+sector}}
+\index{write\+\_\+sector@{write\+\_\+sector}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{write\+\_\+sector(unsigned int addr)}{write_sector(unsigned int addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void write\+\_\+sector (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{ata_8c_ad401554817438cc3bcbf7aa8f894598a}{}\label{ata_8c_ad401554817438cc3bcbf7aa8f894598a}
+
+
+Definition at line 6 of file ata.\+c.
+
+
+\begin{DoxyCode}
+7 \{
+8     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F1, 0x00);
+9     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F2, 0x01);
+10     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F3, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr});
+11     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F4, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 8));
+12     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F5, (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char})(\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 16));
+13     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F6, 0xE0 | (\hyperlink{ata_8h_ab13f3654d2ec5c1c5573f64073bf2be1}{drive} << 4) | ((\hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr} >> 24) & 0x0F));
+14     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x1F7, 0x30);
+15 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=221pt]{ata_8c_ad401554817438cc3bcbf7aa8f894598a_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{ata.\+c@{ata.\+c}!mbr@{mbr}}
+\index{mbr@{mbr}!ata.\+c@{ata.\+c}}
+\subsubsection[{\texorpdfstring{mbr}{mbr}}]{\setlength{\rightskip}{0pt plus 5cm}mbr\+\_\+t mbr}\hypertarget{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}{}\label{ata_8c_ab085ad5652aa1dcd3d1c289126acb76e}
+
+
+Definition at line 224 of file ata.\+c.
+

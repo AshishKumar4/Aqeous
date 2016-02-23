@@ -1,0 +1,254 @@
+\hypertarget{cmos_8h}{}\section{Experimental Edition/\+Source/\+Drivers/timer/cmos.h File Reference}
+\label{cmos_8h}\index{Experimental Edition/\+Source/\+Drivers/timer/cmos.\+h@{Experimental Edition/\+Source/\+Drivers/timer/cmos.\+h}}
+{\ttfamily \#include $<$system.\+h$>$}\\*
+Include dependency graph for cmos.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{cmos_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=318pt]{cmos_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929f}{cmos\+\_\+reg} \{ \\*
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fac7ffa39bae4c6d58fa48b24988896a84}{cmos\+\_\+rtc\+\_\+reg\+\_\+seconds} = 0x00, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faf67e962b07b95efb6a555ea054c128a8}{cmos\+\_\+rtc\+\_\+reg\+\_\+minutes} = 0x02, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa82225f60aec3cb8f81b271d64f868a10}{cmos\+\_\+rtc\+\_\+reg\+\_\+hours} = 0x04, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faa9f8e2a5da3b0d88d86a472c1a730a25}{cmos\+\_\+rtc\+\_\+reg\+\_\+weekday} = 0x06, 
+\\*
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa62abccfb1732f47529f154725fea9b71}{cmos\+\_\+rtc\+\_\+reg\+\_\+day} = 0x07, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa4b07a58cb3bbed60cd6fea9edc770a44}{cmos\+\_\+rtc\+\_\+reg\+\_\+month} = 0x08, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa07a1b3be6838f0770bb5371ff4bb722d}{cmos\+\_\+rtc\+\_\+reg\+\_\+year} = 0x09, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa1ba4062e2bf84386e016961f88928d0a}{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a} = 0x0a, 
+\\*
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa9197ce6f9548d3d673f19fa88a153ca8}{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b} = 0x0b, 
+\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa54f489ded1c92f7ccb257e6d590aa3df}{cmos\+\_\+rtc\+\_\+reg\+\_\+century} = 0x32
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{cmos_8h_a30444c527dbf74f503acbd98b0dad750}{init\+\_\+cmos} ()
+\item 
+\hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool} \hyperlink{cmos_8h_a4b2eb60a4ffbeee68a9bb7918c76b94c}{cmos\+\_\+updating} ()
+\item 
+uint8\+\_\+t \hyperlink{cmos_8h_a7f45839bd17c5aabf56c01241c1ca12a}{cmos\+\_\+rtc\+\_\+get\+\_\+value} (enum \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929f}{cmos\+\_\+reg} r, \hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool} auto\+\_\+decode\+\_\+bcd)
+\item 
+\hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool} \hyperlink{cmos_8h_a18f8ab7489d92fe1f90a04c43d091fc6}{cmos\+\_\+24hour} ()
+\item 
+\hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool} \hyperlink{cmos_8h_a5c9b39699de990a7941aa71a97b8f88a}{cmos\+\_\+bcd\+\_\+encoded} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+reg@{cmos\+\_\+reg}}
+\index{cmos\+\_\+reg@{cmos\+\_\+reg}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{cmos\+\_\+reg}{cmos_reg}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf cmos\+\_\+reg}}\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929f}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929f}
+The C\+M\+OS registers for Real-\/\+Time-\/\+Clock (R\+TC) value access. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{cmos\+\_\+rtc\+\_\+reg\+\_\+seconds@{cmos\+\_\+rtc\+\_\+reg\+\_\+seconds}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+seconds@{cmos\+\_\+rtc\+\_\+reg\+\_\+seconds}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+seconds\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fac7ffa39bae4c6d58fa48b24988896a84}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fac7ffa39bae4c6d58fa48b24988896a84}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+minutes@{cmos\+\_\+rtc\+\_\+reg\+\_\+minutes}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+minutes@{cmos\+\_\+rtc\+\_\+reg\+\_\+minutes}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+minutes\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faf67e962b07b95efb6a555ea054c128a8}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faf67e962b07b95efb6a555ea054c128a8}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+hours@{cmos\+\_\+rtc\+\_\+reg\+\_\+hours}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+hours@{cmos\+\_\+rtc\+\_\+reg\+\_\+hours}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+hours\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa82225f60aec3cb8f81b271d64f868a10}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa82225f60aec3cb8f81b271d64f868a10}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+weekday@{cmos\+\_\+rtc\+\_\+reg\+\_\+weekday}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+weekday@{cmos\+\_\+rtc\+\_\+reg\+\_\+weekday}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+weekday\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faa9f8e2a5da3b0d88d86a472c1a730a25}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faa9f8e2a5da3b0d88d86a472c1a730a25}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+day@{cmos\+\_\+rtc\+\_\+reg\+\_\+day}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+day@{cmos\+\_\+rtc\+\_\+reg\+\_\+day}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+day\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa62abccfb1732f47529f154725fea9b71}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa62abccfb1732f47529f154725fea9b71}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+month@{cmos\+\_\+rtc\+\_\+reg\+\_\+month}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+month@{cmos\+\_\+rtc\+\_\+reg\+\_\+month}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+month\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa4b07a58cb3bbed60cd6fea9edc770a44}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa4b07a58cb3bbed60cd6fea9edc770a44}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+year@{cmos\+\_\+rtc\+\_\+reg\+\_\+year}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+year@{cmos\+\_\+rtc\+\_\+reg\+\_\+year}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+year\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa07a1b3be6838f0770bb5371ff4bb722d}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa07a1b3be6838f0770bb5371ff4bb722d}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a@{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a@{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+a\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa1ba4062e2bf84386e016961f88928d0a}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa1ba4062e2bf84386e016961f88928d0a}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b@{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b@{cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+status\+\_\+b\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa9197ce6f9548d3d673f19fa88a153ca8}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa9197ce6f9548d3d673f19fa88a153ca8}
+}]\index{cmos\+\_\+rtc\+\_\+reg\+\_\+century@{cmos\+\_\+rtc\+\_\+reg\+\_\+century}!cmos.\+h@{cmos.\+h}}\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+reg\+\_\+century@{cmos\+\_\+rtc\+\_\+reg\+\_\+century}}\item[{\em 
+cmos\+\_\+rtc\+\_\+reg\+\_\+century\hypertarget{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa54f489ded1c92f7ccb257e6d590aa3df}{}\label{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa54f489ded1c92f7ccb257e6d590aa3df}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 10 of file cmos.\+h.
+
+
+\begin{DoxyCode}
+11 \{
+12     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fac7ffa39bae4c6d58fa48b24988896a84}{cmos\_rtc\_reg\_seconds} = 0x00,
+13     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faf67e962b07b95efb6a555ea054c128a8}{cmos\_rtc\_reg\_minutes} = 0x02,
+14     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa82225f60aec3cb8f81b271d64f868a10}{cmos\_rtc\_reg\_hours} = 0x04,
+15     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faa9f8e2a5da3b0d88d86a472c1a730a25}{cmos\_rtc\_reg\_weekday} = 0x06,
+16     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa62abccfb1732f47529f154725fea9b71}{cmos\_rtc\_reg\_day} = 0x07,
+17     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa4b07a58cb3bbed60cd6fea9edc770a44}{cmos\_rtc\_reg\_month} = 0x08,
+18     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa07a1b3be6838f0770bb5371ff4bb722d}{cmos\_rtc\_reg\_year} = 0x09,
+19     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa1ba4062e2bf84386e016961f88928d0a}{cmos\_rtc\_reg\_status\_a} = 0x0a,
+20     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa9197ce6f9548d3d673f19fa88a153ca8}{cmos\_rtc\_reg\_status\_b} = 0x0b,
+21 
+22     \textcolor{comment}{/* the following register is not universally available */}
+23     \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa54f489ded1c92f7ccb257e6d590aa3df}{cmos\_rtc\_reg\_century} = 0x32,
+24 \};
+\end{DoxyCode}
+
+
+\subsection{Function Documentation}
+\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+24hour@{cmos\+\_\+24hour}}
+\index{cmos\+\_\+24hour@{cmos\+\_\+24hour}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{cmos\+\_\+24hour()}{cmos_24hour()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} cmos\+\_\+24hour (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{cmos_8h_a18f8ab7489d92fe1f90a04c43d091fc6}{}\label{cmos_8h_a18f8ab7489d92fe1f90a04c43d091fc6}
+Test to see if C\+M\+OS is configured to be 24hour. 
+
+Definition at line 124 of file cmos.\+c.
+
+
+\begin{DoxyCode}
+125 \{
+126     \textcolor{keywordflow}{return} \hyperlink{cmos_8c_a2b8b53ce0d496a2f3e814808f1c2656b}{cmos}.is\_24h;
+127 \};
+\end{DoxyCode}
+\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+bcd\+\_\+encoded@{cmos\+\_\+bcd\+\_\+encoded}}
+\index{cmos\+\_\+bcd\+\_\+encoded@{cmos\+\_\+bcd\+\_\+encoded}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{cmos\+\_\+bcd\+\_\+encoded()}{cmos_bcd_encoded()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} cmos\+\_\+bcd\+\_\+encoded (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{cmos_8h_a5c9b39699de990a7941aa71a97b8f88a}{}\label{cmos_8h_a5c9b39699de990a7941aa71a97b8f88a}
+Test to see if C\+M\+OS is bcd encoded. 
+
+Definition at line 129 of file cmos.\+c.
+
+
+\begin{DoxyCode}
+130 \{
+131     \textcolor{keywordflow}{return} \hyperlink{cmos_8c_a2b8b53ce0d496a2f3e814808f1c2656b}{cmos}.bcd\_encoded;
+132 \};
+\end{DoxyCode}
+\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+rtc\+\_\+get\+\_\+value@{cmos\+\_\+rtc\+\_\+get\+\_\+value}}
+\index{cmos\+\_\+rtc\+\_\+get\+\_\+value@{cmos\+\_\+rtc\+\_\+get\+\_\+value}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{cmos\+\_\+rtc\+\_\+get\+\_\+value(enum cmos\+\_\+reg r, bool auto\+\_\+decode\+\_\+bcd)}{cmos_rtc_get_value(enum cmos_reg r, bool auto_decode_bcd)}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t cmos\+\_\+rtc\+\_\+get\+\_\+value (
+\begin{DoxyParamCaption}
+\item[{enum {\bf cmos\+\_\+reg}}]{r, }
+\item[{{\bf bool}}]{auto\+\_\+decode\+\_\+bcd}
+\end{DoxyParamCaption}
+)}\hypertarget{cmos_8h_a7f45839bd17c5aabf56c01241c1ca12a}{}\label{cmos_8h_a7f45839bd17c5aabf56c01241c1ca12a}
+Retrieve the a value from C\+M\+OS for the specified register. This also allows for specifying whether the C\+M\+OS value should be automatically decoded from B\+CD, if it is in bcd. 
+
+Definition at line 149 of file cmos.\+c.
+
+
+\begin{DoxyCode}
+150 \{
+151     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+152     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(\hyperlink{cmos_8c_aa819b5d8e57a2e0a1a2a08285209b7db}{CMOS\_REGISTER\_PORT}, r);
+153     uint8\_t ret\_val = \hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(\hyperlink{cmos_8c_abaa1d2c0815d36f47eccec69775f400a}{CMOS\_DATA\_PORT});
+154     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+155 
+156     \textcolor{comment}{/* we should only decode the value if it is in BCD and we've specified */}
+157     \textcolor{comment}{/* automatic decoding */}
+158     \textcolor{keywordflow}{if} (\hyperlink{cmos_8c_a5c9b39699de990a7941aa71a97b8f88a}{cmos\_bcd\_encoded}() && auto\_decode\_bcd) \{
+159         \textcolor{keywordflow}{switch} (r) \{
+160             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fac7ffa39bae4c6d58fa48b24988896a84}{cmos\_rtc\_reg\_seconds}:
+161             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faf67e962b07b95efb6a555ea054c128a8}{cmos\_rtc\_reg\_minutes}:
+162             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa82225f60aec3cb8f81b271d64f868a10}{cmos\_rtc\_reg\_hours}:
+163             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929faa9f8e2a5da3b0d88d86a472c1a730a25}{cmos\_rtc\_reg\_weekday}:
+164             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa62abccfb1732f47529f154725fea9b71}{cmos\_rtc\_reg\_day}:
+165             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa4b07a58cb3bbed60cd6fea9edc770a44}{cmos\_rtc\_reg\_month}:
+166             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa07a1b3be6838f0770bb5371ff4bb722d}{cmos\_rtc\_reg\_year}:
+167             \textcolor{keywordflow}{case} \hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa54f489ded1c92f7ccb257e6d590aa3df}{cmos\_rtc\_reg\_century}:
+168                 ret\_val = \hyperlink{cmos_8c_a172e1a111093b1cb1dc32ca5e9a35eca}{decode\_bcd}(ret\_val);
+169                 \textcolor{keywordflow}{break};
+170             \textcolor{keywordflow}{default}:
+171                 \textcolor{keywordflow}{break};
+172         \}
+173     \}
+174 
+175     \textcolor{keywordflow}{return} ret\_val;
+176 \};
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=324pt]{cmos_8h_a7f45839bd17c5aabf56c01241c1ca12a_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{cmos.\+h@{cmos.\+h}!cmos\+\_\+updating@{cmos\+\_\+updating}}
+\index{cmos\+\_\+updating@{cmos\+\_\+updating}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{cmos\+\_\+updating()}{cmos_updating()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} cmos\+\_\+updating (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{cmos_8h_a4b2eb60a4ffbeee68a9bb7918c76b94c}{}\label{cmos_8h_a4b2eb60a4ffbeee68a9bb7918c76b94c}
+Checks to see if C\+M\+OS is in the process of being updated. It is important that accessing of C\+M\+OS R\+TC values is not performed if this is happening. 
+
+Definition at line 134 of file cmos.\+c.
+
+
+\begin{DoxyCode}
+135 \{
+136     uint8\_t v = \hyperlink{cmos_8c_a7f45839bd17c5aabf56c01241c1ca12a}{cmos\_rtc\_get\_value}(\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa1ba4062e2bf84386e016961f88928d0a}{cmos\_rtc\_reg\_status\_a}, \textcolor{keyword}{false});
+137     \textcolor{keywordflow}{return} v & 0x80;
+138 \};
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{cmos_8h_a4b2eb60a4ffbeee68a9bb7918c76b94c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{cmos.\+h@{cmos.\+h}!init\+\_\+cmos@{init\+\_\+cmos}}
+\index{init\+\_\+cmos@{init\+\_\+cmos}!cmos.\+h@{cmos.\+h}}
+\subsubsection[{\texorpdfstring{init\+\_\+cmos()}{init_cmos()}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+cmos (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{cmos_8h_a30444c527dbf74f503acbd98b0dad750}{}\label{cmos_8h_a30444c527dbf74f503acbd98b0dad750}
+Initialise the driver for C\+M\+OS access. 
+
+Definition at line 117 of file cmos.\+c.
+
+
+\begin{DoxyCode}
+118 \{
+119     uint8\_t v = \hyperlink{cmos_8c_a7f45839bd17c5aabf56c01241c1ca12a}{cmos\_rtc\_get\_value}(\hyperlink{cmos_8h_ae4f04e3c25c63448f33ec7a51d04929fa9197ce6f9548d3d673f19fa88a153ca8}{cmos\_rtc\_reg\_status\_b}, \textcolor{keyword}{false});
+120     \hyperlink{cmos_8c_a2b8b53ce0d496a2f3e814808f1c2656b}{cmos}.is\_24h = v & (1 << 1);
+121     \hyperlink{cmos_8c_a2b8b53ce0d496a2f3e814808f1c2656b}{cmos}.bcd\_encoded = (v & (1 << 2)) ? \textcolor{keyword}{false} : \textcolor{keyword}{true};
+122 \};
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{cmos_8h_a30444c527dbf74f503acbd98b0dad750_cgraph}
+\end{center}
+\end{figure}
+
+

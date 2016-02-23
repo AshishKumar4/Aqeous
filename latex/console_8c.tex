@@ -1,0 +1,441 @@
+\hypertarget{console_8c}{}\section{Experimental Edition/\+Source/console/console.c File Reference}
+\label{console_8c}\index{Experimental Edition/\+Source/console/console.\+c@{Experimental Edition/\+Source/console/console.\+c}}
+{\ttfamily \#include $<$stdbool.\+h$>$}\\*
+{\ttfamily \#include $<$stddef.\+h$>$}\\*
+{\ttfamily \#include $<$stdint.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$console.\+h$>$}\\*
+{\ttfamily \#include $<$acpi.\+h$>$}\\*
+{\ttfamily \#include $<$vga.\+h$>$}\\*
+Include dependency graph for console.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{console_8c__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{console_8c_acadd2a5d99d952e55a4580dbc8f8739d}{console\+\_\+init} (void)
+\item 
+void \hyperlink{console_8c_a7f38a80abdcd211ec9f984d50c21903a}{console\+\_\+setcolor} (uint8\+\_\+t color)
+\item 
+void \hyperlink{console_8c_ace5f5cd3a88b2f24cafd88827e5f6322}{console\+\_\+putentryat} (char c, uint8\+\_\+t color, size\+\_\+t x, size\+\_\+t y)
+\item 
+void \hyperlink{console_8c_ac156aa97dae8b45e5aea8f6534d38946}{console\+\_\+putchar} (char c)
+\item 
+void \hyperlink{console_8c_ad219d3a4d1adaa9323e5c3422f56f2ee}{console\+\_\+write} (const char $\ast$data, size\+\_\+t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+void \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\+\_\+writestring} (const char $\ast$data)
+\item 
+int \hyperlink{console_8c_ae8cb82b5dc7e5ff61f5610bdac37ff60}{putchar} (int ic)
+\item 
+void \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\+\_\+write\+\_\+dec} (uint32\+\_\+t in)
+\item 
+void \hyperlink{console_8c_a4340730c5409b7e9981408c37974686d}{printint} (uint32\+\_\+t in)
+\item 
+void \hyperlink{console_8c_aae14f26f524b8163e88dc1d54cae9697}{backspace} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow}
+\item 
+size\+\_\+t \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn}
+\item 
+uint8\+\_\+t \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\+\_\+color}
+\item 
+uint16\+\_\+t $\ast$ \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\+\_\+buffer}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{console.\+c@{console.\+c}!backspace@{backspace}}
+\index{backspace@{backspace}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{backspace()}{backspace()}}]{\setlength{\rightskip}{0pt plus 5cm}void backspace (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_aae14f26f524b8163e88dc1d54cae9697}{}\label{console_8c_aae14f26f524b8163e88dc1d54cae9697}
+
+
+Definition at line 144 of file console.\+c.
+
+
+\begin{DoxyCode}
+145 \{
+146         --\hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn};
+147         \hyperlink{console_8c_ace5f5cd3a88b2f24cafd88827e5f6322}{console\_putentryat}(\textcolor{charliteral}{' '}, \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color}, 
+      \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn}, \hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow});
+148 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=279pt]{console_8c_aae14f26f524b8163e88dc1d54cae9697_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!console\+\_\+init@{console\+\_\+init}}
+\index{console\+\_\+init@{console\+\_\+init}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+init(void)}{console_init(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_acadd2a5d99d952e55a4580dbc8f8739d}{}\label{console_8c_acadd2a5d99d952e55a4580dbc8f8739d}
+
+
+Definition at line 15 of file console.\+c.
+
+
+\begin{DoxyCode}
+16 \{
+17     \hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow} = 0;
+18     \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn} = 0;
+19     \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color} = make\_color(\hyperlink{vga_8h_abaae057bae62d0c3e11501e3199cb60ea612e88bdf4015d1f208761d40c603a0e}{COLOR\_LIGHT\_GREY}, 
+      \hyperlink{vga_8h_abaae057bae62d0c3e11501e3199cb60ea2a9daf215a30f1c539ead18c66380fc1}{COLOR\_BLACK});
+20     \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer} = VGA\_MEMORY;
+21     \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} y = 0; y < VGA\_HEIGHT; y++ )
+22     \{
+23         \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} x = 0; x < VGA\_WIDTH; x++ )
+24         \{
+25             \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} index = y * VGA\_WIDTH + x;
+26             \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer}[index] = make\_vgaentry(\textcolor{charliteral}{' '}, 
+      \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color});
+27         \}
+28     \}
+29 \}
+\end{DoxyCode}
+\index{console.\+c@{console.\+c}!console\+\_\+putchar@{console\+\_\+putchar}}
+\index{console\+\_\+putchar@{console\+\_\+putchar}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+putchar(char c)}{console_putchar(char c)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+putchar (
+\begin{DoxyParamCaption}
+\item[{char}]{c}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_ac156aa97dae8b45e5aea8f6534d38946}{}\label{console_8c_ac156aa97dae8b45e5aea8f6534d38946}
+
+
+Definition at line 42 of file console.\+c.
+
+
+\begin{DoxyCode}
+43 \{
+44     \textcolor{keywordtype}{char} a=c;
+45     \textcolor{keywordflow}{if}(c==\textcolor{charliteral}{'\(\backslash\)n'}) c=\textcolor{charliteral}{' '};
+46     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(c==\textcolor{charliteral}{'\(\backslash\)t'}) c=\textcolor{charliteral}{' '};
+47     \hyperlink{console_8c_ace5f5cd3a88b2f24cafd88827e5f6322}{console\_putentryat}(c, \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color}, 
+      \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn}, \hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow});
+48     \textcolor{keywordflow}{if} ( ++\hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn} == VGA\_WIDTH||a==\textcolor{charliteral}{'\(\backslash\)n'})
+49     \{
+50         \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn} = 0;
+51         \textcolor{keywordflow}{if} ( ++\hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow} == VGA\_HEIGHT )
+52         \{
+53             --\hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow};
+54             uint16\_t \hyperlink{vesa_8c_af30c10a8c6ed3d4649cfdc61e2029dc3}{buff}[((VGA\_HEIGHT+1)*VGA\_WIDTH)+VGA\_WIDTH+1];
+55             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t} x=0;x<(((VGA\_HEIGHT+1)*VGA\_WIDTH)+VGA\_WIDTH+1);x++)
+56             \{
+57                 buff[x] = 0;
+58             \}
+59             \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} y = 0; y < VGA\_HEIGHT; y++ )
+60             \{
+61                 \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} x = 0; x < VGA\_WIDTH; x++ )
+62                 \{
+63                     \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} index = y * VGA\_WIDTH + x;
+64                     buff[index] = \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer}[index];
+65                 \}
+66             \}
+67             \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} y = 0; y < VGA\_HEIGHT; y++ )
+68             \{
+69                 \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} x = 0; x < VGA\_WIDTH; x++ )
+70                 \{
+71                     \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} index = y * VGA\_WIDTH + x;
+72                     \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} backindex = (y+1) * VGA\_WIDTH + x;
+73                     \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer}[index] = buff[backindex];
+74                 \}
+75             \}
+76         \}
+77     \}
+78     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(a==\textcolor{charliteral}{'\(\backslash\)t'})
+79     \{
+80         \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn}+=5;
+81     \}
+82 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=303pt]{console_8c_ac156aa97dae8b45e5aea8f6534d38946_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!console\+\_\+putentryat@{console\+\_\+putentryat}}
+\index{console\+\_\+putentryat@{console\+\_\+putentryat}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+putentryat(char c, uint8\+\_\+t color, size\+\_\+t x, size\+\_\+t y)}{console_putentryat(char c, uint8_t color, size_t x, size_t y)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+putentryat (
+\begin{DoxyParamCaption}
+\item[{char}]{c, }
+\item[{uint8\+\_\+t}]{color, }
+\item[{size\+\_\+t}]{x, }
+\item[{size\+\_\+t}]{y}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_ace5f5cd3a88b2f24cafd88827e5f6322}{}\label{console_8c_ace5f5cd3a88b2f24cafd88827e5f6322}
+
+
+Definition at line 36 of file console.\+c.
+
+
+\begin{DoxyCode}
+37 \{
+38     \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} index = y * VGA\_WIDTH + x;
+39     \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer}[index] = make\_vgaentry(c, color);
+40 \}
+\end{DoxyCode}
+\index{console.\+c@{console.\+c}!console\+\_\+setcolor@{console\+\_\+setcolor}}
+\index{console\+\_\+setcolor@{console\+\_\+setcolor}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+setcolor(uint8\+\_\+t color)}{console_setcolor(uint8_t color)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+setcolor (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{color}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_a7f38a80abdcd211ec9f984d50c21903a}{}\label{console_8c_a7f38a80abdcd211ec9f984d50c21903a}
+
+
+Definition at line 31 of file console.\+c.
+
+
+\begin{DoxyCode}
+32 \{
+33     \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color} = color;
+34 \}
+\end{DoxyCode}
+\index{console.\+c@{console.\+c}!console\+\_\+write@{console\+\_\+write}}
+\index{console\+\_\+write@{console\+\_\+write}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+write(const char $\ast$data, size\+\_\+t size)}{console_write(const char *data, size_t size)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+write (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{data, }
+\item[{size\+\_\+t}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_ad219d3a4d1adaa9323e5c3422f56f2ee}{}\label{console_8c_ad219d3a4d1adaa9323e5c3422f56f2ee}
+
+
+Definition at line 84 of file console.\+c.
+
+
+\begin{DoxyCode}
+85 \{
+86     \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} i = 0; i < \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size}; i++ )
+87         \hyperlink{console_8c_ac156aa97dae8b45e5aea8f6534d38946}{console\_putchar}(data[i]);
+88 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c_ad219d3a4d1adaa9323e5c3422f56f2ee_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!console\+\_\+write\+\_\+dec@{console\+\_\+write\+\_\+dec}}
+\index{console\+\_\+write\+\_\+dec@{console\+\_\+write\+\_\+dec}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+write\+\_\+dec(uint32\+\_\+t in)}{console_write_dec(uint32_t in)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+write\+\_\+dec (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{}\label{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}
+
+
+Definition at line 102 of file console.\+c.
+
+
+\begin{DoxyCode}
+103 \{
+104     uint32\_t d=1,ln=0,b=in;
+105     \textcolor{keywordtype}{char} a[40];
+106     \textcolor{keywordflow}{for}(uint32\_t i=0;b;i++)
+107     \{
+108         b=b/10;
+109         ++ln;
+110     \}
+111     b=in;
+112     \textcolor{keywordflow}{for}(uint32\_t i=0;i<ln;i++) d=d*10;
+113     d=d/10;
+114     uint32\_t i;
+115     \textcolor{keywordflow}{for}(i=0;i<ln;i++)
+116     \{
+117         a[i]=48+b/d;
+118         b=b%d;
+119         d=d/10;
+120     \}
+121     a[i]=\textcolor{charliteral}{'\(\backslash\)0'};
+122     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(a);
+123 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!console\+\_\+writestring@{console\+\_\+writestring}}
+\index{console\+\_\+writestring@{console\+\_\+writestring}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+writestring(const char $\ast$data)}{console_writestring(const char *data)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+writestring (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{data}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{}\label{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}
+
+
+Definition at line 90 of file console.\+c.
+
+
+\begin{DoxyCode}
+91 \{
+92     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(data);
+93     \textcolor{comment}{//console\_write(data, strlen(data));}
+94 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c_a7e3f5006dd96b9d8c61242ddc5351832_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!printint@{printint}}
+\index{printint@{printint}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{printint(uint32\+\_\+t in)}{printint(uint32_t in)}}]{\setlength{\rightskip}{0pt plus 5cm}void printint (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_a4340730c5409b7e9981408c37974686d}{}\label{console_8c_a4340730c5409b7e9981408c37974686d}
+
+
+Definition at line 125 of file console.\+c.
+
+
+\begin{DoxyCode}
+126 \{
+127     \textcolor{keywordflow}{if}(in<=999999999)
+128         \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(in);
+129     \textcolor{keywordflow}{else}
+130     \{
+131         uint32\_t d=1,b=in,c=0;
+132         \textcolor{keywordflow}{for}(uint32\_t i=0;b;i++)
+133         \{
+134             b=b/10;
+135             ++c;
+136         \}
+137         c=c-9;
+138         \textcolor{keywordflow}{for}(uint32\_t i=0;i<c;i++) d=d*10;
+139         \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(in/d);
+140         \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(in%d);
+141     \}
+142 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c_a4340730c5409b7e9981408c37974686d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+c@{console.\+c}!putchar@{putchar}}
+\index{putchar@{putchar}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{putchar(int ic)}{putchar(int ic)}}]{\setlength{\rightskip}{0pt plus 5cm}int putchar (
+\begin{DoxyParamCaption}
+\item[{int}]{ic}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8c_ae8cb82b5dc7e5ff61f5610bdac37ff60}{}\label{console_8c_ae8cb82b5dc7e5ff61f5610bdac37ff60}
+
+
+Definition at line 95 of file console.\+c.
+
+
+\begin{DoxyCode}
+96 \{
+97     \textcolor{keywordtype}{char} c = (char) ic;
+98     \hyperlink{console_8c_ad219d3a4d1adaa9323e5c3422f56f2ee}{console\_write}(&c, \textcolor{keyword}{sizeof}(c));
+99     \textcolor{keywordflow}{return} ic;
+100 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8c_ae8cb82b5dc7e5ff61f5610bdac37ff60_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{console.\+c@{console.\+c}!console\+\_\+buffer@{console\+\_\+buffer}}
+\index{console\+\_\+buffer@{console\+\_\+buffer}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+buffer}{console_buffer}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t$\ast$ console\+\_\+buffer}\hypertarget{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{}\label{console_8c_a3776bc9cc9fb07b614fe11932150ad50}
+
+
+Definition at line 13 of file console.\+c.
+
+\index{console.\+c@{console.\+c}!console\+\_\+color@{console\+\_\+color}}
+\index{console\+\_\+color@{console\+\_\+color}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+color}{console_color}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t console\+\_\+color}\hypertarget{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{}\label{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}
+
+
+Definition at line 12 of file console.\+c.
+
+\index{console.\+c@{console.\+c}!consolecolumn@{consolecolumn}}
+\index{consolecolumn@{consolecolumn}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{consolecolumn}{consolecolumn}}]{\setlength{\rightskip}{0pt plus 5cm}size\+\_\+t consolecolumn}\hypertarget{console_8c_a391230757710c7b1b66a5a795ff780db}{}\label{console_8c_a391230757710c7b1b66a5a795ff780db}
+
+
+Definition at line 11 of file console.\+c.
+
+\index{console.\+c@{console.\+c}!consolerow@{consolerow}}
+\index{consolerow@{consolerow}!console.\+c@{console.\+c}}
+\subsubsection[{\texorpdfstring{consolerow}{consolerow}}]{\setlength{\rightskip}{0pt plus 5cm}size\+\_\+t consolerow}\hypertarget{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{}\label{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}
+
+
+Definition at line 10 of file console.\+c.
+

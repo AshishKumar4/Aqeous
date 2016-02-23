@@ -1,0 +1,9 @@
+<map id="PciDeviceRead" name="PciDeviceRead">
+<area shape="rect" id="node2" href="$PCI_8c.html#a40d719200bdf6d24aa419cf0611670f8" title="PciRead8" alt="" coords="171,81,249,108"/>
+<area shape="rect" id="node5" href="$PCI_8c.html#a0f554ba70c238c73d9c0b82973594106" title="PciRead16" alt="" coords="167,31,253,57"/>
+<area shape="rect" id="node7" href="$PCI_8c.html#a5725f60580d5fa96eac78c97603bef5d" title="PciRead32" alt="" coords="167,132,253,159"/>
+<area shape="rect" id="node3" href="$sys_8h.html#ab53ee9eece30b2ac66ec33f66ebaa325" title="outl" alt="" coords="301,56,344,83"/>
+<area shape="rect" id="node4" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="303,107,342,133"/>
+<area shape="rect" id="node6" href="$sys_8h.html#a3dcbb9e13203beb0e38956999e8ae61d" title="inw" alt="" coords="301,5,344,32"/>
+<area shape="rect" id="node8" href="$sys_8h.html#a42d0bfc1f7ce1d7334607503f60b4202" title="inl" alt="" coords="303,157,342,184"/>
+</map>

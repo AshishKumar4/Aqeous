@@ -1,0 +1,19 @@
+<map id="Experimental Edition/Library/stdio.h" name="Experimental Edition/Library/stdio.h">
+<area shape="rect" id="node2" href="$stdlib_8h.html" title="Experimental Edition\l/Library/stdlib.h" alt="" coords="5,102,148,143"/>
+<area shape="rect" id="node3" href="$console_8c.html" title="Experimental Edition\l/Source/console/console.c" alt="" coords="127,414,303,455"/>
+<area shape="rect" id="node5" href="$mem_8h.html" title="Experimental Edition\l/Source/MemManagement/mem.h" alt="" coords="730,102,949,143"/>
+<area shape="rect" id="node13" href="$task_8c.html" title="Experimental Edition\l/Source/MultiTasking\l/task.c" alt="" coords="1137,303,1283,359"/>
+<area shape="rect" id="node17" href="$vmem_8c.html" title="Experimental Edition\l/Source/MemManagement\l/vmem.c" alt="" coords="1340,95,1515,151"/>
+<area shape="rect" id="node18" href="$Shell_8h.html" title="Experimental Edition\l/Source/Shell/Shell.h" alt="" coords="1539,102,1683,143"/>
+<area shape="rect" id="node4" href="$kernel_8c.html" title="Experimental Edition\l/Source/kernel.c" alt="" coords="684,511,827,552"/>
+<area shape="rect" id="node6" href="$ahci_8c.html" title="Experimental Edition\l/Source/Drivers/AHCI\l/ahci.c" alt="" coords="821,303,972,359"/>
+<area shape="rect" id="node7" href="$ahci_8h.html" title="Experimental Edition\l/Source/Drivers/AHCI\l/ahci.h" alt="" coords="708,199,859,255"/>
+<area shape="rect" id="node9" href="$PCI_8c.html" title="Experimental Edition\l/Source/Drivers/PCI/PCI.c" alt="" coords="934,206,1113,247"/>
+<area shape="rect" id="node10" href="$mem_8c.html" title="Experimental Edition\l/Source/MemManagement/mem.c" alt="" coords="247,310,466,351"/>
+<area shape="rect" id="node11" href="$paging_8c.html" title="Experimental Edition\l/Source/MemManagement\l/paging.c" alt="" coords="384,407,559,463"/>
+<area shape="rect" id="node12" href="$task_8h.html" title="Experimental Edition\l/Source/MultiTasking\l/task.h" alt="" coords="1137,199,1283,255"/>
+<area shape="rect" id="node14" href="$vesa_8c.html" title="Experimental Edition\l/Source/vesa/vesa.c" alt="" coords="541,206,684,247"/>
+<area shape="rect" id="node8" href="$ata_8c.html" title="Experimental Edition\l/Source/Drivers/ATA/ata.c" alt="" coords="763,414,939,455"/>
+<area shape="rect" id="node15" href="$graphics_8c.html" title="Experimental Edition\l/Source/graphics/graphics.c" alt="" coords="551,310,735,351"/>
+<area shape="rect" id="node16" href="$mouse_8c.html" title="Experimental Edition\l/Source/Drivers/mouse\l/mouse.c" alt="" coords="583,407,739,463"/>
+</map>

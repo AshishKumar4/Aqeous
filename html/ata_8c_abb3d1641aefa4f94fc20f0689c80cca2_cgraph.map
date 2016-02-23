@@ -1,0 +1,6 @@
+<map id="read_ata" name="read_ata">
+<area shape="rect" id="node2" href="$ata_8c.html#a749bcef1772dea8b9db54d233cd69a0d" title="read_sector" alt="" coords="125,5,216,32"/>
+<area shape="rect" id="node4" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="151,56,190,83"/>
+<area shape="rect" id="node5" href="$sys_8h.html#a3dcbb9e13203beb0e38956999e8ae61d" title="inw" alt="" coords="149,107,192,133"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="264,5,311,32"/>
+</map>

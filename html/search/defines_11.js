@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['xfer_5fmw_5fdma_5f0',['XFER_MW_DMA_0',['../ahci_8h.html#af51311a3528a44bd0f103fae393cfc01',1,'ahci.h']]],
+  ['xfer_5fmw_5fdma_5f1',['XFER_MW_DMA_1',['../ahci_8h.html#aaf1a523fe29e87acbcfe0ec85834d402',1,'ahci.h']]],
+  ['xfer_5fmw_5fdma_5f2',['XFER_MW_DMA_2',['../ahci_8h.html#a46357226de8d8cae41fec6f2c0d49ce0',1,'ahci.h']]],
+  ['xfer_5fpio_5f0',['XFER_PIO_0',['../ahci_8h.html#a42cca67e7ea888072e546dc6c42a8f12',1,'ahci.h']]],
+  ['xfer_5fpio_5f1',['XFER_PIO_1',['../ahci_8h.html#ae596496b824cfdf09875c9bea05ad57e',1,'ahci.h']]],
+  ['xfer_5fpio_5f2',['XFER_PIO_2',['../ahci_8h.html#a2052645c8e3b626d545b5b96e872237e',1,'ahci.h']]],
+  ['xfer_5fpio_5f3',['XFER_PIO_3',['../ahci_8h.html#aa1bf5584bb1cef576d4907933d0dd659',1,'ahci.h']]],
+  ['xfer_5fpio_5f4',['XFER_PIO_4',['../ahci_8h.html#ab71ccb0eee11b7de5ad751a5c8c5c0c8',1,'ahci.h']]],
+  ['xfer_5fpio_5fslow',['XFER_PIO_SLOW',['../ahci_8h.html#a737297288418cb2751a6179510d38ce9',1,'ahci.h']]],
+  ['xfer_5fsw_5fdma_5f0',['XFER_SW_DMA_0',['../ahci_8h.html#aed989c5372491d46be340e350de7ba1a',1,'ahci.h']]],
+  ['xfer_5fsw_5fdma_5f1',['XFER_SW_DMA_1',['../ahci_8h.html#a697f743f076cc6e23bba976295777922',1,'ahci.h']]],
+  ['xfer_5fsw_5fdma_5f2',['XFER_SW_DMA_2',['../ahci_8h.html#a24f3e37a6a4b7c76ea9cbdbe5bc9e8b8',1,'ahci.h']]],
+  ['xfer_5fudma_5f0',['XFER_UDMA_0',['../ahci_8h.html#ab1fe10b0fd0af1b26c202795eff247a4',1,'ahci.h']]],
+  ['xfer_5fudma_5f1',['XFER_UDMA_1',['../ahci_8h.html#ad8815cb88d18051a726138e3ee415981',1,'ahci.h']]],
+  ['xfer_5fudma_5f2',['XFER_UDMA_2',['../ahci_8h.html#a797246627ca9df590e7e80259c5d00cb',1,'ahci.h']]],
+  ['xfer_5fudma_5f3',['XFER_UDMA_3',['../ahci_8h.html#a3ffb4add833ebad82804afdeec795c33',1,'ahci.h']]],
+  ['xfer_5fudma_5f4',['XFER_UDMA_4',['../ahci_8h.html#a4d2a084b16d791f2731cfda75a20b6a6',1,'ahci.h']]],
+  ['xfer_5fudma_5f5',['XFER_UDMA_5',['../ahci_8h.html#a83f4ab57c2872c764a18539eb67c1522',1,'ahci.h']]],
+  ['xfer_5fudma_5f6',['XFER_UDMA_6',['../ahci_8h.html#a94fa5698490ebffacb85e23b573477d6',1,'ahci.h']]],
+  ['xfer_5fudma_5f7',['XFER_UDMA_7',['../ahci_8h.html#af5f6f47884a703a2f149525fa7ca30a4',1,'ahci.h']]]
+];

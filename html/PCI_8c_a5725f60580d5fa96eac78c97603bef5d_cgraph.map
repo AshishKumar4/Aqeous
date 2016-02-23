@@ -1,0 +1,4 @@
+<map id="PciRead32" name="PciRead32">
+<area shape="rect" id="node2" href="$sys_8h.html#ab53ee9eece30b2ac66ec33f66ebaa325" title="outl" alt="" coords="140,5,183,32"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a42d0bfc1f7ce1d7334607503f60b4202" title="inl" alt="" coords="142,56,181,83"/>
+</map>

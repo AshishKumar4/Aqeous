@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['u16int',['u16int',['../common_8h.html#ade81be9b965e7be1641f9792ba8af75e',1,'common.h']]],
+  ['u32int',['u32int',['../common_8h.html#a7ae3a26c17ddfe117c6291739780801d',1,'common.h']]],
+  ['u8int',['u8int',['../common_8h.html#a27a416e6606c138f2d33233142a5593e',1,'common.h']]],
+  ['ufis',['ufis',['../structtagHBA__FIS.html#a878d317f7fcacf4f24e7dd38567ef0a4',1,'tagHBA_FIS']]],
+  ['uheap_5finitial_5fsize',['UHEAP_INITIAL_SIZE',['../mem_8h.html#a2b9506231d31649b9ff1e2f72989d873',1,'mem.h']]],
+  ['uheap_5fstart',['UHEAP_START',['../mem_8h.html#a75dff8b3a47ea9eef961fb4a96e8104a',1,'mem.h']]],
+  ['uint_5ft',['uint_t',['../system_8h.html#a12a1e9b3ce141648783a82445d02b58d',1,'system.h']]],
+  ['unneded1',['unneded1',['../structFACP.html#ae5f7c21401a9d170e5c6a3caaa9b74ba',1,'FACP']]],
+  ['unneded2',['unneded2',['../structFACP.html#a6926f57eda7c9c85a3f7509b1d3080c6',1,'FACP']]],
+  ['unneded3',['unneded3',['../structFACP.html#aa83604b4fb4ca7634fc6da593f8a9d10',1,'FACP']]],
+  ['unneded4',['unneded4',['../structFACP.html#a8309a4015441febd7eebf3ed7524c2e7',1,'FACP']]],
+  ['unused1',['unused1',['../struct____attribute____.html#a8d815909cef8ca1b062a2ad96c660a9c',1,'__attribute__']]],
+  ['unused2',['unused2',['../struct____attribute____.html#a18f24001adf4149e889ed86a8cbaff54',1,'__attribute__']]],
+  ['unused3',['unused3',['../struct____attribute____.html#a5e3c3ed46d04f2818d5d3edcf9b0300f',1,'__attribute__']]],
+  ['unused4',['unused4',['../struct____attribute____.html#a0b098ce1ed9de8d4a04ebb0868821517',1,'__attribute__']]],
+  ['unused5',['unused5',['../struct____attribute____.html#a7ba552a7e1c4b9a14f34db29c9804f78',1,'__attribute__']]],
+  ['unused6',['unused6',['../struct____attribute____.html#a2237e6caea302218050257b393aca1c8',1,'__attribute__']]],
+  ['unused7',['unused7',['../struct____attribute____.html#a3ca12260c33c9b1431db806c9dcfe209',1,'__attribute__']]],
+  ['usage',['usage',['../structqueues.html#abcded8e97b078ab04228a84686c301a6',1,'queues']]],
+  ['useresp',['useresp',['../structregisters.html#ad4734529e5faf04f6c61cfabfe4324e9',1,'registers::useresp()'],['../structregs.html#a55d3b6b0025dd401f204d585d256c140',1,'regs::useresp()']]]
+];

@@ -1,0 +1,229 @@
+\hypertarget{pci__list_8h}{}\section{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/pci\+\_\+list.h File Reference}
+\label{pci__list_8h}\index{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/pci\+\_\+list.\+h@{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/pci\+\_\+list.\+h}}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{pci__list_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct__PCI__VENTABLE}{\+\_\+\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}
+\item 
+struct \hyperlink{struct__PCI__DEVTABLE}{\+\_\+\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}
+\item 
+struct \hyperlink{struct__PCI__CLASSCODETABLE}{\+\_\+\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{pci__list_8h_a4e89aa5e502b8695293201c5ce91608e}{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{Pci\+Ven\+Table})/sizeof(\hyperlink{pci__list_8h_a6bc80ec3329e2808858485388d5af812}{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}))
+\item 
+\#define \hyperlink{pci__list_8h_ab883eccf5cf2a02694f1e62906fda6a7}{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{Pci\+Dev\+Table})/sizeof(\hyperlink{pci__list_8h_a09cfaf8246964380436bf1495ccb066b}{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}))
+\item 
+\#define \hyperlink{pci__list_8h_a0276831eccf2773ad5c40ffe17a60c7d}{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_aec4648724009d1af53aa9b005b1bd17c}{Pci\+Class\+Code\+Table})/sizeof(\hyperlink{pci__list_8h_a5532c32fe8312433f2da2d7f6ea385fb}{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}))
+\item 
+\#define \hyperlink{pci__list_8h_a390c78eb58fe0eb7fd997e8ad54fef9f}{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_a214087e81ecf6e7ba80475925a5f8ced}{Pci\+Command\+Flags})/sizeof(char $\ast$))
+\item 
+\#define \hyperlink{pci__list_8h_a6f20336703d308b47fa5650a36335842}{P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_affe70e077d6f377cc965a57fd38ad5fc}{Pci\+Status\+Flags})/sizeof(char $\ast$))
+\item 
+\#define \hyperlink{pci__list_8h_a531dcdbc6066b4fe04d8e815b0706917}{P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN}~(sizeof(\hyperlink{pci__list_8h_aaaa2ee254801dd7b06cd00b6969983d5}{Pci\+Dev\+Sel\+Flags})/sizeof(char $\ast$))
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct__PCI__VENTABLE}{\+\_\+\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE} \hyperlink{pci__list_8h_a6bc80ec3329e2808858485388d5af812}{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}
+\item 
+typedef struct \hyperlink{struct__PCI__VENTABLE}{\+\_\+\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE} $\ast$ \hyperlink{pci__list_8h_ac7575dbc15162e14f66a81f24490fc2a}{P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}
+\item 
+typedef struct \hyperlink{struct__PCI__DEVTABLE}{\+\_\+\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE} \hyperlink{pci__list_8h_a09cfaf8246964380436bf1495ccb066b}{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}
+\item 
+typedef struct \hyperlink{struct__PCI__DEVTABLE}{\+\_\+\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE} $\ast$ \hyperlink{pci__list_8h_a800c3be31c1eca3899ee43fe95fa78d3}{P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}
+\item 
+typedef struct \hyperlink{struct__PCI__CLASSCODETABLE}{\+\_\+\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE} \hyperlink{pci__list_8h_a5532c32fe8312433f2da2d7f6ea385fb}{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}
+\item 
+typedef struct \hyperlink{struct__PCI__CLASSCODETABLE}{\+\_\+\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE} $\ast$ \hyperlink{pci__list_8h_a53f59bd8912804c9acd6ff4b346800ac}{P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{pci__list_8h_a6bc80ec3329e2808858485388d5af812}{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE} \hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{Pci\+Ven\+Table} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{pci__list_8h_a09cfaf8246964380436bf1495ccb066b}{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE} \hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{Pci\+Dev\+Table} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{pci__list_8h_a5532c32fe8312433f2da2d7f6ea385fb}{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE} \hyperlink{pci__list_8h_aec4648724009d1af53aa9b005b1bd17c}{Pci\+Class\+Code\+Table} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \hyperlink{pci__list_8h_a214087e81ecf6e7ba80475925a5f8ced}{Pci\+Command\+Flags} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \hyperlink{pci__list_8h_affe70e077d6f377cc965a57fd38ad5fc}{Pci\+Status\+Flags} \mbox{[}$\,$\mbox{]}
+\item 
+const char $\ast$ \hyperlink{pci__list_8h_aaaa2ee254801dd7b06cd00b6969983d5}{Pci\+Dev\+Sel\+Flags} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN}{PCI_CLASSCODETABLE_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+L\+E\+\_\+\+L\+EN~(sizeof({\bf Pci\+Class\+Code\+Table})/sizeof({\bf P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}))}\hypertarget{pci__list_8h_a0276831eccf2773ad5c40ffe17a60c7d}{}\label{pci__list_8h_a0276831eccf2773ad5c40ffe17a60c7d}
+
+
+Definition at line 6971 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN}{PCI_COMMANDFLAGS_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+N\+D\+F\+L\+A\+G\+S\+\_\+\+L\+EN~(sizeof({\bf Pci\+Command\+Flags})/sizeof(char $\ast$))}\hypertarget{pci__list_8h_a390c78eb58fe0eb7fd997e8ad54fef9f}{}\label{pci__list_8h_a390c78eb58fe0eb7fd997e8ad54fef9f}
+
+
+Definition at line 6994 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN}{PCI_DEVSELFLAGS_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+D\+E\+V\+S\+E\+L\+F\+L\+A\+G\+S\+\_\+\+L\+EN~(sizeof({\bf Pci\+Dev\+Sel\+Flags})/sizeof(char $\ast$))}\hypertarget{pci__list_8h_a531dcdbc6066b4fe04d8e815b0706917}{}\label{pci__list_8h_a531dcdbc6066b4fe04d8e815b0706917}
+
+
+Definition at line 7030 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN}{PCI_DEVTABLE_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+L\+E\+\_\+\+L\+EN~(sizeof({\bf Pci\+Dev\+Table})/sizeof({\bf P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}))}\hypertarget{pci__list_8h_ab883eccf5cf2a02694f1e62906fda6a7}{}\label{pci__list_8h_ab883eccf5cf2a02694f1e62906fda6a7}
+
+
+Definition at line 6872 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN}{PCI_STATUSFLAGS_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+S\+T\+A\+T\+U\+S\+F\+L\+A\+G\+S\+\_\+\+L\+EN~(sizeof({\bf Pci\+Status\+Flags})/sizeof(char $\ast$))}\hypertarget{pci__list_8h_a6f20336703d308b47fa5650a36335842}{}\label{pci__list_8h_a6f20336703d308b47fa5650a36335842}
+
+
+Definition at line 7018 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN}}
+\index{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN@{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN}{PCI_VENTABLE_LEN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+L\+E\+\_\+\+L\+EN~(sizeof({\bf Pci\+Ven\+Table})/sizeof({\bf P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}))}\hypertarget{pci__list_8h_a4e89aa5e502b8695293201c5ce91608e}{}\label{pci__list_8h_a4e89aa5e502b8695293201c5ce91608e}
+
+
+Definition at line 1518 of file pci\+\_\+list.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}}
+\index{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}{PCI_CLASSCODETABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}   {\bf P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_a5532c32fe8312433f2da2d7f6ea385fb}{}\label{pci__list_8h_a5532c32fe8312433f2da2d7f6ea385fb}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}}
+\index{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}{PCI_DEVTABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}   {\bf P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_a09cfaf8246964380436bf1495ccb066b}{}\label{pci__list_8h_a09cfaf8246964380436bf1495ccb066b}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}}
+\index{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE@{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}{PCI_VENTABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}   {\bf P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_a6bc80ec3329e2808858485388d5af812}{}\label{pci__list_8h_a6bc80ec3329e2808858485388d5af812}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}}
+\index{P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}{PPCI_CLASSCODETABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE} $\ast$ {\bf P\+P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_a53f59bd8912804c9acd6ff4b346800ac}{}\label{pci__list_8h_a53f59bd8912804c9acd6ff4b346800ac}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}}
+\index{P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}{PPCI_DEVTABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE} $\ast$ {\bf P\+P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_a800c3be31c1eca3899ee43fe95fa78d3}{}\label{pci__list_8h_a800c3be31c1eca3899ee43fe95fa78d3}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}}
+\index{P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE@{P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}{PPCI_VENTABLE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE} $\ast$ {\bf P\+P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE}}\hypertarget{pci__list_8h_ac7575dbc15162e14f66a81f24490fc2a}{}\label{pci__list_8h_ac7575dbc15162e14f66a81f24490fc2a}
+
+
+\subsection{Variable Documentation}
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Class\+Code\+Table@{Pci\+Class\+Code\+Table}}
+\index{Pci\+Class\+Code\+Table@{Pci\+Class\+Code\+Table}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Class\+Code\+Table}{PciClassCodeTable}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+C\+I\+\_\+\+C\+L\+A\+S\+S\+C\+O\+D\+E\+T\+A\+B\+LE} Pci\+Class\+Code\+Table\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_aec4648724009d1af53aa9b005b1bd17c}{}\label{pci__list_8h_aec4648724009d1af53aa9b005b1bd17c}
+
+
+Definition at line 6884 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Command\+Flags@{Pci\+Command\+Flags}}
+\index{Pci\+Command\+Flags@{Pci\+Command\+Flags}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Command\+Flags}{PciCommandFlags}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ Pci\+Command\+Flags\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_a214087e81ecf6e7ba80475925a5f8ced}{}\label{pci__list_8h_a214087e81ecf6e7ba80475925a5f8ced}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+=
+\{
+    \textcolor{stringliteral}{"I/O Access"},
+    \textcolor{stringliteral}{"Memory Access"},
+    \textcolor{stringliteral}{"Bus Mastering"},
+    \textcolor{stringliteral}{"Special Cycles"},
+    \textcolor{stringliteral}{"Memory Write & Invalidate"},
+    \textcolor{stringliteral}{"Palette Snoop"},
+    \textcolor{stringliteral}{"Parity Errors"},
+    \textcolor{stringliteral}{"Wait Cycles"},
+    \textcolor{stringliteral}{"System Errors"},
+    \textcolor{stringliteral}{"Fast Back-To-Back"},
+    \textcolor{stringliteral}{"Reserved 10"},
+    \textcolor{stringliteral}{"Reserved 11"},
+    \textcolor{stringliteral}{"Reserved 12"},
+    \textcolor{stringliteral}{"Reserved 13"},
+    \textcolor{stringliteral}{"Reserved 14"},
+    \textcolor{stringliteral}{"Reserved 15"}
+\}
+\end{DoxyCode}
+
+
+Definition at line 6973 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Dev\+Sel\+Flags@{Pci\+Dev\+Sel\+Flags}}
+\index{Pci\+Dev\+Sel\+Flags@{Pci\+Dev\+Sel\+Flags}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Dev\+Sel\+Flags}{PciDevSelFlags}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ Pci\+Dev\+Sel\+Flags\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_aaaa2ee254801dd7b06cd00b6969983d5}{}\label{pci__list_8h_aaaa2ee254801dd7b06cd00b6969983d5}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+=
+\{
+    \textcolor{stringliteral}{"Fast Devsel Speed"},     
+    \textcolor{stringliteral}{"Medium Devsel Speed"},   
+    \textcolor{stringliteral}{"Slow Devsel Speed"},     
+    \textcolor{stringliteral}{"Reserved 9&10"}
+\}
+\end{DoxyCode}
+
+
+Definition at line 7021 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Dev\+Table@{Pci\+Dev\+Table}}
+\index{Pci\+Dev\+Table@{Pci\+Dev\+Table}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Dev\+Table}{PciDevTable}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+C\+I\+\_\+\+D\+E\+V\+T\+A\+B\+LE} Pci\+Dev\+Table\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{}\label{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}
+
+
+Definition at line 1528 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Status\+Flags@{Pci\+Status\+Flags}}
+\index{Pci\+Status\+Flags@{Pci\+Status\+Flags}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Status\+Flags}{PciStatusFlags}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ Pci\+Status\+Flags\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_affe70e077d6f377cc965a57fd38ad5fc}{}\label{pci__list_8h_affe70e077d6f377cc965a57fd38ad5fc}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+=
+\{
+    \textcolor{stringliteral}{"Reserved 0"},
+    \textcolor{stringliteral}{"Reserved 1"},
+    \textcolor{stringliteral}{"Reserved 2"},
+    \textcolor{stringliteral}{"Reserved 3"},
+    \textcolor{stringliteral}{"Reserved 4"},
+    \textcolor{stringliteral}{"66 MHz Capable"},
+    \textcolor{stringliteral}{"User-Defined Features"},
+    \textcolor{stringliteral}{"Fast Back-To-Back"},
+    \textcolor{stringliteral}{"Data Parity Reported"},
+    \textcolor{stringliteral}{""},
+    \textcolor{stringliteral}{""},
+    \textcolor{stringliteral}{"Signalled Target Abort"},
+    \textcolor{stringliteral}{"Received Target Abort"},
+    \textcolor{stringliteral}{"Received Master Abort"},
+    \textcolor{stringliteral}{"Signalled System Error"},
+    \textcolor{stringliteral}{"Detected Parity Error"}
+\}
+\end{DoxyCode}
+
+
+Definition at line 6997 of file pci\+\_\+list.\+h.
+
+\index{pci\+\_\+list.\+h@{pci\+\_\+list.\+h}!Pci\+Ven\+Table@{Pci\+Ven\+Table}}
+\index{Pci\+Ven\+Table@{Pci\+Ven\+Table}!pci\+\_\+list.\+h@{pci\+\_\+list.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Ven\+Table}{PciVenTable}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+C\+I\+\_\+\+V\+E\+N\+T\+A\+B\+LE} Pci\+Ven\+Table\mbox{[}$\,$\mbox{]}}\hypertarget{pci__list_8h_a0f3207ced174b50192ac00d326911424}{}\label{pci__list_8h_a0f3207ced174b50192ac00d326911424}
+
+
+Definition at line 14 of file pci\+\_\+list.\+h.
+

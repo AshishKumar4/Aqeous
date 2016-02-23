@@ -1,0 +1,8 @@
+<map id="free_page" name="free_page">
+<area shape="rect" id="node2" href="$paging_8h.html#a97203e0effac91dc856ff4f28b3d6b79" title="pt_entry_pfn" alt="" coords="380,24,475,51"/>
+<area shape="rect" id="node3" href="$mem_8c.html#a88aa6b479b05e673cbb8e79d8692830d" title="free" alt="" coords="132,100,176,127"/>
+<area shape="rect" id="node7" href="$paging_8h.html#ad06738f925b4ecff695aac009cde9b60" title="pt_entry_del_attrib" alt="" coords="363,151,492,177"/>
+<area shape="rect" id="node4" href="$mem_8h.html#ac2bc8a6ea9783c848eabff245617fe5d" title="BlockFinder" alt="" coords="224,24,315,51"/>
+<area shape="rect" id="node5" href="$string_8h.html#ab70ae7ba054fd55023ccf5b7ceae875a" title="memset" alt="" coords="235,75,304,101"/>
+<area shape="rect" id="node6" href="$paging_8c.html#a7077dda14170b0967709669e4d1fe615" title="free_page" alt="" coords="230,125,309,152"/>
+</map>

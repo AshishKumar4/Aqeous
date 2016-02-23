@@ -1,0 +1,12 @@
+<map id="keyboard_handler" name="keyboard_handler">
+<area shape="rect" id="node2" href="$keyboard_8c.html#a74b2b41d9b627a0ba98aa23727a34de4" title="read status from keyboard controller " alt="" coords="540,31,695,57"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="791,5,829,32"/>
+<area shape="rect" id="node4" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="211,157,261,184"/>
+<area shape="rect" id="node9" href="$keyboard_8c.html#ab7d85d4360d084ea93e7ae874d497354" title="sets leds " alt="" coords="177,81,295,108"/>
+<area shape="rect" id="node5" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="390,132,445,159"/>
+<area shape="rect" id="node6" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="387,183,448,209"/>
+<area shape="rect" id="node7" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="552,183,683,209"/>
+<area shape="rect" id="node8" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="743,208,877,235"/>
+<area shape="rect" id="node10" href="$keyboard_8c.html#a525ed043dbf1ac4ca55cda20262f9d0a" title="send command byte to keyboard encoder " alt="" coords="343,81,492,108"/>
+<area shape="rect" id="node11" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="594,81,641,108"/>
+</map>

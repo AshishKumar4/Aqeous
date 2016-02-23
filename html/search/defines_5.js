@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['hba_5fport_5fdet_5fpresent',['HBA_PORT_DET_PRESENT',['../ahci_8h.html#ad35e9d10e89ce48bf4f0e94929664102',1,'ahci.h']]],
+  ['hba_5fport_5fipm_5factive',['HBA_PORT_IPM_ACTIVE',['../ahci_8h.html#a7799cbde4e99b339a61cb79ba018ed78',1,'ahci.h']]],
+  ['hba_5fpxcmd_5fcr',['HBA_PxCMD_CR',['../ahci_8h.html#ad2550f8f63fa32140f93da1b95354cf6',1,'ahci.h']]],
+  ['hba_5fpxcmd_5ffr',['HBA_PxCMD_FR',['../ahci_8h.html#a93f2b1904299d4d1920e65039ff7ce5c',1,'ahci.h']]],
+  ['hba_5fpxcmd_5ffre',['HBA_PxCMD_FRE',['../ahci_8h.html#a27978dd2aac599cbd0330c923652c6e4',1,'ahci.h']]],
+  ['hba_5fpxcmd_5fst',['HBA_PxCMD_ST',['../ahci_8h.html#a469ab8af9bf8f1f89a5c8f79b2305e34',1,'ahci.h']]],
+  ['hba_5fpxcmd_5fsud',['HBA_PxCMD_SUD',['../ahci_8h.html#a8c9e7501928cd8945cf681e7700e5704',1,'ahci.h']]],
+  ['hba_5fpxis_5ftfes',['HBA_PxIS_TFES',['../ahci_8h.html#a11add414188662b170c68ead95a786d8',1,'ahci.h']]],
+  ['heap_5findex_5fsize',['HEAP_INDEX_SIZE',['../mem_8h.html#af1a449a1cd9f28cdda2327efd3517d95',1,'mem.h']]],
+  ['heap_5fmagic',['HEAP_MAGIC',['../mem_8h.html#a604474f5c0892ea2c6c16b5e45c59f59',1,'mem.h']]],
+  ['heap_5fmin_5fsize',['HEAP_MIN_SIZE',['../mem_8h.html#a6000da6aee6de14d187fec34f0648279',1,'mem.h']]],
+  ['host_5fahci_5fen',['HOST_AHCI_EN',['../ahci_8h.html#a13424aa33c5cb66df618464b96cb92ef',1,'ahci.h']]],
+  ['host_5fcap',['HOST_CAP',['../ahci_8h.html#a3bcabc3278f6b0f45b76f8d31beb0f62',1,'ahci.h']]],
+  ['host_5fcap2',['HOST_CAP2',['../ahci_8h.html#a0614c8c72297046562e4b33208d383f6',1,'ahci.h']]],
+  ['host_5fctl',['HOST_CTL',['../ahci_8h.html#a8a6c6ff30d66d52f46ea0c5f32317887',1,'ahci.h']]],
+  ['host_5firq_5fen',['HOST_IRQ_EN',['../ahci_8h.html#a351badfbfbd972fda5e25317fd46bc5a',1,'ahci.h']]],
+  ['host_5firq_5fstat',['HOST_IRQ_STAT',['../ahci_8h.html#a1914cc1e6bf25e25210bb0015546baec',1,'ahci.h']]],
+  ['host_5fports_5fimpl',['HOST_PORTS_IMPL',['../ahci_8h.html#a3d88f7127d9a557c0976fe61dbddf1a5',1,'ahci.h']]],
+  ['host_5freset',['HOST_RESET',['../ahci_8h.html#a7063742474cd7a6857885fdb39bc9ae6',1,'ahci.h']]],
+  ['host_5fversion',['HOST_VERSION',['../ahci_8h.html#aa8bc193818940a8954ef0e0e5a8e16d6',1,'ahci.h']]],
+  ['hvesa',['hVESA',['../vesa_8c.html#a0037df5a79ebb99d709343bbb5b35de6',1,'vesa.c']]]
+];

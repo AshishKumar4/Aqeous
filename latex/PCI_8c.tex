@@ -1,0 +1,716 @@
+\hypertarget{PCI_8c}{}\section{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+CI.c File Reference}
+\label{PCI_8c}\index{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+C\+I.\+c@{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+C\+I.\+c}}
+{\ttfamily \#include $<$pci.\+h$>$}\\*
+{\ttfamily \#include $<$mem.\+h$>$}\\*
+{\ttfamily \#include $<$sys.\+h$>$}\\*
+Include dependency graph for P\+C\+I.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{PCI_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{PCI_8c_aaa58db8af2d00af66c78624104e1016b}{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS}~0x\+C\+F8
+\item 
+\#define \hyperlink{PCI_8c_ad1fedcf5fe37518ccc1ddfcb880d1b01}{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA}~0x\+C\+FC
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \hyperlink{PCI_8c_a5064ae4507c0c52094bc1fa90293069e}{pci\+\_\+vendor\+\_\+lookup} (unsigned short vendor\+\_\+id)
+\item 
+const char $\ast$ \hyperlink{PCI_8c_a72776c181c2e88cae0d0245be7a5496d}{pci\+\_\+device\+\_\+lookup} (unsigned short vendor\+\_\+id, unsigned short device\+\_\+id)
+\item 
+unsigned short \hyperlink{PCI_8c_ac316d14d49a6cf3e9dce306d56177c96}{pci\+Config\+Read\+Word} (unsigned short \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, unsigned short slot, unsigned short \hyperlink{ahci_8c_a3b56e67c68d28003939a2da223f12671}{func}, unsigned short \hyperlink{graphics_8c_aed7ea92f45bd273dde380a45ddced592}{offset})
+\item 
+uint32\+\_\+t \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{Pci\+Read32} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)
+\item 
+uint16\+\_\+t \hyperlink{PCI_8c_a0f554ba70c238c73d9c0b82973594106}{Pci\+Read16} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)
+\item 
+uint8\+\_\+t \hyperlink{PCI_8c_a40d719200bdf6d24aa419cf0611670f8}{Pci\+Read8} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)
+\item 
+void \hyperlink{PCI_8c_a26380542797df4d0096125b1826ce577}{Pci\+Write32} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint32\+\_\+t Value)
+\item 
+void \hyperlink{PCI_8c_ad92c9a27c2496e5c2f63bebc6c77e097}{Pci\+Write16} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint16\+\_\+t Value)
+\item 
+void \hyperlink{PCI_8c_a8259e8b0ee1cffc6146a1a94a10062ac}{Pci\+Write8} (uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint8\+\_\+t Value)
+\item 
+uint32\+\_\+t \hyperlink{PCI_8c_a6b15fe8ecb67c5ad5e470aca12da1059}{Pci\+Device\+Read} (\hyperlink{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{Pci\+Device\+\_\+t} $\ast$Device, uint32\+\_\+t Register, uint32\+\_\+t Length)
+\item 
+void \hyperlink{PCI_8c_abd4bccd5dae0c43196d9b54893cec491}{Pci\+Device\+Write} (\hyperlink{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{Pci\+Device\+\_\+t} $\ast$Device, uint32\+\_\+t Register, uint32\+\_\+t Value, uint32\+\_\+t Length)
+\item 
+\hyperlink{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{Pci\+Device\+\_\+t} \hyperlink{PCI_8c_a3be526de20a10af314b77e522864943c}{check\+Device} (uint8\+\_\+t \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, uint8\+\_\+t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device})
+\item 
+void \hyperlink{PCI_8c_a6ce10e588aa8706ddda501da33380f7c}{check\+All\+Buses} (void)
+\item 
+uint32\+\_\+t \hyperlink{PCI_8c_af7aa098edb42b39b29458d27e97defca}{Pci\+Get\+Bar\+\_\+1} (int \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, int slot, int barno)
+\item 
+uint32\+\_\+t \hyperlink{PCI_8c_a6dd4b65118ac53e37e4eeb8792b8ec07}{Pci\+Get\+Bar\+\_\+2} (\hyperlink{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{Pci\+Device\+\_\+t} $\ast$\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, int barno)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{PCI_8h_a478d1e5507b733431433bfe46bc1d465}{Pci\+Native\+Header\+\_\+t} $\ast$ \hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{temp\+P\+CS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS@{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS}}
+\index{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS@{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS}{PCI_CONFIG_ADDRESS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+A\+D\+D\+R\+E\+SS~0x\+C\+F8}\hypertarget{PCI_8c_aaa58db8af2d00af66c78624104e1016b}{}\label{PCI_8c_aaa58db8af2d00af66c78624104e1016b}
+
+
+Definition at line 5 of file P\+C\+I.\+c.
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA@{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA}}
+\index{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA@{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA}{PCI_CONFIG_DATA}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+D\+A\+TA~0x\+C\+FC}\hypertarget{PCI_8c_ad1fedcf5fe37518ccc1ddfcb880d1b01}{}\label{PCI_8c_ad1fedcf5fe37518ccc1ddfcb880d1b01}
+
+
+Definition at line 6 of file P\+C\+I.\+c.
+
+
+
+\subsection{Function Documentation}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!check\+All\+Buses@{check\+All\+Buses}}
+\index{check\+All\+Buses@{check\+All\+Buses}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{check\+All\+Buses(void)}{checkAllBuses(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void check\+All\+Buses (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a6ce10e588aa8706ddda501da33380f7c}{}\label{PCI_8c_a6ce10e588aa8706ddda501da33380f7c}
+
+
+Definition at line 197 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+198  \{
+199      uint8\_t \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus};
+200      uint8\_t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device};
+201      uint8\_t flag=0;
+202          \hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS}=(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}*)\hyperlink{mem_8c_a289ed80726a2c8adc2fa154f442eaad7}{kmalloc}(\textcolor{keyword}{sizeof}(
+      \hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}));
+203      \textcolor{keywordflow}{for}(bus = 0; bus <255 ; bus++)
+204      \{
+205          \textcolor{keywordflow}{for}(device = 0; device < 32; device++)
+206          \{
+207              devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}]=\hyperlink{PCI_8c_a3be526de20a10af314b77e522864943c}{checkDevice}(bus, device);
+208              \hyperlink{struct__PciDevice}{PciDevice\_t} dev=devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}];
+209              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} vendorID = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_acc809b557a84fbe99da19b442210e6a1}{VendorId};
+210              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} deviceID = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a4cb00b77b64768cc8754c3b5938a09ea}{DeviceId};
+211              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} classcode = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a2feb2dca74bf9ff2af1e08ebbb310241}{Class};
+212              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} subclasscode = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a988d996c402af2ac9a89b86d409815b5}{Subclass};
+213              \textcolor{keywordflow}{if}(devices[bus][device].Bus!=-1&&devices[bus][device].Header->Class!=255)
+214                   \{
+215                                  \textcolor{keywordflow}{if}(classcode==1&&subclasscode==6)
+216                                  \{
+217                                      AHCI\_Devices[TotalAHCIDevices]=dev;
+218                                      ++TotalAHCIDevices;
+219                                  \}
+220                  \textcolor{keywordflow}{if}(!flag)
+221                  \{
+222                      flag=1;
+223                      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)n  BUS number "});
+224                      \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(bus);
+225                      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n"});
+226                  \}
+227                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tDEVICE: "});
+228                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\hyperlink{PCI_8c_a72776c181c2e88cae0d0245be7a5496d}{pci\_device\_lookup}(vendorID,
+      deviceID));
+229                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" CLASS: "});
+230                  \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(classcode);
+231                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" subCLASS: "});
+232                  \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(subclasscode);
+233              \}
+234          \}
+235         flag=0;
+236      \}
+237      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)n"});
+238  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{PCI_8c_a6ce10e588aa8706ddda501da33380f7c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!check\+Device@{check\+Device}}
+\index{check\+Device@{check\+Device}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{check\+Device(uint8\+\_\+t bus, uint8\+\_\+t device)}{checkDevice(uint8_t bus, uint8_t device)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Pci\+Device\+\_\+t} check\+Device (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{bus, }
+\item[{uint8\+\_\+t}]{device}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a3be526de20a10af314b77e522864943c}{}\label{PCI_8c_a3be526de20a10af314b77e522864943c}
+
+
+Definition at line 152 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+153 \{
+154      uint8\_t \textcolor{keyword}{function} = 0;
+155          \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset}((\textcolor{keywordtype}{void}*)\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS},0,\textcolor{keyword}{sizeof}(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}));
+156         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<64;i+=16)
+157             \{
+158                 *(uint32\_t*)((uint32\_t)\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS} + i) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(
+      \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i);
+159                 *(uint32\_t*)((uint32\_t)\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS} + i + 4) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(
+      \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 4);
+160                 *(uint32\_t*)((uint32\_t)\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS} + i + 8) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(
+      \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 8);
+161                 *(uint32\_t*)((uint32\_t)\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS} + i + 12) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(
+      \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 12);
+162             \}
+163      \textcolor{keywordflow}{if}(\hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS}->\hyperlink{struct__PciNativeHeader_acc809b557a84fbe99da19b442210e6a1}{VendorId} == 0xFFFF)     \textcolor{comment}{// Device doesn't exist}
+164      \{
+165          \hyperlink{struct__PciDevice}{PciDevice\_t} null;
+166          null.\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}=-1;
+167          null.\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}=-1;
+168          null.\hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}=-1;
+169          null.\hyperlink{struct__PciDevice_a57d861d58ee386f1fe1d8820c1e409c5}{Type}=-1;
+170          null.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}=(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}*)\hyperlink{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{NULL};
+171          \textcolor{keywordflow}{return} null;
+172      \}
+173 
+174      \hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t} *pcs=(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}*)
+      \hyperlink{mem_8c_a289ed80726a2c8adc2fa154f442eaad7}{kmalloc}(\textcolor{keyword}{sizeof}(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}));
+175         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<64;i+=16)
+176             \{
+177                 *(uint32\_t*)((uint32\_t)pcs + i) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, 
+      \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i);
+178                 *(uint32\_t*)((uint32\_t)pcs + i + 4) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, 
+      \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 4);
+179                 *(uint32\_t*)((uint32\_t)pcs + i + 8) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, 
+      \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 8);
+180                 *(uint32\_t*)((uint32\_t)pcs + i + 12) = \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, 
+      \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, \textcolor{keyword}{function}, i + 12);
+181             \}
+182        \hyperlink{struct__PciDevice}{PciDevice\_t} dev;
+183          dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}=pcs;
+184          dev.\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}=\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus};
+185          dev.\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}=\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device};
+186          \textcolor{comment}{//pcs=tempPCS;}
+187      \textcolor{comment}{/*console\_writestring("\(\backslash\)n\(\backslash\)tDEVICE: ");}
+188 \textcolor{comment}{     console\_writestring(pci\_device\_lookup(vendorID,deviceID));}
+189 \textcolor{comment}{     console\_writestring(" CLASS: ");}
+190 \textcolor{comment}{     console\_write\_dec(classcode);}
+191 \textcolor{comment}{     console\_writestring(" subCLASS: ");}
+192 \textcolor{comment}{     console\_write\_dec(subclasscode);*/}
+193      dev.\hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}=\textcolor{keyword}{function};
+194      \textcolor{keywordflow}{return} dev;
+195  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{PCI_8c_a3be526de20a10af314b77e522864943c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!pci\+\_\+device\+\_\+lookup@{pci\+\_\+device\+\_\+lookup}}
+\index{pci\+\_\+device\+\_\+lookup@{pci\+\_\+device\+\_\+lookup}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{pci\+\_\+device\+\_\+lookup(unsigned short vendor\+\_\+id, unsigned short device\+\_\+id)}{pci_device_lookup(unsigned short vendor_id, unsigned short device_id)}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ pci\+\_\+device\+\_\+lookup (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{vendor\+\_\+id, }
+\item[{unsigned short}]{device\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a72776c181c2e88cae0d0245be7a5496d}{}\label{PCI_8c_a72776c181c2e88cae0d0245be7a5496d}
+
+
+Definition at line 17 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+17                                                                                    \{
+18     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i = 0; i < \hyperlink{pci__list_8h_ab883eccf5cf2a02694f1e62906fda6a7}{PCI\_DEVTABLE\_LEN}; ++i) \{
+19         \textcolor{keywordflow}{if} (\hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].VenId == vendor\_id && \hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].DevId == device\_id) \{
+20             \textcolor{keywordflow}{return} \hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].\hyperlink{struct__PCI__DEVTABLE_aa93c23c253df7ff6365b332220f447ec}{ChipDesc};
+21         \}
+22     \}
+23     \textcolor{keywordflow}{return} \textcolor{stringliteral}{""};
+24 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!pci\+\_\+vendor\+\_\+lookup@{pci\+\_\+vendor\+\_\+lookup}}
+\index{pci\+\_\+vendor\+\_\+lookup@{pci\+\_\+vendor\+\_\+lookup}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{pci\+\_\+vendor\+\_\+lookup(unsigned short vendor\+\_\+id)}{pci_vendor_lookup(unsigned short vendor_id)}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ pci\+\_\+vendor\+\_\+lookup (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{vendor\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a5064ae4507c0c52094bc1fa90293069e}{}\label{PCI_8c_a5064ae4507c0c52094bc1fa90293069e}
+
+
+Definition at line 8 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+8                                                          \{
+9     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i = 0; i < \hyperlink{pci__list_8h_a4e89aa5e502b8695293201c5ce91608e}{PCI\_VENTABLE\_LEN}; ++i) \{
+10         \textcolor{keywordflow}{if} (\hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{PciVenTable}[i].VenId == vendor\_id) \{
+11             \textcolor{keywordflow}{return} \hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{PciVenTable}[i].\hyperlink{struct__PCI__VENTABLE_aad91ea393afe64b533c1ad399f12baf2}{VenFull};
+12         \}
+13     \}
+14     \textcolor{keywordflow}{return} \textcolor{stringliteral}{""};
+15 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!pci\+Config\+Read\+Word@{pci\+Config\+Read\+Word}}
+\index{pci\+Config\+Read\+Word@{pci\+Config\+Read\+Word}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{pci\+Config\+Read\+Word(unsigned short bus, unsigned short slot, unsigned short func, unsigned short offset)}{pciConfigReadWord(unsigned short bus, unsigned short slot, unsigned short func, unsigned short offset)}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned short pci\+Config\+Read\+Word (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{bus, }
+\item[{unsigned short}]{slot, }
+\item[{unsigned short}]{func, }
+\item[{unsigned short}]{offset}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_ac316d14d49a6cf3e9dce306d56177c96}{}\label{PCI_8c_ac316d14d49a6cf3e9dce306d56177c96}
+
+
+Definition at line 26 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+26                                                                                                            
+                \{
+27    \textcolor{comment}{// unsigned long address;}
+28     uint32\_t address;
+29     uint32\_t lbus = (uint32\_t)\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus};
+30     uint32\_t lslot = (uint32\_t)slot;
+31     uint32\_t lfunc = (uint32\_t)\hyperlink{ahci_8c_a3b56e67c68d28003939a2da223f12671}{func};
+32     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} tmp = 0;
+33 
+34     \textcolor{comment}{/* create configuration address as per Figure 1 */}
+35     address = (uint32\_t)((lbus << 16) | (lslot << 11) |
+36               (lfunc << 8) | (\hyperlink{graphics_8c_aed7ea92f45bd273dde380a45ddced592}{offset} & 0xfc) | ((uint32\_t)0x80000000));
+37 
+38     \textcolor{comment}{/* write out the address */}
+39 
+40     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl} (0xCF8, address);
+41 
+42     \textcolor{comment}{/* read in the data */}
+43     \textcolor{comment}{/* (offset & 2) * 8) = 0 will choose the fisrt word of the 32 bits register */}
+44 
+45     tmp = (\textcolor{keywordtype}{unsigned} short)((\hyperlink{sys_8h_a42d0bfc1f7ce1d7334607503f60b4202}{inl} (0xCFC) >> ((\hyperlink{graphics_8c_aed7ea92f45bd273dde380a45ddced592}{offset} & 2) * 8)) & 0xffff);
+46     \textcolor{keywordflow}{return} (tmp);
+47  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{PCI_8c_ac316d14d49a6cf3e9dce306d56177c96_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Device\+Read@{Pci\+Device\+Read}}
+\index{Pci\+Device\+Read@{Pci\+Device\+Read}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Device\+Read(\+Pci\+Device\+\_\+t $\ast$\+Device, uint32\+\_\+t Register, uint32\+\_\+t Length)}{PciDeviceRead(PciDevice_t *Device, uint32_t Register, uint32_t Length)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Pci\+Device\+Read (
+\begin{DoxyParamCaption}
+\item[{{\bf Pci\+Device\+\_\+t} $\ast$}]{Device, }
+\item[{uint32\+\_\+t}]{Register, }
+\item[{uint32\+\_\+t}]{Length}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a6b15fe8ecb67c5ad5e470aca12da1059}{}\label{PCI_8c_a6b15fe8ecb67c5ad5e470aca12da1059}
+
+
+Definition at line 130 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+131 \{
+132     \textcolor{keywordflow}{if} (\hyperlink{structFACP_ad27e676e94e75e3d8140a2a8c9fd6bfd}{Length} == 1)
+133         \textcolor{keywordflow}{return} (uint32\_t)\hyperlink{PCI_8c_a40d719200bdf6d24aa419cf0611670f8}{PciRead8}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register);
+134     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (\hyperlink{structFACP_ad27e676e94e75e3d8140a2a8c9fd6bfd}{Length} == 2)
+135         \textcolor{keywordflow}{return} (uint32\_t)\hyperlink{PCI_8c_a0f554ba70c238c73d9c0b82973594106}{PciRead16}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register);
+136     \textcolor{keywordflow}{else}
+137         \textcolor{keywordflow}{return} \hyperlink{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{PciRead32}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register);
+138 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=334pt]{PCI_8c_a6b15fe8ecb67c5ad5e470aca12da1059_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Device\+Write@{Pci\+Device\+Write}}
+\index{Pci\+Device\+Write@{Pci\+Device\+Write}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Device\+Write(\+Pci\+Device\+\_\+t $\ast$\+Device, uint32\+\_\+t Register, uint32\+\_\+t Value, uint32\+\_\+t Length)}{PciDeviceWrite(PciDevice_t *Device, uint32_t Register, uint32_t Value, uint32_t Length)}}]{\setlength{\rightskip}{0pt plus 5cm}void Pci\+Device\+Write (
+\begin{DoxyParamCaption}
+\item[{{\bf Pci\+Device\+\_\+t} $\ast$}]{Device, }
+\item[{uint32\+\_\+t}]{Register, }
+\item[{uint32\+\_\+t}]{Value, }
+\item[{uint32\+\_\+t}]{Length}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_abd4bccd5dae0c43196d9b54893cec491}{}\label{PCI_8c_abd4bccd5dae0c43196d9b54893cec491}
+
+
+Definition at line 140 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+141 \{
+142     \textcolor{keywordflow}{if} (\hyperlink{structFACP_ad27e676e94e75e3d8140a2a8c9fd6bfd}{Length} == 1)
+143         \hyperlink{PCI_8c_a8259e8b0ee1cffc6146a1a94a10062ac}{PciWrite8}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register, (uint8\_t)(Value & 0xFF));
+144     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (\hyperlink{structFACP_ad27e676e94e75e3d8140a2a8c9fd6bfd}{Length} == 2)
+145         \hyperlink{PCI_8c_ad92c9a27c2496e5c2f63bebc6c77e097}{PciWrite16}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register, (uint16\_t)(Value & 0xFFFFF));
+146     \textcolor{keywordflow}{else}
+147         \hyperlink{PCI_8c_a26380542797df4d0096125b1826ce577}{PciWrite32}(Device->\hyperlink{struct__PciDevice_ac99e17b6dde217c76aeec72883f4d1e7}{Bus}, Device->\hyperlink{struct__PciDevice_abab1111099256cd120062a3c01d56f75}{Device}, Device->
+      \hyperlink{struct__PciDevice_ac8b9939eac2f6edaf3372d22871554e7}{Function}, Register, Value);
+148 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{PCI_8c_abd4bccd5dae0c43196d9b54893cec491_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Get\+Bar\+\_\+1@{Pci\+Get\+Bar\+\_\+1}}
+\index{Pci\+Get\+Bar\+\_\+1@{Pci\+Get\+Bar\+\_\+1}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Get\+Bar\+\_\+1(int bus, int slot, int barno)}{PciGetBar_1(int bus, int slot, int barno)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Pci\+Get\+Bar\+\_\+1 (
+\begin{DoxyParamCaption}
+\item[{int}]{bus, }
+\item[{int}]{slot, }
+\item[{int}]{barno}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_af7aa098edb42b39b29458d27e97defca}{}\label{PCI_8c_af7aa098edb42b39b29458d27e97defca}
+
+
+Definition at line 240 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+241 \{
+242     \textcolor{keywordflow}{if} (!barno)
+243         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar0;
+244     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==1)
+245         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar1;
+246     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==2)
+247         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar2;
+248     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==3)
+249         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar3;
+250     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==4)
+251         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar4;
+252     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==5)
+253         \textcolor{keywordflow}{return} devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][slot].Header->Bar5;
+254     \textcolor{keywordflow}{else} \textcolor{keywordflow}{return} -1;
+255 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Get\+Bar\+\_\+2@{Pci\+Get\+Bar\+\_\+2}}
+\index{Pci\+Get\+Bar\+\_\+2@{Pci\+Get\+Bar\+\_\+2}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Get\+Bar\+\_\+2(\+Pci\+Device\+\_\+t $\ast$device, int barno)}{PciGetBar_2(PciDevice_t *device, int barno)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Pci\+Get\+Bar\+\_\+2 (
+\begin{DoxyParamCaption}
+\item[{{\bf Pci\+Device\+\_\+t} $\ast$}]{device, }
+\item[{int}]{barno}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a6dd4b65118ac53e37e4eeb8792b8ec07}{}\label{PCI_8c_a6dd4b65118ac53e37e4eeb8792b8ec07}
+
+
+Definition at line 257 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+258 \{
+259     \textcolor{keywordflow}{if} (!barno)
+260         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a5ea1ceacaf1539a1f43d418cb35d5ae0}{Bar0};
+261     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==1)
+262         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_aa9af6e2520f693035c7db1b08532bbac}{Bar1};
+263     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==2)
+264         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_aefeefb8bb0d4d2c8c9d699b146472abb}{Bar2};
+265     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==3)
+266         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a7db6363b61b19d6a52ef679b22f560cb}{Bar3};
+267     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==4)
+268         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a1fdd80a61e6b295ebbe6ba26483c9e2a}{Bar4};
+269     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(barno==5)
+270         \textcolor{keywordflow}{return} device->\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_aa18626af4b1e61cb290c6c8fb2e8a895}{Bar5};
+271     \textcolor{keywordflow}{else} \textcolor{keywordflow}{return} -1;
+272 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Read16@{Pci\+Read16}}
+\index{Pci\+Read16@{Pci\+Read16}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Read16(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)}{PciRead16(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register)}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t Pci\+Read16 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a0f554ba70c238c73d9c0b82973594106}{}\label{PCI_8c_a0f554ba70c238c73d9c0b82973594106}
+
+
+Definition at line 63 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+64 \{
+65     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+66     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+67         | (Bus << 16)
+68         | (Device << 11)
+69         | (Function << 8)
+70         | (Register & 0xFC));
+71 
+72     \textcolor{comment}{/* Read Data */}
+73     \textcolor{keywordflow}{return} \hyperlink{sys_8h_a3dcbb9e13203beb0e38956999e8ae61d}{inw}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT} + (Register & 0x2));
+74 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=213pt]{PCI_8c_a0f554ba70c238c73d9c0b82973594106_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Read32@{Pci\+Read32}}
+\index{Pci\+Read32@{Pci\+Read32}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Read32(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)}{PciRead32(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Pci\+Read32 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}{}\label{PCI_8c_a5725f60580d5fa96eac78c97603bef5d}
+
+
+Definition at line 50 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+51 \{
+52     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+53     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+54         | (Bus << 16)
+55         | (Device << 11)
+56         | (Function << 8)
+57         | (Register & 0xFC));
+58 
+59     \textcolor{comment}{/* Read Data */}
+60     \textcolor{keywordflow}{return} \hyperlink{sys_8h_a42d0bfc1f7ce1d7334607503f60b4202}{inl}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT});
+61 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=213pt]{PCI_8c_a5725f60580d5fa96eac78c97603bef5d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Read8@{Pci\+Read8}}
+\index{Pci\+Read8@{Pci\+Read8}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Read8(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register)}{PciRead8(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register)}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Pci\+Read8 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a40d719200bdf6d24aa419cf0611670f8}{}\label{PCI_8c_a40d719200bdf6d24aa419cf0611670f8}
+
+
+Definition at line 76 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+77 \{
+78     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+79     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+80         | (Bus << 16)
+81         | (Device << 11)
+82         | (Function << 8)
+83         | (Register & 0xFC));
+84 
+85     \textcolor{comment}{/* Read Data */}
+86     \textcolor{keywordflow}{return} \hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT} + (Register & 0x3));
+87 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=207pt]{PCI_8c_a40d719200bdf6d24aa419cf0611670f8_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Write16@{Pci\+Write16}}
+\index{Pci\+Write16@{Pci\+Write16}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Write16(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint16\+\_\+t Value)}{PciWrite16(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint16_t Value)}}]{\setlength{\rightskip}{0pt plus 5cm}void Pci\+Write16 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register, }
+\item[{uint16\+\_\+t}]{Value}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_ad92c9a27c2496e5c2f63bebc6c77e097}{}\label{PCI_8c_ad92c9a27c2496e5c2f63bebc6c77e097}
+
+
+Definition at line 103 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+104 \{
+105     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+106     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+107         | (Bus << 16)
+108         | (Device << 11)
+109         | (Function << 8)
+110         | (Register & 0xFC));
+111 
+112     \textcolor{comment}{/* Write DATA */}
+113     \hyperlink{sys_8h_aab8bf5abe19006ff9a80654d87f98908}{outw}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT} + (Register & 0x2), Value);
+114 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=219pt]{PCI_8c_ad92c9a27c2496e5c2f63bebc6c77e097_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Write32@{Pci\+Write32}}
+\index{Pci\+Write32@{Pci\+Write32}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Write32(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint32\+\_\+t Value)}{PciWrite32(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint32_t Value)}}]{\setlength{\rightskip}{0pt plus 5cm}void Pci\+Write32 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register, }
+\item[{uint32\+\_\+t}]{Value}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a26380542797df4d0096125b1826ce577}{}\label{PCI_8c_a26380542797df4d0096125b1826ce577}
+
+
+Definition at line 90 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+91 \{
+92     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+93     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+94         | (Bus << 16)
+95         | (Device << 11)
+96         | (Function << 8)
+97         | (Register & 0xFC));
+98 
+99     \textcolor{comment}{/* Write DATA */}
+100     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT}, Value);
+101 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=213pt]{PCI_8c_a26380542797df4d0096125b1826ce577_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!Pci\+Write8@{Pci\+Write8}}
+\index{Pci\+Write8@{Pci\+Write8}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{Pci\+Write8(uint32\+\_\+t Bus, uint32\+\_\+t Device, uint32\+\_\+t Function, uint32\+\_\+t Register, uint8\+\_\+t Value)}{PciWrite8(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint8_t Value)}}]{\setlength{\rightskip}{0pt plus 5cm}void Pci\+Write8 (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{Bus, }
+\item[{uint32\+\_\+t}]{Device, }
+\item[{uint32\+\_\+t}]{Function, }
+\item[{uint32\+\_\+t}]{Register, }
+\item[{uint8\+\_\+t}]{Value}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8c_a8259e8b0ee1cffc6146a1a94a10062ac}{}\label{PCI_8c_a8259e8b0ee1cffc6146a1a94a10062ac}
+
+
+Definition at line 116 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+117 \{
+118     \textcolor{comment}{/* Select Bus/Device/Function/Register */}
+119     \hyperlink{sys_8h_ab53ee9eece30b2ac66ec33f66ebaa325}{outl}(\hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{PCI\_ADDRESS\_PORT}, 0x80000000
+120         | (Bus << 16)
+121         | (Device << 11)
+122         | (Function << 8)
+123         | (Register & 0xFC));
+124 
+125     \textcolor{comment}{/* Write DATA */}
+126     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(\hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{PCI\_VALUE\_PORT} + (Register & 0x03), Value);
+127 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{PCI_8c_a8259e8b0ee1cffc6146a1a94a10062ac_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{P\+C\+I.\+c@{P\+C\+I.\+c}!temp\+P\+CS@{temp\+P\+CS}}
+\index{temp\+P\+CS@{temp\+P\+CS}!P\+C\+I.\+c@{P\+C\+I.\+c}}
+\subsubsection[{\texorpdfstring{temp\+P\+CS}{tempPCS}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Pci\+Native\+Header\+\_\+t}$\ast$ temp\+P\+CS}\hypertarget{PCI_8c_a74f769972e2170ca3e585607a5746c99}{}\label{PCI_8c_a74f769972e2170ca3e585607a5746c99}
+
+
+Definition at line 150 of file P\+C\+I.\+c.
+

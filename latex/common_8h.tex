@@ -1,0 +1,302 @@
+\hypertarget{common_8h}{}\section{Experimental Edition/\+Library/common.h File Reference}
+\label{common_8h}\index{Experimental Edition/\+Library/common.\+h@{Experimental Edition/\+Library/common.\+h}}
+{\ttfamily \#include $<$system.\+h$>$}\\*
+{\ttfamily \#include $<$stdint-\/gcc.\+h$>$}\\*
+Include dependency graph for common.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{common_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{common_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structfile}{file}
+\item 
+struct \hyperlink{structregisters}{registers}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{N\+U\+LL}~((void$\ast$) 0)
+\item 
+\#define \hyperlink{common_8h_a926c1ab4f6ca8b244750377dcdea9ec1}{M\+IN}(\+\_\+a,  \+\_\+b)
+\item 
+\#define \hyperlink{common_8h_ad448d437b99a125bd9344585d4f02e9a}{M\+AX}(\+\_\+a,  \+\_\+b)
+\item 
+\#define \hyperlink{common_8h_a057810d35075597ca699719778344515}{R\+O\+U\+N\+D\+D\+O\+WN}(a,  n)
+\item 
+\#define \hyperlink{common_8h_a5d25fbed833545ed7a3c01e818de0bcf}{R\+O\+U\+N\+D\+UP}(a,  n)
+\item 
+\#define \hyperlink{common_8h_afd049f7ad59dbe455f460807475c2841}{offsetof}(type,  member)~((size\+\_\+t) (\&((type$\ast$)0)-\/$>$member))
+\item 
+\#define \hyperlink{common_8h_a0d112bae8fd35be772185b6ec6bcbe64}{S\+E\+E\+K\+\_\+\+S\+ET}~1
+\item 
+\#define \hyperlink{common_8h_a4c8d0b76b470ba65a43ca46a88320f39}{S\+E\+E\+K\+\_\+\+C\+UR}~2
+\item 
+\#define \hyperlink{common_8h_ad2a2e6c114780c3071efd24f16c7f7d8}{S\+E\+E\+K\+\_\+\+E\+ND}~3
+\item 
+\#define \hyperlink{common_8h_a101586fab2b90a8adffe50a3550e235d}{A\+S\+S\+E\+RT}(b)~((b) ? (void)0 \+: panic\+\_\+assert(\+\_\+\+\_\+\+F\+I\+L\+E\+\_\+\+\_\+, \+\_\+\+\_\+\+L\+I\+N\+E\+\_\+\+\_\+, \#b))
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef uint32\+\_\+t \hyperlink{common_8h_a7ae3a26c17ddfe117c6291739780801d}{u32int}
+\item 
+typedef int \hyperlink{common_8h_a61350201bbcea1180bb1160bd09b717f}{s32int}
+\item 
+typedef uint16\+\_\+t \hyperlink{common_8h_ade81be9b965e7be1641f9792ba8af75e}{u16int}
+\item 
+typedef short \hyperlink{common_8h_ad039e929f72cfdb80d3a96ac1f7d9c3d}{s16int}
+\item 
+typedef uint8\+\_\+t \hyperlink{common_8h_a27a416e6606c138f2d33233142a5593e}{u8int}
+\item 
+typedef char \hyperlink{common_8h_afa805b2bbcb6f0e85de57cef336f98df}{s8int}
+\item 
+typedef \+\_\+\+Bool \hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool}
+\item 
+typedef struct \hyperlink{structregisters}{registers} \hyperlink{common_8h_adf58dbaf6139b4957c348711f2026957}{registers\+\_\+t}
+\item 
+typedef void($\ast$ \hyperlink{common_8h_a0468dc495af5789aa4d49f2d4d0ede0d}{isr\+\_\+t}) (\hyperlink{common_8h_adf58dbaf6139b4957c348711f2026957}{registers\+\_\+t})
+\item 
+typedef void($\ast$ \hyperlink{common_8h_a4e754d9618c8c45cd58f7e9b6638a906}{irq\+\_\+t}) ()
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \hyperlink{common_8h_a06fc87d81c62e9abb8790b6e5713c55bae9de385ef6fe9bf3360d1038396b884c}{false}, 
+\hyperlink{common_8h_a06fc87d81c62e9abb8790b6e5713c55ba08f175a5505a10b9ed657defeb050e4b}{true}
+ \}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{common.\+h@{common.\+h}!A\+S\+S\+E\+RT@{A\+S\+S\+E\+RT}}
+\index{A\+S\+S\+E\+RT@{A\+S\+S\+E\+RT}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{A\+S\+S\+E\+RT}{ASSERT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define A\+S\+S\+E\+RT(
+\begin{DoxyParamCaption}
+\item[{}]{b}
+\end{DoxyParamCaption}
+)~((b) ? (void)0 \+: panic\+\_\+assert(\+\_\+\+\_\+\+F\+I\+L\+E\+\_\+\+\_\+, \+\_\+\+\_\+\+L\+I\+N\+E\+\_\+\+\_\+, \#b))}\hypertarget{common_8h_a101586fab2b90a8adffe50a3550e235d}{}\label{common_8h_a101586fab2b90a8adffe50a3550e235d}
+
+
+Definition at line 84 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!M\+AX@{M\+AX}}
+\index{M\+AX@{M\+AX}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{M\+AX}{MAX}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+AX(
+\begin{DoxyParamCaption}
+\item[{}]{\+\_\+a, }
+\item[{}]{\+\_\+b}
+\end{DoxyParamCaption}
+)}\hypertarget{common_8h_ad448d437b99a125bd9344585d4f02e9a}{}\label{common_8h_ad448d437b99a125bd9344585d4f02e9a}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+(\{                              \(\backslash\)
+    typeof(\_a) \_\_a = (\_a);                  \(\backslash\)
+    typeof(\_b) \_\_b = (\_b);                  \(\backslash\)
+    \_\_a >= \_\_b ? \_\_a : \_\_b;                 \(\backslash\)
+\})
+\end{DoxyCode}
+
+
+Definition at line 32 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!M\+IN@{M\+IN}}
+\index{M\+IN@{M\+IN}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{M\+IN}{MIN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+IN(
+\begin{DoxyParamCaption}
+\item[{}]{\+\_\+a, }
+\item[{}]{\+\_\+b}
+\end{DoxyParamCaption}
+)}\hypertarget{common_8h_a926c1ab4f6ca8b244750377dcdea9ec1}{}\label{common_8h_a926c1ab4f6ca8b244750377dcdea9ec1}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+(\{                              \(\backslash\)
+    typeof(\_a) \_\_a = (\_a);                  \(\backslash\)
+    typeof(\_b) \_\_b = (\_b);                  \(\backslash\)
+    \_\_a <= \_\_b ? \_\_a : \_\_b;                 \(\backslash\)
+\})
+\end{DoxyCode}
+
+
+Definition at line 26 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!N\+U\+LL@{N\+U\+LL}}
+\index{N\+U\+LL@{N\+U\+LL}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{N\+U\+LL}{NULL}}]{\setlength{\rightskip}{0pt plus 5cm}\#define N\+U\+LL~((void$\ast$) 0)}\hypertarget{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{}\label{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}
+
+
+Definition at line 18 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!offsetof@{offsetof}}
+\index{offsetof@{offsetof}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{offsetof}{offsetof}}]{\setlength{\rightskip}{0pt plus 5cm}\#define offsetof(
+\begin{DoxyParamCaption}
+\item[{}]{type, }
+\item[{}]{member}
+\end{DoxyParamCaption}
+)~((size\+\_\+t) (\&((type$\ast$)0)-\/$>$member))}\hypertarget{common_8h_afd049f7ad59dbe455f460807475c2841}{}\label{common_8h_afd049f7ad59dbe455f460807475c2841}
+
+
+Definition at line 54 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!R\+O\+U\+N\+D\+D\+O\+WN@{R\+O\+U\+N\+D\+D\+O\+WN}}
+\index{R\+O\+U\+N\+D\+D\+O\+WN@{R\+O\+U\+N\+D\+D\+O\+WN}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{R\+O\+U\+N\+D\+D\+O\+WN}{ROUNDDOWN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\+O\+U\+N\+D\+D\+O\+WN(
+\begin{DoxyParamCaption}
+\item[{}]{a, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{common_8h_a057810d35075597ca699719778344515}{}\label{common_8h_a057810d35075597ca699719778344515}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+(\{                              \(\backslash\)
+    uint64\_t \_\_a = (uint64\_t) (a);              \(\backslash\)
+    (typeof(a)) (\_\_a - \_\_a % (n));              \(\backslash\)
+\})
+\end{DoxyCode}
+
+
+Definition at line 41 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!R\+O\+U\+N\+D\+UP@{R\+O\+U\+N\+D\+UP}}
+\index{R\+O\+U\+N\+D\+UP@{R\+O\+U\+N\+D\+UP}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{R\+O\+U\+N\+D\+UP}{ROUNDUP}}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\+O\+U\+N\+D\+UP(
+\begin{DoxyParamCaption}
+\item[{}]{a, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{common_8h_a5d25fbed833545ed7a3c01e818de0bcf}{}\label{common_8h_a5d25fbed833545ed7a3c01e818de0bcf}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+(\{                              \(\backslash\)
+    uint64\_t \_\_n = (uint64\_t) (n);              \(\backslash\)
+    (typeof(a)) (\hyperlink{common_8h_a057810d35075597ca699719778344515}{ROUNDDOWN}((uint64\_t) (a) + \_\_n - 1, \_\_n));    \(\backslash\)
+\})
+\end{DoxyCode}
+
+
+Definition at line 47 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!S\+E\+E\+K\+\_\+\+C\+UR@{S\+E\+E\+K\+\_\+\+C\+UR}}
+\index{S\+E\+E\+K\+\_\+\+C\+UR@{S\+E\+E\+K\+\_\+\+C\+UR}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+E\+K\+\_\+\+C\+UR}{SEEK_CUR}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+E\+K\+\_\+\+C\+UR~2}\hypertarget{common_8h_a4c8d0b76b470ba65a43ca46a88320f39}{}\label{common_8h_a4c8d0b76b470ba65a43ca46a88320f39}
+
+
+Definition at line 68 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!S\+E\+E\+K\+\_\+\+E\+ND@{S\+E\+E\+K\+\_\+\+E\+ND}}
+\index{S\+E\+E\+K\+\_\+\+E\+ND@{S\+E\+E\+K\+\_\+\+E\+ND}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+E\+K\+\_\+\+E\+ND}{SEEK_END}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+E\+K\+\_\+\+E\+ND~3}\hypertarget{common_8h_ad2a2e6c114780c3071efd24f16c7f7d8}{}\label{common_8h_ad2a2e6c114780c3071efd24f16c7f7d8}
+
+
+Definition at line 69 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!S\+E\+E\+K\+\_\+\+S\+ET@{S\+E\+E\+K\+\_\+\+S\+ET}}
+\index{S\+E\+E\+K\+\_\+\+S\+ET@{S\+E\+E\+K\+\_\+\+S\+ET}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+E\+K\+\_\+\+S\+ET}{SEEK_SET}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+E\+K\+\_\+\+S\+ET~1}\hypertarget{common_8h_a0d112bae8fd35be772185b6ec6bcbe64}{}\label{common_8h_a0d112bae8fd35be772185b6ec6bcbe64}
+
+
+Definition at line 67 of file common.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{common.\+h@{common.\+h}!bool@{bool}}
+\index{bool@{bool}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{bool}{bool}}]{\setlength{\rightskip}{0pt plus 5cm}typedef \+\_\+\+Bool {\bf bool}}\hypertarget{common_8h_afaa87723b8417d40fcf45b7330261ef9}{}\label{common_8h_afaa87723b8417d40fcf45b7330261ef9}
+
+
+Definition at line 22 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!irq\+\_\+t@{irq\+\_\+t}}
+\index{irq\+\_\+t@{irq\+\_\+t}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{irq\+\_\+t}{irq_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ irq\+\_\+t) ()}\hypertarget{common_8h_a4e754d9618c8c45cd58f7e9b6638a906}{}\label{common_8h_a4e754d9618c8c45cd58f7e9b6638a906}
+
+
+Definition at line 82 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!isr\+\_\+t@{isr\+\_\+t}}
+\index{isr\+\_\+t@{isr\+\_\+t}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{isr\+\_\+t}{isr_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ isr\+\_\+t) ({\bf registers\+\_\+t})}\hypertarget{common_8h_a0468dc495af5789aa4d49f2d4d0ede0d}{}\label{common_8h_a0468dc495af5789aa4d49f2d4d0ede0d}
+
+
+Definition at line 80 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!registers\+\_\+t@{registers\+\_\+t}}
+\index{registers\+\_\+t@{registers\+\_\+t}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{registers\+\_\+t}{registers_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf registers}  {\bf registers\+\_\+t}}\hypertarget{common_8h_adf58dbaf6139b4957c348711f2026957}{}\label{common_8h_adf58dbaf6139b4957c348711f2026957}
+\index{common.\+h@{common.\+h}!s16int@{s16int}}
+\index{s16int@{s16int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{s16int}{s16int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef short {\bf s16int}}\hypertarget{common_8h_ad039e929f72cfdb80d3a96ac1f7d9c3d}{}\label{common_8h_ad039e929f72cfdb80d3a96ac1f7d9c3d}
+
+
+Definition at line 13 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!s32int@{s32int}}
+\index{s32int@{s32int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{s32int}{s32int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf s32int}}\hypertarget{common_8h_a61350201bbcea1180bb1160bd09b717f}{}\label{common_8h_a61350201bbcea1180bb1160bd09b717f}
+
+
+Definition at line 11 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!s8int@{s8int}}
+\index{s8int@{s8int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{s8int}{s8int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef char {\bf s8int}}\hypertarget{common_8h_afa805b2bbcb6f0e85de57cef336f98df}{}\label{common_8h_afa805b2bbcb6f0e85de57cef336f98df}
+
+
+Definition at line 15 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!u16int@{u16int}}
+\index{u16int@{u16int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{u16int}{u16int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint16\+\_\+t {\bf u16int}}\hypertarget{common_8h_ade81be9b965e7be1641f9792ba8af75e}{}\label{common_8h_ade81be9b965e7be1641f9792ba8af75e}
+
+
+Definition at line 12 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!u32int@{u32int}}
+\index{u32int@{u32int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{u32int}{u32int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint32\+\_\+t {\bf u32int}}\hypertarget{common_8h_a7ae3a26c17ddfe117c6291739780801d}{}\label{common_8h_a7ae3a26c17ddfe117c6291739780801d}
+
+
+Definition at line 10 of file common.\+h.
+
+\index{common.\+h@{common.\+h}!u8int@{u8int}}
+\index{u8int@{u8int}!common.\+h@{common.\+h}}
+\subsubsection[{\texorpdfstring{u8int}{u8int}}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint8\+\_\+t {\bf u8int}}\hypertarget{common_8h_a27a416e6606c138f2d33233142a5593e}{}\label{common_8h_a27a416e6606c138f2d33233142a5593e}
+
+
+Definition at line 14 of file common.\+h.
+
+
+
+\subsection{Enumeration Type Documentation}
+\subsubsection[{\texorpdfstring{anonymous enum}{anonymous enum}}]{\setlength{\rightskip}{0pt plus 5cm}anonymous enum}\hypertarget{common_8h_a06fc87d81c62e9abb8790b6e5713c55b}{}\label{common_8h_a06fc87d81c62e9abb8790b6e5713c55b}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{false@{false}!common.\+h@{common.\+h}}\index{common.\+h@{common.\+h}!false@{false}}\item[{\em 
+false\hypertarget{common_8h_a06fc87d81c62e9abb8790b6e5713c55bae9de385ef6fe9bf3360d1038396b884c}{}\label{common_8h_a06fc87d81c62e9abb8790b6e5713c55bae9de385ef6fe9bf3360d1038396b884c}
+}]\index{true@{true}!common.\+h@{common.\+h}}\index{common.\+h@{common.\+h}!true@{true}}\item[{\em 
+true\hypertarget{common_8h_a06fc87d81c62e9abb8790b6e5713c55ba08f175a5505a10b9ed657defeb050e4b}{}\label{common_8h_a06fc87d81c62e9abb8790b6e5713c55ba08f175a5505a10b9ed657defeb050e4b}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 23 of file common.\+h.
+
+
+\begin{DoxyCode}
+23 \{ \textcolor{keyword}{false}, \textcolor{keyword}{true} \};
+\end{DoxyCode}

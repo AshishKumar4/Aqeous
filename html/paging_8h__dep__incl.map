@@ -1,0 +1,12 @@
+<map id="Experimental Edition/Source/MemManagement/paging.h" name="Experimental Edition/Source/MemManagement/paging.h">
+<area shape="rect" id="node2" href="$mem_8c.html" title="Experimental Edition\l/Source/MemManagement/mem.c" alt="" coords="5,221,224,262"/>
+<area shape="rect" id="node4" href="$vmem_8h.html" title="Experimental Edition\l/Source/MemManagement\l/vmem.h" alt="" coords="198,109,373,165"/>
+<area shape="rect" id="node5" href="$vmem_8c.html" title="Experimental Edition\l/Source/MemManagement\l/vmem.c" alt="" coords="249,213,423,269"/>
+<area shape="rect" id="node6" href="$paging_8c.html" title="Experimental Edition\l/Source/MemManagement\l/paging.c" alt="" coords="301,317,475,373"/>
+<area shape="rect" id="node7" href="$task_8h.html" title="Experimental Edition\l/Source/MultiTasking\l/task.h" alt="" coords="499,109,645,165"/>
+<area shape="rect" id="node9" href="$vesa_8c.html" title="Experimental Edition\l/Source/vesa/vesa.c" alt="" coords="670,117,813,158"/>
+<area shape="rect" id="node3" href="$kernel_8c.html" title="Experimental Edition\l/Source/kernel.c" alt="" coords="317,421,459,463"/>
+<area shape="rect" id="node8" href="$task_8c.html" title="Experimental Edition\l/Source/MultiTasking\l/task.c" alt="" coords="499,317,645,373"/>
+<area shape="rect" id="node10" href="$graphics_8c.html" title="Experimental Edition\l/Source/graphics/graphics.c" alt="" coords="652,221,836,262"/>
+<area shape="rect" id="node11" href="$mouse_8c.html" title="Experimental Edition\l/Source/Drivers/mouse\l/mouse.c" alt="" coords="669,317,825,373"/>
+</map>

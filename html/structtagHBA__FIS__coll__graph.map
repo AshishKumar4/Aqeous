@@ -1,0 +1,6 @@
+<map id="tagHBA_FIS" name="tagHBA_FIS">
+<area shape="rect" id="node2" href="$structtagFIS__REG__H2D.html" title="tagFIS_REG_H2D" alt="" coords="5,5,136,32"/>
+<area shape="rect" id="node3" href="$structtagFIS__REG__D2H.html" title="tagFIS_REG_D2H" alt="" coords="160,5,291,32"/>
+<area shape="rect" id="node4" href="$structtagFIS__DMA__SETUP.html" title="tagFIS_DMA_SETUP" alt="" coords="315,5,466,32"/>
+<area shape="rect" id="node5" href="$structtagFIS__PIO__SETUP.html" title="tagFIS_PIO_SETUP" alt="" coords="490,5,633,32"/>
+</map>

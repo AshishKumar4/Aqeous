@@ -1,0 +1,291 @@
+\hypertarget{timer_8c}{}\section{Experimental Edition/\+Source/\+Drivers/timer/timer.c File Reference}
+\label{timer_8c}\index{Experimental Edition/\+Source/\+Drivers/timer/timer.\+c@{Experimental Edition/\+Source/\+Drivers/timer/timer.\+c}}
+{\ttfamily \#include \char`\"{}timer.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}console.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}sys.\+h\char`\"{}}\\*
+Include dependency graph for timer.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{timer_8c__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{timer_8c_ab8c2ca2f6404f395523220560b3cb9c1}{timer\+\_\+idle\+\_\+task} ()
+\item 
+void \hyperlink{timer_8c_a66c75c7551444c348c7d3a264814be05}{timer\+\_\+stub} ()
+\item 
+void \hyperlink{timer_8c_afbe59c6bb430e9e6479313e798bc726b}{timer\+\_\+callback} ()
+\item 
+void \hyperlink{timer_8c_a9dad37d7930bbbd7388e3946ef440299}{init\+\_\+timer\+\_\+\+R\+TC} ()
+\item 
+void \hyperlink{timer_8c_a6291136fdf305bf3a785ac8a53395f09}{pic\+Init} (unsigned short \+\_\+pic1, unsigned short \+\_\+pic2)
+\item 
+void \hyperlink{timer_8c_a4301322816f2a31905f0a122e437c4ed}{init\+\_\+timer} (uint32\+\_\+t frequency)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \hyperlink{timer_8c_a260e06ce96c2e4deebccaedeb059dc0b}{tick} = 0
+\item 
+uint32\+\_\+t \hyperlink{timer_8c_a247dcf1ffe81e47819843f3ea7a12330}{timer\+\_\+task} =(uint32\+\_\+t)\hyperlink{timer_8c_ab8c2ca2f6404f395523220560b3cb9c1}{timer\+\_\+idle\+\_\+task}
+\item 
+unsigned short \hyperlink{timer_8c_a7e69f0b67d364ed2694203e233168f1d}{master\+P\+IC}
+\item 
+unsigned short \hyperlink{timer_8c_ac729ec27d3d657b8d32b97da0028ab29}{slave\+P\+IC}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{timer.\+c@{timer.\+c}!init\+\_\+timer@{init\+\_\+timer}}
+\index{init\+\_\+timer@{init\+\_\+timer}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{init\+\_\+timer(uint32\+\_\+t frequency)}{init_timer(uint32_t frequency)}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+timer (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{frequency}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_a4301322816f2a31905f0a122e437c4ed}{}\label{timer_8c_a4301322816f2a31905f0a122e437c4ed}
+P\+IT T\+I\+M\+ER, working 
+
+Definition at line 81 of file timer.\+c.
+
+
+\begin{DoxyCode}
+82  \{
+83     \textcolor{comment}{//Our PIT timer handler is already especially hard coded in asm in interrupts.s}
+84     \textcolor{comment}{// The value we send to the PIT is the value to divide it's input clock}
+85     \textcolor{comment}{// (1193180 Hz) by, to get our required frequency. Important to note is}
+86     \textcolor{comment}{// that the divisor must be small enough to fit into 16-bits.}
+87     uint32\_t divisor = 1193180 / frequency;
+88 
+89     \textcolor{comment}{// Send the command byte.}
+90     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x43, 0x36);
+91 
+92     \textcolor{comment}{// Divisor has to be sent byte-wise, so split here into upper/lower bytes.}
+93     uint8\_t l = (uint8\_t)(divisor & 0xFF);
+94     uint8\_t h = (uint8\_t)( (divisor>>8) & 0xFF );
+95 
+96     \textcolor{comment}{// Send the frequency divisor.}
+97     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x40, l);
+98     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x40, h);
+99  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=207pt]{timer_8c_a4301322816f2a31905f0a122e437c4ed_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{timer.\+c@{timer.\+c}!init\+\_\+timer\+\_\+\+R\+TC@{init\+\_\+timer\+\_\+\+R\+TC}}
+\index{init\+\_\+timer\+\_\+\+R\+TC@{init\+\_\+timer\+\_\+\+R\+TC}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{init\+\_\+timer\+\_\+\+R\+T\+C()}{init_timer_RTC()}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+timer\+\_\+\+R\+TC (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_a9dad37d7930bbbd7388e3946ef440299}{}\label{timer_8c_a9dad37d7930bbbd7388e3946ef440299}
+R\+E\+AL T\+I\+M\+ER R\+TC, might not work 
+
+Definition at line 26 of file timer.\+c.
+
+
+\begin{DoxyCode}
+27  \{
+28      \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+29      \textcolor{comment}{/*outb(0x70, 0x8B);        // select register B, and disable NMI}
+30 \textcolor{comment}{     char prev=inb(0x71);   // read the current value of register B}
+31 \textcolor{comment}{     outb(0x70, 0x8B);      // set the index again (a read will reset the index to register D)}
+32 \textcolor{comment}{     outb(0x71, prev | 0x40);*/}
+33      \textcolor{keywordtype}{int} rate;
+34      rate=5;
+35      rate &= 0x0F;          \textcolor{comment}{// rate must be above 2 and not over 15}
+36 
+37      \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x70, 0x8A);      \textcolor{comment}{// set index to register A, disable NMI}
+38      \textcolor{keywordtype}{char} prev=\hyperlink{sys_8h_a3d758e66f0e4acaf38ba39b58ce83e4d}{inb}(0x71);    \textcolor{comment}{// get initial value of register A}
+39      \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x70, 0x8A);      \textcolor{comment}{// reset index to A}
+40      \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x71, (prev & 0xF0) | rate); \textcolor{comment}{//write only our rate to A. Note, rate is the bottom 4 bits.}
+41 
+42      \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+43     \textcolor{comment}{//register\_interrupt\_handler(IRQ8,timer\_task);}
+44  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=234pt]{timer_8c_a9dad37d7930bbbd7388e3946ef440299_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{timer.\+c@{timer.\+c}!pic\+Init@{pic\+Init}}
+\index{pic\+Init@{pic\+Init}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{pic\+Init(unsigned short \+\_\+pic1, unsigned short \+\_\+pic2)}{picInit(unsigned short _pic1, unsigned short _pic2)}}]{\setlength{\rightskip}{0pt plus 5cm}void pic\+Init (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{\+\_\+pic1, }
+\item[{unsigned short}]{\+\_\+pic2}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_a6291136fdf305bf3a785ac8a53395f09}{}\label{timer_8c_a6291136fdf305bf3a785ac8a53395f09}
+
+
+Definition at line 48 of file timer.\+c.
+
+
+\begin{DoxyCode}
+49  \{
+50     \hyperlink{timer_8c_a7e69f0b67d364ed2694203e233168f1d}{masterPIC} = \_pic1;
+51     \hyperlink{timer_8c_ac729ec27d3d657b8d32b97da0028ab29}{slavePIC}  = \_pic2;
+52 
+53     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} data1 = \_pic1 + 1;
+54     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} data2 = \_pic2 + 1;
+55 
+56     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(\_pic1, 0x10 + 0x01);   \textcolor{comment}{// Init + ICW4 (Set up Cascade mode)}
+57     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(\_pic2, 0x10 + 0x01);
+58 
+59     \textcolor{comment}{// After this init, the PICs are expecting three additional pieces}
+60     \textcolor{comment}{// of data; Vector offset, Cascade position, and mode.}
+61 
+62     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data1, 0x20);  \textcolor{comment}{// Relocate pic1 to interrupt 0x20}
+63     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data2, 0x28);  \textcolor{comment}{// Relocate pic2 to interrupt 0x28}
+64 
+65     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data1, 4);     \textcolor{comment}{// Tell Master it has Slave on line 2 (00000100)}
+66     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data2, 2);     \textcolor{comment}{// Tell the Slave it's cascading      (00000010)}
+67 
+68     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data1, 1);     \textcolor{comment}{// Tell the Pic it's in 8086 mode}
+69     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data2, 1);
+70 
+71     \textcolor{comment}{// At this point, init is complete, and the pic goes into normal}
+72     \textcolor{comment}{// Operating mode. But there is still one last thing to do, Set the}
+73     \textcolor{comment}{// Interrupt Masks so we don't get interrupts until we set up the}
+74     \textcolor{comment}{// Devices on their respective IRQ Lines.}
+75 
+76     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data1, 0xFF);  \textcolor{comment}{// Lines 0-7 are all masked}
+77     \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(data2, 0xFF);  \textcolor{comment}{// Lines 8-15 are now masked too.}
+78  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{timer_8c_a6291136fdf305bf3a785ac8a53395f09_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{timer.\+c@{timer.\+c}!timer\+\_\+callback@{timer\+\_\+callback}}
+\index{timer\+\_\+callback@{timer\+\_\+callback}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{timer\+\_\+callback()}{timer_callback()}}]{\setlength{\rightskip}{0pt plus 5cm}void timer\+\_\+callback (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_afbe59c6bb430e9e6479313e798bc726b}{}\label{timer_8c_afbe59c6bb430e9e6479313e798bc726b}
+
+
+Definition at line 21 of file timer.\+c.
+
+
+\begin{DoxyCode}
+22  \{
+23     \hyperlink{timer_8c_a260e06ce96c2e4deebccaedeb059dc0b}{tick}++;
+24  \}
+\end{DoxyCode}
+\index{timer.\+c@{timer.\+c}!timer\+\_\+idle\+\_\+task@{timer\+\_\+idle\+\_\+task}}
+\index{timer\+\_\+idle\+\_\+task@{timer\+\_\+idle\+\_\+task}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{timer\+\_\+idle\+\_\+task()}{timer_idle_task()}}]{\setlength{\rightskip}{0pt plus 5cm}void timer\+\_\+idle\+\_\+task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_ab8c2ca2f6404f395523220560b3cb9c1}{}\label{timer_8c_ab8c2ca2f6404f395523220560b3cb9c1}
+
+
+Definition at line 7 of file timer.\+c.
+
+
+\begin{DoxyCode}
+8 \{
+9   \hyperlink{sys_8h_a1fe613f83e149aa1a4ae0d5f5149ab34}{outb}(0x20, 0x20);
+10   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+11   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"iret"});
+12 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=234pt]{timer_8c_ab8c2ca2f6404f395523220560b3cb9c1_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{timer.\+c@{timer.\+c}!timer\+\_\+stub@{timer\+\_\+stub}}
+\index{timer\+\_\+stub@{timer\+\_\+stub}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{timer\+\_\+stub()}{timer_stub()}}]{\setlength{\rightskip}{0pt plus 5cm}void timer\+\_\+stub (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{timer_8c_a66c75c7551444c348c7d3a264814be05}{}\label{timer_8c_a66c75c7551444c348c7d3a264814be05}
+
+
+Definition at line 16 of file timer.\+c.
+
+
+\begin{DoxyCode}
+17 \{
+18   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"jmp *%0"}::\textcolor{stringliteral}{"r"}(\hyperlink{timer_8c_a247dcf1ffe81e47819843f3ea7a12330}{timer\_task}));
+19 \}
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\index{timer.\+c@{timer.\+c}!master\+P\+IC@{master\+P\+IC}}
+\index{master\+P\+IC@{master\+P\+IC}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{master\+P\+IC}{masterPIC}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned short master\+P\+IC}\hypertarget{timer_8c_a7e69f0b67d364ed2694203e233168f1d}{}\label{timer_8c_a7e69f0b67d364ed2694203e233168f1d}
+
+
+Definition at line 46 of file timer.\+c.
+
+\index{timer.\+c@{timer.\+c}!slave\+P\+IC@{slave\+P\+IC}}
+\index{slave\+P\+IC@{slave\+P\+IC}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{slave\+P\+IC}{slavePIC}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned short slave\+P\+IC}\hypertarget{timer_8c_ac729ec27d3d657b8d32b97da0028ab29}{}\label{timer_8c_ac729ec27d3d657b8d32b97da0028ab29}
+
+
+Definition at line 46 of file timer.\+c.
+
+\index{timer.\+c@{timer.\+c}!tick@{tick}}
+\index{tick@{tick}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{tick}{tick}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t tick = 0}\hypertarget{timer_8c_a260e06ce96c2e4deebccaedeb059dc0b}{}\label{timer_8c_a260e06ce96c2e4deebccaedeb059dc0b}
+
+
+Definition at line 5 of file timer.\+c.
+
+\index{timer.\+c@{timer.\+c}!timer\+\_\+task@{timer\+\_\+task}}
+\index{timer\+\_\+task@{timer\+\_\+task}!timer.\+c@{timer.\+c}}
+\subsubsection[{\texorpdfstring{timer\+\_\+task}{timer_task}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t timer\+\_\+task =(uint32\+\_\+t){\bf timer\+\_\+idle\+\_\+task}}\hypertarget{timer_8c_a247dcf1ffe81e47819843f3ea7a12330}{}\label{timer_8c_a247dcf1ffe81e47819843f3ea7a12330}
+
+
+Definition at line 14 of file timer.\+c.
+

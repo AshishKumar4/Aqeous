@@ -1,0 +1,437 @@
+\hypertarget{kernel_8c}{}\section{Experimental Edition/\+Source/kernel.c File Reference}
+\label{kernel_8c}\index{Experimental Edition/\+Source/kernel.\+c@{Experimental Edition/\+Source/kernel.\+c}}
+{\ttfamily \#include \char`\"{}mouse.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}console.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}interrupts.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}multiboot.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}vfs.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}cmos.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pci.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ahci.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}timer.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}mem.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}paging.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ata.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}acpi.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}vmem.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}keyboard.\+c\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}task.\+c\char`\"{}}\\*
+Include dependency graph for kernel.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{kernel_8c_a76d4f27b3b103a97270dfdb6f12b4a69}{dbug} ()
+\item 
+void \hyperlink{kernel_8c_ada8402e0c504af8cafef5cc76c076003}{kernel\+\_\+main} ()
+\item 
+void \hyperlink{kernel_8c_a6aad4dd5839517091904182c1484fdef}{kernel\+\_\+early} (struct \hyperlink{structmultiboot}{multiboot} $\ast$mboot\+\_\+ptr, \hyperlink{common_8h_a7ae3a26c17ddfe117c6291739780801d}{u32int} initial\+\_\+stack)
+\item 
+void \hyperlink{kernel_8c_a5fed83f1870809270475ca393c04530f}{kernel\+\_\+start} ()
+\item 
+uint8\+\_\+t \hyperlink{kernel_8c_ab7981500510b079513bd93519d049b7a}{console\+\_\+manager} (char $\ast$inst)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{common_8h_a7ae3a26c17ddfe117c6291739780801d}{u32int} \hyperlink{kernel_8c_acc19810fa2331d1652a66f800eed0498}{initial\+\_\+esp}
+\item 
+uint32\+\_\+t \hyperlink{kernel_8c_a2d33b5234091bd5266a4f1902c82f12b}{initial\+\_\+ebp}
+\item 
+\hyperlink{common_8h_a27a416e6606c138f2d33233142a5593e}{u8int} \hyperlink{kernel_8c_a16f1946dba8cf386d93e649674de8768}{calle} =0
+\item 
+uint32\+\_\+t \hyperlink{kernel_8c_ad45a6d6fed3534730c8f43c22630d34d}{initial\+\_\+eip}
+\item 
+\hyperlink{task_8h_aa2a3cd026faa98dd705aba6998ac04e6}{tss\+\_\+struct\+\_\+t} $\ast$ \hyperlink{kernel_8c_a2dca3394502d4162ee2246af6a6f9570}{T\+SS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{kernel.\+c@{kernel.\+c}!console\+\_\+manager@{console\+\_\+manager}}
+\index{console\+\_\+manager@{console\+\_\+manager}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{console\+\_\+manager(char $\ast$inst)}{console_manager(char *inst)}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t console\+\_\+manager (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{inst}
+\end{DoxyParamCaption}
+)}\hypertarget{kernel_8c_ab7981500510b079513bd93519d049b7a}{}\label{kernel_8c_ab7981500510b079513bd93519d049b7a}
+
+
+Definition at line 194 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+195 \{
+196     \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"help"}))
+197     \{
+198         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nAvialable Commands are:\(\backslash\)n"});
+199         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)thelp         To get all the available commands"});
+200         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tmdbug        To test the Memory Managment System"});
+201         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tshutdown     To ACPI Power off the system (may not work on few machines)"});
+202         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tstart vesa   To enter VESA Super VGA Mode"});
+203         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tmemmap       To view the Physical Memory Map of the system"});
+204         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)ttest multi   To Test multitasking"});
+205         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tother commands\(\backslash\)n"});
+206         \textcolor{keywordflow}{return} 0;
+207     \}
+208     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"shutdown"}))
+209     \{
+210             \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Turning Power off"});
+211             \hyperlink{acpi_8c_a6f63c2b70d3c6d268bdc2423d3fdfb9f}{acpiPowerOff}();
+212             \textcolor{keywordflow}{return} 0;
+213     \}
+214     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"mdbug"}))
+215     \{
+216             \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Testing Virtual Memory Manager"});
+217             \hyperlink{console_8h_a0b1c810c221b3638c2afc63834428893}{mdbug}();
+218             \textcolor{keywordflow}{return} 0;
+219     \}
+220     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"start vesa"}))
+221     \{
+222         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Entering VESA SVGA mode 1024*768"});
+223         \hyperlink{console_8h_a84ab240c572ff018be52cc0c227ac44c}{vesa}(0x117);
+224         \textcolor{keywordflow}{return} 1;
+225     \}
+226     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"memmap"}))
+227     \{
+228     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nMemory Map:"});
+229     \hyperlink{structmemory__region}{MemRegion\_t}* memmap\_info=\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info};
+230 
+231     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<15;i++)
+232     \{
+233         \textcolor{keywordflow}{if}(memmap\_info->\hyperlink{structmemory__region_a85b8ec619e9aa2053ea033c5b7d3683c}{startLo}==0) \textcolor{keywordflow}{break};
+234         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"region %i address: %x size: %x Bytes Type: %i (%s)\(\backslash\)n"},i,memmap\_info->
+      \hyperlink{structmemory__region_a090957a0a7f28700a605cf6f5e8f614a}{startHi},memmap\_info->\hyperlink{structmemory__region_a3d6aa91c428379cfc829556e48aee067}{sizeHi},
+235                memmap\_info->\hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type},\hyperlink{vmem_8h_aa980b4f0db6827466a011796b1179f71}{strMemoryTypes}[memmap\_info->
+      \hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type}-1]);
+236         memmap\_info++;
+237     \}
+238         \textcolor{keywordflow}{return} 0;
+239     \}
+240     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"test multi"}))
+241     \{
+242         \textcolor{comment}{//schedule=switch\_task;}
+243         \textcolor{comment}{//printf("\(\backslash\)n\(\backslash\)tEnter the timer Value:");}
+244         \textcolor{comment}{//uint32\_t timer=getint();}
+245         \hyperlink{task_8c_aa84eaf17b807dd55decb63a2de5f1bc7}{Scheduler\_exec}();
+246         \textcolor{keywordflow}{return} 0;
+247     \}
+248     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"rand-gen"}))
+249     \{
+250         \hyperlink{task_8c_aed5860394b06605b9c6de6e8a31f74fa}{rand\_test}();
+251         \textcolor{keywordflow}{return} 0;
+252     \}
+253     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Command Not Recognized! type help for help\(\backslash\)n"});
+254     \textcolor{keywordflow}{return} 0;
+255 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel_8c_ab7981500510b079513bd93519d049b7a_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{kernel.\+c@{kernel.\+c}!dbug@{dbug}}
+\index{dbug@{dbug}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{dbug()}{dbug()}}]{\setlength{\rightskip}{0pt plus 5cm}void dbug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{kernel_8c_a76d4f27b3b103a97270dfdb6f12b4a69}{}\label{kernel_8c_a76d4f27b3b103a97270dfdb6f12b4a69}
+
+
+Definition at line 22 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+23 \{
+24     \textcolor{keywordtype}{int} a[4];
+25     \textcolor{comment}{/*printf("\(\backslash\)n\(\backslash\)tEnter the size of: ");}
+26 \textcolor{comment}{    for(int i=0;i<4;i++)}
+27 \textcolor{comment}{    \{}
+28 \textcolor{comment}{        printf("\(\backslash\)n\(\backslash\)t\(\backslash\)tvar %x: ",i+1);}
+29 \textcolor{comment}{        a[i]=getint();}
+30 \textcolor{comment}{    \}*/}
+31     a[0] = 10;
+32     a[1] = 512;
+33     a[2] = 514;
+34     a[3] = 100;
+35     uint32\_t *temp1=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[0]),*temp2=temp1;
+36     \textcolor{comment}{//malloc(4096);}
+37     uint32\_t *\hyperlink{ahci_8c_afd17a5aedbd8bd935cad000d4147d6c2}{test1}=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[1]),*test2=\hyperlink{ahci_8c_afd17a5aedbd8bd935cad000d4147d6c2}{test1};
+38     uint32\_t *test3=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[2]);
+39     uint32\_t *test4=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[3]);
+40     uint32\_t *test5=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(1);
+41     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \(\backslash\)n"},temp1,test1,test3,
+      test4,test5);
+42     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)tPutting Magic Numbers into first two addresses\(\backslash\)n"});
+43     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<32;i++)
+44     \{
+45         *temp1=4284;
+46         ++temp1;
+47     \}
+48     temp1=temp2;
+49     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<100;i++)
+50     \{
+51         *test1=100;
+52         ++\hyperlink{ahci_8c_afd17a5aedbd8bd935cad000d4147d6c2}{test1};
+53     \}
+54     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)tDone, Now Reading what we just wrote, 4284 on first few memory, 100 on others\(\backslash\)n"});
+55     test1=test2;
+56     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<32;i++)
+57     \{
+58         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" %x "},*temp1);
+59         ++temp1;
+60     \}
+61     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<100;i+=5)
+62     \{
+63         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" %x "},*test1);
+64         ++\hyperlink{ahci_8c_afd17a5aedbd8bd935cad000d4147d6c2}{test1};
+65     \}
+66     temp1=temp2;
+67     test1=test2;
+68     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"If you just saw few 4284's and 100's and nothing else, no extra space; everything worked
+       fine!\(\backslash\)n"});
+69     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"Now Freeing the memory!\(\backslash\)n"});
+70     \hyperlink{mem_8c_a88aa6b479b05e673cbb8e79d8692830d}{free}(temp2);
+71     \hyperlink{mem_8c_a88aa6b479b05e673cbb8e79d8692830d}{free}(test2);
+72     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<1000;i+=50)
+73     \{
+74         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" %x "},*temp1);
+75         ++temp1;
+76     \}
+77     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<100;i+=5)
+78     \{
+79         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" %x "},*test1);
+80         ++\hyperlink{ahci_8c_afd17a5aedbd8bd935cad000d4147d6c2}{test1};
+81     \}
+82     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{" If you didnt saw any numbers above, It worked!!!\(\backslash\)n"});
+83     uint32\_t *tmp1=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[0]),*tmp2=tmp1;
+84     \textcolor{comment}{//malloc(4096);}
+85     uint32\_t *tst1=(uint32\_t*)\hyperlink{mem_8c_a078d20da53d088938d806e26395534b8}{malloc}(a[1]),*tst2=tst1;
+86     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)tLocation of var 1: %x, var 2: %x \(\backslash\)n"},tmp1,tst1);
+87 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel_8c_a76d4f27b3b103a97270dfdb6f12b4a69_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{kernel.\+c@{kernel.\+c}!kernel\+\_\+early@{kernel\+\_\+early}}
+\index{kernel\+\_\+early@{kernel\+\_\+early}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{kernel\+\_\+early(struct multiboot $\ast$mboot\+\_\+ptr, u32int initial\+\_\+stack)}{kernel_early(struct multiboot *mboot_ptr, u32int initial_stack)}}]{\setlength{\rightskip}{0pt plus 5cm}void kernel\+\_\+early (
+\begin{DoxyParamCaption}
+\item[{struct {\bf multiboot} $\ast$}]{mboot\+\_\+ptr, }
+\item[{{\bf u32int}}]{initial\+\_\+stack}
+\end{DoxyParamCaption}
+)}\hypertarget{kernel_8c_a6aad4dd5839517091904182c1484fdef}{}\label{kernel_8c_a6aad4dd5839517091904182c1484fdef}
+
+
+Definition at line 95 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+96 \{
+97      \textcolor{comment}{//Kernel stack located at 60th mb to 70th mb}
+98     \hyperlink{kernel_8c_acc19810fa2331d1652a66f800eed0498}{initial\_esp} = 0x3C00000;
+99         \hyperlink{console_8c_acadd2a5d99d952e55a4580dbc8f8739d}{console\_init}();
+100         \hyperlink{mouse_8c_a2c765935a206229e0b5d7c53d85326f0}{mouseinit}();
+101         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nMouse Drivers initialized\(\backslash\)n"});
+102         \hyperlink{keyboard_8c_aaeb4e4a3c4813ee1efc6b98bba9ec781}{keyboard\_init}();
+103         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nKeyboard Drivers Initialized\(\backslash\)n"});
+104     \hyperlink{descriptors_8c_a29b68b6342c3a52a54ad89ec23945472}{init\_descriptor\_tables}();
+105     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"DESCRIPTOR TABLES INITIALIZED \(\backslash\)n"});
+106         \hyperlink{task_8h_aa2a3cd026faa98dd705aba6998ac04e6}{tss\_struct\_t} tss;
+107         \hyperlink{kernel_8c_a2dca3394502d4162ee2246af6a6f9570}{TSS}=&tss;
+108         gdt\_set\_gate(5,(uint32\_t)&tss,\textcolor{keyword}{sizeof}(\hyperlink{task_8h_aa2a3cd026faa98dd705aba6998ac04e6}{tss\_struct\_t}),0x89,0x40);
+109       \hyperlink{descriptors_8c_af3833dc9063c90b6758a50b1101f54b1}{gdt\_flush}((\hyperlink{common_8h_a7ae3a26c17ddfe117c6291739780801d}{u32int})&\hyperlink{descriptors_8c_ab0888c07dfb9352ef76d05e63464cf0b}{gdt\_ptr});
+110         tss.ss0=0x10;
+111         tss.esp0=\hyperlink{kernel_8c_acc19810fa2331d1652a66f800eed0498}{initial\_esp};
+112         tss.iomap=\textcolor{keyword}{sizeof}(\hyperlink{task_8h_aa2a3cd026faa98dd705aba6998ac04e6}{tss\_struct\_t});
+113         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"TSS setuped\(\backslash\)n"});
+114     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nAvailable memory: "});
+115     \hyperlink{stdio_8h_a4340730c5409b7e9981408c37974686d}{printint}(mboot\_ptr->\hyperlink{structmultiboot_a914ffaeaee2f44eea822a3808f6bfc44}{mem\_upper});
+116     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nMemory Map:"});
+117     \hyperlink{vmem_8h_a0f979e071f945985080d1c0d4fda6f8a}{memAvailable}=mboot\_ptr->\hyperlink{structmultiboot_a914ffaeaee2f44eea822a3808f6bfc44}{mem\_upper};
+118     uint32\_t *mmap=(uint32\_t*)mboot\_ptr->\hyperlink{structmultiboot_a058132ecf13be63c04fae96cea47d5da}{mmap\_addr};
+119     \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}=(\hyperlink{structmemory__region}{MemRegion\_t}*)mmap;\textcolor{comment}{//+mboot\_ptr->size;}
+120         \hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem}=\hyperlink{vmem_8h_a0f979e071f945985080d1c0d4fda6f8a}{memAvailable};
+121     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<20;i++)
+122     \{
+123         \textcolor{keywordflow}{if}(\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}->\hyperlink{structmemory__region_a85b8ec619e9aa2053ea033c5b7d3683c}{startLo}==0) \textcolor{keywordflow}{break};
+124         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"region %i address: %x size: %x Bytes Type: %i (%s)\(\backslash\)n"},i,
+      \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}->\hyperlink{structmemory__region_a090957a0a7f28700a605cf6f5e8f614a}{startHi},\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}->\hyperlink{structmemory__region_a3d6aa91c428379cfc829556e48aee067}{sizeHi},
+125                \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}->\hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type},\hyperlink{vmem_8h_aa980b4f0db6827466a011796b1179f71}{strMemoryTypes}[
+      \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}->\hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type}-1]);
+126         \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}++;
+127     \}
+128         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nInitializing Memory Manager!\(\backslash\)n"});
+129     \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info}=(\hyperlink{structmemory__region}{MemRegion\_t}*)mmap;\textcolor{comment}{//+mboot\_ptr->size;*/}
+130     \hyperlink{vmem_8c_af1b23449cc4dd41f72614ecc55ac9d7f}{Mapper}();
+131         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nEnabling ACPI!\(\backslash\)n"});
+132     \hyperlink{acpi_8c_a7fe73cf42200ac2245d5dd48fe2268db}{initAcpi}();
+133     \textcolor{keywordflow}{if}(!\hyperlink{acpi_8c_a7785e47ec7c5a61c43890af2581da359}{acpiEnable}())
+134         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nACPI Initialized\(\backslash\)n"});
+135     \textcolor{keywordflow}{else} \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nACPI CANT BE INITIALIZED\(\backslash\)n"});
+136 
+137         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)nEnumerating all devices on PCI BUS:\(\backslash\)n"});
+138         \hyperlink{PCI_8c_a6ce10e588aa8706ddda501da33380f7c}{checkAllBuses}();
+139         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nEnabling Hard Disk\(\backslash\)n"});
+140         \hyperlink{ahci_8c_a0fe47f9aac2b2aec861fd41a0daa7395}{checkAHCI}();
+141         \textcolor{keywordflow}{if}(!\hyperlink{ahci_8c_a3af2180010826f632153d8428bac73f8}{ahci\_found})
+142             \hyperlink{ata_8c_a43278fa663983ddcfb2d1bbb78dbf618}{init\_ata}();
+143         \textcolor{comment}{//printf(" %x %x ",satatest,abcd);}
+144         \textcolor{comment}{//printf(" %x %x %x  ",sizeof(unsigned short),sizeof(unsigned long),sizeof(unsigned long int));s}
+145         \textcolor{keywordflow}{while}(1);
+146         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nEnabling Paging\(\backslash\)n"});
+147         \hyperlink{paging_8c_ad05c453b13c69ecf5c7963798704cc18}{initialise\_paging}();
+148         \hyperlink{paging_8c_ae62af42af2d4cb211a64978ff1ef060e}{enable\_paging}();
+149         \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info},(\textcolor{keywordtype}{void}*)\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info});
+150         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Paging Has been Enabled Successfully!"});
+151         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Available Memory: %x KB\(\backslash\)n"},\hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem});
+152         \hyperlink{task_8c_aea945e91746a54801f4763ad264746b9}{initTasking}();
+153         \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+154 
+155         \hyperlink{cmos_8c_a30444c527dbf74f503acbd98b0dad750}{init\_cmos}();
+156         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nCMOS Clock Initialized\(\backslash\)n"});
+157 
+158    \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nLOADING MAIN KERNEL...\(\backslash\)n"});
+159      \hyperlink{console_8h_a0b1c810c221b3638c2afc63834428893}{mdbug}=\hyperlink{kernel_8c_a76d4f27b3b103a97270dfdb6f12b4a69}{dbug};
+160      \hyperlink{console_8h_a84ab240c572ff018be52cc0c227ac44c}{vesa}=\hyperlink{vesa_8c_aea30091e5f3aac163abe194e70fb54a6}{setVesa};
+161      \textcolor{comment}{//printf("\(\backslash\)nsize of FrameMap\_t: %x",sizeof(FrameMap\_t));}
+162      \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)n\(\backslash\)tType shutdown to do ACPI shutdown (wont work on certain systems)"});
+163      \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tType mdbug to test the Memory Manager"});
+164      \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n location of kernel\_main: %x "},\hyperlink{kernel_8c_ada8402e0c504af8cafef5cc76c076003}{kernel\_main});
+165      \textcolor{comment}{//idle2();}
+166 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{kernel_8c_a6aad4dd5839517091904182c1484fdef_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{kernel.\+c@{kernel.\+c}!kernel\+\_\+main@{kernel\+\_\+main}}
+\index{kernel\+\_\+main@{kernel\+\_\+main}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{kernel\+\_\+main()}{kernel_main()}}]{\setlength{\rightskip}{0pt plus 5cm}void kernel\+\_\+main (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{kernel_8c_ada8402e0c504af8cafef5cc76c076003}{}\label{kernel_8c_ada8402e0c504af8cafef5cc76c076003}
+
+
+Definition at line 172 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+173 \{
+174         \textcolor{comment}{//Scheduler\_exec();}
+175         \textcolor{comment}{//rand\_test();}
+176         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n"});
+177         \textcolor{keywordtype}{char} *inst=\textcolor{stringliteral}{" "};
+178         uint8\_t flg=0;
+179     \textcolor{keywordflow}{while}(!flg)
+180     \{
+181                 \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)ncmd>"});
+182                 \textcolor{comment}{//asm volatile("popl %%eax;": "=a"(initial\_eip));}
+183                 \textcolor{comment}{//printf("eip %x ",initial\_eip);}
+184                 \hyperlink{keyboard_8c_a3b0a0dd71bca58f7eec23991e11ce6d3}{getline}(inst);
+185                 flg=\hyperlink{kernel_8c_ab7981500510b079513bd93519d049b7a}{console\_manager}(inst);\textcolor{comment}{//*/}
+186     \}
+187         \textcolor{keywordflow}{while}(1)
+188         \{
+189             \hyperlink{graphics_8c_a731591af3a62a9240b8a3f58ecde6cd3}{Mouse\_Plot}(\hyperlink{mouse_8c_aa3d2105adcc19a5aba525c805fc49ff2}{mousex},\hyperlink{mouse_8c_a6d4a0453f23b7c4df1a7be2972529a0b}{mousey});
+190             \hyperlink{graphics_8c_aa8f757f92401a982acb48fb56b4da7d7}{DBuff}();\textcolor{comment}{//*/}
+191         \}
+192 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel_8c_ada8402e0c504af8cafef5cc76c076003_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{kernel.\+c@{kernel.\+c}!kernel\+\_\+start@{kernel\+\_\+start}}
+\index{kernel\+\_\+start@{kernel\+\_\+start}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{kernel\+\_\+start()}{kernel_start()}}]{\setlength{\rightskip}{0pt plus 5cm}void kernel\+\_\+start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{kernel_8c_a5fed83f1870809270475ca393c04530f}{}\label{kernel_8c_a5fed83f1870809270475ca393c04530f}
+
+
+Definition at line 168 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+169 \{
+170 \}
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\index{kernel.\+c@{kernel.\+c}!calle@{calle}}
+\index{calle@{calle}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{calle}{calle}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf u8int} calle =0}\hypertarget{kernel_8c_a16f1946dba8cf386d93e649674de8768}{}\label{kernel_8c_a16f1946dba8cf386d93e649674de8768}
+
+
+Definition at line 20 of file kernel.\+c.
+
+\index{kernel.\+c@{kernel.\+c}!initial\+\_\+ebp@{initial\+\_\+ebp}}
+\index{initial\+\_\+ebp@{initial\+\_\+ebp}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{initial\+\_\+ebp}{initial_ebp}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t initial\+\_\+ebp}\hypertarget{kernel_8c_a2d33b5234091bd5266a4f1902c82f12b}{}\label{kernel_8c_a2d33b5234091bd5266a4f1902c82f12b}
+
+
+Definition at line 19 of file kernel.\+c.
+
+\index{kernel.\+c@{kernel.\+c}!initial\+\_\+eip@{initial\+\_\+eip}}
+\index{initial\+\_\+eip@{initial\+\_\+eip}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{initial\+\_\+eip}{initial_eip}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t initial\+\_\+eip}\hypertarget{kernel_8c_ad45a6d6fed3534730c8f43c22630d34d}{}\label{kernel_8c_ad45a6d6fed3534730c8f43c22630d34d}
+
+
+Definition at line 89 of file kernel.\+c.
+
+\index{kernel.\+c@{kernel.\+c}!initial\+\_\+esp@{initial\+\_\+esp}}
+\index{initial\+\_\+esp@{initial\+\_\+esp}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{initial\+\_\+esp}{initial_esp}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf u32int} initial\+\_\+esp}\hypertarget{kernel_8c_acc19810fa2331d1652a66f800eed0498}{}\label{kernel_8c_acc19810fa2331d1652a66f800eed0498}
+
+
+Definition at line 18 of file kernel.\+c.
+
+\index{kernel.\+c@{kernel.\+c}!T\+SS@{T\+SS}}
+\index{T\+SS@{T\+SS}!kernel.\+c@{kernel.\+c}}
+\subsubsection[{\texorpdfstring{T\+SS}{TSS}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf tss\+\_\+struct\+\_\+t}$\ast$ T\+SS}\hypertarget{kernel_8c_a2dca3394502d4162ee2246af6a6f9570}{}\label{kernel_8c_a2dca3394502d4162ee2246af6a6f9570}
+
+
+Definition at line 93 of file kernel.\+c.
+

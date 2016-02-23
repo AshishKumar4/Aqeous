@@ -1,0 +1,511 @@
+\hypertarget{string_8h}{}\section{Experimental Edition/\+Library/string.h File Reference}
+\label{string_8h}\index{Experimental Edition/\+Library/string.\+h@{Experimental Edition/\+Library/string.\+h}}
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$sys/cdefs.\+h$>$}\\*
+{\ttfamily \#include $<$stddef.\+h$>$}\\*
+Include dependency graph for string.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=225pt]{string_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{string_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{string_8h_a3376078c105a2293e911a180e7fbab4b}{memcmp} (const void $\ast$\+\_\+s1, const void $\ast$\+\_\+s2, size\+\_\+t \+\_\+n)
+\item 
+void $\ast$ \hyperlink{string_8h_a776fdd36ddff3e9f4191ea47e0cbd5de}{memcpy} (void $\ast$\+\_\+dest, const void $\ast$\+\_\+src, size\+\_\+t \+\_\+n)
+\item 
+void $\ast$ \hyperlink{string_8h_ae972269902c41dcc0afca72fc22af95f}{memmove} (void $\ast$dstptr, const void $\ast$srcptr, size\+\_\+t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+void \hyperlink{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{memset} (void $\ast$\+\_\+s, int \+\_\+c, size\+\_\+t \+\_\+n)
+\item 
+size\+\_\+t \hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen} (const char $\ast$\+\_\+s)
+\item 
+int \hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp} (const char $\ast$\+\_\+s1, const char $\ast$\+\_\+s2)
+\item 
+int \hyperlink{string_8h_a7377c7836651b9c210e431b531ede0c8}{strncmp} (const char $\ast$\+\_\+s1, const char $\ast$\+\_\+s2, size\+\_\+t \+\_\+n)
+\item 
+char $\ast$ \hyperlink{string_8h_a5d193b0ce634c4a4915378441a475c46}{strcpy} (char $\ast$\+\_\+dest, const char $\ast$\+\_\+src)
+\item 
+char $\ast$ \hyperlink{string_8h_a98218333c64beb42f1b1d06da7d53329}{strcat} (char $\ast$\+\_\+dest, const char $\ast$\+\_\+src)
+\item 
+int \hyperlink{string_8h_a3487905a0eeaa950e7fedeed68ff9bf8}{strcmpy} (const char $\ast$c1, const char $\ast$c2)
+\item 
+char $\ast$ \hyperlink{string_8h_a0d822829769975a03cfc4b9b2bc83895}{strchr} (const char $\ast$\+\_\+s, int \+\_\+c)
+\item 
+size\+\_\+t \hyperlink{string_8h_a70edc6f218324e3355a0ad188ec84944}{strspn} (const char $\ast$\+\_\+s, const char $\ast$\+\_\+accept)
+\item 
+size\+\_\+t \hyperlink{string_8h_a9f9d868422cf96200bc5420a197895e6}{strcspn} (const char $\ast$\+\_\+s, const char $\ast$\+\_\+reject)
+\item 
+char $\ast$ \hyperlink{string_8h_ad1fc4977575eda6fb175df488baf3284}{strtok} (char $\ast$\+\_\+s, const char $\ast$\+\_\+delim)
+\item 
+char $\ast$ \hyperlink{string_8h_a0b12094c3530d2c7ba3bddde57520819}{strstr} (const char $\ast$\+\_\+haystack, const char $\ast$\+\_\+needle)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{string.\+h@{string.\+h}!memcmp@{memcmp}}
+\index{memcmp@{memcmp}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{memcmp(const void $\ast$\+\_\+s1, const void $\ast$\+\_\+s2, size\+\_\+t \+\_\+n)}{memcmp(const void *_s1, const void *_s2, size_t _n)}}]{\setlength{\rightskip}{0pt plus 5cm}int memcmp (
+\begin{DoxyParamCaption}
+\item[{const void $\ast$}]{\+\_\+s1, }
+\item[{const void $\ast$}]{\+\_\+s2, }
+\item[{size\+\_\+t}]{\+\_\+n}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a3376078c105a2293e911a180e7fbab4b}{}\label{string_8h_a3376078c105a2293e911a180e7fbab4b}
+
+
+Definition at line 8 of file string.\+h.
+
+
+\begin{DoxyCode}
+9 \{
+10     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *us1 = (\textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *)\_s1;
+11     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *us2 = (\textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *)\_s2;
+12     \textcolor{keywordflow}{while}(\_n-- != 0) \{
+13         \textcolor{keywordflow}{if}(*us1 != *us2)\{
+14             \textcolor{keywordflow}{return} (*us1 < *us2) ? -1 : +1;
+15         \}
+16         us1++;
+17         us2++;
+18     \}
+19     \textcolor{keywordflow}{return} 0;
+20 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!memcpy@{memcpy}}
+\index{memcpy@{memcpy}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{memcpy(void $\ast$\+\_\+dest, const void $\ast$\+\_\+src, size\+\_\+t \+\_\+n)}{memcpy(void *_dest, const void *_src, size_t _n)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ memcpy (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{\+\_\+dest, }
+\item[{const void $\ast$}]{\+\_\+src, }
+\item[{size\+\_\+t}]{\+\_\+n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{string_8h_a776fdd36ddff3e9f4191ea47e0cbd5de}{}\label{string_8h_a776fdd36ddff3e9f4191ea47e0cbd5de}
+
+
+Definition at line 22 of file string.\+h.
+
+
+\begin{DoxyCode}
+23 \{
+24     \textcolor{keywordtype}{char} *sp = (\textcolor{keywordtype}{char}*) \_src;
+25     \textcolor{keywordtype}{char} *dp = (\textcolor{keywordtype}{char}*) \_dest;
+26     \textcolor{keywordflow}{for}(; \_n != 0; \_n--) \{
+27         *dp++ = *sp++;
+28     \}
+29     \textcolor{keywordflow}{return} \_dest;
+30 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!memmove@{memmove}}
+\index{memmove@{memmove}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{memmove(void $\ast$dstptr, const void $\ast$srcptr, size\+\_\+t size)}{memmove(void *dstptr, const void *srcptr, size_t size)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ memmove (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{dstptr, }
+\item[{const void $\ast$}]{srcptr, }
+\item[{size\+\_\+t}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_ae972269902c41dcc0afca72fc22af95f}{}\label{string_8h_ae972269902c41dcc0afca72fc22af95f}
+
+
+Definition at line 32 of file string.\+h.
+
+
+\begin{DoxyCode}
+33 \{
+34     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* dst = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}*) dstptr;
+35     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* src = (\textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}*) srcptr;
+36     \textcolor{keywordflow}{if} ( dst < src )
+37         \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} i = 0; i < \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size}; i++ )
+38             dst[i] = src[i];
+39     \textcolor{keywordflow}{else}
+40         \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} i = size; i != 0; i-- )
+41             dst[i-1] = src[i-1];
+42     \textcolor{keywordflow}{return} dstptr;
+43 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!memset@{memset}}
+\index{memset@{memset}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{memset(void $\ast$\+\_\+s, int \+\_\+c, size\+\_\+t \+\_\+n)}{memset(void *_s, int _c, size_t _n)}}]{\setlength{\rightskip}{0pt plus 5cm}void memset (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{\+\_\+s, }
+\item[{int}]{\+\_\+c, }
+\item[{size\+\_\+t}]{\+\_\+n}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}{}\label{string_8h_ab70ae7ba054fd55023ccf5b7ceae875a}
+
+
+Definition at line 46 of file string.\+h.
+
+
+\begin{DoxyCode}
+47 \{
+48     \textcolor{keywordtype}{char} *temp = (\textcolor{keywordtype}{char}*) \_s;
+49     \textcolor{keywordflow}{for} ( ; \_n != 0; \_n--) \{
+50         *temp++ = \_c;
+51     \}
+52 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strcat@{strcat}}
+\index{strcat@{strcat}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strcat(char $\ast$\+\_\+dest, const char $\ast$\+\_\+src)}{strcat(char *_dest, const char *_src)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ strcat (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{\+\_\+dest, }
+\item[{const char $\ast$}]{\+\_\+src}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a98218333c64beb42f1b1d06da7d53329}{}\label{string_8h_a98218333c64beb42f1b1d06da7d53329}
+
+
+Definition at line 98 of file string.\+h.
+
+
+\begin{DoxyCode}
+99 \{
+100    \textcolor{keywordtype}{size\_t} n;
+101 
+102    n = \hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(\_dest);
+103    \hyperlink{string_8h_a5d193b0ce634c4a4915378441a475c46}{strcpy}(\_dest + n, \_src);
+104 
+105    \textcolor{keywordflow}{return} \_dest;
+106 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=201pt]{string_8h_a98218333c64beb42f1b1d06da7d53329_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{string.\+h@{string.\+h}!strchr@{strchr}}
+\index{strchr@{strchr}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strchr(const char $\ast$\+\_\+s, int \+\_\+c)}{strchr(const char *_s, int _c)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ strchr (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s, }
+\item[{int}]{\+\_\+c}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a0d822829769975a03cfc4b9b2bc83895}{}\label{string_8h_a0d822829769975a03cfc4b9b2bc83895}
+
+
+Definition at line 127 of file string.\+h.
+
+
+\begin{DoxyCode}
+128 \{
+129     \textcolor{keywordflow}{while} (*\_s != (\textcolor{keywordtype}{char})\_c) \{
+130         \textcolor{keywordflow}{if} (!*\_s++) \{
+131             \textcolor{keywordflow}{return} 0;
+132         \}
+133     \}
+134     \textcolor{keywordflow}{return} (\textcolor{keywordtype}{char} *)\_s;
+135 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strcmp@{strcmp}}
+\index{strcmp@{strcmp}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strcmp(const char $\ast$\+\_\+s1, const char $\ast$\+\_\+s2)}{strcmp(const char *_s1, const char *_s2)}}]{\setlength{\rightskip}{0pt plus 5cm}int strcmp (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s1, }
+\item[{const char $\ast$}]{\+\_\+s2}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a34624c3be7459f677d90ae0ad046821a}{}\label{string_8h_a34624c3be7459f677d90ae0ad046821a}
+
+
+Definition at line 63 of file string.\+h.
+
+
+\begin{DoxyCode}
+64 \{
+65     \textcolor{keywordflow}{for}(; *\_s1 == *\_s2; ++\_s1, ++\_s2) \{
+66         \textcolor{keywordflow}{if}(*\_s1 == 0) \{
+67             \textcolor{keywordflow}{return} 0;
+68         \}
+69     \}
+70     \textcolor{keywordflow}{return} *(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *)\_s1 < *(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *)\_s2 ? -1 : 1;
+71 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strcmpy@{strcmpy}}
+\index{strcmpy@{strcmpy}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strcmpy(const char $\ast$c1, const char $\ast$c2)}{strcmpy(const char *c1, const char *c2)}}]{\setlength{\rightskip}{0pt plus 5cm}int strcmpy (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{c1, }
+\item[{const char $\ast$}]{c2}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a3487905a0eeaa950e7fedeed68ff9bf8}{}\label{string_8h_a3487905a0eeaa950e7fedeed68ff9bf8}
+
+
+Definition at line 108 of file string.\+h.
+
+
+\begin{DoxyCode}
+109 \{
+110     uint32\_t \hyperlink{vesa_8c_af30c10a8c6ed3d4649cfdc61e2029dc3}{buff}=0;
+111     \textcolor{keywordflow}{for}(uint32\_t i=0;i<=\hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(c1);i++)
+112     \{
+113         \textcolor{keywordflow}{for}(uint32\_t j=0;j<\hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(c2);j++)
+114         \{
+115             \textcolor{keywordflow}{if}(c1[i+j]==c2[j])
+116             \{
+117                 buff+=1;
+118             \}
+119         \}
+120         \textcolor{keywordflow}{if}(buff==\hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(c2))
+121             \textcolor{keywordflow}{return} 0;
+122         \textcolor{keywordflow}{else} buff=0;
+123     \}
+124     \textcolor{keywordflow}{return} 1;
+125 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=209pt]{string_8h_a3487905a0eeaa950e7fedeed68ff9bf8_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{string.\+h@{string.\+h}!strcpy@{strcpy}}
+\index{strcpy@{strcpy}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strcpy(char $\ast$\+\_\+dest, const char $\ast$\+\_\+src)}{strcpy(char *_dest, const char *_src)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ strcpy (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{\+\_\+dest, }
+\item[{const char $\ast$}]{\+\_\+src}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a5d193b0ce634c4a4915378441a475c46}{}\label{string_8h_a5d193b0ce634c4a4915378441a475c46}
+
+
+Definition at line 90 of file string.\+h.
+
+
+\begin{DoxyCode}
+91 \{
+92     \textcolor{keywordflow}{do} \{
+93       *\_dest++ = *\_src++;
+94     \} \textcolor{keywordflow}{while} (*\_src != 0);
+95     \textcolor{keywordflow}{return} \_dest;
+96 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strcspn@{strcspn}}
+\index{strcspn@{strcspn}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strcspn(const char $\ast$\+\_\+s, const char $\ast$\+\_\+reject)}{strcspn(const char *_s, const char *_reject)}}]{\setlength{\rightskip}{0pt plus 5cm}size\+\_\+t strcspn (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s, }
+\item[{const char $\ast$}]{\+\_\+reject}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a9f9d868422cf96200bc5420a197895e6}{}\label{string_8h_a9f9d868422cf96200bc5420a197895e6}
+
+
+Definition at line 146 of file string.\+h.
+
+
+\begin{DoxyCode}
+147 \{
+148     \textcolor{keywordtype}{size\_t} ret=0;
+149     \textcolor{keywordflow}{while}(*\_s) \{
+150         \textcolor{keywordflow}{if}(\hyperlink{string_8h_a0d822829769975a03cfc4b9b2bc83895}{strchr}(\_reject,*\_s)) \{
+151             \textcolor{keywordflow}{return} ret;
+152         \} \textcolor{keywordflow}{else} \{
+153             \_s++,ret++;
+154         \}
+155     \}
+156     \textcolor{keywordflow}{return} ret;
+157 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=206pt]{string_8h_a9f9d868422cf96200bc5420a197895e6_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{string.\+h@{string.\+h}!strlen@{strlen}}
+\index{strlen@{strlen}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strlen(const char $\ast$\+\_\+s)}{strlen(const char *_s)}}]{\setlength{\rightskip}{0pt plus 5cm}size\+\_\+t strlen (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{}\label{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}
+
+
+Definition at line 54 of file string.\+h.
+
+
+\begin{DoxyCode}
+55 \{
+56    \textcolor{keywordtype}{size\_t} n;
+57    \textcolor{keywordflow}{for}(n=0; \_s[n] != \textcolor{charliteral}{'\(\backslash\)0'}; n++) \{
+58        ;
+59    \}
+60    \textcolor{keywordflow}{return} n;
+61 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strncmp@{strncmp}}
+\index{strncmp@{strncmp}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strncmp(const char $\ast$\+\_\+s1, const char $\ast$\+\_\+s2, size\+\_\+t \+\_\+n)}{strncmp(const char *_s1, const char *_s2, size_t _n)}}]{\setlength{\rightskip}{0pt plus 5cm}int strncmp (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s1, }
+\item[{const char $\ast$}]{\+\_\+s2, }
+\item[{size\+\_\+t}]{\+\_\+n}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a7377c7836651b9c210e431b531ede0c8}{}\label{string_8h_a7377c7836651b9c210e431b531ede0c8}
+
+
+Definition at line 73 of file string.\+h.
+
+
+\begin{DoxyCode}
+74 \{
+75     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} uc1, uc2;
+76     \textcolor{keywordflow}{if} (\_n==0)
+77         \textcolor{keywordflow}{return} 0;
+78     \textcolor{keywordflow}{while} (\_n-- > 0 && *\_s1 == *\_s2) \{
+79         \textcolor{keywordflow}{if} (\_n==0 || *\_s1 == \textcolor{charliteral}{'\(\backslash\)0'} ) \{
+80             \textcolor{keywordflow}{return} 0;
+81         \}
+82         \_s1++;
+83         \_s2++;
+84     \}
+85     uc1 = (*(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *) \_s1);
+86     uc2 = (*(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} *) \_s2);
+87     \textcolor{keywordflow}{return} ((uc1 < uc2) ? -1 : (uc1 > uc2));
+88 \}
+\end{DoxyCode}
+\index{string.\+h@{string.\+h}!strspn@{strspn}}
+\index{strspn@{strspn}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strspn(const char $\ast$\+\_\+s, const char $\ast$\+\_\+accept)}{strspn(const char *_s, const char *_accept)}}]{\setlength{\rightskip}{0pt plus 5cm}size\+\_\+t strspn (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+s, }
+\item[{const char $\ast$}]{\+\_\+accept}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a70edc6f218324e3355a0ad188ec84944}{}\label{string_8h_a70edc6f218324e3355a0ad188ec84944}
+
+
+Definition at line 137 of file string.\+h.
+
+
+\begin{DoxyCode}
+138 \{
+139     \textcolor{keywordtype}{size\_t} ret=0;
+140     \textcolor{keywordflow}{while}(*\_s && \hyperlink{string_8h_a0d822829769975a03cfc4b9b2bc83895}{strchr}(\_accept,*\_s++)) \{
+141         ret++;
+142     \}
+143     \textcolor{keywordflow}{return} ret;
+144 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=201pt]{string_8h_a70edc6f218324e3355a0ad188ec84944_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{string.\+h@{string.\+h}!strstr@{strstr}}
+\index{strstr@{strstr}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strstr(const char $\ast$\+\_\+haystack, const char $\ast$\+\_\+needle)}{strstr(const char *_haystack, const char *_needle)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ strstr (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{\+\_\+haystack, }
+\item[{const char $\ast$}]{\+\_\+needle}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_a0b12094c3530d2c7ba3bddde57520819}{}\label{string_8h_a0b12094c3530d2c7ba3bddde57520819}
+
+
+Definition at line 176 of file string.\+h.
+
+
+\begin{DoxyCode}
+177 \{
+178     \textcolor{keywordtype}{size\_t} needleLen;
+179     \textcolor{keywordflow}{if}(*\_needle == \textcolor{charliteral}{'\(\backslash\)0'}) \{
+180         \textcolor{keywordflow}{return} (\textcolor{keywordtype}{char} *) \_haystack;
+181     \}
+182     needleLen = \hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(\_needle);
+183 
+184     \textcolor{keywordflow}{for}(;(\_haystack = \hyperlink{string_8h_a0d822829769975a03cfc4b9b2bc83895}{strchr}(\_haystack, *\_needle))!= \hyperlink{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{NULL};\_haystack++) \{
+185         \textcolor{keywordflow}{if} (\hyperlink{string_8h_a7377c7836651b9c210e431b531ede0c8}{strncmp}(\_haystack, \_needle, needleLen) == 0) \{
+186             \textcolor{keywordflow}{return} (\textcolor{keywordtype}{char} *) \_haystack;
+187         \}
+188     \}
+189     \textcolor{keywordflow}{return} \hyperlink{common_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{NULL};
+190 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=207pt]{string_8h_a0b12094c3530d2c7ba3bddde57520819_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{string.\+h@{string.\+h}!strtok@{strtok}}
+\index{strtok@{strtok}!string.\+h@{string.\+h}}
+\subsubsection[{\texorpdfstring{strtok(char $\ast$\+\_\+s, const char $\ast$\+\_\+delim)}{strtok(char *_s, const char *_delim)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ strtok (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{\+\_\+s, }
+\item[{const char $\ast$}]{\+\_\+delim}
+\end{DoxyParamCaption}
+)}\hypertarget{string_8h_ad1fc4977575eda6fb175df488baf3284}{}\label{string_8h_ad1fc4977575eda6fb175df488baf3284}
+
+
+Definition at line 159 of file string.\+h.
+
+
+\begin{DoxyCode}
+160 \{
+161     \textcolor{keyword}{static} \textcolor{keywordtype}{char}* p=0;
+162     \textcolor{keywordflow}{if}(\_s) \{
+163         p=\_s;
+164     \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!p) \{
+165         \textcolor{keywordflow}{return} 0;
+166     \}
+167     \_s = p   + \hyperlink{string_8h_a70edc6f218324e3355a0ad188ec84944}{strspn}(p,\_delim);
+168     p  = \_s  + \hyperlink{string_8h_a9f9d868422cf96200bc5420a197895e6}{strcspn}(\_s,\_delim);
+169     \textcolor{keywordflow}{if}(p==\_s) \{
+170         \textcolor{keywordflow}{return} p=0;
+171     \}
+172     p = *p ? *p=0,p+1 : 0;
+173     \textcolor{keywordflow}{return} \_s;
+174 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=283pt]{string_8h_ad1fc4977575eda6fb175df488baf3284_cgraph}
+\end{center}
+\end{figure}
+
+

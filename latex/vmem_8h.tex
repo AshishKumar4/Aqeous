@@ -1,0 +1,207 @@
+\hypertarget{vmem_8h}{}\section{Experimental Edition/\+Source/\+Mem\+Management/vmem.h File Reference}
+\label{vmem_8h}\index{Experimental Edition/\+Source/\+Mem\+Management/vmem.\+h@{Experimental Edition/\+Source/\+Mem\+Management/vmem.\+h}}
+{\ttfamily \#include $<$paging.\+h$>$}\\*
+Include dependency graph for vmem.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{vmem_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vmem_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structmemory__region}{memory\+\_\+region}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structmemory__region}{memory\+\_\+region} \hyperlink{vmem_8h_aaa5080e96f897d34fd8a1ac292404f2f}{Mem\+Region\+\_\+t}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{vmem_8h_af25c7e4fb48d8821ebaebee7b690778e}{\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((packed)) \hyperlink{struct____attribute____}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}((aligned(8))) Page\+Frame\+Map
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{vmem_8h_a7782aec3b2c89efea6a3a16432380a0f}{pag} =0
+\item 
+int \hyperlink{vmem_8h_a6e27f49150e9a14580fb313cc2777e00}{status} =0
+\item 
+uint32\+\_\+t \hyperlink{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{maxmem} =0
+\item 
+uint32\+\_\+t \hyperlink{vmem_8h_a0f979e071f945985080d1c0d4fda6f8a}{mem\+Available} =0
+\item 
+\hyperlink{vmem_8h_aeae537702c4c6622d46fbe31dad9904f}{Frame\+Map\+\_\+t}
+\item 
+\hyperlink{vmem_8h_aeae537702c4c6622d46fbe31dad9904f}{Frame\+Map\+\_\+t} $\ast$ \hyperlink{vmem_8h_a1d636d3797ab1b3ac96a3f86fb3f1ac1}{Start\+Frame}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t} $\ast$ \hyperlink{vmem_8h_a23fb7e1107b26858b1e5e6451f2f4ad4}{Mblock}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t} $\ast$ \hyperlink{vmem_8h_abbb985bc8b0a939e358573e2cf546790}{last\+Block}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t} $\ast$ \hyperlink{vmem_8h_a9d2e0cd915585cca8ca31389bd367d94}{last\+Block\+Addr}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t} \hyperlink{vmem_8h_addeaab56ff885e2ac8908eb3138cc3af}{mblock}
+\item 
+\hyperlink{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{Mem\+Map\+\_\+t} $\ast$ \hyperlink{vmem_8h_a9897a993c2d0f2fd0cde7faac9aab792}{Kblock}
+\item 
+\hyperlink{vmem_8h_aaa5080e96f897d34fd8a1ac292404f2f}{Mem\+Region\+\_\+t} $\ast$ \hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\+\_\+info}
+\item 
+char $\ast$ \hyperlink{vmem_8h_aa980b4f0db6827466a011796b1179f71}{str\+Memory\+Types} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em different memory regions (in \hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{memory\+\_\+region.\+type}) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\index{vmem.\+h@{vmem.\+h}!Mem\+Region\+\_\+t@{Mem\+Region\+\_\+t}}
+\index{Mem\+Region\+\_\+t@{Mem\+Region\+\_\+t}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Mem\+Region\+\_\+t}{MemRegion_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf memory\+\_\+region} {\bf Mem\+Region\+\_\+t}}\hypertarget{vmem_8h_aaa5080e96f897d34fd8a1ac292404f2f}{}\label{vmem_8h_aaa5080e96f897d34fd8a1ac292404f2f}
+
+
+\subsection{Function Documentation}
+\index{vmem.\+h@{vmem.\+h}!\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{\+\_\+\+\_\+attribute\+\_\+\+\_\+((packed)) \+\_\+\+\_\+attribute\+\_\+\+\_\+((aligned(8))) Page\+Frame\+Map}{__attribute__((packed)) __attribute__((aligned(8))) PageFrameMap}}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf \+\_\+\+\_\+attribute\+\_\+\+\_\+} (
+\begin{DoxyParamCaption}
+\item[{(packed)}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{vmem_8h_af25c7e4fb48d8821ebaebee7b690778e}{}\label{vmem_8h_af25c7e4fb48d8821ebaebee7b690778e}
+
+
+Definition at line 11 of file vmem.\+h.
+
+
+\begin{DoxyCode}
+12 \{
+13     uint32\_t used;
+14     uint32\_t frame;
+15 \}\hyperlink{vmem_8h_aeae537702c4c6622d46fbe31dad9904f}{FrameMap\_t};
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\index{vmem.\+h@{vmem.\+h}!Frame\+Map\+\_\+t@{Frame\+Map\+\_\+t}}
+\index{Frame\+Map\+\_\+t@{Frame\+Map\+\_\+t}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Frame\+Map\+\_\+t}{FrameMap_t}}]{\setlength{\rightskip}{0pt plus 5cm}Frame\+Map\+\_\+t}\hypertarget{vmem_8h_aeae537702c4c6622d46fbe31dad9904f}{}\label{vmem_8h_aeae537702c4c6622d46fbe31dad9904f}
+
+
+Definition at line 15 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!Kblock@{Kblock}}
+\index{Kblock@{Kblock}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Kblock}{Kblock}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Map\+\_\+t} $\ast$ Kblock}\hypertarget{vmem_8h_a9897a993c2d0f2fd0cde7faac9aab792}{}\label{vmem_8h_a9897a993c2d0f2fd0cde7faac9aab792}
+
+
+Definition at line 28 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!last\+Block@{last\+Block}}
+\index{last\+Block@{last\+Block}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{last\+Block}{lastBlock}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Map\+\_\+t} $\ast$ last\+Block}\hypertarget{vmem_8h_abbb985bc8b0a939e358573e2cf546790}{}\label{vmem_8h_abbb985bc8b0a939e358573e2cf546790}
+
+
+Definition at line 28 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!last\+Block\+Addr@{last\+Block\+Addr}}
+\index{last\+Block\+Addr@{last\+Block\+Addr}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{last\+Block\+Addr}{lastBlockAddr}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Map\+\_\+t} $\ast$ last\+Block\+Addr}\hypertarget{vmem_8h_a9d2e0cd915585cca8ca31389bd367d94}{}\label{vmem_8h_a9d2e0cd915585cca8ca31389bd367d94}
+
+
+Definition at line 28 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!maxmem@{maxmem}}
+\index{maxmem@{maxmem}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{maxmem}{maxmem}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t maxmem =0}\hypertarget{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}{}\label{vmem_8h_ad7a3d22321c93b2af4c720e4978c882f}
+
+
+Definition at line 8 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!Mblock@{Mblock}}
+\index{Mblock@{Mblock}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Mblock}{Mblock}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Map\+\_\+t}$\ast$ Mblock}\hypertarget{vmem_8h_a23fb7e1107b26858b1e5e6451f2f4ad4}{}\label{vmem_8h_a23fb7e1107b26858b1e5e6451f2f4ad4}
+
+
+Definition at line 28 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!mblock@{mblock}}
+\index{mblock@{mblock}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{mblock}{mblock}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Map\+\_\+t} mblock}\hypertarget{vmem_8h_addeaab56ff885e2ac8908eb3138cc3af}{}\label{vmem_8h_addeaab56ff885e2ac8908eb3138cc3af}
+
+
+Definition at line 28 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!mem\+Available@{mem\+Available}}
+\index{mem\+Available@{mem\+Available}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{mem\+Available}{memAvailable}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t mem\+Available =0}\hypertarget{vmem_8h_a0f979e071f945985080d1c0d4fda6f8a}{}\label{vmem_8h_a0f979e071f945985080d1c0d4fda6f8a}
+
+
+Definition at line 9 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!Mem\+Map\+\_\+t@{Mem\+Map\+\_\+t}}
+\index{Mem\+Map\+\_\+t@{Mem\+Map\+\_\+t}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Mem\+Map\+\_\+t}{MemMap_t}}]{\setlength{\rightskip}{0pt plus 5cm}Mem\+Map\+\_\+t}\hypertarget{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}{}\label{vmem_8h_a820b5c7c8db63c3b056cf18f190157df}
+
+
+Definition at line 26 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!mmap\+\_\+info@{mmap\+\_\+info}}
+\index{mmap\+\_\+info@{mmap\+\_\+info}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{mmap\+\_\+info}{mmap_info}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mem\+Region\+\_\+t}$\ast$ mmap\+\_\+info}\hypertarget{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{}\label{vmem_8h_a652241438a84d50f059167c4eea7f1cc}
+
+
+Definition at line 40 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!pag@{pag}}
+\index{pag@{pag}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{pag}{pag}}]{\setlength{\rightskip}{0pt plus 5cm}int pag =0}\hypertarget{vmem_8h_a7782aec3b2c89efea6a3a16432380a0f}{}\label{vmem_8h_a7782aec3b2c89efea6a3a16432380a0f}
+
+
+Definition at line 6 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!Start\+Frame@{Start\+Frame}}
+\index{Start\+Frame@{Start\+Frame}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{Start\+Frame}{StartFrame}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Frame\+Map\+\_\+t}$\ast$ Start\+Frame}\hypertarget{vmem_8h_a1d636d3797ab1b3ac96a3f86fb3f1ac1}{}\label{vmem_8h_a1d636d3797ab1b3ac96a3f86fb3f1ac1}
+
+
+Definition at line 17 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!status@{status}}
+\index{status@{status}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{status}{status}}]{\setlength{\rightskip}{0pt plus 5cm}int status =0}\hypertarget{vmem_8h_a6e27f49150e9a14580fb313cc2777e00}{}\label{vmem_8h_a6e27f49150e9a14580fb313cc2777e00}
+
+
+Definition at line 7 of file vmem.\+h.
+
+\index{vmem.\+h@{vmem.\+h}!str\+Memory\+Types@{str\+Memory\+Types}}
+\index{str\+Memory\+Types@{str\+Memory\+Types}!vmem.\+h@{vmem.\+h}}
+\subsubsection[{\texorpdfstring{str\+Memory\+Types}{strMemoryTypes}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ str\+Memory\+Types\mbox{[}$\,$\mbox{]}}\hypertarget{vmem_8h_aa980b4f0db6827466a011796b1179f71}{}\label{vmem_8h_aa980b4f0db6827466a011796b1179f71}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+
+    \textcolor{stringliteral}{"Available"},            
+    \textcolor{stringliteral}{"Reserved"},         
+    \textcolor{stringliteral}{"ACPI Reclaim"},     
+    \textcolor{stringliteral}{"ACPI NVS Memory"}       
+\}
+\end{DoxyCode}
+
+
+different memory regions (in \hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{memory\+\_\+region.\+type}) 
+
+
+
+Definition at line 43 of file vmem.\+h.
+

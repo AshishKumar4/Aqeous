@@ -1,0 +1,521 @@
+\hypertarget{PCI_8h}{}\section{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+CI.h File Reference}
+\label{PCI_8h}\index{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+C\+I.\+h@{Experimental Edition/\+Source/\+Drivers/\+P\+C\+I/\+P\+C\+I.\+h}}
+{\ttfamily \#include $<$ata.\+h$>$}\\*
+{\ttfamily \#include $<$pci\+\_\+list.\+h$>$}\\*
+Include dependency graph for P\+C\+I.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{PCI_8h__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct__PciNativeHeader}{\+\_\+\+Pci\+Native\+Header}
+\item 
+struct \hyperlink{struct__PciDevice}{\+\_\+\+Pci\+Device}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{PCI_8h_ae01a383ed97f2fef624e91dadb388637}{P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID}~0x00
+\item 
+\#define \hyperlink{PCI_8h_ad26cd5a9786b77d9fb9ae23cd2d7eae5}{P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID}~0x02
+\item 
+\#define \hyperlink{PCI_8h_ace199ecb77d8e32d759ac065c22304b3}{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND}~0x04
+\item 
+\#define \hyperlink{PCI_8h_a250f9aa7637e1c67edc266e2d36adf49}{P\+C\+I\+\_\+\+S\+T\+A\+T\+US}~0x06
+\item 
+\#define \hyperlink{PCI_8h_ad929de128f7af09f5859000ee3cff800}{P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID}~0x08
+\item 
+\#define \hyperlink{PCI_8h_ad5db735214607cd17d8430346faa7728}{P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF}~0x09
+\item 
+\#define \hyperlink{PCI_8h_a85484470d77ed1db1d1201f4a6a7cae5}{P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS}~0x0a
+\item 
+\#define \hyperlink{PCI_8h_ac14335441eedc270b16a9a47d1eab372}{P\+C\+I\+\_\+\+C\+L\+A\+SS}~0x0b
+\item 
+\#define \hyperlink{PCI_8h_ab0714901b1972ad6700d98d11d683f04}{P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE}~0x0c
+\item 
+\#define \hyperlink{PCI_8h_ae2cade69be1011c19d4918689e988e2d}{P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER}~0x0d
+\item 
+\#define \hyperlink{PCI_8h_a19e39e2931bb71460a3b5e1e30206d7b}{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE}~0x0e
+\item 
+\#define \hyperlink{PCI_8h_a7e90cb70f5d4911a8126fe93cdac2147}{P\+C\+I\+\_\+\+B\+I\+ST}~0x0f
+\item 
+\#define \hyperlink{PCI_8h_a178d44cd6a809bca6a3e73c331390983}{P\+C\+I\+\_\+\+B\+A\+R0}~0x10
+\item 
+\#define \hyperlink{PCI_8h_ae298b06cba997596cedec711e0836b0e}{P\+C\+I\+\_\+\+B\+A\+R1}~0x14
+\item 
+\#define \hyperlink{PCI_8h_a866210f8f707527a62e3280e8fc84a34}{P\+C\+I\+\_\+\+B\+A\+R2}~0x18
+\item 
+\#define \hyperlink{PCI_8h_a444e88eba503daded2bf995b1a35b104}{P\+C\+I\+\_\+\+B\+A\+R3}~0x1C
+\item 
+\#define \hyperlink{PCI_8h_ac92507fba4c7755722bbe9b45f3536f2}{P\+C\+I\+\_\+\+B\+A\+R4}~0x20
+\item 
+\#define \hyperlink{PCI_8h_a8beff8dcd21e35c86d181c0acaac92c4}{P\+C\+I\+\_\+\+B\+A\+R5}~0x24
+\item 
+\#define \hyperlink{PCI_8h_a8116525040b6cde4a11b3aaaf5e40ec7}{P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE}~0x3C
+\item 
+\#define \hyperlink{PCI_8h_a542c19851ef72dbe90bf3aa8cc275fd3}{P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US}~0x09
+\item 
+\#define \hyperlink{PCI_8h_aa22a6d0a85a157316b6528864bf8bd86}{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE}~0
+\item 
+\#define \hyperlink{PCI_8h_ad8e741ca14aec81566cefb1936f16510}{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}~1
+\item 
+\#define \hyperlink{PCI_8h_a31cd01509b5097e0fb1257b5b701b4eb}{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US}~2
+\item 
+\#define \hyperlink{PCI_8h_a36f8e61ddafeaa474bf6d95ad5d4b6d3}{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}~0x0604
+\item 
+\#define \hyperlink{PCI_8h_a10bf7d300fb36b56e999a704fec54b28}{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA}~0x0106
+\item 
+\#define \hyperlink{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT}~0x\+C\+F8
+\item 
+\#define \hyperlink{PCI_8h_a59d647ec553deeb55217ab18d5740525}{P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT}~0x\+C\+FC
+\item 
+\#define \hyperlink{PCI_8h_a6e719bea36ac98073329ee789f7a8f67}{P\+C\+I\+\_\+\+N\+O\+NE}~0x\+F\+F\+FF
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t}) (uint32\+\_\+t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, uint16\+\_\+t vendor\+\_\+id, uint16\+\_\+t device\+\_\+id, void $\ast$extra)
+\item 
+typedef struct \hyperlink{struct__PciNativeHeader}{\+\_\+\+Pci\+Native\+Header} \hyperlink{PCI_8h_a478d1e5507b733431433bfe46bc1d465}{Pci\+Native\+Header\+\_\+t}
+\item 
+typedef struct \hyperlink{struct__PciDevice}{\+\_\+\+Pci\+Device} \hyperlink{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{Pci\+Device\+\_\+t}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \hyperlink{PCI_8h_a011a12939cd7fbb5a76d789e0398c47b}{pci\+\_\+read\+\_\+field} (uint32\+\_\+t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, int field, int \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+void \hyperlink{PCI_8h_a8c143435216a215c4d4a1ced860e0fe1}{pci\+\_\+write\+\_\+field} (uint32\+\_\+t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}, int field, int \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size}, uint32\+\_\+t value)
+\item 
+uint16\+\_\+t \hyperlink{PCI_8h_ae6cc6e3aff25f57b383047a24147c237}{pci\+\_\+find\+\_\+type} (uint32\+\_\+t dev)
+\item 
+const char $\ast$ \hyperlink{PCI_8h_a5064ae4507c0c52094bc1fa90293069e}{pci\+\_\+vendor\+\_\+lookup} (unsigned short vendor\+\_\+id)
+\item 
+const char $\ast$ \hyperlink{PCI_8h_a72776c181c2e88cae0d0245be7a5496d}{pci\+\_\+device\+\_\+lookup} (unsigned short vendor\+\_\+id, unsigned short device\+\_\+id)
+\item 
+void \hyperlink{PCI_8h_a2ae4ded66be38e7850bcede3322c4387}{pci\+\_\+scan\+\_\+hit} (\hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t} f, uint32\+\_\+t dev, void $\ast$extra)
+\item 
+void \hyperlink{PCI_8h_a1b37d82cc074d10bed7a0c87dfa66908}{pci\+\_\+scan\+\_\+func} (\hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t} f, int type, int \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, int slot, int \hyperlink{ahci_8c_a3b56e67c68d28003939a2da223f12671}{func}, void $\ast$extra)
+\item 
+void \hyperlink{PCI_8h_a8ebfb47081429115a6903c6b482cb43c}{pci\+\_\+scan\+\_\+slot} (\hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t} f, int type, int \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, int slot, void $\ast$extra)
+\item 
+void \hyperlink{PCI_8h_aa5b949701967f055b870bd51b19d0995}{pci\+\_\+scan\+\_\+bus} (\hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t} f, int type, int \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}, void $\ast$extra)
+\item 
+void \hyperlink{PCI_8h_a707f6ee9596d4004b15682c0e5873524}{pci\+\_\+scan} (\hyperlink{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{pci\+\_\+func\+\_\+t} f, int type, void $\ast$extra)
+\item 
+void \hyperlink{PCI_8h_a6ce10e588aa8706ddda501da33380f7c}{check\+All\+Buses} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT@{P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT}}
+\index{P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT@{P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT}{PCI_ADDRESS_PORT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+A\+D\+D\+R\+E\+S\+S\+\_\+\+P\+O\+RT~0x\+C\+F8}\hypertarget{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}{}\label{PCI_8h_a037a2e71ef982be53e287bab3f19dbe0}
+
+
+Definition at line 39 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R0@{P\+C\+I\+\_\+\+B\+A\+R0}}
+\index{P\+C\+I\+\_\+\+B\+A\+R0@{P\+C\+I\+\_\+\+B\+A\+R0}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R0}{PCI_BAR0}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R0~0x10}\hypertarget{PCI_8h_a178d44cd6a809bca6a3e73c331390983}{}\label{PCI_8h_a178d44cd6a809bca6a3e73c331390983}
+
+
+Definition at line 21 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R1@{P\+C\+I\+\_\+\+B\+A\+R1}}
+\index{P\+C\+I\+\_\+\+B\+A\+R1@{P\+C\+I\+\_\+\+B\+A\+R1}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R1}{PCI_BAR1}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R1~0x14}\hypertarget{PCI_8h_ae298b06cba997596cedec711e0836b0e}{}\label{PCI_8h_ae298b06cba997596cedec711e0836b0e}
+
+
+Definition at line 22 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R2@{P\+C\+I\+\_\+\+B\+A\+R2}}
+\index{P\+C\+I\+\_\+\+B\+A\+R2@{P\+C\+I\+\_\+\+B\+A\+R2}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R2}{PCI_BAR2}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R2~0x18}\hypertarget{PCI_8h_a866210f8f707527a62e3280e8fc84a34}{}\label{PCI_8h_a866210f8f707527a62e3280e8fc84a34}
+
+
+Definition at line 23 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R3@{P\+C\+I\+\_\+\+B\+A\+R3}}
+\index{P\+C\+I\+\_\+\+B\+A\+R3@{P\+C\+I\+\_\+\+B\+A\+R3}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R3}{PCI_BAR3}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R3~0x1C}\hypertarget{PCI_8h_a444e88eba503daded2bf995b1a35b104}{}\label{PCI_8h_a444e88eba503daded2bf995b1a35b104}
+
+
+Definition at line 24 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R4@{P\+C\+I\+\_\+\+B\+A\+R4}}
+\index{P\+C\+I\+\_\+\+B\+A\+R4@{P\+C\+I\+\_\+\+B\+A\+R4}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R4}{PCI_BAR4}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R4~0x20}\hypertarget{PCI_8h_ac92507fba4c7755722bbe9b45f3536f2}{}\label{PCI_8h_ac92507fba4c7755722bbe9b45f3536f2}
+
+
+Definition at line 25 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+A\+R5@{P\+C\+I\+\_\+\+B\+A\+R5}}
+\index{P\+C\+I\+\_\+\+B\+A\+R5@{P\+C\+I\+\_\+\+B\+A\+R5}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+A\+R5}{PCI_BAR5}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+A\+R5~0x24}\hypertarget{PCI_8h_a8beff8dcd21e35c86d181c0acaac92c4}{}\label{PCI_8h_a8beff8dcd21e35c86d181c0acaac92c4}
+
+
+Definition at line 26 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+B\+I\+ST@{P\+C\+I\+\_\+\+B\+I\+ST}}
+\index{P\+C\+I\+\_\+\+B\+I\+ST@{P\+C\+I\+\_\+\+B\+I\+ST}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+B\+I\+ST}{PCI_BIST}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+B\+I\+ST~0x0f}\hypertarget{PCI_8h_a7e90cb70f5d4911a8126fe93cdac2147}{}\label{PCI_8h_a7e90cb70f5d4911a8126fe93cdac2147}
+
+
+Definition at line 20 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE@{P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE}}
+\index{P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE@{P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE}{PCI_CACHE_LINE_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+A\+C\+H\+E\+\_\+\+L\+I\+N\+E\+\_\+\+S\+I\+ZE~0x0c}\hypertarget{PCI_8h_ab0714901b1972ad6700d98d11d683f04}{}\label{PCI_8h_ab0714901b1972ad6700d98d11d683f04}
+
+
+Definition at line 17 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+C\+L\+A\+SS@{P\+C\+I\+\_\+\+C\+L\+A\+SS}}
+\index{P\+C\+I\+\_\+\+C\+L\+A\+SS@{P\+C\+I\+\_\+\+C\+L\+A\+SS}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+L\+A\+SS}{PCI_CLASS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+L\+A\+SS~0x0b}\hypertarget{PCI_8h_ac14335441eedc270b16a9a47d1eab372}{}\label{PCI_8h_ac14335441eedc270b16a9a47d1eab372}
+
+
+Definition at line 16 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND@{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND}}
+\index{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND@{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND}{PCI_COMMAND}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+C\+O\+M\+M\+A\+ND~0x04}\hypertarget{PCI_8h_ace199ecb77d8e32d759ac065c22304b3}{}\label{PCI_8h_ace199ecb77d8e32d759ac065c22304b3}
+
+
+Definition at line 10 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID@{P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID}}
+\index{P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID@{P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID}{PCI_DEVICE_ID}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+D\+E\+V\+I\+C\+E\+\_\+\+ID~0x02}\hypertarget{PCI_8h_ad26cd5a9786b77d9fb9ae23cd2d7eae5}{}\label{PCI_8h_ad26cd5a9786b77d9fb9ae23cd2d7eae5}
+
+
+Definition at line 9 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE}}
+\index{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE}{PCI_HEADER_TYPE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+PE~0x0e}\hypertarget{PCI_8h_a19e39e2931bb71460a3b5e1e30206d7b}{}\label{PCI_8h_a19e39e2931bb71460a3b5e1e30206d7b}
+
+
+Definition at line 19 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}}
+\index{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}{PCI_HEADER_TYPE_BRIDGE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE~1}\hypertarget{PCI_8h_ad8e741ca14aec81566cefb1936f16510}{}\label{PCI_8h_ad8e741ca14aec81566cefb1936f16510}
+
+
+Definition at line 33 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US}}
+\index{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US}{PCI_HEADER_TYPE_CARDBUS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+C\+A\+R\+D\+B\+US~2}\hypertarget{PCI_8h_a31cd01509b5097e0fb1257b5b701b4eb}{}\label{PCI_8h_a31cd01509b5097e0fb1257b5b701b4eb}
+
+
+Definition at line 34 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE}}
+\index{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE@{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE}{PCI_HEADER_TYPE_DEVICE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+H\+E\+A\+D\+E\+R\+\_\+\+T\+Y\+P\+E\+\_\+\+D\+E\+V\+I\+CE~0}\hypertarget{PCI_8h_aa22a6d0a85a157316b6528864bf8bd86}{}\label{PCI_8h_aa22a6d0a85a157316b6528864bf8bd86}
+
+
+Definition at line 32 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE@{P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE}}
+\index{P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE@{P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE}{PCI_INTERRUPT_LINE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+I\+N\+T\+E\+R\+R\+U\+P\+T\+\_\+\+L\+I\+NE~0x3C}\hypertarget{PCI_8h_a8116525040b6cde4a11b3aaaf5e40ec7}{}\label{PCI_8h_a8116525040b6cde4a11b3aaaf5e40ec7}
+
+
+Definition at line 28 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER@{P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER}}
+\index{P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER@{P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER}{PCI_LATENCY_TIMER}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+L\+A\+T\+E\+N\+C\+Y\+\_\+\+T\+I\+M\+ER~0x0d}\hypertarget{PCI_8h_ae2cade69be1011c19d4918689e988e2d}{}\label{PCI_8h_ae2cade69be1011c19d4918689e988e2d}
+
+
+Definition at line 18 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+N\+O\+NE@{P\+C\+I\+\_\+\+N\+O\+NE}}
+\index{P\+C\+I\+\_\+\+N\+O\+NE@{P\+C\+I\+\_\+\+N\+O\+NE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+N\+O\+NE}{PCI_NONE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+N\+O\+NE~0x\+F\+F\+FF}\hypertarget{PCI_8h_a6e719bea36ac98073329ee789f7a8f67}{}\label{PCI_8h_a6e719bea36ac98073329ee789f7a8f67}
+
+
+Definition at line 42 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF@{P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF}}
+\index{P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF@{P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF}{PCI_PROG_IF}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+P\+R\+O\+G\+\_\+\+IF~0x09}\hypertarget{PCI_8h_ad5db735214607cd17d8430346faa7728}{}\label{PCI_8h_ad5db735214607cd17d8430346faa7728}
+
+
+Definition at line 14 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID@{P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID}}
+\index{P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID@{P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID}{PCI_REVISION_ID}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+ID~0x08}\hypertarget{PCI_8h_ad929de128f7af09f5859000ee3cff800}{}\label{PCI_8h_ad929de128f7af09f5859000ee3cff800}
+
+
+Definition at line 12 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US@{P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US}}
+\index{P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US@{P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US}{PCI_SECONDARY_BUS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+S\+E\+C\+O\+N\+D\+A\+R\+Y\+\_\+\+B\+US~0x09}\hypertarget{PCI_8h_a542c19851ef72dbe90bf3aa8cc275fd3}{}\label{PCI_8h_a542c19851ef72dbe90bf3aa8cc275fd3}
+
+
+Definition at line 30 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+S\+T\+A\+T\+US@{P\+C\+I\+\_\+\+S\+T\+A\+T\+US}}
+\index{P\+C\+I\+\_\+\+S\+T\+A\+T\+US@{P\+C\+I\+\_\+\+S\+T\+A\+T\+US}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+S\+T\+A\+T\+US}{PCI_STATUS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+S\+T\+A\+T\+US~0x06}\hypertarget{PCI_8h_a250f9aa7637e1c67edc266e2d36adf49}{}\label{PCI_8h_a250f9aa7637e1c67edc266e2d36adf49}
+
+
+Definition at line 11 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS@{P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS}}
+\index{P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS@{P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS}{PCI_SUBCLASS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+S\+U\+B\+C\+L\+A\+SS~0x0a}\hypertarget{PCI_8h_a85484470d77ed1db1d1201f4a6a7cae5}{}\label{PCI_8h_a85484470d77ed1db1d1201f4a6a7cae5}
+
+
+Definition at line 15 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE@{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}}
+\index{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE@{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE}{PCI_TYPE_BRIDGE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+B\+R\+I\+D\+GE~0x0604}\hypertarget{PCI_8h_a36f8e61ddafeaa474bf6d95ad5d4b6d3}{}\label{PCI_8h_a36f8e61ddafeaa474bf6d95ad5d4b6d3}
+
+
+Definition at line 36 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA@{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA}}
+\index{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA@{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA}{PCI_TYPE_SATA}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+T\+Y\+P\+E\+\_\+\+S\+A\+TA~0x0106}\hypertarget{PCI_8h_a10bf7d300fb36b56e999a704fec54b28}{}\label{PCI_8h_a10bf7d300fb36b56e999a704fec54b28}
+
+
+Definition at line 37 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT@{P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT}}
+\index{P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT@{P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT}{PCI_VALUE_PORT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+V\+A\+L\+U\+E\+\_\+\+P\+O\+RT~0x\+C\+FC}\hypertarget{PCI_8h_a59d647ec553deeb55217ab18d5740525}{}\label{PCI_8h_a59d647ec553deeb55217ab18d5740525}
+
+
+Definition at line 40 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID@{P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID}}
+\index{P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID@{P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID}{PCI_VENDOR_ID}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+C\+I\+\_\+\+V\+E\+N\+D\+O\+R\+\_\+\+ID~0x00}\hypertarget{PCI_8h_ae01a383ed97f2fef624e91dadb388637}{}\label{PCI_8h_ae01a383ed97f2fef624e91dadb388637}
+
+
+Definition at line 8 of file P\+C\+I.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+func\+\_\+t@{pci\+\_\+func\+\_\+t}}
+\index{pci\+\_\+func\+\_\+t@{pci\+\_\+func\+\_\+t}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+func\+\_\+t}{pci_func_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ pci\+\_\+func\+\_\+t) (uint32\+\_\+t {\bf device}, uint16\+\_\+t vendor\+\_\+id, uint16\+\_\+t device\+\_\+id, void $\ast$extra)}\hypertarget{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}{}\label{PCI_8h_a7b6e6beb2996fd73f7c5fa150485d3fd}
+
+
+Definition at line 44 of file P\+C\+I.\+h.
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!Pci\+Device\+\_\+t@{Pci\+Device\+\_\+t}}
+\index{Pci\+Device\+\_\+t@{Pci\+Device\+\_\+t}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Device\+\_\+t}{PciDevice_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+Pci\+Device}  {\bf Pci\+Device\+\_\+t}}\hypertarget{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}{}\label{PCI_8h_a9b8b354f1d0843a744762fc05dfc7366}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!Pci\+Native\+Header\+\_\+t@{Pci\+Native\+Header\+\_\+t}}
+\index{Pci\+Native\+Header\+\_\+t@{Pci\+Native\+Header\+\_\+t}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{Pci\+Native\+Header\+\_\+t}{PciNativeHeader_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \+\_\+\+Pci\+Native\+Header}  {\bf Pci\+Native\+Header\+\_\+t}}\hypertarget{PCI_8h_a478d1e5507b733431433bfe46bc1d465}{}\label{PCI_8h_a478d1e5507b733431433bfe46bc1d465}
+
+
+\subsection{Function Documentation}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!check\+All\+Buses@{check\+All\+Buses}}
+\index{check\+All\+Buses@{check\+All\+Buses}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{check\+All\+Buses(void)}{checkAllBuses(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void check\+All\+Buses (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a6ce10e588aa8706ddda501da33380f7c}{}\label{PCI_8h_a6ce10e588aa8706ddda501da33380f7c}
+
+
+Definition at line 197 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+198  \{
+199      uint8\_t \hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus};
+200      uint8\_t \hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device};
+201      uint8\_t flag=0;
+202          \hyperlink{PCI_8c_a74f769972e2170ca3e585607a5746c99}{tempPCS}=(\hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}*)\hyperlink{mem_8c_a289ed80726a2c8adc2fa154f442eaad7}{kmalloc}(\textcolor{keyword}{sizeof}(
+      \hyperlink{struct__PciNativeHeader}{PciNativeHeader\_t}));
+203      \textcolor{keywordflow}{for}(bus = 0; bus <255 ; bus++)
+204      \{
+205          \textcolor{keywordflow}{for}(device = 0; device < 32; device++)
+206          \{
+207              devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}]=\hyperlink{PCI_8c_a3be526de20a10af314b77e522864943c}{checkDevice}(bus, device);
+208              \hyperlink{struct__PciDevice}{PciDevice\_t} dev=devices[\hyperlink{ahci_8c_a829d48eff93a24012e522fca8fa6aeea}{bus}][\hyperlink{ahci_8c_ac9fe1492f3fc88db647f830b7dad9446}{device}];
+209              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} vendorID = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_acc809b557a84fbe99da19b442210e6a1}{VendorId};
+210              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{short} deviceID = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a4cb00b77b64768cc8754c3b5938a09ea}{DeviceId};
+211              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} classcode = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a2feb2dca74bf9ff2af1e08ebbb310241}{Class};
+212              \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} subclasscode = dev.\hyperlink{struct__PciDevice_a308d9d7234decbd3802735bf0a83e156}{Header}->\hyperlink{struct__PciNativeHeader_a988d996c402af2ac9a89b86d409815b5}{Subclass};
+213              \textcolor{keywordflow}{if}(devices[bus][device].Bus!=-1&&devices[bus][device].Header->Class!=255)
+214                   \{
+215                                  \textcolor{keywordflow}{if}(classcode==1&&subclasscode==6)
+216                                  \{
+217                                      AHCI\_Devices[TotalAHCIDevices]=dev;
+218                                      ++TotalAHCIDevices;
+219                                  \}
+220                  \textcolor{keywordflow}{if}(!flag)
+221                  \{
+222                      flag=1;
+223                      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)n  BUS number "});
+224                      \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(bus);
+225                      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n"});
+226                  \}
+227                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tDEVICE: "});
+228                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\hyperlink{PCI_8c_a72776c181c2e88cae0d0245be7a5496d}{pci\_device\_lookup}(vendorID,
+      deviceID));
+229                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" CLASS: "});
+230                  \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(classcode);
+231                  \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" subCLASS: "});
+232                  \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(subclasscode);
+233              \}
+234          \}
+235         flag=0;
+236      \}
+237      \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)n"});
+238  \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{PCI_8h_a6ce10e588aa8706ddda501da33380f7c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+device\+\_\+lookup@{pci\+\_\+device\+\_\+lookup}}
+\index{pci\+\_\+device\+\_\+lookup@{pci\+\_\+device\+\_\+lookup}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+device\+\_\+lookup(unsigned short vendor\+\_\+id, unsigned short device\+\_\+id)}{pci_device_lookup(unsigned short vendor_id, unsigned short device_id)}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ pci\+\_\+device\+\_\+lookup (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{vendor\+\_\+id, }
+\item[{unsigned short}]{device\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a72776c181c2e88cae0d0245be7a5496d}{}\label{PCI_8h_a72776c181c2e88cae0d0245be7a5496d}
+
+
+Definition at line 17 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+17                                                                                    \{
+18     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i = 0; i < \hyperlink{pci__list_8h_ab883eccf5cf2a02694f1e62906fda6a7}{PCI\_DEVTABLE\_LEN}; ++i) \{
+19         \textcolor{keywordflow}{if} (\hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].VenId == vendor\_id && \hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].DevId == device\_id) \{
+20             \textcolor{keywordflow}{return} \hyperlink{pci__list_8h_ac00f433400d146963a3dd09b1aebb2da}{PciDevTable}[i].\hyperlink{struct__PCI__DEVTABLE_aa93c23c253df7ff6365b332220f447ec}{ChipDesc};
+21         \}
+22     \}
+23     \textcolor{keywordflow}{return} \textcolor{stringliteral}{""};
+24 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+find\+\_\+type@{pci\+\_\+find\+\_\+type}}
+\index{pci\+\_\+find\+\_\+type@{pci\+\_\+find\+\_\+type}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+find\+\_\+type(uint32\+\_\+t dev)}{pci_find_type(uint32_t dev)}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t pci\+\_\+find\+\_\+type (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{dev}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_ae6cc6e3aff25f57b383047a24147c237}{}\label{PCI_8h_ae6cc6e3aff25f57b383047a24147c237}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+read\+\_\+field@{pci\+\_\+read\+\_\+field}}
+\index{pci\+\_\+read\+\_\+field@{pci\+\_\+read\+\_\+field}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+read\+\_\+field(uint32\+\_\+t device, int field, int size)}{pci_read_field(uint32_t device, int field, int size)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t pci\+\_\+read\+\_\+field (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{device, }
+\item[{int}]{field, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a011a12939cd7fbb5a76d789e0398c47b}{}\label{PCI_8h_a011a12939cd7fbb5a76d789e0398c47b}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+scan@{pci\+\_\+scan}}
+\index{pci\+\_\+scan@{pci\+\_\+scan}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+scan(pci\+\_\+func\+\_\+t f, int type, void $\ast$extra)}{pci_scan(pci_func_t f, int type, void *extra)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+scan (
+\begin{DoxyParamCaption}
+\item[{{\bf pci\+\_\+func\+\_\+t}}]{f, }
+\item[{int}]{type, }
+\item[{void $\ast$}]{extra}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a707f6ee9596d4004b15682c0e5873524}{}\label{PCI_8h_a707f6ee9596d4004b15682c0e5873524}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+scan\+\_\+bus@{pci\+\_\+scan\+\_\+bus}}
+\index{pci\+\_\+scan\+\_\+bus@{pci\+\_\+scan\+\_\+bus}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+scan\+\_\+bus(pci\+\_\+func\+\_\+t f, int type, int bus, void $\ast$extra)}{pci_scan_bus(pci_func_t f, int type, int bus, void *extra)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+scan\+\_\+bus (
+\begin{DoxyParamCaption}
+\item[{{\bf pci\+\_\+func\+\_\+t}}]{f, }
+\item[{int}]{type, }
+\item[{int}]{bus, }
+\item[{void $\ast$}]{extra}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_aa5b949701967f055b870bd51b19d0995}{}\label{PCI_8h_aa5b949701967f055b870bd51b19d0995}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+scan\+\_\+func@{pci\+\_\+scan\+\_\+func}}
+\index{pci\+\_\+scan\+\_\+func@{pci\+\_\+scan\+\_\+func}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+scan\+\_\+func(pci\+\_\+func\+\_\+t f, int type, int bus, int slot, int func, void $\ast$extra)}{pci_scan_func(pci_func_t f, int type, int bus, int slot, int func, void *extra)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+scan\+\_\+func (
+\begin{DoxyParamCaption}
+\item[{{\bf pci\+\_\+func\+\_\+t}}]{f, }
+\item[{int}]{type, }
+\item[{int}]{bus, }
+\item[{int}]{slot, }
+\item[{int}]{func, }
+\item[{void $\ast$}]{extra}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a1b37d82cc074d10bed7a0c87dfa66908}{}\label{PCI_8h_a1b37d82cc074d10bed7a0c87dfa66908}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+scan\+\_\+hit@{pci\+\_\+scan\+\_\+hit}}
+\index{pci\+\_\+scan\+\_\+hit@{pci\+\_\+scan\+\_\+hit}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+scan\+\_\+hit(pci\+\_\+func\+\_\+t f, uint32\+\_\+t dev, void $\ast$extra)}{pci_scan_hit(pci_func_t f, uint32_t dev, void *extra)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+scan\+\_\+hit (
+\begin{DoxyParamCaption}
+\item[{{\bf pci\+\_\+func\+\_\+t}}]{f, }
+\item[{uint32\+\_\+t}]{dev, }
+\item[{void $\ast$}]{extra}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a2ae4ded66be38e7850bcede3322c4387}{}\label{PCI_8h_a2ae4ded66be38e7850bcede3322c4387}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+scan\+\_\+slot@{pci\+\_\+scan\+\_\+slot}}
+\index{pci\+\_\+scan\+\_\+slot@{pci\+\_\+scan\+\_\+slot}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+scan\+\_\+slot(pci\+\_\+func\+\_\+t f, int type, int bus, int slot, void $\ast$extra)}{pci_scan_slot(pci_func_t f, int type, int bus, int slot, void *extra)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+scan\+\_\+slot (
+\begin{DoxyParamCaption}
+\item[{{\bf pci\+\_\+func\+\_\+t}}]{f, }
+\item[{int}]{type, }
+\item[{int}]{bus, }
+\item[{int}]{slot, }
+\item[{void $\ast$}]{extra}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a8ebfb47081429115a6903c6b482cb43c}{}\label{PCI_8h_a8ebfb47081429115a6903c6b482cb43c}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+vendor\+\_\+lookup@{pci\+\_\+vendor\+\_\+lookup}}
+\index{pci\+\_\+vendor\+\_\+lookup@{pci\+\_\+vendor\+\_\+lookup}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+vendor\+\_\+lookup(unsigned short vendor\+\_\+id)}{pci_vendor_lookup(unsigned short vendor_id)}}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ pci\+\_\+vendor\+\_\+lookup (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{vendor\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a5064ae4507c0c52094bc1fa90293069e}{}\label{PCI_8h_a5064ae4507c0c52094bc1fa90293069e}
+
+
+Definition at line 8 of file P\+C\+I.\+c.
+
+
+\begin{DoxyCode}
+8                                                          \{
+9     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i = 0; i < \hyperlink{pci__list_8h_a4e89aa5e502b8695293201c5ce91608e}{PCI\_VENTABLE\_LEN}; ++i) \{
+10         \textcolor{keywordflow}{if} (\hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{PciVenTable}[i].VenId == vendor\_id) \{
+11             \textcolor{keywordflow}{return} \hyperlink{pci__list_8h_a0f3207ced174b50192ac00d326911424}{PciVenTable}[i].\hyperlink{struct__PCI__VENTABLE_aad91ea393afe64b533c1ad399f12baf2}{VenFull};
+12         \}
+13     \}
+14     \textcolor{keywordflow}{return} \textcolor{stringliteral}{""};
+15 \}
+\end{DoxyCode}
+\index{P\+C\+I.\+h@{P\+C\+I.\+h}!pci\+\_\+write\+\_\+field@{pci\+\_\+write\+\_\+field}}
+\index{pci\+\_\+write\+\_\+field@{pci\+\_\+write\+\_\+field}!P\+C\+I.\+h@{P\+C\+I.\+h}}
+\subsubsection[{\texorpdfstring{pci\+\_\+write\+\_\+field(uint32\+\_\+t device, int field, int size, uint32\+\_\+t value)}{pci_write_field(uint32_t device, int field, int size, uint32_t value)}}]{\setlength{\rightskip}{0pt plus 5cm}void pci\+\_\+write\+\_\+field (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{device, }
+\item[{int}]{field, }
+\item[{int}]{size, }
+\item[{uint32\+\_\+t}]{value}
+\end{DoxyParamCaption}
+)}\hypertarget{PCI_8h_a8c143435216a215c4d4a1ced860e0fe1}{}\label{PCI_8h_a8c143435216a215c4d4a1ced860e0fe1}

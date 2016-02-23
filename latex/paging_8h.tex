@@ -1,0 +1,855 @@
+\hypertarget{paging_8h}{}\section{Experimental Edition/\+Source/\+Mem\+Management/paging.h File Reference}
+\label{paging_8h}\index{Experimental Edition/\+Source/\+Mem\+Management/paging.\+h@{Experimental Edition/\+Source/\+Mem\+Management/paging.\+h}}
+{\ttfamily \#include $<$common.\+h$>$}\\*
+{\ttfamily \#include $<$interrupts.\+h$>$}\\*
+Include dependency graph for paging.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{paging_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structptable__t}{ptable\+\_\+t}
+\begin{DoxyCompactList}\small\item\em page table \end{DoxyCompactList}\item 
+struct \hyperlink{structpdirectory__t}{pdirectory\+\_\+t}
+\begin{DoxyCompactList}\small\item\em page directory \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{paging_8h_a8ab9130a83c4ae60cd4bae22e302de1c}{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE}~1024
+\begin{DoxyCompactList}\small\item\em i86 architecture defines 1024 entries per table--do not change \end{DoxyCompactList}\item 
+\#define \hyperlink{paging_8h_ad3776aea830f9786b52f79eeac040d0b}{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR}~1024
+\item 
+\#define \hyperlink{paging_8h_a877752f604817d711c82889f7ded52b8}{P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX}(x)~(((x) $>$$>$ 22) \& 0x3ff)
+\item 
+\#define \hyperlink{paging_8h_a9a736011ad6043805b1e3db9e889b149}{P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX}(x)~(((x) $>$$>$ 12) \& 0x3ff)
+\item 
+\#define \hyperlink{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS}(x)~($\ast$x \& $\sim$0xfff)
+\item 
+\#define \hyperlink{paging_8h_aeee2033d28aaca5d18913d66e8444297}{P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}~0x400000
+\begin{DoxyCompactList}\small\item\em page table represents 4mb address space \end{DoxyCompactList}\item 
+\#define \hyperlink{paging_8h_aac40b0e78eba37280949b58f8605fddd}{D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}~0x100000000
+\begin{DoxyCompactList}\small\item\em directory table represents 4gb address space \end{DoxyCompactList}\item 
+\#define \hyperlink{paging_8h_a7d467c1d283fdfa1f2081ba1e0d01b6e}{P\+A\+G\+E\+\_\+\+S\+I\+ZE}~4096
+\begin{DoxyCompactList}\small\item\em page sizes are 4k \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef uint32\+\_\+t \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t}
+\begin{DoxyCompactList}\small\item\em page table entry \end{DoxyCompactList}\item 
+typedef uint32\+\_\+t \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t}
+\begin{DoxyCompactList}\small\item\em a page directery entry \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structptable__t}{ptable\+\_\+t} \hyperlink{paging_8h_ad6fc9cfaf6c7630b9a3201e8442e3a81}{ptable}
+\begin{DoxyCompactList}\small\item\em page table \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structpdirectory__t}{pdirectory\+\_\+t} \hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory}
+\begin{DoxyCompactList}\small\item\em page directory \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24}{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS} \{ \\*
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a40c9a29a2723f2ad7a9c64f5c433edc3}{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT} = 0, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT} = 1, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE} = 2, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER} = 4, 
+\\*
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a4a87bd269d4f4ee053c8502903f34033}{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH} = 8, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aa6d8fb393290dfa33fe7d1dfc2bec53a}{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE} = 0x10, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a3d9c6bc86d58ce628869971b4d051b8c}{I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED} = 0x20, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a9116da693bf592d217786036f8c94db0}{I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY} = 0x40, 
+\\*
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a0856bd241c7a11b5ca5b05b0e0eafbce}{I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT} = 0x80, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ae1c250379af35737f6c37b5be8c84186}{I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL} = 0x100, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aee07dd0b8d30d92dc99a4c074bede113}{I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL} = 0x200, 
+\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}{I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME} = 0x7\+F\+F\+F\+F000
+ \}
+\item 
+enum \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ec}{P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS} \{ \\*
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca81e8681d1f1124a984ed4b679a43adad}{I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT} = 0, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT} = 1, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE} = 2, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecadffc8bdec64c1bee5ec063d3e3e2e6b4}{I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER} = 4, 
+\\*
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca2e8e67e77211a76117887d49d72dd5f3}{I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT} = 8, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecaea9a22feb75e50b6ec757cc7c483ad1e}{I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD} = 0x10, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca4f5cae316055690b6c650db37eae67d9}{I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED} = 0x20, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca11f716f722569ac9903f7ab524b72721}{I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY} = 0x40, 
+\\*
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca922f2dc5e38cc609312a05b38f8225d1}{I86\+\_\+\+P\+D\+E\+\_\+4\+MB} = 0, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca006602f55ff1f6c2e1e9bd8fdeb88722}{I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL} = 0x100, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca28b7690c8db1383af3c1683e3e38ef34}{I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL} = 0x200, 
+\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}{I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME} = 0x7\+F\+F\+F\+F000
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{paging_8h_a6293af8e675059a566216be86660854b}{page\+\_\+fault} (\hyperlink{common_8h_adf58dbaf6139b4957c348711f2026957}{registers\+\_\+t} \hyperlink{structregs}{regs})
+\item 
+\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$ \hyperlink{paging_8h_a3bbb55b579c39bc711aeac29c03710b8}{Map\+Page} (void $\ast$phys, void $\ast$virt)
+\item 
+void \hyperlink{paging_8h_a6080e9390b1c9b1d3a42bf0790cbfd0d}{map} (uint32\+\_\+t phy, size\+\_\+t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+void \hyperlink{paging_8h_a7077dda14170b0967709669e4d1fe615}{free\+\_\+page} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e)
+\item 
+void \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\+\_\+entry\+\_\+add\+\_\+attrib} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e, uint32\+\_\+t attrib)
+\item 
+void \hyperlink{paging_8h_ad06738f925b4ecff695aac009cde9b60}{pt\+\_\+entry\+\_\+del\+\_\+attrib} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e, uint32\+\_\+t attrib)
+\item 
+void \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\+\_\+entry\+\_\+set\+\_\+frame} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} $\ast$e, uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+int \hyperlink{paging_8h_a58bdec56525a8ebc4daa7488fe19b57a}{pt\+\_\+entry\+\_\+is\+\_\+present} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} e)
+\item 
+int \hyperlink{paging_8h_a6b065fc65d2a4faf9a31ed750956db82}{pt\+\_\+entry\+\_\+is\+\_\+writable} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} e)
+\item 
+uint32\+\_\+t \hyperlink{paging_8h_a97203e0effac91dc856ff4f28b3d6b79}{pt\+\_\+entry\+\_\+pfn} (\hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\+\_\+t} e)
+\item 
+void \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\+\_\+entry\+\_\+add\+\_\+attrib} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} $\ast$e, uint32\+\_\+t attrib)
+\item 
+void \hyperlink{paging_8h_a068ad083a47cb287f1848e7fe7ec44cc}{pd\+\_\+entry\+\_\+del\+\_\+attrib} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} $\ast$e, uint32\+\_\+t attrib)
+\item 
+void \hyperlink{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}{pd\+\_\+entry\+\_\+set\+\_\+frame} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} $\ast$e, uint32\+\_\+t \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr})
+\item 
+int \hyperlink{paging_8h_a660f411eb2d2fadefcccc769547ffbe2}{pd\+\_\+entry\+\_\+is\+\_\+present} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} e)
+\item 
+\hyperlink{common_8h_afaa87723b8417d40fcf45b7330261ef9}{bool} \hyperlink{paging_8h_aa502c615be4dd9429438872dc8fc681f}{pd\+\_\+entry\+\_\+is\+\_\+writable} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} e)
+\item 
+uint32\+\_\+t \hyperlink{paging_8h_a803c74ae975c440c83f171218b3634ee}{pd\+\_\+entry\+\_\+pfn} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} e)
+\item 
+int \hyperlink{paging_8h_a25ad3943f81ef7fa2e93ef4225765b04}{pd\+\_\+entry\+\_\+is\+\_\+user} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} e)
+\item 
+int \hyperlink{paging_8h_a669ca3befa6dbf0141ae26b3d19166ba}{pd\+\_\+entry\+\_\+is\+\_\+4mb} (\hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\+\_\+t} e)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24}{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS} \hyperlink{paging_8h_afd763ef2554e711a33decaf1a29b092d}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}
+\item 
+\hyperlink{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{pdirectory} $\ast$ \hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\+\_\+dir}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{paging.\+h@{paging.\+h}!D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE@{D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}}
+\index{D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE@{D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}{DTABLE_ADDR_SPACE_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE~0x100000000}\hypertarget{paging_8h_aac40b0e78eba37280949b58f8605fddd}{}\label{paging_8h_aac40b0e78eba37280949b58f8605fddd}
+
+
+directory table represents 4gb address space 
+
+
+
+Definition at line 62 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX@{P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX}}
+\index{P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX@{P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX}{PAGE_DIRECTORY_INDEX}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+R\+Y\+\_\+\+I\+N\+D\+EX(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)~(((x) $>$$>$ 22) \& 0x3ff)}\hypertarget{paging_8h_a877752f604817d711c82889f7ded52b8}{}\label{paging_8h_a877752f604817d711c82889f7ded52b8}
+
+
+Definition at line 54 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS@{P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS}}
+\index{P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS@{P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS}{PAGE_GET_PHYSICAL_ADDRESS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+\_\+\+G\+E\+T\+\_\+\+P\+H\+Y\+S\+I\+C\+A\+L\+\_\+\+A\+D\+D\+R\+E\+SS(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)~($\ast$x \& $\sim$0xfff)}\hypertarget{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{}\label{paging_8h_a580ade9f59adcb10c12550e6b38295fd}
+
+
+Definition at line 56 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+S\+I\+ZE@{P\+A\+G\+E\+\_\+\+S\+I\+ZE}}
+\index{P\+A\+G\+E\+\_\+\+S\+I\+ZE@{P\+A\+G\+E\+\_\+\+S\+I\+ZE}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+S\+I\+ZE}{PAGE_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+\_\+\+S\+I\+ZE~4096}\hypertarget{paging_8h_a7d467c1d283fdfa1f2081ba1e0d01b6e}{}\label{paging_8h_a7d467c1d283fdfa1f2081ba1e0d01b6e}
+
+
+page sizes are 4k 
+
+
+
+Definition at line 65 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX@{P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX}}
+\index{P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX@{P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX}{PAGE_TABLE_INDEX}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+\_\+\+T\+A\+B\+L\+E\+\_\+\+I\+N\+D\+EX(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)~(((x) $>$$>$ 12) \& 0x3ff)}\hypertarget{paging_8h_a9a736011ad6043805b1e3db9e889b149}{}\label{paging_8h_a9a736011ad6043805b1e3db9e889b149}
+
+
+Definition at line 55 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR@{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR}}
+\index{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR@{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR}{PAGES_PER_DIR}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+D\+IR~1024}\hypertarget{paging_8h_ad3776aea830f9786b52f79eeac040d0b}{}\label{paging_8h_ad3776aea830f9786b52f79eeac040d0b}
+
+
+Definition at line 52 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE@{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE}}
+\index{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE@{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE}{PAGES_PER_TABLE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+A\+G\+E\+S\+\_\+\+P\+E\+R\+\_\+\+T\+A\+B\+LE~1024}\hypertarget{paging_8h_a8ab9130a83c4ae60cd4bae22e302de1c}{}\label{paging_8h_a8ab9130a83c4ae60cd4bae22e302de1c}
+
+
+i86 architecture defines 1024 entries per table--do not change 
+
+
+
+Definition at line 51 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE@{P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}}
+\index{P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE@{P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE}{PTABLE_ADDR_SPACE_SIZE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+T\+A\+B\+L\+E\+\_\+\+A\+D\+D\+R\+\_\+\+S\+P\+A\+C\+E\+\_\+\+S\+I\+ZE~0x400000}\hypertarget{paging_8h_aeee2033d28aaca5d18913d66e8444297}{}\label{paging_8h_aeee2033d28aaca5d18913d66e8444297}
+
+
+page table represents 4mb address space 
+
+
+
+Definition at line 59 of file paging.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{paging.\+h@{paging.\+h}!page\+\_\+t@{page\+\_\+t}}
+\index{page\+\_\+t@{page\+\_\+t}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{page\+\_\+t}{page_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint32\+\_\+t {\bf page\+\_\+t}}\hypertarget{paging_8h_a227fa4963f927f874cf466939abe839d}{}\label{paging_8h_a227fa4963f927f874cf466939abe839d}
+
+
+a page directery entry 
+
+
+
+Definition at line 43 of file paging.\+h.
+
+\index{paging.\+h@{paging.\+h}!pdirectory@{pdirectory}}
+\index{pdirectory@{pdirectory}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pdirectory}{pdirectory}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf pdirectory\+\_\+t} {\bf pdirectory}}\hypertarget{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}{}\label{paging_8h_a681a136bf0b5fcccb0c77e91ad5ad7b9}
+
+
+page directory 
+
+\index{paging.\+h@{paging.\+h}!ptable@{ptable}}
+\index{ptable@{ptable}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{ptable}{ptable}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf ptable\+\_\+t} {\bf ptable}}\hypertarget{paging_8h_ad6fc9cfaf6c7630b9a3201e8442e3a81}{}\label{paging_8h_ad6fc9cfaf6c7630b9a3201e8442e3a81}
+
+
+page table 
+
+\index{paging.\+h@{paging.\+h}!table\+\_\+t@{table\+\_\+t}}
+\index{table\+\_\+t@{table\+\_\+t}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{table\+\_\+t}{table_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint32\+\_\+t {\bf table\+\_\+t}}\hypertarget{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{}\label{paging_8h_af2b0f06df05995d3d6e17bdb025220db}
+
+
+page table entry 
+
+
+
+Definition at line 24 of file paging.\+h.
+
+
+
+\subsection{Enumeration Type Documentation}
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS@{P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS}}
+\index{P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS@{P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS}{PAGE_PDE_FLAGS}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\+A\+G\+E\+\_\+\+P\+D\+E\+\_\+\+F\+L\+A\+GS}}\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ec}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ec}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca81e8681d1f1124a984ed4b679a43adad}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca81e8681d1f1124a984ed4b679a43adad}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+P\+R\+E\+S\+E\+NT\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE@{I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE@{I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER@{I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER@{I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+U\+S\+ER\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecadffc8bdec64c1bee5ec063d3e3e2e6b4}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecadffc8bdec64c1bee5ec063d3e3e2e6b4}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+P\+WT\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca2e8e67e77211a76117887d49d72dd5f3}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca2e8e67e77211a76117887d49d72dd5f3}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD@{I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+P\+CD\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecaea9a22feb75e50b6ec757cc7c483ad1e}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecaea9a22feb75e50b6ec757cc7c483ad1e}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED@{I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED@{I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca4f5cae316055690b6c650db37eae67d9}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca4f5cae316055690b6c650db37eae67d9}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY@{I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY@{I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+D\+I\+R\+TY\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca11f716f722569ac9903f7ab524b72721}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca11f716f722569ac9903f7ab524b72721}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+4\+MB@{I86\+\_\+\+P\+D\+E\+\_\+4\+MB}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+4\+MB@{I86\+\_\+\+P\+D\+E\+\_\+4\+MB}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+4\+MB\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca922f2dc5e38cc609312a05b38f8225d1}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca922f2dc5e38cc609312a05b38f8225d1}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca006602f55ff1f6c2e1e9bd8fdeb88722}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca006602f55ff1f6c2e1e9bd8fdeb88722}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca28b7690c8db1383af3c1683e3e38ef34}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca28b7690c8db1383af3c1683e3e38ef34}
+}]\index{I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME@{I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME@{I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME}}\item[{\em 
+I86\+\_\+\+P\+D\+E\+\_\+\+F\+R\+A\+ME\hypertarget{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}{}\label{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 26 of file paging.\+h.
+
+
+\begin{DoxyCode}
+27 \{
+28     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca81e8681d1f1124a984ed4b679a43adad}{I86\_PDE\_NOT\_PRESENT}          =   0,      \textcolor{comment}{//0000000000000000000000000000000}
+29     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\_PDE\_PRESENT}          =   1,      \textcolor{comment}{//0000000000000000000000000000001}
+30     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\_PDE\_WRITABLE}        =   2,      \textcolor{comment}{//0000000000000000000000000000010}
+31     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecadffc8bdec64c1bee5ec063d3e3e2e6b4}{I86\_PDE\_USER}            =   4,      \textcolor{comment}{//0000000000000000000000000000100}
+32     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca2e8e67e77211a76117887d49d72dd5f3}{I86\_PDE\_PWT}          =   8,      \textcolor{comment}{//0000000000000000000000000001000}
+33     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecaea9a22feb75e50b6ec757cc7c483ad1e}{I86\_PDE\_PCD}          =   0x10,       \textcolor{comment}{//0000000000000000000000000010000}
+34     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca4f5cae316055690b6c650db37eae67d9}{I86\_PDE\_ACCESSED}        =   0x20,       \textcolor{comment}{//0000000000000000000000000100000}
+35     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca11f716f722569ac9903f7ab524b72721}{I86\_PDE\_DIRTY}          =   0x40,       \textcolor{comment}{//0000000000000000000000001000000}
+36     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca922f2dc5e38cc609312a05b38f8225d1}{I86\_PDE\_4MB}          =   0,      \textcolor{comment}{//0000000000000000000000010000000}
+37     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca006602f55ff1f6c2e1e9bd8fdeb88722}{I86\_PDE\_CPU\_GLOBAL}        =   0x100,      \textcolor{comment}{//0000000000000000000000100000000}
+38     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca28b7690c8db1383af3c1683e3e38ef34}{I86\_PDE\_LV4\_GLOBAL}        =   0x200,      \textcolor{comment}{//0000000000000000000001000000000}
+39     \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}{I86\_PDE\_FRAME}          =   0x7FFFF000  \textcolor{comment}{//1111111111111111111000000000000}
+40 \};
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS@{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS}}
+\index{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS@{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS}{PAGE_PTE_FLAGS}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS}}\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+P\+R\+E\+S\+E\+NT\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a40c9a29a2723f2ad7a9c64f5c433edc3}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a40c9a29a2723f2ad7a9c64f5c433edc3}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT@{I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+P\+R\+E\+S\+E\+NT\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE@{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE@{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+A\+B\+LE\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER@{I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER@{I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+U\+S\+ER\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH@{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH@{I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+W\+R\+I\+T\+E\+T\+H\+O\+U\+GH\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a4a87bd269d4f4ee053c8502903f34033}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a4a87bd269d4f4ee053c8502903f34033}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE@{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE@{I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+N\+O\+T\+\_\+\+C\+A\+C\+H\+E\+A\+B\+LE\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aa6d8fb393290dfa33fe7d1dfc2bec53a}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aa6d8fb393290dfa33fe7d1dfc2bec53a}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED@{I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED@{I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+A\+C\+C\+E\+S\+S\+ED\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a3d9c6bc86d58ce628869971b4d051b8c}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a3d9c6bc86d58ce628869971b4d051b8c}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY@{I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY@{I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+D\+I\+R\+TY\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a9116da693bf592d217786036f8c94db0}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a9116da693bf592d217786036f8c94db0}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT@{I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT@{I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+P\+AT\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a0856bd241c7a11b5ca5b05b0e0eafbce}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a0856bd241c7a11b5ca5b05b0e0eafbce}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+C\+P\+U\+\_\+\+G\+L\+O\+B\+AL\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ae1c250379af35737f6c37b5be8c84186}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ae1c250379af35737f6c37b5be8c84186}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL@{I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+L\+V4\+\_\+\+G\+L\+O\+B\+AL\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aee07dd0b8d30d92dc99a4c074bede113}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aee07dd0b8d30d92dc99a4c074bede113}
+}]\index{I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME@{I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME}!paging.\+h@{paging.\+h}}\index{paging.\+h@{paging.\+h}!I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME@{I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME}}\item[{\em 
+I86\+\_\+\+P\+T\+E\+\_\+\+F\+R\+A\+ME\hypertarget{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}{}\label{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 7 of file paging.\+h.
+
+
+\begin{DoxyCode}
+8 \{
+9     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a40c9a29a2723f2ad7a9c64f5c433edc3}{I86\_PTE\_NOT\_PRESENT}          =   0,      \textcolor{comment}{//0000000000000000000000000000000}
+10     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT}          =   1,      \textcolor{comment}{//0000000000000000000000000000001}
+11     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\_PTE\_WRITABLE}        =   2,      \textcolor{comment}{//0000000000000000000000000000010}
+12     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ad2aaa851995bd6f0882b8aac8f953442}{I86\_PTE\_USER}            =   4,      \textcolor{comment}{//0000000000000000000000000000100}
+13     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a4a87bd269d4f4ee053c8502903f34033}{I86\_PTE\_WRITETHOUGH}      =   8,      \textcolor{comment}{//0000000000000000000000000001000}
+14     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aa6d8fb393290dfa33fe7d1dfc2bec53a}{I86\_PTE\_NOT\_CACHEABLE}      =   0x10,       \textcolor{comment}{//0000000000000000000000000010000}
+15     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a3d9c6bc86d58ce628869971b4d051b8c}{I86\_PTE\_ACCESSED}        =   0x20,       \textcolor{comment}{//0000000000000000000000000100000}
+16     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a9116da693bf592d217786036f8c94db0}{I86\_PTE\_DIRTY}          =   0x40,       \textcolor{comment}{//0000000000000000000000001000000}
+17     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a0856bd241c7a11b5ca5b05b0e0eafbce}{I86\_PTE\_PAT}          =   0x80,       \textcolor{comment}{//0000000000000000000000010000000}
+18     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24ae1c250379af35737f6c37b5be8c84186}{I86\_PTE\_CPU\_GLOBAL}        =   0x100,      \textcolor{comment}{//0000000000000000000000100000000}
+19     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24aee07dd0b8d30d92dc99a4c074bede113}{I86\_PTE\_LV4\_GLOBAL}        =   0x200,      \textcolor{comment}{//0000000000000000000001000000000}
+20     \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}{I86\_PTE\_FRAME}          =   0x7FFFF000  \textcolor{comment}{//1111111111111111111000000000000}
+21 \};
+\end{DoxyCode}
+
+
+\subsection{Function Documentation}
+\index{paging.\+h@{paging.\+h}!free\+\_\+page@{free\+\_\+page}}
+\index{free\+\_\+page@{free\+\_\+page}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{free\+\_\+page(page\+\_\+t $\ast$e)}{free_page(page_t *e)}}]{\setlength{\rightskip}{0pt plus 5cm}void free\+\_\+page (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8h_a7077dda14170b0967709669e4d1fe615}{}\label{paging_8h_a7077dda14170b0967709669e4d1fe615}
+
+
+Definition at line 29 of file paging.\+c.
+
+
+\begin{DoxyCode}
+30 \{
+31     \textcolor{keywordtype}{void}* p = (\textcolor{keywordtype}{void}*)\hyperlink{paging_8h_a97203e0effac91dc856ff4f28b3d6b79}{pt\_entry\_pfn} (*e);
+32     \textcolor{keywordflow}{if} (p)
+33         \hyperlink{mem_8c_a88aa6b479b05e673cbb8e79d8692830d}{free} (p);
+34 
+35     \hyperlink{paging_8h_ad06738f925b4ecff695aac009cde9b60}{pt\_entry\_del\_attrib} (e, \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT});
+36 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8h_a7077dda14170b0967709669e4d1fe615_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+h@{paging.\+h}!map@{map}}
+\index{map@{map}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{map(uint32\+\_\+t phy, size\+\_\+t size)}{map(uint32_t phy, size_t size)}}]{\setlength{\rightskip}{0pt plus 5cm}void map (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{phy, }
+\item[{size\+\_\+t}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8h_a6080e9390b1c9b1d3a42bf0790cbfd0d}{}\label{paging_8h_a6080e9390b1c9b1d3a42bf0790cbfd0d}
+
+
+Definition at line 114 of file paging.\+c.
+
+
+\begin{DoxyCode}
+115 \{
+116     uint32\_t j=phy;
+117     \textcolor{keywordflow}{for} (; j < phy+\hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size};j+=0x1000)
+118     \{
+119       \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)j,(\textcolor{keywordtype}{void}*)j);
+120     \}
+121 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8h_a6080e9390b1c9b1d3a42bf0790cbfd0d_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+h@{paging.\+h}!Map\+Page@{Map\+Page}}
+\index{Map\+Page@{Map\+Page}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{Map\+Page(void $\ast$phys, void $\ast$virt)}{MapPage(void *phys, void *virt)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf page\+\_\+t}$\ast$ Map\+Page (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{phys, }
+\item[{void $\ast$}]{virt}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8h_a3bbb55b579c39bc711aeac29c03710b8}{}\label{paging_8h_a3bbb55b579c39bc711aeac29c03710b8}
+get page directory
+
+get page table
+
+page table not present, allocate it
+
+clear page table
+
+create a new entry
+
+map in the table (Can also just do $\ast$entry $\vert$= 3) to enable these bits
+
+get table
+
+get page
+
+map it in (Can also do ($\ast$page $\vert$= 3 to enable..) 
+
+Definition at line 75 of file paging.\+c.
+
+
+\begin{DoxyCode}
+76 \{\textcolor{comment}{}
+77 \textcolor{comment}{   //! get page directory}
+78 \textcolor{comment}{}   \hyperlink{structpdirectory__t}{pdirectory}* pageDirectory = \hyperlink{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{main\_dir};
+79 \textcolor{comment}{}
+80 \textcolor{comment}{   //! get page table}
+81 \textcolor{comment}{}   \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* e = &pageDirectory->m\_entries [\hyperlink{paging_8h_a877752f604817d711c82889f7ded52b8}{PAGE\_DIRECTORY\_INDEX} ((uint32\_t) virt
+      ) ];
+82    \textcolor{keywordflow}{if} ( (*e & \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT}) != I86\_PTE\_PRESENT)
+83    \{\textcolor{comment}{}
+84 \textcolor{comment}{      //! page table not present, allocate it}
+85 \textcolor{comment}{}      \hyperlink{structptable__t}{ptable}* table = (\hyperlink{structptable__t}{ptable}*) \hyperlink{mem_8c_a1f58e286674c0527a087f9560d8c491d}{pmalloc}(4096);
+86       \textcolor{keywordflow}{if} (!table)
+87          \textcolor{keywordflow}{return} 0;
+88 \textcolor{comment}{}
+89 \textcolor{comment}{      //! clear page table}
+90 \textcolor{comment}{}      \textcolor{comment}{//memset (table, 0, sizeof(ptable));}
+91 \textcolor{comment}{}
+92 \textcolor{comment}{      //! create a new entry}
+93 \textcolor{comment}{}      \hyperlink{paging_8h_af2b0f06df05995d3d6e17bdb025220db}{table\_t}* entry =
+94          &pageDirectory->m\_entries [\hyperlink{paging_8h_a877752f604817d711c82889f7ded52b8}{PAGE\_DIRECTORY\_INDEX} ( (uint32\_t) virt) ];
+95 \textcolor{comment}{}
+96 \textcolor{comment}{      //! map in the table (Can also just do *entry |= 3) to enable these bits}
+97 \textcolor{comment}{}      \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\_PDE\_PRESENT});
+98       \hyperlink{paging_8h_aa02323457572c726a13d8222a9d7587e}{pd\_entry\_add\_attrib} (entry, \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\_PDE\_WRITABLE});
+99       \hyperlink{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}{pd\_entry\_set\_frame} (entry, (uint32\_t)table);
+100    \}
+101 \textcolor{comment}{}
+102 \textcolor{comment}{   //! get table}
+103 \textcolor{comment}{}   \hyperlink{structptable__t}{ptable}* table = (\hyperlink{structptable__t}{ptable}*) \hyperlink{paging_8h_a580ade9f59adcb10c12550e6b38295fd}{PAGE\_GET\_PHYSICAL\_ADDRESS} ( e );
+104 \textcolor{comment}{}
+105 \textcolor{comment}{   //! get page}
+106 \textcolor{comment}{}   \hyperlink{paging_8h_a227fa4963f927f874cf466939abe839d}{page\_t}* page = &table->m\_entries [ \hyperlink{paging_8h_a9a736011ad6043805b1e3db9e889b149}{PAGE\_TABLE\_INDEX} ( (uint32\_t) virt) ];
+107 \textcolor{comment}{}
+108 \textcolor{comment}{   //! map it in (Can also do (*page |= 3 to enable..)}
+109 \textcolor{comment}{}   \hyperlink{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{pt\_entry\_set\_frame} ( page, (uint32\_t) phys);
+110    \hyperlink{paging_8h_a6417ed10a34bf0b789fb321828215b43}{pt\_entry\_add\_attrib} ( page, I86\_PTE\_PRESENT);
+111    \textcolor{keywordflow}{return} page;
+112 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8h_a3bbb55b579c39bc711aeac29c03710b8_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+h@{paging.\+h}!page\+\_\+fault@{page\+\_\+fault}}
+\index{page\+\_\+fault@{page\+\_\+fault}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{page\+\_\+fault(registers\+\_\+t regs)}{page_fault(registers_t regs)}}]{\setlength{\rightskip}{0pt plus 5cm}void page\+\_\+fault (
+\begin{DoxyParamCaption}
+\item[{{\bf registers\+\_\+t}}]{regs}
+\end{DoxyParamCaption}
+)}\hypertarget{paging_8h_a6293af8e675059a566216be86660854b}{}\label{paging_8h_a6293af8e675059a566216be86660854b}
+
+
+Definition at line 216 of file paging.\+c.
+
+
+\begin{DoxyCode}
+217 \{
+218   \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+219     \textcolor{comment}{// A page fault has occurred.}
+220     \textcolor{comment}{// The faulting address is stored in the CR2 register.}
+221     uint32\_t faulting\_address;
+222     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"mov %%cr2, %0"} : \textcolor{stringliteral}{"=r"} (faulting\_address));
+223 
+224     \textcolor{comment}{// The error code gives us details of what happened.}
+225     \textcolor{keywordtype}{int} present   = !(regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x1); \textcolor{comment}{// Page not present}
+226     \textcolor{keywordtype}{int} rw = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x2;           \textcolor{comment}{// Write operation?}
+227     \textcolor{keywordtype}{int} us = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x4;           \textcolor{comment}{// Processor was in user-mode?}
+228     \textcolor{keywordtype}{int} reserved = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x8;     \textcolor{comment}{// Overwritten CPU-reserved bits of page entry?}
+229     \textcolor{keywordtype}{int} \textcolor{keywordtype}{id} = regs.\hyperlink{structregisters_a1f90b3d484c66002c9ffcd0e54e97c2c}{err\_code} & 0x10;          \textcolor{comment}{// Caused by an instruction fetch?}
+230 
+231     \textcolor{comment}{// Output an error message.}
+232     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)nPage fault! ( "});
+233     \textcolor{keywordflow}{if} (present)
+234     \{
+235       \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"present, Allocating page for it "});
+236       \hyperlink{paging_8c_a3bbb55b579c39bc711aeac29c03710b8}{MapPage}((\textcolor{keywordtype}{void}*)faulting\_address,(\textcolor{keywordtype}{void}*)faulting\_address);
+237     \}
+238     \textcolor{keywordflow}{if} (rw)
+239     \{
+240         \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"read-only "});
+241     \}
+242     \textcolor{keywordflow}{if} (us) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"user-mode "});\}
+243     \textcolor{keywordflow}{if} (reserved) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"reserved "});\}
+244 
+245     \textcolor{keywordflow}{if} (\textcolor{keywordtype}{id}) \{\hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"id "}); \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(\textcolor{keywordtype}{id});\}
+246     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{") at 0x"});
+247     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(faulting\_address);
+248     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{" - EIP: "});
+249     \hyperlink{console_8c_a0962a25f4eb04ccc0f0f2a1418091b35}{console\_write\_dec}(regs.\hyperlink{structregisters_aaeedf83509826a731e436025aeb53576}{eip});
+250     \hyperlink{console_8c_a7e3f5006dd96b9d8c61242ddc5351832}{console\_writestring}(\textcolor{stringliteral}{"\(\backslash\)n"});
+251     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"         \(\backslash\)}
+252 \textcolor{stringliteral}{     cli;                 \(\backslash\)}
+253 \textcolor{stringliteral}{     mov %0, %%ecx;       \(\backslash\)}
+254 \textcolor{stringliteral}{     mov %1, %%esp;       \(\backslash\)}
+255 \textcolor{stringliteral}{     mov %2, %%ebp;       \(\backslash\)}
+256 \textcolor{stringliteral}{     sti;                 \(\backslash\)}
+257 \textcolor{stringliteral}{     jmp *%%ecx           "}
+258                  : : \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_aaeedf83509826a731e436025aeb53576}{eip}), \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_a9cc3091e4c0f25d142ac74443dc8d384}{esp}), \textcolor{stringliteral}{"r"}(regs.\hyperlink{structregisters_a8d156d1d27fcb1c2f2bbcce1a784431f}{ebp}));
+259     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+260     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"iret"});
+261    \textcolor{comment}{// PANIC("Page fault");}
+262 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{paging_8h_a6293af8e675059a566216be86660854b_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+add\+\_\+attrib@{pd\+\_\+entry\+\_\+add\+\_\+attrib}}
+\index{pd\+\_\+entry\+\_\+add\+\_\+attrib@{pd\+\_\+entry\+\_\+add\+\_\+attrib}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+add\+\_\+attrib(table\+\_\+t $\ast$e, uint32\+\_\+t attrib)}{pd_entry_add_attrib(table_t *e, uint32_t attrib)}}]{\setlength{\rightskip}{0pt plus 5cm}void pd\+\_\+entry\+\_\+add\+\_\+attrib (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{attrib}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_aa02323457572c726a13d8222a9d7587e}{}\label{paging_8h_aa02323457572c726a13d8222a9d7587e}
+
+
+Definition at line 110 of file paging.\+h.
+
+
+\begin{DoxyCode}
+111 \{
+112     *e |= attrib;
+113 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+del\+\_\+attrib@{pd\+\_\+entry\+\_\+del\+\_\+attrib}}
+\index{pd\+\_\+entry\+\_\+del\+\_\+attrib@{pd\+\_\+entry\+\_\+del\+\_\+attrib}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+del\+\_\+attrib(table\+\_\+t $\ast$e, uint32\+\_\+t attrib)}{pd_entry_del_attrib(table_t *e, uint32_t attrib)}}]{\setlength{\rightskip}{0pt plus 5cm}void pd\+\_\+entry\+\_\+del\+\_\+attrib (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{attrib}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a068ad083a47cb287f1848e7fe7ec44cc}{}\label{paging_8h_a068ad083a47cb287f1848e7fe7ec44cc}
+
+
+Definition at line 115 of file paging.\+h.
+
+
+\begin{DoxyCode}
+116 \{
+117     *e &= ~attrib;
+118 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+is\+\_\+4mb@{pd\+\_\+entry\+\_\+is\+\_\+4mb}}
+\index{pd\+\_\+entry\+\_\+is\+\_\+4mb@{pd\+\_\+entry\+\_\+is\+\_\+4mb}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+is\+\_\+4mb(table\+\_\+t e)}{pd_entry_is_4mb(table_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}int pd\+\_\+entry\+\_\+is\+\_\+4mb (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a669ca3befa6dbf0141ae26b3d19166ba}{}\label{paging_8h_a669ca3befa6dbf0141ae26b3d19166ba}
+
+
+Definition at line 145 of file paging.\+h.
+
+
+\begin{DoxyCode}
+146 \{
+147     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca922f2dc5e38cc609312a05b38f8225d1}{I86\_PDE\_4MB};
+148 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+is\+\_\+present@{pd\+\_\+entry\+\_\+is\+\_\+present}}
+\index{pd\+\_\+entry\+\_\+is\+\_\+present@{pd\+\_\+entry\+\_\+is\+\_\+present}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+is\+\_\+present(table\+\_\+t e)}{pd_entry_is_present(table_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}int pd\+\_\+entry\+\_\+is\+\_\+present (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a660f411eb2d2fadefcccc769547ffbe2}{}\label{paging_8h_a660f411eb2d2fadefcccc769547ffbe2}
+
+
+Definition at line 125 of file paging.\+h.
+
+
+\begin{DoxyCode}
+126 \{
+127     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1eca31cab4d582e8222d255fced36c273bf1}{I86\_PDE\_PRESENT};
+128 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+is\+\_\+user@{pd\+\_\+entry\+\_\+is\+\_\+user}}
+\index{pd\+\_\+entry\+\_\+is\+\_\+user@{pd\+\_\+entry\+\_\+is\+\_\+user}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+is\+\_\+user(table\+\_\+t e)}{pd_entry_is_user(table_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}int pd\+\_\+entry\+\_\+is\+\_\+user (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a25ad3943f81ef7fa2e93ef4225765b04}{}\label{paging_8h_a25ad3943f81ef7fa2e93ef4225765b04}
+
+
+Definition at line 140 of file paging.\+h.
+
+
+\begin{DoxyCode}
+141 \{
+142     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecadffc8bdec64c1bee5ec063d3e3e2e6b4}{I86\_PDE\_USER};
+143 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+is\+\_\+writable@{pd\+\_\+entry\+\_\+is\+\_\+writable}}
+\index{pd\+\_\+entry\+\_\+is\+\_\+writable@{pd\+\_\+entry\+\_\+is\+\_\+writable}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+is\+\_\+writable(table\+\_\+t e)}{pd_entry_is_writable(table_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} pd\+\_\+entry\+\_\+is\+\_\+writable (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_aa502c615be4dd9429438872dc8fc681f}{}\label{paging_8h_aa502c615be4dd9429438872dc8fc681f}
+
+
+Definition at line 130 of file paging.\+h.
+
+
+\begin{DoxyCode}
+131 \{
+132     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecad2d1582ff1abc53d854faecc56da3f2d}{I86\_PDE\_WRITABLE};
+133 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+pfn@{pd\+\_\+entry\+\_\+pfn}}
+\index{pd\+\_\+entry\+\_\+pfn@{pd\+\_\+entry\+\_\+pfn}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+pfn(table\+\_\+t e)}{pd_entry_pfn(table_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t pd\+\_\+entry\+\_\+pfn (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a803c74ae975c440c83f171218b3634ee}{}\label{paging_8h_a803c74ae975c440c83f171218b3634ee}
+
+
+Definition at line 135 of file paging.\+h.
+
+
+\begin{DoxyCode}
+136 \{
+137     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}{I86\_PDE\_FRAME};
+138 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pd\+\_\+entry\+\_\+set\+\_\+frame@{pd\+\_\+entry\+\_\+set\+\_\+frame}}
+\index{pd\+\_\+entry\+\_\+set\+\_\+frame@{pd\+\_\+entry\+\_\+set\+\_\+frame}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pd\+\_\+entry\+\_\+set\+\_\+frame(table\+\_\+t $\ast$e, uint32\+\_\+t addr)}{pd_entry_set_frame(table_t *e, uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void pd\+\_\+entry\+\_\+set\+\_\+frame (
+\begin{DoxyParamCaption}
+\item[{{\bf table\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}{}\label{paging_8h_ac7af7b87f7e6dafd44054b69245cc0e4}
+
+
+Definition at line 120 of file paging.\+h.
+
+
+\begin{DoxyCode}
+121 \{
+122     *e = (*e & ~\hyperlink{paging_8h_a7b2f9eab3fbae10eafb87bfeb384d1ecafc950620b5c97293886d463ed974a8f6}{I86\_PDE\_FRAME}) | \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr};
+123 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+add\+\_\+attrib@{pt\+\_\+entry\+\_\+add\+\_\+attrib}}
+\index{pt\+\_\+entry\+\_\+add\+\_\+attrib@{pt\+\_\+entry\+\_\+add\+\_\+attrib}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+add\+\_\+attrib(page\+\_\+t $\ast$e, uint32\+\_\+t attrib)}{pt_entry_add_attrib(page_t *e, uint32_t attrib)}}]{\setlength{\rightskip}{0pt plus 5cm}void pt\+\_\+entry\+\_\+add\+\_\+attrib (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{attrib}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a6417ed10a34bf0b789fb321828215b43}{}\label{paging_8h_a6417ed10a34bf0b789fb321828215b43}
+
+
+Definition at line 81 of file paging.\+h.
+
+
+\begin{DoxyCode}
+82 \{
+83     *e |= attrib;
+84 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+del\+\_\+attrib@{pt\+\_\+entry\+\_\+del\+\_\+attrib}}
+\index{pt\+\_\+entry\+\_\+del\+\_\+attrib@{pt\+\_\+entry\+\_\+del\+\_\+attrib}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+del\+\_\+attrib(page\+\_\+t $\ast$e, uint32\+\_\+t attrib)}{pt_entry_del_attrib(page_t *e, uint32_t attrib)}}]{\setlength{\rightskip}{0pt plus 5cm}void pt\+\_\+entry\+\_\+del\+\_\+attrib (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{attrib}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_ad06738f925b4ecff695aac009cde9b60}{}\label{paging_8h_ad06738f925b4ecff695aac009cde9b60}
+
+
+Definition at line 86 of file paging.\+h.
+
+
+\begin{DoxyCode}
+87 \{
+88     *e &= ~attrib;
+89 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+is\+\_\+present@{pt\+\_\+entry\+\_\+is\+\_\+present}}
+\index{pt\+\_\+entry\+\_\+is\+\_\+present@{pt\+\_\+entry\+\_\+is\+\_\+present}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+is\+\_\+present(page\+\_\+t e)}{pt_entry_is_present(page_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}int pt\+\_\+entry\+\_\+is\+\_\+present (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a58bdec56525a8ebc4daa7488fe19b57a}{}\label{paging_8h_a58bdec56525a8ebc4daa7488fe19b57a}
+
+
+Definition at line 96 of file paging.\+h.
+
+
+\begin{DoxyCode}
+97 \{
+98     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24afc1c0668509c8a3f467c3b1a6ced75ae}{I86\_PTE\_PRESENT};
+99 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+is\+\_\+writable@{pt\+\_\+entry\+\_\+is\+\_\+writable}}
+\index{pt\+\_\+entry\+\_\+is\+\_\+writable@{pt\+\_\+entry\+\_\+is\+\_\+writable}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+is\+\_\+writable(page\+\_\+t e)}{pt_entry_is_writable(page_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}int pt\+\_\+entry\+\_\+is\+\_\+writable (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a6b065fc65d2a4faf9a31ed750956db82}{}\label{paging_8h_a6b065fc65d2a4faf9a31ed750956db82}
+
+
+Definition at line 101 of file paging.\+h.
+
+
+\begin{DoxyCode}
+102 \{
+103     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a1919243f9e90bd4725a6565890d4b142}{I86\_PTE\_WRITABLE};
+104 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+pfn@{pt\+\_\+entry\+\_\+pfn}}
+\index{pt\+\_\+entry\+\_\+pfn@{pt\+\_\+entry\+\_\+pfn}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+pfn(page\+\_\+t e)}{pt_entry_pfn(page_t e)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t pt\+\_\+entry\+\_\+pfn (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t}}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a97203e0effac91dc856ff4f28b3d6b79}{}\label{paging_8h_a97203e0effac91dc856ff4f28b3d6b79}
+
+
+Definition at line 106 of file paging.\+h.
+
+
+\begin{DoxyCode}
+107 \{
+108     \textcolor{keywordflow}{return} e & \hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}{I86\_PTE\_FRAME};
+109 \}
+\end{DoxyCode}
+\index{paging.\+h@{paging.\+h}!pt\+\_\+entry\+\_\+set\+\_\+frame@{pt\+\_\+entry\+\_\+set\+\_\+frame}}
+\index{pt\+\_\+entry\+\_\+set\+\_\+frame@{pt\+\_\+entry\+\_\+set\+\_\+frame}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{pt\+\_\+entry\+\_\+set\+\_\+frame(page\+\_\+t $\ast$e, uint32\+\_\+t addr)}{pt_entry_set_frame(page_t *e, uint32_t addr)}}]{\setlength{\rightskip}{0pt plus 5cm}void pt\+\_\+entry\+\_\+set\+\_\+frame (
+\begin{DoxyParamCaption}
+\item[{{\bf page\+\_\+t} $\ast$}]{e, }
+\item[{uint32\+\_\+t}]{addr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}{}\label{paging_8h_a73074448fb8439a820a3a22f37c1c9c2}
+
+
+Definition at line 91 of file paging.\+h.
+
+
+\begin{DoxyCode}
+92 \{
+93     *e = (*e & ~\hyperlink{paging_8h_ad68a29380bcb6012b9eff9d81b5afd24a26e2d5cbd329b7a22d3116c808c3e49c}{I86\_PTE\_FRAME}) | \hyperlink{multiboot_8h_a48f994dfe1a5aea3bce6dc7d2be8efd5}{addr};
+94 \}
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\index{paging.\+h@{paging.\+h}!\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{\+\_\+\+\_\+attribute\+\_\+\+\_\+}{__attribute__}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\+A\+G\+E\+\_\+\+P\+T\+E\+\_\+\+F\+L\+A\+GS}  {\bf \+\_\+\+\_\+attribute\+\_\+\+\_\+}}\hypertarget{paging_8h_afd763ef2554e711a33decaf1a29b092d}{}\label{paging_8h_afd763ef2554e711a33decaf1a29b092d}
+\index{paging.\+h@{paging.\+h}!main\+\_\+dir@{main\+\_\+dir}}
+\index{main\+\_\+dir@{main\+\_\+dir}!paging.\+h@{paging.\+h}}
+\subsubsection[{\texorpdfstring{main\+\_\+dir}{main_dir}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf pdirectory}$\ast$ main\+\_\+dir}\hypertarget{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}{}\label{paging_8h_a8cf40646a9ed5f548aaf4eca68edc2de}
+
+
+Definition at line 79 of file paging.\+h.
+

@@ -1,0 +1,264 @@
+\hypertarget{console_8h}{}\section{Experimental Edition/\+Source/console/console.h File Reference}
+\label{console_8h}\index{Experimental Edition/\+Source/console/console.\+h@{Experimental Edition/\+Source/console/console.\+h}}
+{\ttfamily \#include $<$stddef.\+h$>$}\\*
+Include dependency graph for console.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{console_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{console_8h_acadd2a5d99d952e55a4580dbc8f8739d}{console\+\_\+init} (void)
+\item 
+void \hyperlink{console_8h_a2746e47a32f9614d1f3cacc250451c6f}{console\+\_\+putch} (char c)
+\item 
+void \hyperlink{console_8h_ad219d3a4d1adaa9323e5c3422f56f2ee}{console\+\_\+write} (const char $\ast$data, size\+\_\+t \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size})
+\item 
+void \hyperlink{console_8h_a7e3f5006dd96b9d8c61242ddc5351832}{console\+\_\+writestring} (const char $\ast$data)
+\item 
+void \hyperlink{console_8h_aa2ad21f3a06d702a312a1182027d686c}{console\+\_\+write\+\_\+dec} (unsigned long int in)
+\item 
+void \hyperlink{console_8h_a3ba9e2c60586ea967a1bec1347a7d6ad}{printint} (unsigned long int in)
+\item 
+uint8\+\_\+t \hyperlink{console_8h_ab7981500510b079513bd93519d049b7a}{console\+\_\+manager} (char $\ast$inst)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+void($\ast$ \hyperlink{console_8h_a0b1c810c221b3638c2afc63834428893}{mdbug} )()
+\item 
+void($\ast$ \hyperlink{console_8h_a84ab240c572ff018be52cc0c227ac44c}{vesa} )(uint32\+\_\+t mode)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{console.\+h@{console.\+h}!console\+\_\+init@{console\+\_\+init}}
+\index{console\+\_\+init@{console\+\_\+init}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+init(void)}{console_init(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_acadd2a5d99d952e55a4580dbc8f8739d}{}\label{console_8h_acadd2a5d99d952e55a4580dbc8f8739d}
+
+
+Definition at line 15 of file console.\+c.
+
+
+\begin{DoxyCode}
+16 \{
+17     \hyperlink{console_8c_ab00bf51d192c2dcff46faf4eae44b49d}{consolerow} = 0;
+18     \hyperlink{console_8c_a391230757710c7b1b66a5a795ff780db}{consolecolumn} = 0;
+19     \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color} = make\_color(\hyperlink{vga_8h_abaae057bae62d0c3e11501e3199cb60ea612e88bdf4015d1f208761d40c603a0e}{COLOR\_LIGHT\_GREY}, 
+      \hyperlink{vga_8h_abaae057bae62d0c3e11501e3199cb60ea2a9daf215a30f1c539ead18c66380fc1}{COLOR\_BLACK});
+20     \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer} = VGA\_MEMORY;
+21     \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} y = 0; y < VGA\_HEIGHT; y++ )
+22     \{
+23         \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} x = 0; x < VGA\_WIDTH; x++ )
+24         \{
+25             \textcolor{keyword}{const} \textcolor{keywordtype}{size\_t} index = y * VGA\_WIDTH + x;
+26             \hyperlink{console_8c_a3776bc9cc9fb07b614fe11932150ad50}{console\_buffer}[index] = make\_vgaentry(\textcolor{charliteral}{' '}, 
+      \hyperlink{console_8c_ad97a398a7a043a7c5896606cf2cdadf8}{console\_color});
+27         \}
+28     \}
+29 \}
+\end{DoxyCode}
+\index{console.\+h@{console.\+h}!console\+\_\+manager@{console\+\_\+manager}}
+\index{console\+\_\+manager@{console\+\_\+manager}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+manager(char $\ast$inst)}{console_manager(char *inst)}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t console\+\_\+manager (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{inst}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_ab7981500510b079513bd93519d049b7a}{}\label{console_8h_ab7981500510b079513bd93519d049b7a}
+
+
+Definition at line 194 of file kernel.\+c.
+
+
+\begin{DoxyCode}
+195 \{
+196     \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"help"}))
+197     \{
+198         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nAvialable Commands are:\(\backslash\)n"});
+199         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)thelp         To get all the available commands"});
+200         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tmdbug        To test the Memory Managment System"});
+201         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tshutdown     To ACPI Power off the system (may not work on few machines)"});
+202         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tstart vesa   To enter VESA Super VGA Mode"});
+203         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tmemmap       To view the Physical Memory Map of the system"});
+204         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)ttest multi   To Test multitasking"});
+205         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n\(\backslash\)tother commands\(\backslash\)n"});
+206         \textcolor{keywordflow}{return} 0;
+207     \}
+208     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"shutdown"}))
+209     \{
+210             \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Turning Power off"});
+211             \hyperlink{acpi_8c_a6f63c2b70d3c6d268bdc2423d3fdfb9f}{acpiPowerOff}();
+212             \textcolor{keywordflow}{return} 0;
+213     \}
+214     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"mdbug"}))
+215     \{
+216             \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Testing Virtual Memory Manager"});
+217             \hyperlink{console_8h_a0b1c810c221b3638c2afc63834428893}{mdbug}();
+218             \textcolor{keywordflow}{return} 0;
+219     \}
+220     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"start vesa"}))
+221     \{
+222         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Entering VESA SVGA mode 1024*768"});
+223         \hyperlink{console_8h_a84ab240c572ff018be52cc0c227ac44c}{vesa}(0x117);
+224         \textcolor{keywordflow}{return} 1;
+225     \}
+226     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"memmap"}))
+227     \{
+228     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)nMemory Map:"});
+229     \hyperlink{structmemory__region}{MemRegion\_t}* memmap\_info=\hyperlink{vmem_8h_a652241438a84d50f059167c4eea7f1cc}{mmap\_info};
+230 
+231     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<15;i++)
+232     \{
+233         \textcolor{keywordflow}{if}(memmap\_info->\hyperlink{structmemory__region_a85b8ec619e9aa2053ea033c5b7d3683c}{startLo}==0) \textcolor{keywordflow}{break};
+234         \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"region %i address: %x size: %x Bytes Type: %i (%s)\(\backslash\)n"},i,memmap\_info->
+      \hyperlink{structmemory__region_a090957a0a7f28700a605cf6f5e8f614a}{startHi},memmap\_info->\hyperlink{structmemory__region_a3d6aa91c428379cfc829556e48aee067}{sizeHi},
+235                memmap\_info->\hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type},\hyperlink{vmem_8h_aa980b4f0db6827466a011796b1179f71}{strMemoryTypes}[memmap\_info->
+      \hyperlink{structmemory__region_a3591afc4df88a58fa5a91eab6ebe94cc}{type}-1]);
+236         memmap\_info++;
+237     \}
+238         \textcolor{keywordflow}{return} 0;
+239     \}
+240     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"test multi"}))
+241     \{
+242         \textcolor{comment}{//schedule=switch\_task;}
+243         \textcolor{comment}{//printf("\(\backslash\)n\(\backslash\)tEnter the timer Value:");}
+244         \textcolor{comment}{//uint32\_t timer=getint();}
+245         \hyperlink{task_8c_aa84eaf17b807dd55decb63a2de5f1bc7}{Scheduler\_exec}();
+246         \textcolor{keywordflow}{return} 0;
+247     \}
+248     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(inst,\textcolor{stringliteral}{"rand-gen"}))
+249     \{
+250         \hyperlink{task_8c_aed5860394b06605b9c6de6e8a31f74fa}{rand\_test}();
+251         \textcolor{keywordflow}{return} 0;
+252     \}
+253     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n Command Not Recognized! type help for help\(\backslash\)n"});
+254     \textcolor{keywordflow}{return} 0;
+255 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8h_ab7981500510b079513bd93519d049b7a_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+h@{console.\+h}!console\+\_\+putch@{console\+\_\+putch}}
+\index{console\+\_\+putch@{console\+\_\+putch}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+putch(char c)}{console_putch(char c)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+putch (
+\begin{DoxyParamCaption}
+\item[{char}]{c}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_a2746e47a32f9614d1f3cacc250451c6f}{}\label{console_8h_a2746e47a32f9614d1f3cacc250451c6f}
+\index{console.\+h@{console.\+h}!console\+\_\+write@{console\+\_\+write}}
+\index{console\+\_\+write@{console\+\_\+write}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+write(const char $\ast$data, size\+\_\+t size)}{console_write(const char *data, size_t size)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+write (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{data, }
+\item[{size\+\_\+t}]{size}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_ad219d3a4d1adaa9323e5c3422f56f2ee}{}\label{console_8h_ad219d3a4d1adaa9323e5c3422f56f2ee}
+
+
+Definition at line 84 of file console.\+c.
+
+
+\begin{DoxyCode}
+85 \{
+86     \textcolor{keywordflow}{for} ( \textcolor{keywordtype}{size\_t} i = 0; i < \hyperlink{multiboot_8h_a8c5ccb4d457cb24df33a7c9facfa2650}{size}; i++ )
+87         \hyperlink{console_8c_ac156aa97dae8b45e5aea8f6534d38946}{console\_putchar}(data[i]);
+88 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8h_ad219d3a4d1adaa9323e5c3422f56f2ee_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+h@{console.\+h}!console\+\_\+write\+\_\+dec@{console\+\_\+write\+\_\+dec}}
+\index{console\+\_\+write\+\_\+dec@{console\+\_\+write\+\_\+dec}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+write\+\_\+dec(unsigned long int in)}{console_write_dec(unsigned long int in)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+write\+\_\+dec (
+\begin{DoxyParamCaption}
+\item[{unsigned long int}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_aa2ad21f3a06d702a312a1182027d686c}{}\label{console_8h_aa2ad21f3a06d702a312a1182027d686c}
+\index{console.\+h@{console.\+h}!console\+\_\+writestring@{console\+\_\+writestring}}
+\index{console\+\_\+writestring@{console\+\_\+writestring}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{console\+\_\+writestring(const char $\ast$data)}{console_writestring(const char *data)}}]{\setlength{\rightskip}{0pt plus 5cm}void console\+\_\+writestring (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{data}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_a7e3f5006dd96b9d8c61242ddc5351832}{}\label{console_8h_a7e3f5006dd96b9d8c61242ddc5351832}
+
+
+Definition at line 90 of file console.\+c.
+
+
+\begin{DoxyCode}
+91 \{
+92     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(data);
+93     \textcolor{comment}{//console\_write(data, strlen(data));}
+94 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{console_8h_a7e3f5006dd96b9d8c61242ddc5351832_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{console.\+h@{console.\+h}!printint@{printint}}
+\index{printint@{printint}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{printint(unsigned long int in)}{printint(unsigned long int in)}}]{\setlength{\rightskip}{0pt plus 5cm}void printint (
+\begin{DoxyParamCaption}
+\item[{unsigned long int}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{console_8h_a3ba9e2c60586ea967a1bec1347a7d6ad}{}\label{console_8h_a3ba9e2c60586ea967a1bec1347a7d6ad}
+
+
+\subsection{Variable Documentation}
+\index{console.\+h@{console.\+h}!mdbug@{mdbug}}
+\index{mdbug@{mdbug}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{mdbug}{mdbug}}]{\setlength{\rightskip}{0pt plus 5cm}void($\ast$ mdbug) ()}\hypertarget{console_8h_a0b1c810c221b3638c2afc63834428893}{}\label{console_8h_a0b1c810c221b3638c2afc63834428893}
+
+
+Definition at line 4 of file console.\+h.
+
+\index{console.\+h@{console.\+h}!vesa@{vesa}}
+\index{vesa@{vesa}!console.\+h@{console.\+h}}
+\subsubsection[{\texorpdfstring{vesa}{vesa}}]{\setlength{\rightskip}{0pt plus 5cm}void($\ast$ vesa) (uint32\+\_\+t mode)}\hypertarget{console_8h_a84ab240c572ff018be52cc0c227ac44c}{}\label{console_8h_a84ab240c572ff018be52cc0c227ac44c}
+
+
+Definition at line 5 of file console.\+h.
+

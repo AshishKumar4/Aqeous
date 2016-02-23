@@ -1,0 +1,6 @@
+<map id="kkybrd_set_leds" name="kkybrd_set_leds">
+<area shape="rect" id="node2" href="$keyboard_8c.html#a525ed043dbf1ac4ca55cda20262f9d0a" title="send command byte to keyboard encoder " alt="" coords="171,31,320,57"/>
+<area shape="rect" id="node3" href="$keyboard_8c.html#a74b2b41d9b627a0ba98aa23727a34de4" title="read status from keyboard controller " alt="" coords="368,5,523,32"/>
+<area shape="rect" id="node5" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="422,56,469,83"/>
+<area shape="rect" id="node4" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="571,5,609,32"/>
+</map>

@@ -1,0 +1,149 @@
+\hypertarget{Shell_8c}{}\section{Experimental Edition/\+Source/\+Shell/\+Shell.c File Reference}
+\label{Shell_8c}\index{Experimental Edition/\+Source/\+Shell/\+Shell.\+c@{Experimental Edition/\+Source/\+Shell/\+Shell.\+c}}
+{\ttfamily \#include $<$shell.\+h$>$}\\*
+Include dependency graph for Shell.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{Shell_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{Shell_8c_a3a5b33cdd8fb591704c9adfcf908a273}{init\+\_\+shell} ()
+\item 
+void \hyperlink{Shell_8c_a97dde9d5e0b018feddac600897f80308}{shell} ()
+\item 
+void \hyperlink{Shell_8c_aee70f4f39fc40aa0ae6f38de5971a878}{Add\+\_\+command} (char $\ast$name, char $\ast$discription, void $\ast$function)
+\item 
+int \hyperlink{Shell_8c_a9110982da26623b34bd538c6e699a01a}{find\+Command} (char $\ast$command)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{Shell.\+c@{Shell.\+c}!Add\+\_\+command@{Add\+\_\+command}}
+\index{Add\+\_\+command@{Add\+\_\+command}!Shell.\+c@{Shell.\+c}}
+\subsubsection[{\texorpdfstring{Add\+\_\+command(char $\ast$name, char $\ast$discription, void $\ast$function)}{Add_command(char *name, char *discription, void *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void Add\+\_\+command (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{name, }
+\item[{char $\ast$}]{discription, }
+\item[{void $\ast$}]{function}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8c_aee70f4f39fc40aa0ae6f38de5971a878}{}\label{Shell_8c_aee70f4f39fc40aa0ae6f38de5971a878}
+
+
+Definition at line 27 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+28 \{
+29   \textcolor{keywordflow}{if}(!(\hyperlink{Shell_8h_a4b2b20c68bee625b7dc737c4d05699fd}{MAX\_COMMANDS}-\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}-1))
+30   \{
+31     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].\hyperlink{structCommand_aac61810b8e87055d1648ec142086eb0e}{name}=name;
+32     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].discription=discription;
+33     \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands}].\hyperlink{structCommand_a3012bc63b47f3e5606ee1ccafb5fb3ae}{function}=\textcolor{keyword}{function};
+34     ++\hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands};
+35   \}
+36   \textcolor{keywordflow}{return};
+37 \}
+\end{DoxyCode}
+\index{Shell.\+c@{Shell.\+c}!find\+Command@{find\+Command}}
+\index{find\+Command@{find\+Command}!Shell.\+c@{Shell.\+c}}
+\subsubsection[{\texorpdfstring{find\+Command(char $\ast$command)}{findCommand(char *command)}}]{\setlength{\rightskip}{0pt plus 5cm}int find\+Command (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{command}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8c_a9110982da26623b34bd538c6e699a01a}{}\label{Shell_8c_a9110982da26623b34bd538c6e699a01a}
+
+
+Definition at line 39 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+40 \{
+41     \textcolor{keywordtype}{int} i;
+42     \textcolor{keywordtype}{int} ret;
+43 
+44     \textcolor{keywordflow}{for}(i = 0; i < \hyperlink{Shell_8h_a519c0278df2b482f57914c046c8a3d23}{Number\_of\_commands} + 1; i++)
+45     \{
+46         \textcolor{keywordflow}{if}(!\hyperlink{string_8h_a34624c3be7459f677d90ae0ad046821a}{strcmp}(command, \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[i].name))
+47             \textcolor{keywordflow}{return} i;
+48         \textcolor{keywordflow}{else}
+49             \textcolor{keywordflow}{return} -1;
+50     \}
+51 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=240pt]{Shell_8c_a9110982da26623b34bd538c6e699a01a_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{Shell.\+c@{Shell.\+c}!init\+\_\+shell@{init\+\_\+shell}}
+\index{init\+\_\+shell@{init\+\_\+shell}!Shell.\+c@{Shell.\+c}}
+\subsubsection[{\texorpdfstring{init\+\_\+shell()}{init_shell()}}]{\setlength{\rightskip}{0pt plus 5cm}void init\+\_\+shell (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8c_a3a5b33cdd8fb591704c9adfcf908a273}{}\label{Shell_8c_a3a5b33cdd8fb591704c9adfcf908a273}
+
+
+Definition at line 3 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+4 \{
+5 
+6 \}
+\end{DoxyCode}
+\index{Shell.\+c@{Shell.\+c}!shell@{shell}}
+\index{shell@{shell}!Shell.\+c@{Shell.\+c}}
+\subsubsection[{\texorpdfstring{shell()}{shell()}}]{\setlength{\rightskip}{0pt plus 5cm}void shell (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{Shell_8c_a97dde9d5e0b018feddac600897f80308}{}\label{Shell_8c_a97dde9d5e0b018feddac600897f80308}
+
+
+Definition at line 8 of file Shell.\+c.
+
+
+\begin{DoxyCode}
+9 \{
+10   \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"cmd>"});
+11   \hyperlink{keyboard_8c_a3b0a0dd71bca58f7eec23991e11ce6d3}{getline}(\hyperlink{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{Input});
+12   void (*\hyperlink{structCommand}{Command})(void);
+13   \textcolor{keywordtype}{int} i = \hyperlink{Shell_8c_a9110982da26623b34bd538c6e699a01a}{findCommand}(\hyperlink{Shell_8h_a62cd437edd97679443762efe3b9e94a7}{Input});
+14   \textcolor{keywordflow}{if}(i >= 0)
+15   \{
+16       \hyperlink{structCommand}{Command} = \hyperlink{Shell_8h_a9a140697218baee7834a4bf2acc0a8d3}{Command\_table}[i].\hyperlink{structCommand_a3012bc63b47f3e5606ee1ccafb5fb3ae}{function};
+17       \hyperlink{structCommand}{Command}();
+18   \}
+19   \textcolor{keywordflow}{else}
+20   \{
+21       \textcolor{keywordflow}{return};
+22   \}
+23 
+24   \textcolor{keywordflow}{return};
+25 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Shell_8c_a97dde9d5e0b018feddac600897f80308_cgraph}
+\end{center}
+\end{figure}
+
+

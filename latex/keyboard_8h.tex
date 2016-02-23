@@ -1,0 +1,573 @@
+\hypertarget{keyboard_8h}{}\section{Experimental Edition/\+Source/\+Drivers/\+Keyboard/keyboard.h File Reference}
+\label{keyboard_8h}\index{Experimental Edition/\+Source/\+Drivers/\+Keyboard/keyboard.\+h@{Experimental Edition/\+Source/\+Drivers/\+Keyboard/keyboard.\+h}}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=209pt]{keyboard_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfb}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO} \{ \hyperlink{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba83804ad0a472d824b9cb1f204e55cf90}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF} = 0x60, 
+\hyperlink{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba3c91cb01ada50ec59d742cb1d139475f}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG} = 0x60
+ \}
+\item 
+enum \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3d}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS} \{ \\*
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da11b9491f32db4beb7ab379256c9e3b5e}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED} = 0x\+ED, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3621a0b5e156b8c3b8aa4022ee4403f2}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO} = 0x\+EE, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da8b8e4167fada5c0224324af40ef11b7e}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET} = 0x\+F0, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae8e15e61a65dde860a00cd0ec486ae58}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID} = 0x\+F2, 
+\\*
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da7769405e85e6fc65208b1be21cf7944b}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY} = 0x\+F3, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dacdaea10cdd1f7cf00a134973db25089b}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE} = 0x\+F4, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da90b0fbfe5df40043562bd1821b210da9}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT} = 0x\+F5, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da893657dbfce20830c77ba6dadba4071d}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN} = 0x\+F6, 
+\\*
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da2dcb1dab59e866f8a4f798b47eb28888}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO} = 0x\+F7, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da350f2bd0ceea7bf1815d2bfc55755578}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK} = 0x\+F8, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae3e0a3ebd61dcf6ae052166304106540}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY} = 0x\+F9, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dac775ff0e1ffbfd595cbb572ede225dfc}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO} = 0x\+FA, 
+\\*
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3daf2605a86d3e580f2e6d85e39760545fd}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT} = 0x\+FB, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da829e22d08efa78917b65f80d68088c40}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK} = 0x\+FC, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3305ce750ae5e9ba1381430c47eb88b0}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY} = 0x\+FD, 
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da717967f3c3c54ba73e2f6e5027c50c09}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND} = 0x\+FE, 
+\\*
+\hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da471507a04d8c22fefe6b5035a35f074d}{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET} = 0x\+FF
+ \}
+\item 
+enum \hyperlink{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO} \{ \hyperlink{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a56c381b75422979a6f98c5bd0202ab3b}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG} = 0x64, 
+\hyperlink{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a81cca3a9655135c8efdae39ebbf1645e}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG} = 0x64
+ \}
+\item 
+enum \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK} \{ \\*
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a70aeb039670db8843dd8cffa35e4bfc7}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF} = 1, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a7100d3b2d4e251b6e7c97227e9567318}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF} = 2, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52adeafc06c63229e957cdd645c92856130}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM} = 4, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52aac1899894ee975e7cc1aaf4430f233bf}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA} = 8, 
+\\*
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a8d68313b0a16778079a7b0205c3d56dd}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED} = 0x10, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a2e2c91fc68328078a9c72579c7a13f6a}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF} = 0x20, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab635f8fe5ba712b2ef49c82a35f16b6f}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT} = 0x40, 
+\hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab5d81e305f00cb97d8cf3ccaf6fc27ae}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY} = 0x80
+ \}
+\item 
+enum \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6fa}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS} \{ \\*
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3d6f17ef26fea7892995740ab193e372}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD} = 0x20, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faae810b8052e90703de6f862a34f59caf6}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE} = 0x60, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa060e22396e386508744668b6f7198b83}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST} = 0x\+AA, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa43c2b785757b12d53b970169ef3d2202}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST} = 0x\+AB, 
+\\*
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faab05490befe0f3a26fdc4f32a971504df}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE} = 0x\+AD, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa2480165c46adcc488a343ca2c442fb03}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE} = 0x\+AE, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5a982bb832701793ae8feb318e4259a8}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT} = 0x\+C0, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa9f19639408bab90c96d61ff989f0ef9d}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT} = 0x\+D0, 
+\\*
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa94ae4549a94933927e81f48e0b07d5da}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT} = 0x\+D1, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3fa36f368387b780ce328b195bb37cb7}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS} = 0x\+E0, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaff213571ae11f4fa2ef54081aac1e2d2}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET} = 0x\+FE, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaa32247c579b7586952aec4265b78209d}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE} = 0x\+A7, 
+\\*
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faad3dd8dfae303fa685b25ecc3f98f8084}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE} = 0x\+A8, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faac5a938c0183f3063873e6686341c9acb}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST} = 0x\+A9, 
+\hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5d38b9cc1ef2e343b138609b2f24f82b}{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE} = 0x\+D4
+ \}
+\item 
+enum \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbac}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR} \{ \\*
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca435623f8138fc41407248d2cc88469ec}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN} = 0, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca8ac189e3ebc9ad1d7666156471b2d388}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET} = 0x83\+AB, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2547740feafac24f57da0879f88909da}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT} = 0x\+AA, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca1d4e8c48fa87fa3f6caee386394f436b}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET} = 0x\+EE, 
+\\*
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbacaa3dc1b518f3d05f9db322d955b9a88fc}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK} = 0x\+FA, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2756eee0a34a54959eeb4b1a82668f70}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED} = 0x\+FC, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca9178c5af84c2345267fc9751c53aeb88}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED} = 0x\+FD, 
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca91047cb9460052c5cac1a5ad7eaac81b}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD} = 0x\+FE, 
+\\*
+\hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca427283abddd836296220dafc8fada795}{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY} = 0x\+FF
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \hyperlink{keyboard_8h_a668644c144dda2deede41fde5aab613f}{getchar} ()
+\item 
+void \hyperlink{keyboard_8h_a3b0a0dd71bca58f7eec23991e11ce6d3}{getline} (char $\ast$string)
+\item 
+uint32\+\_\+t \hyperlink{keyboard_8h_ada79ee5c754077262a178f47cefadda2}{Str\+To\+Int} (char $\ast$str)
+\item 
+uint32\+\_\+t \hyperlink{keyboard_8h_a6ec3e6ec37ae6d9830bc0d6b48892120}{getint} ()
+\item 
+void \hyperlink{keyboard_8h_aaeb4e4a3c4813ee1efc6b98bba9ec781}{keyboard\+\_\+init} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS}}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS}{KYBRD_CTRL_CMDS}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+DS}}\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6fa}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6fa}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+AD\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3d6f17ef26fea7892995740ab193e372}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3d6f17ef26fea7892995740ab193e372}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+TE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faae810b8052e90703de6f862a34f59caf6}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faae810b8052e90703de6f862a34f59caf6}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+E\+L\+F\+\_\+\+T\+E\+ST\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa060e22396e386508744668b6f7198b83}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa060e22396e386508744668b6f7198b83}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+T\+E\+ST\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa43c2b785757b12d53b970169ef3d2202}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa43c2b785757b12d53b970169ef3d2202}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+D\+I\+S\+A\+B\+LE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faab05490befe0f3a26fdc4f32a971504df}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faab05490befe0f3a26fdc4f32a971504df}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa2480165c46adcc488a343ca2c442fb03}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa2480165c46adcc488a343ca2c442fb03}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+I\+N\+\_\+\+P\+O\+RT\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5a982bb832701793ae8feb318e4259a8}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5a982bb832701793ae8feb318e4259a8}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa9f19639408bab90c96d61ff989f0ef9d}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa9f19639408bab90c96d61ff989f0ef9d}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+W\+R\+I\+T\+E\+\_\+\+O\+U\+T\+\_\+\+P\+O\+RT\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa94ae4549a94933927e81f48e0b07d5da}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa94ae4549a94933927e81f48e0b07d5da}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+E\+A\+D\+\_\+\+T\+E\+S\+T\+\_\+\+I\+N\+P\+U\+TS\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3fa36f368387b780ce328b195bb37cb7}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3fa36f368387b780ce328b195bb37cb7}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+S\+Y\+S\+T\+E\+M\+\_\+\+R\+E\+S\+ET\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaff213571ae11f4fa2ef54081aac1e2d2}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaff213571ae11f4fa2ef54081aac1e2d2}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+D\+I\+S\+A\+B\+LE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaa32247c579b7586952aec4265b78209d}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaa32247c579b7586952aec4265b78209d}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+E\+N\+A\+B\+LE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faad3dd8dfae303fa685b25ecc3f98f8084}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faad3dd8dfae303fa685b25ecc3f98f8084}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+P\+O\+R\+T\+\_\+\+T\+E\+ST\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faac5a938c0183f3063873e6686341c9acb}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faac5a938c0183f3063873e6686341c9acb}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+M\+O\+U\+S\+E\+\_\+\+W\+R\+I\+TE\hypertarget{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5d38b9cc1ef2e343b138609b2f24f82b}{}\label{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5d38b9cc1ef2e343b138609b2f24f82b}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 51 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+51                      \{
+52 
+53     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3d6f17ef26fea7892995740ab193e372}{KYBRD\_CTRL\_CMD\_READ}              =   0x20,
+54     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faae810b8052e90703de6f862a34f59caf6}{KYBRD\_CTRL\_CMD\_WRITE}            =   0x60,
+55     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa060e22396e386508744668b6f7198b83}{KYBRD\_CTRL\_CMD\_SELF\_TEST}        =   0xAA,
+56     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa43c2b785757b12d53b970169ef3d2202}{KYBRD\_CTRL\_CMD\_INTERFACE\_TEST}  =   0xAB,
+57     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faab05490befe0f3a26fdc4f32a971504df}{KYBRD\_CTRL\_CMD\_DISABLE}            =   0xAD,
+58     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa2480165c46adcc488a343ca2c442fb03}{KYBRD\_CTRL\_CMD\_ENABLE}          =   0xAE,
+59     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5a982bb832701793ae8feb318e4259a8}{KYBRD\_CTRL\_CMD\_READ\_IN\_PORT}      =   0xC0,
+60     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa9f19639408bab90c96d61ff989f0ef9d}{KYBRD\_CTRL\_CMD\_READ\_OUT\_PORT}    =   0xD0,
+61     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa94ae4549a94933927e81f48e0b07d5da}{KYBRD\_CTRL\_CMD\_WRITE\_OUT\_PORT}  =   0xD1,
+62     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa3fa36f368387b780ce328b195bb37cb7}{KYBRD\_CTRL\_CMD\_READ\_TEST\_INPUTS}  =   0xE0,
+63     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaff213571ae11f4fa2ef54081aac1e2d2}{KYBRD\_CTRL\_CMD\_SYSTEM\_RESET}      =   0xFE,
+64     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faaa32247c579b7586952aec4265b78209d}{KYBRD\_CTRL\_CMD\_MOUSE\_DISABLE}    =   0xA7,
+65     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faad3dd8dfae303fa685b25ecc3f98f8084}{KYBRD\_CTRL\_CMD\_MOUSE\_ENABLE}      =   0xA8,
+66     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faac5a938c0183f3063873e6686341c9acb}{KYBRD\_CTRL\_CMD\_MOUSE\_PORT\_TEST}    =   0xA9,
+67     \hyperlink{keyboard_8h_a6ecd61e82419190cccbc841dc19eb6faa5d38b9cc1ef2e343b138609b2f24f82b}{KYBRD\_CTRL\_CMD\_MOUSE\_WRITE}        =   0xD4
+68 \};
+\end{DoxyCode}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO}}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO}{KYBRD_CTRL_IO}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+IO}}\hypertarget{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1}{}\label{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+R\+EG\hypertarget{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a56c381b75422979a6f98c5bd0202ab3b}{}\label{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a56c381b75422979a6f98c5bd0202ab3b}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+C\+M\+D\+\_\+\+R\+EG\hypertarget{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a81cca3a9655135c8efdae39ebbf1645e}{}\label{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a81cca3a9655135c8efdae39ebbf1645e}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 33 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+33                    \{
+34 
+35     \hyperlink{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a56c381b75422979a6f98c5bd0202ab3b}{KYBRD\_CTRL\_STATS\_REG}=   0x64,
+36     \hyperlink{keyboard_8h_ae56b207ceed5685e9cb940a17b03b4c1a81cca3a9655135c8efdae39ebbf1645e}{KYBRD\_CTRL\_CMD\_REG}    =   0x64
+37 \};
+\end{DoxyCode}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK}}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK}{KYBRD_CTRL_STATS_MASK}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+SK}}\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+O\+U\+T\+\_\+\+B\+UF\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a70aeb039670db8843dd8cffa35e4bfc7}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a70aeb039670db8843dd8cffa35e4bfc7}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+I\+N\+\_\+\+B\+UF\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a7100d3b2d4e251b6e7c97227e9567318}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a7100d3b2d4e251b6e7c97227e9567318}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+S\+Y\+S\+T\+EM\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52adeafc06c63229e957cdd645c92856130}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52adeafc06c63229e957cdd645c92856130}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+C\+M\+D\+\_\+\+D\+A\+TA\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52aac1899894ee975e7cc1aaf4430f233bf}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52aac1899894ee975e7cc1aaf4430f233bf}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+L\+O\+C\+K\+ED\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a8d68313b0a16778079a7b0205c3d56dd}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a8d68313b0a16778079a7b0205c3d56dd}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+A\+U\+X\+\_\+\+B\+UF\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a2e2c91fc68328078a9c72579c7a13f6a}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a2e2c91fc68328078a9c72579c7a13f6a}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+T\+I\+M\+E\+O\+UT\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab635f8fe5ba712b2ef49c82a35f16b6f}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab635f8fe5ba712b2ef49c82a35f16b6f}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY@{K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+C\+T\+R\+L\+\_\+\+S\+T\+A\+T\+S\+\_\+\+M\+A\+S\+K\+\_\+\+P\+A\+R\+I\+TY\hypertarget{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab5d81e305f00cb97d8cf3ccaf6fc27ae}{}\label{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab5d81e305f00cb97d8cf3ccaf6fc27ae}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 39 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+39                            \{
+40 
+41     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a70aeb039670db8843dd8cffa35e4bfc7}{KYBRD\_CTRL\_STATS\_MASK\_OUT\_BUF}  =   1,      \textcolor{comment}{//00000001}
+42     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a7100d3b2d4e251b6e7c97227e9567318}{KYBRD\_CTRL\_STATS\_MASK\_IN\_BUF}    =   2,      \textcolor{comment}{//00000010}
+43     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52adeafc06c63229e957cdd645c92856130}{KYBRD\_CTRL\_STATS\_MASK\_SYSTEM}    =   4,      \textcolor{comment}{//00000100}
+44     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52aac1899894ee975e7cc1aaf4430f233bf}{KYBRD\_CTRL\_STATS\_MASK\_CMD\_DATA}    =   8,      \textcolor{comment}{//00001000}
+45     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a8d68313b0a16778079a7b0205c3d56dd}{KYBRD\_CTRL\_STATS\_MASK\_LOCKED}    =   0x10,   \textcolor{comment}{//00010000}
+46     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52a2e2c91fc68328078a9c72579c7a13f6a}{KYBRD\_CTRL\_STATS\_MASK\_AUX\_BUF}  =   0x20,   \textcolor{comment}{//00100000}
+47     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab635f8fe5ba712b2ef49c82a35f16b6f}{KYBRD\_CTRL\_STATS\_MASK\_TIMEOUT}  =   0x40,   \textcolor{comment}{//01000000}
+48     \hyperlink{keyboard_8h_a757e4e69cd6add662c4901fe55e71f52ab5d81e305f00cb97d8cf3ccaf6fc27ae}{KYBRD\_CTRL\_STATS\_MASK\_PARITY}    =   0x80    \textcolor{comment}{//10000000}
+49 \};
+\end{DoxyCode}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS}}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS}{KYBRD_ENC_CMDS}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+DS}}\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3d}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3d}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+E\+T\+\_\+\+L\+ED\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da11b9491f32db4beb7ab379256c9e3b5e}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da11b9491f32db4beb7ab379256c9e3b5e}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+C\+HO\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3621a0b5e156b8c3b8aa4022ee4403f2}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3621a0b5e156b8c3b8aa4022ee4403f2}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+C\+A\+N\+\_\+\+C\+O\+D\+E\+\_\+\+S\+ET\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da8b8e4167fada5c0224324af40ef11b7e}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da8b8e4167fada5c0224324af40ef11b7e}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+ID\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae8e15e61a65dde860a00cd0ec486ae58}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae8e15e61a65dde860a00cd0ec486ae58}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+U\+T\+O\+D\+E\+L\+AY\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da7769405e85e6fc65208b1be21cf7944b}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da7769405e85e6fc65208b1be21cf7944b}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+E\+N\+A\+B\+LE\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dacdaea10cdd1f7cf00a134973db25089b}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dacdaea10cdd1f7cf00a134973db25089b}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+W\+A\+IT\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da90b0fbfe5df40043562bd1821b210da9}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da90b0fbfe5df40043562bd1821b210da9}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+T\+S\+C\+AN\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da893657dbfce20830c77ba6dadba4071d}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da893657dbfce20830c77ba6dadba4071d}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+A\+U\+TO\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da2dcb1dab59e866f8a4f798b47eb28888}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da2dcb1dab59e866f8a4f798b47eb28888}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da350f2bd0ceea7bf1815d2bfc55755578}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da350f2bd0ceea7bf1815d2bfc55755578}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+O\+N\+LY\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae3e0a3ebd61dcf6ae052166304106540}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae3e0a3ebd61dcf6ae052166304106540}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+A\+L\+L\+\_\+\+M\+A\+K\+E\+B\+R\+E\+A\+K\+\_\+\+A\+U\+TO\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dac775ff0e1ffbfd595cbb572ede225dfc}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dac775ff0e1ffbfd595cbb572ede225dfc}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+A\+U\+T\+O\+R\+E\+P\+E\+AT\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3daf2605a86d3e580f2e6d85e39760545fd}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3daf2605a86d3e580f2e6d85e39760545fd}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+M\+A\+K\+E\+B\+R\+E\+AK\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da829e22d08efa78917b65f80d68088c40}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da829e22d08efa78917b65f80d68088c40}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+S\+I\+N\+G\+L\+E\+\_\+\+B\+R\+E\+A\+K\+O\+N\+LY\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3305ce750ae5e9ba1381430c47eb88b0}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3305ce750ae5e9ba1381430c47eb88b0}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+E\+ND\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da717967f3c3c54ba73e2f6e5027c50c09}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da717967f3c3c54ba73e2f6e5027c50c09}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+E\+S\+ET\hypertarget{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da471507a04d8c22fefe6b5035a35f074d}{}\label{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da471507a04d8c22fefe6b5035a35f074d}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 10 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+10                     \{
+11 
+12     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da11b9491f32db4beb7ab379256c9e3b5e}{KYBRD\_ENC\_CMD\_SET\_LED}              =   0xED,
+13     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3621a0b5e156b8c3b8aa4022ee4403f2}{KYBRD\_ENC\_CMD\_ECHO}                    =   0xEE,
+14     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da8b8e4167fada5c0224324af40ef11b7e}{KYBRD\_ENC\_CMD\_SCAN\_CODE\_SET}          =   0xF0,
+15     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae8e15e61a65dde860a00cd0ec486ae58}{KYBRD\_ENC\_CMD\_ID}                    =   0xF2,
+16     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da7769405e85e6fc65208b1be21cf7944b}{KYBRD\_ENC\_CMD\_AUTODELAY}              =   0xF3,
+17     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dacdaea10cdd1f7cf00a134973db25089b}{KYBRD\_ENC\_CMD\_ENABLE}                =   0xF4,
+18     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da90b0fbfe5df40043562bd1821b210da9}{KYBRD\_ENC\_CMD\_RESETWAIT}              =   0xF5,
+19     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da893657dbfce20830c77ba6dadba4071d}{KYBRD\_ENC\_CMD\_RESETSCAN}              =   0xF6,
+20     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da2dcb1dab59e866f8a4f798b47eb28888}{KYBRD\_ENC\_CMD\_ALL\_AUTO}                =   0xF7,
+21     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da350f2bd0ceea7bf1815d2bfc55755578}{KYBRD\_ENC\_CMD\_ALL\_MAKEBREAK}          =   0xF8,
+22     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dae3e0a3ebd61dcf6ae052166304106540}{KYBRD\_ENC\_CMD\_ALL\_MAKEONLY}            =   0xF9,
+23     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3dac775ff0e1ffbfd595cbb572ede225dfc}{KYBRD\_ENC\_CMD\_ALL\_MAKEBREAK\_AUTO}    =   0xFA,
+24     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3daf2605a86d3e580f2e6d85e39760545fd}{KYBRD\_ENC\_CMD\_SINGLE\_AUTOREPEAT}      =   0xFB,
+25     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da829e22d08efa78917b65f80d68088c40}{KYBRD\_ENC\_CMD\_SINGLE\_MAKEBREAK}        =   0xFC,
+26     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da3305ce750ae5e9ba1381430c47eb88b0}{KYBRD\_ENC\_CMD\_SINGLE\_BREAKONLY}        =   0xFD,
+27     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da717967f3c3c54ba73e2f6e5027c50c09}{KYBRD\_ENC\_CMD\_RESEND}                =   0xFE,
+28     \hyperlink{keyboard_8h_a28caab7c6985f9bdba95b5ea5857ed3da471507a04d8c22fefe6b5035a35f074d}{KYBRD\_ENC\_CMD\_RESET}                  =   0xFF
+29 \};
+\end{DoxyCode}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO}}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO}{KYBRD_ENCODER_IO}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+O\+D\+E\+R\+\_\+\+IO}}\hypertarget{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfb}{}\label{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfb}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+I\+N\+P\+U\+T\+\_\+\+B\+UF\hypertarget{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba83804ad0a472d824b9cb1f204e55cf90}{}\label{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba83804ad0a472d824b9cb1f204e55cf90}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG@{K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+N\+C\+\_\+\+C\+M\+D\+\_\+\+R\+EG\hypertarget{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba3c91cb01ada50ec59d742cb1d139475f}{}\label{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba3c91cb01ada50ec59d742cb1d139475f}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 4 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+4                       \{
+5 
+6     \hyperlink{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba83804ad0a472d824b9cb1f204e55cf90}{KYBRD\_ENC\_INPUT\_BUF}  =   0x60,
+7     \hyperlink{keyboard_8h_aefcad78cc2f1b91702b51bb429cdadfba3c91cb01ada50ec59d742cb1d139475f}{KYBRD\_ENC\_CMD\_REG}  =   0x60
+8 \};
+\end{DoxyCode}
+\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR}}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR}{KYBRD_ERROR}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+OR}}\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbac}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbac}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+U\+F\+\_\+\+O\+V\+E\+R\+R\+UN\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca435623f8138fc41407248d2cc88469ec}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca435623f8138fc41407248d2cc88469ec}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+I\+D\+\_\+\+R\+ET\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca8ac189e3ebc9ad1d7666156471b2d388}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca8ac189e3ebc9ad1d7666156471b2d388}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+AT\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2547740feafac24f57da0879f88909da}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2547740feafac24f57da0879f88909da}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+E\+C\+H\+O\+\_\+\+R\+ET\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca1d4e8c48fa87fa3f6caee386394f436b}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca1d4e8c48fa87fa3f6caee386394f436b}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+A\+CK\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbacaa3dc1b518f3d05f9db322d955b9a88fc}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbacaa3dc1b518f3d05f9db322d955b9a88fc}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+B\+A\+T\+\_\+\+F\+A\+I\+L\+ED\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2756eee0a34a54959eeb4b1a82668f70}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2756eee0a34a54959eeb4b1a82668f70}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+D\+I\+A\+G\+\_\+\+F\+A\+I\+L\+ED\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca9178c5af84c2345267fc9751c53aeb88}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca9178c5af84c2345267fc9751c53aeb88}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+R\+E\+S\+E\+N\+D\+\_\+\+C\+MD\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca91047cb9460052c5cac1a5ad7eaac81b}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca91047cb9460052c5cac1a5ad7eaac81b}
+}]\index{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY}!keyboard.\+h@{keyboard.\+h}}\index{keyboard.\+h@{keyboard.\+h}!K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY@{K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY}}\item[{\em 
+K\+Y\+B\+R\+D\+\_\+\+E\+R\+R\+\_\+\+K\+EY\hypertarget{keyboard_8h_a665871cd84acbab0771eaedac924fbaca427283abddd836296220dafc8fada795}{}\label{keyboard_8h_a665871cd84acbab0771eaedac924fbaca427283abddd836296220dafc8fada795}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 72 of file keyboard.\+h.
+
+
+\begin{DoxyCode}
+72                  \{
+73 
+74     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca435623f8138fc41407248d2cc88469ec}{KYBRD\_ERR\_BUF\_OVERRUN}          =   0,
+75     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca8ac189e3ebc9ad1d7666156471b2d388}{KYBRD\_ERR\_ID\_RET}                =   0x83AB,
+76     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2547740feafac24f57da0879f88909da}{KYBRD\_ERR\_BAT}                  =   0xAA,   \textcolor{comment}{//note: can also be L. shift key make code}
+77     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca1d4e8c48fa87fa3f6caee386394f436b}{KYBRD\_ERR\_ECHO\_RET}                =   0xEE,
+78     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbacaa3dc1b518f3d05f9db322d955b9a88fc}{KYBRD\_ERR\_ACK}                  =   0xFA,
+79     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca2756eee0a34a54959eeb4b1a82668f70}{KYBRD\_ERR\_BAT\_FAILED}            =   0xFC,
+80     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca9178c5af84c2345267fc9751c53aeb88}{KYBRD\_ERR\_DIAG\_FAILED}          =   0xFD,
+81     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca91047cb9460052c5cac1a5ad7eaac81b}{KYBRD\_ERR\_RESEND\_CMD}            =   0xFE,
+82     \hyperlink{keyboard_8h_a665871cd84acbab0771eaedac924fbaca427283abddd836296220dafc8fada795}{KYBRD\_ERR\_KEY}                  =   0xFF
+83 \};
+\end{DoxyCode}
+
+
+\subsection{Function Documentation}
+\index{keyboard.\+h@{keyboard.\+h}!getchar@{getchar}}
+\index{getchar@{getchar}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{getchar()}{getchar()}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t getchar (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{keyboard_8h_a668644c144dda2deede41fde5aab613f}{}\label{keyboard_8h_a668644c144dda2deede41fde5aab613f}
+
+
+Definition at line 244 of file keyboard.\+c.
+
+
+\begin{DoxyCode}
+245 \{
+246   back:
+247     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"sti"});
+248   \textcolor{keywordflow}{while}(1)
+249   \{
+250     \textcolor{keywordflow}{if}(\hyperlink{keyboard_8c_af7fe296231d14e4b806c25ee4f144ba7}{checker}(\hyperlink{keyboard_8c_a68c657f271da46a88b7557c64178f11c}{call})) \textcolor{keywordflow}{break};
+251   \}
+252   uint8\_t key=\hyperlink{keyboard_8c_a0db64b3e5910f815c0a2c1708ee594c6}{keyboard\_scancodes}(\hyperlink{keyboard_8c_a68c657f271da46a88b7557c64178f11c}{call});
+253   \textcolor{keywordflow}{if}(key!=\textcolor{charliteral}{'\(\backslash\)r'} && key!=\textcolor{charliteral}{'\(\backslash\)0'} && key!=\textcolor{charliteral}{'\(\backslash\)b'})
+254     \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"%c"},key);
+255   \hyperlink{keyboard_8c_a68c657f271da46a88b7557c64178f11c}{call}=0;
+256     \textcolor{keyword}{asm} \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"cli"});
+257   \textcolor{keywordflow}{if}(key==\textcolor{charliteral}{'\(\backslash\)b'})
+258   \{
+259     \hyperlink{console_8c_aae14f26f524b8163e88dc1d54cae9697}{backspace}();
+260     \textcolor{keywordflow}{goto} back;
+261   \}
+262   \textcolor{keywordflow}{return} key;
+263 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{keyboard_8h_a668644c144dda2deede41fde5aab613f_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{keyboard.\+h@{keyboard.\+h}!getint@{getint}}
+\index{getint@{getint}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{getint()}{getint()}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t getint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{keyboard_8h_a6ec3e6ec37ae6d9830bc0d6b48892120}{}\label{keyboard_8h_a6ec3e6ec37ae6d9830bc0d6b48892120}
+
+
+Definition at line 303 of file keyboard.\+c.
+
+
+\begin{DoxyCode}
+304 \{
+305     uint32\_t var=0;
+306     \textcolor{keywordtype}{char} *temp=\textcolor{stringliteral}{" "};
+307     \hyperlink{keyboard_8c_a3b0a0dd71bca58f7eec23991e11ce6d3}{getline}(temp);
+308     var=\hyperlink{keyboard_8c_ada79ee5c754077262a178f47cefadda2}{StrToInt}(temp);
+309     \textcolor{keywordflow}{return} var;
+310 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{keyboard_8h_a6ec3e6ec37ae6d9830bc0d6b48892120_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{keyboard.\+h@{keyboard.\+h}!getline@{getline}}
+\index{getline@{getline}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{getline(char $\ast$string)}{getline(char *string)}}]{\setlength{\rightskip}{0pt plus 5cm}void getline (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{string}
+\end{DoxyParamCaption}
+)}\hypertarget{keyboard_8h_a3b0a0dd71bca58f7eec23991e11ce6d3}{}\label{keyboard_8h_a3b0a0dd71bca58f7eec23991e11ce6d3}
+
+
+Definition at line 265 of file keyboard.\+c.
+
+
+\begin{DoxyCode}
+266 \{
+267   uint8\_t \hyperlink{vesa_8c_af30c10a8c6ed3d4649cfdc61e2029dc3}{buff};
+268   \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;;i++)
+269   \{
+270     buff=\hyperlink{keyboard_8c_a668644c144dda2deede41fde5aab613f}{getchar}();
+271     \textcolor{keywordflow}{if}(buff==\textcolor{charliteral}{'\(\backslash\)r'})
+272     \{
+273       \textcolor{keywordtype}{string}[i]=\textcolor{charliteral}{'\(\backslash\)0'};
+274       \textcolor{keywordflow}{break};
+275     \}
+276     \textcolor{keywordflow}{if}(buff==\textcolor{charliteral}{'\(\backslash\)b'})
+277     \{
+278       \hyperlink{console_8c_aae14f26f524b8163e88dc1d54cae9697}{backspace}();
+279       i-=2;
+280     \}
+281     \textcolor{keywordflow}{else}
+282       \textcolor{keywordtype}{string}[i]=\hyperlink{vesa_8c_af30c10a8c6ed3d4649cfdc61e2029dc3}{buff};
+283   \}
+284   \hyperlink{stdio_8h_a9eff2528601a782ae056c1b1651bb5a8}{printf}(\textcolor{stringliteral}{"\(\backslash\)n"});
+285 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{keyboard_8h_a3b0a0dd71bca58f7eec23991e11ce6d3_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{keyboard.\+h@{keyboard.\+h}!keyboard\+\_\+init@{keyboard\+\_\+init}}
+\index{keyboard\+\_\+init@{keyboard\+\_\+init}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{keyboard\+\_\+init()}{keyboard_init()}}]{\setlength{\rightskip}{0pt plus 5cm}void keyboard\+\_\+init (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{keyboard_8h_aaeb4e4a3c4813ee1efc6b98bba9ec781}{}\label{keyboard_8h_aaeb4e4a3c4813ee1efc6b98bba9ec781}
+
+
+Definition at line 312 of file keyboard.\+c.
+
+
+\begin{DoxyCode}
+313 \{
+314   \hyperlink{interrupts_8c_ad7e285600239a8df8341de1cc39548f1}{register\_interrupt\_handler}(\hyperlink{system_8h_a37360776bcc1dd3b5da93b025177551f}{IRQ1},\hyperlink{keyboard_8c_a2f4098fc71cbd39422c1001d66970bf5}{keyboard\_handler});
+315   \hyperlink{keyboard_8c_ab7d85d4360d084ea93e7ae874d497354}{kkybrd\_set\_leds}(1,1,1);
+316   scancodes=scancode1;
+317 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{keyboard_8h_aaeb4e4a3c4813ee1efc6b98bba9ec781_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{keyboard.\+h@{keyboard.\+h}!Str\+To\+Int@{Str\+To\+Int}}
+\index{Str\+To\+Int@{Str\+To\+Int}!keyboard.\+h@{keyboard.\+h}}
+\subsubsection[{\texorpdfstring{Str\+To\+Int(char $\ast$str)}{StrToInt(char *str)}}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Str\+To\+Int (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{str}
+\end{DoxyParamCaption}
+)}\hypertarget{keyboard_8h_ada79ee5c754077262a178f47cefadda2}{}\label{keyboard_8h_ada79ee5c754077262a178f47cefadda2}
+
+
+Definition at line 287 of file keyboard.\+c.
+
+
+\begin{DoxyCode}
+288 \{
+289     uint32\_t in=0;
+290     \textcolor{keywordtype}{int} ln=\hyperlink{string_8h_a0e9d5be6802ed032f6354777ac0c1acf}{strlen}(str);
+291     \textcolor{keywordtype}{int} arr[999],a=1;
+292     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<=ln;i++) a=a*10;
+293     a=a/100;
+294     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0;i<=ln;i++)
+295     \{
+296         arr[i]=str[i]-48;
+297         in=in+arr[i]*a;
+298         a=a/10;
+299     \}
+300         \textcolor{keywordflow}{return} in;
+301 \}
+\end{DoxyCode}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=209pt]{keyboard_8h_ada79ee5c754077262a178f47cefadda2_cgraph}
+\end{center}
+\end{figure}
+
+
