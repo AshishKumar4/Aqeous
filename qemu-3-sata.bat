@@ -1,1 +1,0 @@
-qemu-system-i386 -cdrom aqeous.iso -m 1500M -monitor stdio -drive file=test.qed,if=none,id=hdd0 -drive file=aqeous.vmdk,if=none,id=hdd1 -drive file=test.vhd,if=none,id=hdd2 -device ich9-ahci,id=ahci -device ide-drive,drive=hdd0,bus=ahci.1 -device ide-drive,drive=hdd1,bus=ahci.2 -device ide-drive,drive=hdd2,bus=ahci.3
