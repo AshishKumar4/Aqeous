@@ -59,7 +59,7 @@ unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
    struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
    byte *bptr;
    byte check = 0;
-   int i;
+   uint32_t i;
 
    if (memcmp(sig, rsdp, 8) == 0)
    {

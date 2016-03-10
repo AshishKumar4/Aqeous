@@ -1,10 +1,13 @@
 #ifndef STDIO_H
 #define STDIO_H
+#include <stdio.h>
 #include <sys/cdefs.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 extern int putchar(int ic);
+extern void printint(uint32_t in);
+
 static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
@@ -65,7 +68,7 @@ int printf(const char* restrict format, ...)
             int c = va_arg (parameters, int);
             printint(c);
         }
-        else if(*format == 'l') //uint32_t
+        else if(*format == 'l'||*format == 'x') //uint32_t
         {
             format++;
             uint32_t c = va_arg (parameters, uint32_t);

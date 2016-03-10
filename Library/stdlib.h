@@ -1,3 +1,6 @@
+#ifndef STDLIB_h
+#define STDLIB_h
+#include <stdlib.h>
 #include <stdio.h>
 __attribute__((__noreturn__))
 void abort(void)
@@ -8,3 +11,4 @@ void abort(void)
 	__builtin_unreachable();
 }
 
+#endif

@@ -3,30 +3,20 @@
 
 #include <system.h>
 #include <stdint-gcc.h>
+#include <stdbool.h>
 
 // Some nice typedefs, to standardise sizes across platforms.
 // These typedefs are written for 32-bit X86.
-
-typedef unsigned int   u32int;
+typedef 	uint32_t   u32int;
 typedef          int   s32int;
-typedef unsigned short u16int;
+typedef 	  uint16_t u16int;
 typedef          short s16int;
-typedef unsigned char  u8int;
+typedef   	  uint8_t  u8int;
 typedef          char  s8int;
-typedef unsigned int   uint_t;
-typedef          int   sint_t;
-typedef unsigned short ushort_t;
-typedef          short short_t;
-typedef unsigned char  uchar_t;
-typedef          char  schar_t;
 
 #ifndef NULL
 #define NULL ((void*) 0)
 #endif
-
-// Represents true-or-false values
-typedef _Bool bool;
-enum { false, true };
 
 // Efficient min and max operations
 #define MIN(_a, _b)						\
@@ -77,25 +67,29 @@ typedef struct {
 
 typedef struct registers
  {
-    u32int ds;                  // Data segment selector
-    u32int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-    u32int int_no, err_code;    // Interrupt number and error code (if applicable)
-    u32int eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
+    uint32_t ds;                  // Data segment selector
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
+    uint32_t int_no, err_code;    // Interrupt number and error code (if applicable)
+    uint32_t eip, cs, eflags, useresp, ss; // Pushed by the processor automatically.
  } registers_t;
 
 typedef void (*isr_t)(registers_t);
 
+typedef void (*irq_t)();
 
-void panic(const char *message, const char *file, u32int line)
-{
-
-}
-void panic_assert(const char *file, u32int line, const char *desc)
-{
-
-}
-#define PANIC(msg) panic(msg, __FILE__, __LINE__);
 #define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
+
+uint32_t Lower32(uint64_t *addr)
+{
+	return (uint32_t)*addr;
+}
+
+uint32_t Higher32(uint64_t *addr)
+{
+	uint32_t* abc=(uint32_t)addr;
+	++abc;
+	return *abc;
+}
 
 
 #endif // COMMON_H

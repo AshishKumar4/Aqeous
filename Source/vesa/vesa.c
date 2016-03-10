@@ -1,8 +1,8 @@
 
 #include <common.h>
 #include <mem.h>
-#include <console.h>
 #include <paging.h>
+#include <string.h>
 
 #define wVESA     1024
 #define hVESA     768
@@ -73,6 +73,7 @@ typedef struct VESA_INFO
   unsigned char  OemData[256];//         __attribute__ ((packed));
 } VESA_INFO;
 
+VESA_INFO *vbeInfo;
 MODE_INFO *vbeModeInfo;
  void int32(u8int intnum, regs16_t *regs);
 
@@ -86,29 +87,30 @@ void setBank(int bankNo)
 
   int32(0x10, &regs);
 }
-extern u32int placement_address;
-void setVesa(u32int mode)
+
+void setVesa(uint32_t mode)
 {
+  asm volatile("cli");
   //VESA_INFO info; //VESA information //VESA mode information
 
   regs16_t *regs;
 
   /**Gets VESA information**/
-/*
-  u32int buffer = (u32int)kmalloc(sizeof(VESA_INFO)) & 0xFFFFF;
 
-  memcpy(buffer, "VBE2", 4);
-  memset(&regs, 0, sizeof(regs));
+  vbeInfo = (VESA_INFO*)(kmalloc(sizeof(VESA_INFO)) & 0xFFFFF);
+  u32int buffer = (uint32_t)vbeInfo;
+  regs = (regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
 
-  regs.ax = 0x4f00;
-  regs.di = buffer & 0xF;
-  regs.es = (buffer>>4) & 0xFFFF;
-  int32(0x10, &regs);
-  memcpy(&info, buffer, sizeof(VESA_INFO));
+  memcpy((void*)buffer, "VBE2", 4);
+
+  regs->ax = 0x4f00;
+  regs->di = buffer & 0xF;
+  regs->es = (buffer>>4) & 0xFFFF;
+  int32(0x10, regs);
 //*/
-  vbeModeInfo=kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
-  u32int modeBuffer = vbeModeInfo;
-  regs=kmalloc(sizeof(regs)) & 0xFFFFF;
+  vbeModeInfo=(MODE_INFO*)(kmalloc(sizeof(MODE_INFO)) & 0xFFFFF);
+  u32int modeBuffer = (uint32_t)vbeModeInfo;
+  regs=(regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
   //memset(&regs, 0, sizeof(regs));
   regs->ax = 0x4f01;
   regs->di = modeBuffer & 0xF;
@@ -123,8 +125,9 @@ void setVesa(u32int mode)
   widthVESA=vbeModeInfo->XResolution;
   heightVESA=vbeModeInfo->YResolution;
   depthVESA=vbeModeInfo->BitsPerPixel;
+  buff=(u8int*)kmalloc(1024*768*2);
+  map(vbeModeInfo->PhysBasePtr,1024*768*2);
   asm volatile("sti");
-
 }
 
 void vesa_lfb()

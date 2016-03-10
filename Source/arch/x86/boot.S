@@ -23,7 +23,7 @@ stack_top:
 .global _start
 .type _start, @function
 _start:
-	#movl $stack_top, %esp
+	#movl $0x3C00000, %esp //The Kernel stack shall be from 60th mb to 70th mb
 	push %esp
 	push %ebx
 	# Initialize the core kernel before running the global constructors.

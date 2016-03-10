@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <console.h>
+#include <acpi.h>
 
 #include <vga.h>
 
@@ -51,7 +52,7 @@ void console_putchar(char c)
 		{
 		    --consolerow;
 		    uint16_t buff[((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1];
-		    for(int x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
+		    for(size_t x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
             {
                 buff[x] = 0;
             }

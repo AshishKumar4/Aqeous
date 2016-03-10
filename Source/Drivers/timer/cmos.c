@@ -137,6 +137,12 @@ bool cmos_updating()
     return v & 0x80;
 };
 
+inline unsigned int ReadFromCMOS()
+{
+    outb(0x70,0x00);
+    unsigned int time=inb(0x71);
+    return time;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
