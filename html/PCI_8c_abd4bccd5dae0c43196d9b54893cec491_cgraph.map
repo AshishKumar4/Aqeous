@@ -1,8 +1,0 @@
-<map id="PciDeviceWrite" name="PciDeviceWrite">
-<area shape="rect" id="node2" href="$PCI_8c.html#a8259e8b0ee1cffc6146a1a94a10062ac" title="PciWrite8" alt="" coords="171,5,249,32"/>
-<area shape="rect" id="node5" href="$PCI_8c.html#ad92c9a27c2496e5c2f63bebc6c77e097" title="PciWrite16" alt="" coords="167,107,253,133"/>
-<area shape="rect" id="node7" href="$PCI_8c.html#a26380542797df4d0096125b1826ce577" title="PciWrite32" alt="" coords="167,56,253,83"/>
-<area shape="rect" id="node3" href="$sys_8h.html#ab53ee9eece30b2ac66ec33f66ebaa325" title="outl" alt="" coords="305,56,348,83"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="303,5,350,32"/>
-<area shape="rect" id="node6" href="$sys_8h.html#aab8bf5abe19006ff9a80654d87f98908" title="outw" alt="" coords="301,107,352,133"/>
-</map>

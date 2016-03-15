@@ -1,0 +1,1 @@
+qemu-system-i386 -cdrom aqeous.iso -monitor stdio -hda test.vhd -m 1G

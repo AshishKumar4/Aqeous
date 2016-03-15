@@ -1,6 +1,0 @@
-<map id="srandInit" name="srandInit">
-<area shape="rect" id="node2" href="$cmos_8c.html#ad86480bd4e099dc40dbbfc3ff58ede85" title="ReadFromCMOS" alt="" coords="125,31,248,57"/>
-<area shape="rect" id="node5" href="$rand_8h.html#a83a727cc697aea22e24cad5f39198dd2" title="srand" alt="" coords="159,81,214,108"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="296,5,343,32"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="300,56,339,83"/>
-</map>

@@ -1,9 +1,0 @@
-<map id="mouseinit" name="mouseinit">
-<area shape="rect" id="node2" href="$mouse_8c.html#a1ffd7d0515d7a43415f28d1ae71a4e25" title="mouse_wait" alt="" coords="308,137,400,164"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="457,162,496,189"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="331,61,377,88"/>
-<area shape="rect" id="node5" href="$mouse_8c.html#ae4379d8fb20df85b51a1f087ff736307" title="mouse_write" alt="" coords="143,86,239,113"/>
-<area shape="rect" id="node6" href="$mouse_8c.html#a0436fbbe660d94e71fbd2675fed95a6c" title="mouse_read" alt="" coords="145,188,238,214"/>
-<area shape="rect" id="node7" href="$mouse_8c.html#a6ca7c8595f4c1116a2e057ad74fe27a5" title="mouse_handler" alt="" coords="299,238,409,265"/>
-<area shape="rect" id="node8" href="$interrupts_8c.html#ad7e285600239a8df8341de1cc39548f1" title="register_interrupt\l_handler" alt="" coords="132,290,251,331"/>
-</map>

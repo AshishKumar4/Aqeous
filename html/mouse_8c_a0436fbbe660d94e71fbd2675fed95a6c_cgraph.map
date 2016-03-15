@@ -1,5 +1,0 @@
-<map id="mouse_read" name="mouse_read">
-<area shape="rect" id="node2" href="$mouse_8c.html#a1ffd7d0515d7a43415f28d1ae71a4e25" title="mouse_wait" alt="" coords="156,5,248,32"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="305,56,344,83"/>
-<area shape="rect" id="node4" href="$mouse_8c.html#a6ca7c8595f4c1116a2e057ad74fe27a5" title="mouse_handler" alt="" coords="147,107,257,133"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="write_ata" name="write_ata">
-<area shape="rect" id="node2" href="$ata_8c.html#ad401554817438cc3bcbf7aa8f894598a" title="write_sector" alt="" coords="128,5,221,32"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="155,56,194,83"/>
-<area shape="rect" id="node5" href="$sys_8h.html#aab8bf5abe19006ff9a80654d87f98908" title="outw" alt="" coords="149,107,200,133"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="269,5,316,32"/>
-</map>

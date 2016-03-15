@@ -1,5 +1,0 @@
-<map id="mouse_write" name="mouse_write">
-<area shape="rect" id="node2" href="$mouse_8c.html#a1ffd7d0515d7a43415f28d1ae71a4e25" title="mouse_wait" alt="" coords="149,5,241,32"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="172,56,219,83"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="289,5,328,32"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="PciWrite16" name="PciWrite16">
-<area shape="rect" id="node2" href="$sys_8h.html#ab53ee9eece30b2ac66ec33f66ebaa325" title="outl" alt="" coords="144,5,187,32"/>
-<area shape="rect" id="node3" href="$sys_8h.html#aab8bf5abe19006ff9a80654d87f98908" title="outw" alt="" coords="140,56,191,83"/>
-</map>

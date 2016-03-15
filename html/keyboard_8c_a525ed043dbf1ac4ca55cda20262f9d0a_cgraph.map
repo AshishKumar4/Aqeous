@@ -1,5 +1,0 @@
-<map id="kybrd_enc_send_cmd" name="kybrd_enc_send_cmd">
-<area shape="rect" id="node2" href="$keyboard_8c.html#a74b2b41d9b627a0ba98aa23727a34de4" title="read status from keyboard controller " alt="" coords="203,5,357,32"/>
-<area shape="rect" id="node4" href="$sys_8h.html#a1fe613f83e149aa1a4ae0d5f5149ab34" title="outb" alt="" coords="257,56,303,83"/>
-<area shape="rect" id="node3" href="$sys_8h.html#a3d758e66f0e4acaf38ba39b58ce83e4d" title="inb" alt="" coords="405,5,444,32"/>
-</map>

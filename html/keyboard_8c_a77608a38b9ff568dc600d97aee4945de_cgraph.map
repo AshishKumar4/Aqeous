@@ -1,9 +1,0 @@
-<map id="getch" name="getch">
-<area shape="rect" id="node2" href="$keyboard_8c.html#af7fe296231d14e4b806c25ee4f144ba7" title="checker" alt="" coords="147,31,215,57"/>
-<area shape="rect" id="node8" href="$keyboard_8c.html#a0db64b3e5910f815c0a2c1708ee594c6" title="keyboard_scancodes" alt="" coords="108,81,253,108"/>
-<area shape="rect" id="node3" href="$stdio_8h.html#a4340730c5409b7e9981408c37974686d" title="printint" alt="" coords="301,31,363,57"/>
-<area shape="rect" id="node4" href="$console_8c.html#a0962a25f4eb04ccc0f0f2a1418091b35" title="console_write_dec" alt="" coords="411,5,541,32"/>
-<area shape="rect" id="node5" href="$console_8c.html#a7e3f5006dd96b9d8c61242ddc5351832" title="console_writestring" alt="" coords="589,5,724,32"/>
-<area shape="rect" id="node6" href="$stdio_8h.html#a9eff2528601a782ae056c1b1651bb5a8" title="printf" alt="" coords="772,31,823,57"/>
-<area shape="rect" id="node7" href="$string_8h.html#a0e9d5be6802ed032f6354777ac0c1acf" title="strlen" alt="" coords="871,31,925,57"/>
-</map>
