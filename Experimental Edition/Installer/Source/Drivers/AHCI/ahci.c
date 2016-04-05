@@ -154,23 +154,23 @@ int IDENTIFYdrive(Disk_dev_t* disk)
   //str="YEPIEEE IT WORKS :D I CAN READ AND WRITE TO THIS HARD DISK :D \0";
   return 1;
 }
-
-void test_sata(HBA_PORT* port)
-{
-    uint32_t* test=(uint32_t*)malloc(512);
-    uint32_t* t2=(uint32_t*)malloc(512);
-    (*t2)=4284;
-    write(port,40,0,1,(DWORD)t2);
-    printf("1 t2:%x at:%x",*t2,t2);
-    read(port,40,0,1,(DWORD)test);
-    printf("2 test:%x at:%x",*test,test);
-    if(*test==4284)
-    {
-      printf("\n\t\tRead/Write test to hard disk successful\n");
-    }
-    //char* str;
-    //memcpy((void*)str,(void*)test,64);
-}
+//
+// void test_sata(HBA_PORT* port)
+// {
+//     uint32_t* test=(uint32_t*)malloc(512);
+//     uint32_t* t2=(uint32_t*)malloc(512);
+//     (*t2)=4284;
+//     write(port,40,0,1,(DWORD)t2);
+//     printf("1 t2:%x at:%x",*t2,t2);
+//     read(port,40,0,1,(DWORD)test);
+//     printf("2 test:%x at:%x",*test,test);
+//     if(*test==4284)
+//     {
+//       printf("\n\t\tRead/Write test to hard disk successful\n");
+//     }
+//     //char* str;
+//     //memcpy((void*)str,(void*)test,64);
+// }
 
 void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 {
@@ -375,9 +375,9 @@ void stop_cmd(HBA_PORT *port)
 	port->cmd &= ~HBA_PxCMD_FRE;
 }
 
-int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, DWORD buf)
+inline int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 {
-  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((count-1)>>4) + 1,512,startl,starth,count);
+  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
 	if (port->is & HBA_PxIS_TFES)
 	{
 		printf("Read disk error\n");
@@ -387,10 +387,10 @@ int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, DWORD buf)
 
 }
 
-int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, DWORD buf)
+inline int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 {
 
-  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((count-1)>>4) + 1,512,startl,starth,count);
+  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
   // Check again
   if (port->is & HBA_PxIS_TFES)
   {
@@ -415,7 +415,6 @@ int SATA_Commander(HBA_PORT *port, WORD Command, BYTE rw, DWORD buf, DWORD prdtl
   /***Make the Command Table***/
   HBA_CMD_TBL *cmdtbl = (HBA_CMD_TBL*)cmdhead->ctba;//kmalloc(sizeof(HBA_CMD_TBL));
   //cmdhead->ctba = (DWORD)cmdtbl;
-  memset((void*)cmdtbl, 0, sizeof(HBA_CMD_TBL));
 
   uint32_t i=0;
 

@@ -141,6 +141,11 @@ void printint(uint32_t in)
     }
 }
 
+void print64int(uint64_t in)
+{
+//	console_write_dec(u);
+}
+
 void backspace()
 {
 		--consolecolumn;

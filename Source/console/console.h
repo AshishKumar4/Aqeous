@@ -8,7 +8,8 @@ void console_putch(char c);
 void console_write(const char* data, size_t size);
 void console_writestring(const char* data);
 void console_write_dec(unsigned long int in);
-void printint(unsigned long int in);
+void printint(uint32_t in);
 uint8_t console_manager(char *inst);
+void print64int(uint64_t in);
 
 #endif // CONSOLE_H

@@ -7,6 +7,7 @@
 #include <string.h>
 extern int putchar(int ic);
 extern void printint(uint32_t in);
+extern void print64int(uint64_t in);
 
 static void print(const char* data, size_t data_length)
 {
@@ -73,6 +74,12 @@ int printf(const char* restrict format, ...)
             format++;
             uint32_t c = va_arg (parameters, uint32_t);
             printint(c);
+        }
+        else if(*format == 'a'||*format == 'L') //uint32_t
+        {
+            format++;
+            uint64_t c = va_arg (parameters, uint64_t);
+            print64int(c);
         }
 		else
 		{

@@ -486,7 +486,7 @@ typedef struct tagHBA_CMD_TBL
     BYTE    rsv[48];    // Reserved
 
     // 0x80
-    HBA_PRDT_ENTRY  prdt_entry[100] ;  // Physical region descriptor table entries, 0 ~ 65535
+    HBA_PRDT_ENTRY  prdt_entry[0] ;  // Physical region descriptor table entries, 0 ~ 65535
 } HBA_CMD_TBL;
 
 typedef struct tagSATA_SHADOW_REG
@@ -656,8 +656,8 @@ uint32_t sata=0;
 
 extern HBA_MEM *abar;
 
-int read(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, DWORD buf);
-int write(HBA_PORT *port, DWORD startl, DWORD starth, DWORD count, DWORD buf);
+int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
+int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
 char fs_buf[1024];
 int check_type(HBA_PORT *port);
 void port_rebase(HBA_PORT *port, int portno);

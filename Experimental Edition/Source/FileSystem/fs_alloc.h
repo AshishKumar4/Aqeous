@@ -13,8 +13,8 @@ void fs_alloc_init();
 
 uint64_t fs_alloc(uint32_t blocks);
 
-uint64_t file_alloc(); //gives 512 byte memory for files
-
 uint64_t sec_alloc(uint32_t blocks);
+
+void del_blocks(uint64_t location, uint64_t size);
 
 #endif

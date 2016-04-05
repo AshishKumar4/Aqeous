@@ -25,18 +25,19 @@ u8int calle=0;
 void dbug()
 {
 	int a[4];
-	printf("\n\tEnter the size of: ");
+	//printf("\n\tEnter the size of: ");
 	for(int i=0;i<4;i++)
 	{
-		printf("\n\t\tvar %x: ",i+1);
-		a[i]=32;//getint();
+	//	printf("\n\t\tvar %x: ",i+1);
+		a[i]=20;//getint();
 	}
 	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
+	*temp1=4284;
 	//malloc(4096);
 	uint32_t *test1=(uint32_t*)malloc(a[1]),*test2=test1;
 	uint32_t *test3=(uint32_t*)malloc(a[2]);
 	uint32_t *test4=(uint32_t*)malloc(a[3]);
-	uint32_t *test5=(uint32_t*)malloc(1);
+	uint32_t *test5=(uint32_t*)malloc(128);
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
 	printf("\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<8;i++)
@@ -70,7 +71,7 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-	free(test1);
+	free(test3);
 
 	for(int i=0;i<8;i++)
 	{
@@ -98,8 +99,8 @@ tss_struct_t *TSS;
 
 void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 {
-	 //Kernel stack located at 60th mb to 70th mb
-    initial_esp = 0x3C00000;
+	 //Kernel stack located at 200th mb to 250th mb
+    initial_esp = 0xC800000;
 		console_init();
     init_descriptor_tables();
 		int_init();
@@ -132,13 +133,20 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
     }
 		printf("\nInitializing Memory Manager!\n");
     mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;*/
+		max_mem=maxmem*1024;
     Mapper();
+		printf("\nMemory block lists prepared!\n");
+		bitmap_init();
+		initialise_paging();
+		enable_paging();
+		printf("\n Paging Has been Enabled Successfully!");
+		printf("\n Available Memory: %x KB\n",maxmem);
 		printf("\nEnabling ACPI!\n");
     initAcpi();
     if(!acpiEnable())
         printf("\nACPI Initialized\n");
     else printf("\nACPI CANT BE INITIALIZED\n");
-
+		Switch_to_system_dir();
 		printf("\n\nEnumerating all devices on PCI BUS:\n");
 		checkAllBuses();
 		printf("\nEnabling Hard Disk\n");
@@ -148,14 +156,8 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 		//printf(" %x %x ",satatest,abcd);
 		//printf(" %x %x %x  ",sizeof(unsigned short),sizeof(unsigned long),sizeof(unsigned long int));s
 	//	while(1);
-		printf("\nEnabling Paging\n");
-		initialise_paging();
-		enable_paging();
-		MapPage((void*)mmap_info,(void*)mmap_info);
 	//  map(AHCI_BASE,1024*1024*50);
-	  map(&abar->ports[1],sizeof(HBA_PORT));
-		printf("\n Paging Has been Enabled Successfully!");
-		printf("\n Available Memory: %x KB\n",maxmem);
+
  	 	detect_cpu();
 		initTasking();
 		asm volatile("sti");
@@ -172,12 +174,14 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 	 printf("\n%x Protected Mode Enabled? ",a);
 	 if(a & (1<<0))
 	 	printint(1);*/
+
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
 	 printf("\n location of kernel_main: %x ",kernel_main);
 	 printf("sizeof Directory_t %x, File_t %x",sizeof(Directory_t),sizeof(File_t));
+
 	 Init_fs();
-	 //Scheduler_exec();
+	 Switch_back_from_System();
 }
 
 void kernel_start()
@@ -234,25 +238,31 @@ uint8_t console_manager(char *inst)
 	else if(!strcmp(inst,"shutdown"))
 	{
 			printf("\n Turning Power off");
+			Switch_to_system_dir();
 			acpiPowerOff();
 			return 0;
 	}
 	else if(!strcmp(inst,"mdbug"))
 	{
 			printf("\n Testing Virtual Memory Manager");
+			Switch_to_system_dir();
 			mdbug();
+			Switch_back_from_System();
 			return 0;
 	}
 	else if(!strcmp(inst,"start vesa"))
 	{
 		printf("\n Entering VESA SVGA mode 1024*768");
+		Switch_to_system_dir();
 		vesa(0x117);
+		Switch_back_from_System();
 		return 1;
 	}
 	else if(!strcmp(inst,"memmap"))
 	{
     printf("\nMemory Map:");
     MemRegion_t* memmap_info=mmap_info;
+		Switch_to_system_dir();
 
     for(int i=0;i<15;i++)
     {
@@ -261,6 +271,7 @@ uint8_t console_manager(char *inst)
                memmap_info->type,strMemoryTypes[memmap_info->type-1]);
         memmap_info++;
     }
+		Switch_back_from_System();
 		return 0;
 	}
 	else if(!strcmp(inst,"test multi"))
@@ -268,6 +279,7 @@ uint8_t console_manager(char *inst)
 		//schedule=switch_task;
 		//printf("\n\tEnter the timer Value:");
 		//uint32_t timer=getint();
+		Switch_to_system_dir();
 		Scheduler_exec();
 		return 0;
 	}

@@ -26,7 +26,7 @@ void dbug()
 	for(int i=0;i<4;i++)
 	{
 		printf("\n\t\tvar %x: ",i+1);
-		a[i]=getint();
+		a[i]=6;
 	}
 	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
 	//malloc(4096);
@@ -63,7 +63,7 @@ void dbug()
 	test1=test2;
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
-	free(temp2);
+	//free(temp2);
 	free(test2);
 	for(int i=0;i<1000;i+=50)
 	{

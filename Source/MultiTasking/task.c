@@ -143,7 +143,7 @@ void initTasking()
    {
      queue[i]=(uint32_t)1024*1024*(i+90); //90mb to 100mb
      last_element[i]=queue[i]+sizeof(queue_t);
-     timeslice[i]=100/(1+i);
+     timeslice[i]=1000/(1+i);
      q=(queue_t*)queue[i];
      q->next=(queue_t*)last_element[i];
      q->istask=0;
@@ -242,7 +242,7 @@ queue_t* old_element;
 void Scheduler_exec() //Enable Multitasking !!!
 {
 		timer_task=(uint32_t)scheduler;
-    init_timer(20000);
+    init_timer(30000);
     old_element=(queue_t*)(queue[0]+20);
     printf("\n\nEntering Scheduling Mode!!!\nNEW EIP: %x\n",current_task->eip);
     asm volatile("sti");
@@ -253,7 +253,6 @@ void scheduler()
     if(timer_tick)
     {
       --timer_tick;
-      asm volatile("sti");
       outb(0x20, 0x20); // send EoI to master PIC
       asm volatile("iret");
     }
@@ -264,13 +263,13 @@ void scheduler()
     //uint32_t curr_q=0;
     queue_t* queue_element=(queue_t*)queue[9]; //always start from highest priority queue
     queue_t* q;
-    int c_q=(((uint32_t)queue_element)/(1024*1024))-90;
+    int c_q=(((uint32_t)queue_element)/(1048576))-90;
     for(;;)
     {
       queue_element=queue_element->next;
       if(queue_element->istask && queue_element->task->active) //found a task
       {
-        c_q=(((uint32_t)queue_element)/(1024*1024))-90;
+        c_q=(((uint32_t)queue_element)/(1048576))-90;
         if(c_q)
         {
           queue_element->istask=0;

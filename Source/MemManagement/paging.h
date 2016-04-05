@@ -4,6 +4,8 @@
 #include <common.h>
 #include <interrupts.h>
 
+uint32_t mb_temp=0,max_mem;
+
 enum PAGE_PTE_FLAGS //Pages
 {
 	I86_PTE_NOT_PRESENT			=	0,		//0000000000000000000000000000000
@@ -17,6 +19,8 @@ enum PAGE_PTE_FLAGS //Pages
 	I86_PTE_PAT			=	0x80,		//0000000000000000000000010000000
 	I86_PTE_CPU_GLOBAL		=	0x100,		//0000000000000000000000100000000
 	I86_PTE_LV4_GLOBAL		=	0x200,		//0000000000000000000001000000000
+	CUSTOM_PTE_AVAIL_1		=	0x400,		//0000000000000000000010000000000
+	CUSTOM_PTE_AVAIL_2		=	0x800,		//0000000000000000000100000000000
    	I86_PTE_FRAME			=	0x7FFFF000 	//1111111111111111111000000000000
 };
 
@@ -36,16 +40,13 @@ enum PAGE_PDE_FLAGS
 	I86_PDE_4MB			=	0,		//0000000000000000000000010000000
 	I86_PDE_CPU_GLOBAL		=	0x100,		//0000000000000000000000100000000
 	I86_PDE_LV4_GLOBAL		=	0x200,		//0000000000000000000001000000000
+	CUSTOM_PDE_AVAIL_1		=	0x400,		//0000000000000000000010000000000
+	CUSTOM_PDE_AVAIL_2		=	0x800,		//0000000000000000000100000000000
    	I86_PDE_FRAME			=	0x7FFFF000 	//1111111111111111111000000000000
 };
 
 //! a page directery entry
 typedef uint32_t page_t;
-
-void page_fault(registers_t regs);
-page_t* MapPage(void* phys, void* virt);
-void map(uint32_t phy,size_t size);
-void free_page (page_t* e);
 
 //! i86 architecture defines 1024 entries per table--do not change
 #define PAGES_PER_TABLE 1024
@@ -76,7 +77,39 @@ typedef struct pdirectory_t
 	table_t m_entries[PAGES_PER_DIR] __attribute__((aligned(0x1000)));
 }pdirectory;
 
-pdirectory* main_dir;
+pdirectory* main_dir,*system_dir,*user_dir;
+//! current directory table (global)
+pdirectory*		_cur_directory=0,*_prev_directory=0;
+
+typedef struct  ///Array to keep the info of all the page directories made.
+{
+	pdirectory* pgdir; ///location of page directory in kernel
+	uint16_t reserved;
+	uint16_t ID; ///page ID
+}PgDirs_t;
+
+PgDirs_t PgDirs[100]; ///currently, only 100 max possible page directories.
+PgDirs_t curr_pgdir;
+uint8_t PgDs=0; ///Page Directories
+
+inline page_t* Get_Page(uint32_t addr, int make, pdirectory* dir);
+inline page_t* get_page(uint32_t addr,int make, pdirectory* dir);
+inline void Map_non_identity(uint32_t virt, uint32_t phys, uint32_t size, pdirectory* dir);
+inline void System_dir_setup();
+inline void Switch_to_system_dir();
+inline void Switch_back_from_System();
+inline pdirectory* system_dir_maker();
+int Switch_Page_Directory(pdirectory* dir);
+void page_fault(registers_t regs);
+inline page_t* MapPage(void* phys, void* virt, pdirectory* dir);
+void map(uint32_t phy,size_t size, pdirectory* dir);
+void free_page (page_t* e);
+inline table_t* get_table(uint32_t index,int make, pdirectory* dir);
+
+inline uint32_t pt_get_frame(page_t* e)
+{
+	return (*e & I86_PTE_FRAME);
+}
 
 inline void pt_entry_add_attrib (page_t* e, uint32_t attrib)
 {
@@ -107,6 +140,17 @@ inline uint32_t pt_entry_pfn (page_t e)
 {
 	return e & I86_PTE_FRAME;
 }
+
+inline int pt_entry_is_avail_1 (page_t e)
+{
+	return e & CUSTOM_PTE_AVAIL_1;
+}
+
+inline int pt_entry_is_avail_2 (page_t e)
+{
+	return e & CUSTOM_PTE_AVAIL_2;
+}
+
 inline void pd_entry_add_attrib (table_t* e, uint32_t attrib)
 {
 	*e |= attrib;
@@ -145,6 +189,16 @@ inline int pd_entry_is_user (table_t e)
 inline int pd_entry_is_4mb (table_t e)
 {
 	return e & I86_PDE_4MB;
+}
+
+inline int pd_entry_is_avail_1 (table_t e)
+{
+	return e & CUSTOM_PDE_AVAIL_1;
+}
+
+inline int pd_entry_is_avail_2 (table_t e)
+{
+	return e & CUSTOM_PDE_AVAIL_2;
 }
 
 #endif

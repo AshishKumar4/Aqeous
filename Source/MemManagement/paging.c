@@ -1,15 +1,101 @@
-
 #include <paging.h>
+#include <vmem.h>
 #include <mem.h>
 
-void switch_directory(pdirectory *dir)
+inline void switch_directory(pdirectory *dir)
 {
     //asm volatile ("movl %%eax, %%cr3" :: "a" (&dir->m_entries[0])); // load PDPT into CR3
-    asm volatile("mov %0, %%cr3":: "r"((uint32_t)dir));
-    u32int cr0=0;
-    asm volatile("mov %%cr0, %0": "=r"(cr0));
-    cr0 |= 0x80000000; // Enable paging!
-    asm volatile("mov %0, %%cr0":: "r"(cr0));
+    asm volatile("mov %0, %%cr3":: "r"((uint32_t)dir):"memory");
+}
+
+inline pdirectory* pgdir_maker()
+{
+    Switch_to_system_dir();
+    pdirectory* dir=(pdirectory*)pmalloc(sizeof(ptable));
+    PgDirs[PgDs].pgdir=dir;
+    PgDirs[PgDs].ID=PgDs+1;
+    ++PgDs;
+    Switch_back_from_System();
+    return dir;
+}
+
+inline pdirectory* system_dir_maker()
+{
+    pdirectory* dir=(pdirectory*)(4194304);
+    PgDirs[PgDs].pgdir=dir;
+    PgDirs[PgDs].ID=PgDs+1;
+    ++PgDs;
+    for(int i=0;i<1024;i++)
+    {
+      dir->m_entries[i] = (table_t)(((i+1)*4096)+4194304);
+      table_t* entry = &dir->m_entries[i];
+      pd_entry_add_attrib (entry, I86_PDE_PRESENT);
+      pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
+      //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[i]);
+    }
+    return dir;
+}
+
+inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a give pdirectory
+{
+    map(0,8*1024*1024,dir);
+    /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
+    Map_non_identity(8*1024*1024,0xC0000000,92*1024*1024,dir);
+    //while(1);
+}
+
+inline void System_dir_setup() ///will use it to manage OS directly
+{
+    //Map_non_identity(0,0,4095*1024*1024,system_dir);
+    for(uint32_t i=0,j=0;i<0xFFFFF000;i+=4096,j+=4096) //Make the pages and page tables for the whole kernel memory (higher Half)
+    {
+        //printf(" %x",i);
+        page_t* page;
+        page=get_page(j,1,system_dir); //kernel Pages;
+        pt_entry_set_frame ( page, i);
+        pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+        pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+        pt_entry_add_attrib ( page, I86_PTE_USER);
+        pt_entry_del_attrib ( page, CUSTOM_PTE_AVAIL_1);
+        pt_entry_del_attrib ( page, CUSTOM_PTE_AVAIL_2);
+        //page++;
+    }
+}
+
+inline void Switch_to_system_dir()
+{
+    asm volatile("mov %0, %%cr3":: "r"((uint32_t)system_dir):"memory");
+    _prev_directory=_cur_directory;
+    _cur_directory=system_dir;
+}
+
+inline void Switch_back_from_System()
+{
+    asm volatile("mov %0, %%cr3":: "r"((uint32_t)_prev_directory):"memory");
+    _cur_directory=_prev_directory;
+}
+
+inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, pdirectory* dir)
+{
+    if(pag)
+    {
+      Switch_to_system_dir();
+    }
+    for(uint32_t i=phys,j=virt;i<phys+size;i+=4096,j+=4096) //Make the pages and page tables for the whole kernel memory (higher Half)
+    {
+        //printf(" %x",i);
+        page_t* page;
+        page=get_page(j,1,dir); //kernel Pages;
+        pt_entry_set_frame ( page, i);
+        pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+        pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+        pt_entry_add_attrib ( page, I86_PTE_USER);
+        pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
+        pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
+        //page++;
+    }
+    if(pag)
+      Switch_back_from_System();
 }
 
 int alloc_page (page_t* e)
@@ -48,21 +134,31 @@ inline page_t* pdirectory_lookup_entry (pdirectory* p, uint32_t addr)
 		return &p->m_entries[ PAGE_TABLE_INDEX (addr) ];
 	return 0;
 }
-//! current directory table (global)
-pdirectory*		_cur_directory=0;
 
-inline int switch_pdirectory (pdirectory* dir)
+int switch_pdirectory (pdirectory* dir)
 {
 	if (!dir)
 		return 0;
-	_cur_directory = dir;
+	curr_pgdir.pgdir = dir;
+  _cur_directory = dir;
   switch_directory(dir);
+	return 1;
+}
+
+int Switch_Page_Directory(pdirectory* dir) ///to be used once our paging has been enabled.
+{
+	if (!dir)
+		return 0;
+  Switch_to_system_dir();
+  switch_directory(dir);
+  curr_pgdir.pgdir = dir;
+  _cur_directory = dir;
 	return 1;
 }
 
 pdirectory* get_directory ()
 {
-	return main_dir;
+	return curr_pgdir.pgdir;
 }
 
 void flush_tlb_entry (uint32_t addr)
@@ -72,14 +168,14 @@ void flush_tlb_entry (uint32_t addr)
   asm volatile("sti");
 }
 
-page_t* MapPage (void* phys, void* virt)
+inline page_t* MapPage (void* phys, void* virt, pdirectory* dir)
 {
    //! get page directory
-   pdirectory* pageDirectory = main_dir;
+   pdirectory* pageDirectory = dir;
 
    //! get page table
    table_t* e = &pageDirectory->m_entries [PAGE_DIRECTORY_INDEX ((uint32_t) virt) ];
-   if ( (*e & I86_PTE_PRESENT) != I86_PTE_PRESENT)
+   if (!*e)
    {
       //! page table not present, allocate it
       ptable* table = (ptable*) pmalloc(4096);
@@ -90,8 +186,7 @@ page_t* MapPage (void* phys, void* virt)
       //memset (table, 0, sizeof(ptable));
 
       //! create a new entry
-      table_t* entry =
-         &pageDirectory->m_entries [PAGE_DIRECTORY_INDEX ( (uint32_t) virt) ];
+      table_t* entry = &pageDirectory->m_entries [PAGE_DIRECTORY_INDEX ( (uint32_t) virt) ];
 
       //! map in the table (Can also just do *entry |= 3) to enable these bits
       pd_entry_add_attrib (entry, I86_PDE_PRESENT);
@@ -107,21 +202,38 @@ page_t* MapPage (void* phys, void* virt)
 
    //! map it in (Can also do (*page |= 3 to enable..)
    pt_entry_set_frame ( page, (uint32_t) phys);
+   pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
+   pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
    pt_entry_add_attrib ( page, I86_PTE_PRESENT);
    return page;
 }
 
-void map(uint32_t phy,size_t size)
+void map(uint32_t phy,size_t size, pdirectory* dir)
 {
+    if(pag)
+    {
+      Switch_to_system_dir();
+    }
     uint32_t j=phy;
     for (; j < phy+size;j+=0x1000)
     {
-      MapPage((void*)j,(void*)j);
+      MapPage((void*)j,(void*)j,dir);
+    }
+    if(pag)
+    {
+      Switch_back_from_System();
     }
 }
 
+inline page_t* Get_Page(uint32_t addr, int make, pdirectory* dir)
+{
+    Switch_to_system_dir();
+    page_t* page=get_page(addr,make,dir);
+    Switch_back_from_System();
+    return page;
+}
 
-page_t* get_page(uint32_t addr,int make, pdirectory* dir)
+inline page_t* get_page(uint32_t addr,int make, pdirectory* dir)
 {
 
       // Turn the address into an index.
@@ -131,6 +243,7 @@ page_t* get_page(uint32_t addr,int make, pdirectory* dir)
 
       if (dir->m_entries[table_idx]) // If this table is already assigned
       {
+          //printf("1 ");
           table_t* entry = &dir->m_entries [table_idx];
           ptable* table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(entry);
           return &table->m_entries[addr%1024];
@@ -143,8 +256,8 @@ page_t* get_page(uint32_t addr,int make, pdirectory* dir)
           ptable* table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(entry);
           pd_entry_add_attrib (entry, I86_PDE_PRESENT);
           pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
-          pd_entry_set_frame (entry, (uint32_t)dir->m_entries[table_idx]);
-          //dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, US.
+          //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[table_idx]);
+        //  dir->tables[table_idx] = tmp | 0x7; // PRESENT, RW, US.
           return &table->m_entries[addr%1024];
       }
       else
@@ -154,60 +267,66 @@ page_t* get_page(uint32_t addr,int make, pdirectory* dir)
       }
 }
 
+inline table_t* get_table(uint32_t index,int make, pdirectory* dir)
+{
+      if (dir->m_entries[index]) // If this table is already assigned
+      {
+          //printf("1 ");
+          table_t* entry = &dir->m_entries [index];
+          return entry;
+      }
+      else if(make)
+      {
+          dir->m_entries[index] = (table_t)pmalloc(sizeof(ptable));
+          memset((void*)dir->m_entries[index], 0, 0x1000);
+          table_t* entry = &dir->m_entries [index];
+          pd_entry_add_attrib (entry, I86_PDE_PRESENT);
+          pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
+          //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[table_idx]);
+        //  dir->tables[table_idx] = tmp | 0x7; // PRESENT, RW, US.
+          return entry;
+      }
+      else
+      {
+          printf(" Cant get the table! ");
+          return 0;
+      }
+}
+
 void initialise_paging()
 {
-  main_dir = (pdirectory*) pmalloc (sizeof(pdirectory));
+  printf("Making Default Page directories, This may take a while\n");
+  system_dir = system_dir_maker();
+  System_dir_setup();
+  switch_pdirectory(system_dir);
+  uint32_t cr0=0;
+  asm volatile("mov %%cr0, %0": "=r"(cr0)::"memory");
+  cr0 |= 0x80000000; // Enable paging!
+  asm volatile("mov %0, %%cr0":: "r"(cr0):"memory");
+  main_dir = pgdir_maker();
+  user_dir = pgdir_maker();
+  curr_pgdir = PgDirs[0];
+  _cur_directory = main_dir;
   //! clear directory table and set it as current
   memset (main_dir, 0, sizeof (pdirectory));
+  memset (user_dir, 0, sizeof (pdirectory));
 }
 
 void enable_paging()
 {
-
-      printf("Allocating Pages and Page tables, This may take a while\n");
-      MemMap_t* tempBlock3=Mblock;
-      for(uint32_t i=0;i<(1024*1024*300);i+=4096) //Make the pages and page tables for the whole kernel memory (100mb)
-      {
-          page_t* page;
-          page=get_page(i,1,main_dir); //kernel Pages;
-          pt_entry_set_frame ( page, i);
-          pt_entry_add_attrib ( page, I86_PTE_PRESENT);
-          pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
-          pt_entry_add_attrib ( page, I86_PTE_USER);
-          tempBlock3->page=page;
-          tempBlock3++;
-          //page++;
-      }
-      for(uint32_t i=300*1024*1024;i<(1024*maxmem);i+=4096) //For the rest reserved memory!
-      {
-          if(tempBlock3->used==1) // memory is reserved, identity map it, i dont want any issues!
-          {
-            page_t* page;
-            page=get_page(i,1,main_dir); //kernel Pages;
-            pt_entry_set_frame ( page, i);
-            pt_entry_add_attrib ( page, I86_PTE_PRESENT);
-            pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
-            pt_entry_add_attrib ( page, I86_PTE_USER);
-            tempBlock3->page=page;
-          }
-          ++tempBlock3;
-          //page++;
-      }
-      for(uint32_t i=maxmem/4;i<(1024*1024);i++) //For the rest reserved memory!
-      {
-          page_t* page;
-          page=get_page(i*4096,1,main_dir); //kernel Pages;
-          pt_entry_set_frame ( page, i*409);
-          pt_entry_add_attrib ( page, I86_PTE_PRESENT);
-          pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
-          pt_entry_add_attrib ( page, I86_PTE_USER);
-          //page++;
-      }
-   //! switch to our page directory
+   //! switch to our main page directory
+   Kernel_Mapper(main_dir);
+   Kernel_Mapper(user_dir);
+   Map_non_identity(100*1024*1024,100*1024*1024,100*1024*1024,main_dir);
+   printf("\nSwitching Directory");
    switch_pdirectory (main_dir);
-
+   //while(1);
+   //BITMAP_LOCATION=3072*1024*1024;
+   printf("\nDirectory Switched");
    register_interrupt_handler(14, page_fault);
    pag=1;
+   max_mem=0xFFFFFFFF;
+   mb_temp=3062;
    printf("\nEnabled paging\n");
    //pmmngr_paging_enable (true);
 }
@@ -215,48 +334,11 @@ void enable_paging()
 
 void page_fault(registers_t regs)
 {
-  asm volatile("cli");
-    // A page fault has occurred.
-    // The faulting address is stored in the CR2 register.
-    uint32_t faulting_address;
-    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-
-    // The error code gives us details of what happened.
-    int present   = !(regs.err_code & 0x1); // Page not present
-    int rw = regs.err_code & 0x2;           // Write operation?
-    int us = regs.err_code & 0x4;           // Processor was in user-mode?
-    int reserved = regs.err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
-    int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
-
-    // Output an error message.
-    console_writestring("\nPage fault! ( ");
-    if (present)
-    {
-      console_writestring("present, Allocating page for it ");
-      MapPage((void*)faulting_address,(void*)faulting_address);
-    }
-    if (rw)
-    {
-        console_writestring("read-only ");
-    }
-    if (us) {console_writestring("user-mode ");}
-    if (reserved) {console_writestring("reserved ");}
-
-    if (id) {console_writestring("id "); console_write_dec(id);}
-    console_writestring(") at 0x");
-    console_write_dec(faulting_address);
-    console_writestring(" - EIP: ");
-    console_write_dec(regs.eip);
-    console_writestring("\n");
-    asm volatile("         \
-     cli;                 \
-     mov %0, %%ecx;       \
-     mov %1, %%esp;       \
-     mov %2, %%ebp;       \
-     sti;                 \
-     jmp *%%ecx           "
-                 : : "r"(regs.eip), "r"(regs.esp), "r"(regs.ebp));
-    asm volatile("sti");
-    asm volatile("iret");
+  uint32_t faulting_address;
+  asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+  printf("\npage fault");
+  while(1);
+  Map_non_identity(faulting_address,Phy_alloc(3)*4096,4096,_cur_directory);
+  asm volatile("iret");
    // PANIC("Page fault");
 }

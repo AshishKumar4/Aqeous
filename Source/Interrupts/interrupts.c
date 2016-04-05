@@ -45,7 +45,7 @@ int slave=0;
 
 void fault_handler(registers_t regs)
 {
-  int a=printf("\nUnhandled Interrupt %x\n",regs.int_no);
+  printf("\nUnhandled Interrupt %x\n",regs.int_no);
 }
 
 void int_init()

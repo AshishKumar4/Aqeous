@@ -12,7 +12,7 @@ typedef enum
     in = 0x01,
     out = 0x02,
     trunc = 0x04,
-    open = 0x08,
+    ate = 0x08,
     app = 0x10,
 }ios;
 
@@ -46,10 +46,10 @@ typedef struct __attribute__ ((packed)) file
     uint64_t Next_Friend;
 }File_t;
 
-typedef struct  File_Header
+typedef struct __attribute__ ((packed)) File_Header
 {
     uint16_t used;
-    uint16_t reserved;
+    uint16_t spread; // number of continuous sectors it spans.
     uint64_t File_location;
     uint64_t location;
     uint64_t Next_Header;
@@ -79,7 +79,6 @@ typedef struct __attribute__ ((packed)) File_handle
     uint32_t file; //location of loaded file struct in RAM
     uint32_t current_header;
     uint8_t  ios;
-    //uint32_t buf;
     uint64_t file_location;
     struct File_handle* next;
 }File_handle_t;
@@ -116,11 +115,7 @@ void set_curr_dir(uint64_t location);
 
 Directory_t* search_folder(char* name);
 
-uint32_t fread_whole(char* name);
-
-void fwrite(uint32_t buffer,uint32_t size, char* file_name);
-
-File_Header_t* File_Header_Creator(File_t* file);
+File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks);
 
 size_t header_data=1024-sizeof(File_Header_t);
 
@@ -134,6 +129,8 @@ void file_flush(char* name);
 
 void file_close(char *name);
 
-void fread(uint32_t buffer, uint32_t size, uint32_t offset, char* name);
+void file_read(uint32_t buffer, uint32_t size, uint32_t offset, char* name);
+
+void file_write(uint32_t buffer,uint32_t size, char* file_name);
 
 #endif

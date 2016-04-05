@@ -6,18 +6,22 @@
 #include <string.h>
 #include <stdio.h>
 #include <task.h>
+#include <vmem.h>
 
-#define KHEAP_START         0xC0000000
-#define KHEAP_INITIAL_SIZE  0x100000
+//#define KHEAP_START         0xC0000000
+//#define KHEAP_INITIAL_SIZE  0x100000
+uint32_t BITMAP_LOCATION=8388608;
 
-#define UHEAP_START         0x3000000
-#define UHEAP_INITIAL_SIZE  0x7000000
+//#define UHEAP_START         0x3000000
+//#define UHEAP_INITIAL_SIZE  0x7000000
 
 #define HEAP_INDEX_SIZE   0x20000
 #define HEAP_MAGIC        0x123890AB
 #define HEAP_MIN_SIZE     0x70000
 
 uint32_t vga;
+
+inline uint32_t Phy_alloc(uint32_t processID); ///Gives frames for pages
 
 uint32_t BlockFinder(uint32_t addr);
 
@@ -49,6 +53,7 @@ uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys);
 uint32_t kmalloc(uint32_t sz);
 task_t* tmalloc(uint32_t sz);
 uint32_t smalloc(uint32_t sz);
+inline uint32_t Phy_alloc_pg(uint32_t processID);
 
 /**
    General deallocation function.
@@ -57,7 +62,7 @@ void free(uint32_t* ptr);
 
 uint32_t malloc(uint32_t sz);
 
-uint32_t pmalloc(uint32_t sz);
+inline uint32_t pmalloc(uint32_t id);
 
 
 #endif // MEM

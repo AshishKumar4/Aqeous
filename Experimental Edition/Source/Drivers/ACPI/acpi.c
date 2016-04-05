@@ -143,6 +143,7 @@ int acpiCheckHeader(unsigned int *ptr, char *sig)
 
 int acpiEnable(void)
 {
+   Switch_to_system_dir();
    // check if acpi is enabled
    if ( (inw((unsigned int) PM1a_CNT) &SCI_EN) == 0 )
    {
@@ -167,19 +168,25 @@ int acpiEnable(void)
             }
          if (i<300) {
             console_writestring("enabled acpi.\n");
+            Switch_back_from_System();
             return 0;
          } else {
             console_writestring("couldn't enable acpi.\n");
+            Switch_back_from_System();
             return -1;
          }
       } else {
          console_writestring("no known way to enable acpi.\n");
+         Switch_back_from_System();
          return -1;
       }
    } else {
-      //wrstr("acpi was already enabled.\n");
+      printf("acpi was already enabled.\n");
+      Switch_back_from_System();
       return 0;
    }
+   printf("done");
+   Switch_back_from_System();
 }
 
 
@@ -204,8 +211,9 @@ int acpiEnable(void)
 //
 int initAcpi(void)
 {
-   unsigned int *ptr = acpiGetRSDPtr();
+   Switch_to_system_dir();//switch_pdirectory(system_dir); //do everything from here, its completely identity mappped.
 
+   unsigned int *ptr = acpiGetRSDPtr();
    // check if address is correct  ( if acpi is available on this pc )
    if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
    {
@@ -263,6 +271,7 @@ int initAcpi(void)
                      SLP_EN = 1<<13;
                      SCI_EN = 1;
 
+                     Switch_back_from_System();
                      return 0;
                   } else {
                      console_writestring("\\_S5 parse error.\n");
@@ -281,6 +290,7 @@ int initAcpi(void)
       console_writestring("no acpi.\n");
    }
 
+   Switch_back_from_System();
    return -1;
 }
 

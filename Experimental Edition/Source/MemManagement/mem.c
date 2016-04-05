@@ -28,17 +28,59 @@ inline int clearBits(uint32_t map[],uint32_t sz) //gives the output as number of
   return -1;
 }
 
-uint32_t processID=10; //id 4 for paging, rest reserved
+uint32_t processID=10; ///id 4 for paging, rest reserved
+
+inline uint32_t Phy_alloc(uint32_t processID) ///Gives frames for pages
+{
+    uint32_t* ptr=(uint32_t*)(BITMAP_LOCATION);
+    ptr+=3072;
+    for(int i=3072;i<1024*1024;i++)  ///start allocation from beyond 4MB point
+    {
+      if(!*ptr)
+      {
+        *ptr=i*4096;
+    //    printf("\nPhy Frame: %x %x",i,tmp->addr);
+        return i; ///return the frame
+      }
+      ++ptr;
+    }
+    printf("\nNo Physical Memory space left!!!!!");
+    return 0;
+}
+
+inline uint32_t Phy_alloc_pg(uint32_t processID) ///Gives frames for page structures
+{
+    uint32_t* ptr=(uint32_t*)(BITMAP_LOCATION);
+    ptr+=25*1024;
+    for(int i=25*1024;i<1024*1024;i++)  ///start allocation from beyond 4MB point
+    {
+      if(!*ptr)
+      {
+        MemMap_t* tmp=(MemMap_t*)BlockFinder(i*4096);
+        tmp->id=processID;
+        tmp->used=4096;
+        tmp->map[0]=0xFFFFFFFF;
+        tmp->map[1]=0xFFFFFFFF;
+        tmp->map[2]=0xFFFFFFFF;
+        tmp->map[3]=0xFFFFFFFF;
+        *ptr=i*4096;
+      //  printf("\nPhy Frame: %x %x",i,tmp->addr);
+        return i; ///return the frame
+      }
+      ++ptr;
+    }
+    printf("\nNo Physical Memory space left!!!!!");
+    return 0;
+}
 
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int packed,int processId)
 {
-    uint32_t mb=0;
-    if(purpose==1) mb=200; //for kernel
-    else if(purpose==2) mb=49; //for paging
-    else if(purpose==3) mb=100; //for tasking
-    else if(purpose==4) mb=110; //for tasking
-    else if(purpose==5) mb=160; //for filesystem
-    else mb=250;
+    uint32_t mb=0;   ///dont give kernel memory below this point
+    if(purpose==1) mb=+400; //for kernel
+    else if(purpose==3) mb+=52; //for tasking
+    else if(purpose==4) mb+=300; //for tasking
+    else if(purpose==5) mb+=200; //for filesystem
+    else mb+=500;
     MemMap_t* Block=(MemMap_t*)BlockFinder(mb*1024*1024);
     uint32_t addr;
     uint32_t sz4096=sz/4096;
@@ -52,14 +94,14 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
     while(1)
     {
         addr=Block->addr;
-        if(addr>=(mb*1024*1024)+32) //If the block is in user memory; +32 for buffer
+        if(addr>=(mb*1024*1024)+32) //If the block is in available memory; +32 for buffer
         {
           out:
-          if(Block->used==0)
+          if(!Block->id)
           {
               if (align == 1 && (addr & 0xFFFFF000)) //if 4k alignment required
               {
-                while(Block->used) ++Block; //Simply get a comlpetely unused block!
+                while(Block->id) ++Block; //Simply get a comlpetely unused block!
                 //Because Natively,Every Block's starting addr is 4k aligned!
               }
               MemMap_t* tm=Block;
@@ -68,7 +110,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
                   for(uint32_t i=0;i<sz4096+1;i++) //check if adjacent blocks are empty too!
                   {
                     ++tm;
-                    if(tm->used) //cant fit here!
+                    if(tm->id) //cant fit here!
                     {
                       Block=tm;
                       goto out;
@@ -138,13 +180,13 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
               else
               {
                 out3:
-                while(Block->used)
+                while(Block->id)
                   ++Block; //find a completely empty block
                 MemMap_t* tm=Block;
                 for(uint32_t i=0;i<sz4096+1;i++) //check if adjacent blocks are empty too!
                 {
                   ++tm;
-                  if(tm->used) //cant fit here!
+                  if(tm->id) //cant fit here!
                   {
                     Block=tm;
                     goto out3;
@@ -169,7 +211,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
                 break;
               }
             }
-            if(Block->addr>=maxmem*1024)
+            if(Block->addr>=max_mem)
             {
                 printf("\nNo memory");
                 return 0;
@@ -181,33 +223,34 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
         *phys=addr;
     uint32_t size=sz;
     uint32_t tid=processID;
-    if(pag==0) //If paging not enabled
-      {
-        if(sz>4096||Block->used==0)
-        for(uint32_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
-        {
-          if(!processId && !Block->used)
-              Block->used=tid;
-          else Block->used=processId;
-          //tempBlock1->map+=size;
-        }
-      }
-    else
+    uint16_t* ptr;
+    if(sz>4096||Block->id==0)
+    for(uint32_t i=0;i<(sz-1)/4096;i++,Block++,size-=4096)
     {
-      if(sz>4096||Block->used==0)
-        for(uint32_t i=0;i<=(sz-1)/4096;i++,Block++,size-=4096)
-        {
-            if(!processId && !Block->used)
-                Block->used=tid;
-            else Block->used=processId;
-            Block->page=MapPage((void*)Block->addr,(void*)Block->addr);
-        }
-    }
+      Block->id=PgDirs[0].ID; //The System Dir, because its gonna be called from there only.
+      ptr=&Block->id;
+      ptr++;
+      if(!processId && !Block->id)
+          *ptr=tid;
+      else *ptr=processId;
+      Block->used=4096;
+      Block->page=get_page(Block->addr,0,system_dir);
+      //tempBlock1->map+=size;
+    }//*/
+    Block->id=PgDirs[0].ID; //The System Dir, because its gonna be called from there only.
+    ptr=&Block->id;
+    ptr++;
+    if(!processId && !Block->id)
+        *ptr=tid;
+    else *ptr=processId;
+    Block->used=tsz32*32;
+    Block->page=get_page(Block->addr,0,system_dir);
     ++processID;
+    //printf("%x ",addr);
     return addr;
 }
 
-void free(uint32_t* ptr)
+void kfree(uint32_t* ptr)
 {
     uint32_t addr=(uint32_t)ptr;
     MemMap_t* Block=(MemMap_t*)BlockFinder(addr);
@@ -283,9 +326,13 @@ uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys)
     return kmalloc_int(sz, 1, phys,1,1,0);
 }
 
-uint32_t pmalloc(uint32_t sz)
+inline uint32_t pmalloc(uint32_t id)
 {
-    return kmalloc_int(sz, 1, 0,2,1,4);
+    //return kmalloc_int(sz, 1, 0,2,1,4);
+    uint32_t mem=Phy_alloc_pg(id)*4096;
+  //  if(pag)
+  //    MapPage((void*)mem,(void*)mem);
+   return mem;
 }
 
 uint32_t kmalloc(uint32_t sz)
@@ -306,9 +353,4 @@ uint32_t smalloc(uint32_t sz) //for tasks(threads) Stakcs
 uint32_t fsalloc(uint32_t sz) //for tasks(threads) Stakcs
 {
     return kmalloc_int(sz, 0, 0,5,0,0);
-}
-
-uint32_t malloc(uint32_t sz)
-{
-    return kmalloc_int(sz, 0, 0,0,0,0);
 }

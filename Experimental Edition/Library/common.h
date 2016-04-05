@@ -18,6 +18,8 @@ typedef          char  s8int;
 #define NULL ((void*) 0)
 #endif
 
+#define KERNEL_BASE 0xC0000000 
+
 // Efficient min and max operations
 #define MIN(_a, _b)						\
 ({								\
@@ -46,8 +48,6 @@ typedef          char  s8int;
 	(typeof(a)) (ROUNDDOWN((uint64_t) (a) + __n - 1, __n));	\
 })
 
-// Return the offset of 'member' relative to the beginning of a struct type
-#define offsetof(type, member)  ((size_t) (&((type*)0)->member))
 typedef struct {
     int inode_num;//This field will be index in the tarfs table
     char filename[100];
@@ -79,16 +79,16 @@ typedef void (*irq_t)();
 
 #define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
 
-uint32_t Lower32(uint64_t *addr)
+inline uint32_t Lower32(uint64_t val)
 {
-	return (uint32_t)*addr;
+	uint32_t a=val&0xffffffff;
+	return a;
 }
 
-uint32_t Higher32(uint64_t *addr)
+inline uint32_t Higher32(uint64_t val)
 {
-	uint32_t* abc=(uint32_t)addr;
-	++abc;
-	return *abc;
+	uint32_t b=val>>32;
+	return b;
 }
 
 

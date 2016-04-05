@@ -71,5 +71,8 @@ switcher:
     push dword [new_eflags]
     push dword [new_cs]
     push dword [new_eip]
-    call helper1
+    ;call helper1
+    mov dx, 0x20
+    mov ax, 0x20
+    out dx, ax
     iret;

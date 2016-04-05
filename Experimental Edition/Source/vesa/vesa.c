@@ -126,7 +126,7 @@ void setVesa(uint32_t mode)
   heightVESA=vbeModeInfo->YResolution;
   depthVESA=vbeModeInfo->BitsPerPixel;
   buff=(u8int*)kmalloc(1024*768*2);
-  map(vbeModeInfo->PhysBasePtr,1024*768*2);
+  map(vbeModeInfo->PhysBasePtr,1024*768*2,system_dir);
   asm volatile("sti");
 }
 
