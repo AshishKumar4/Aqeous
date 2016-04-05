@@ -1,7 +1,7 @@
 #ifndef DESCRIPTORS_H
 #define DESCRIPTOR_H
 #include <common.h>
-
+#include <stdint.h>
 struct gdt_entry_struct
  {
     uint16_t limit_low;           // The lower 16 bits of the limit.
