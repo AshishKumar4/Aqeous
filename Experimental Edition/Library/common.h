@@ -17,10 +17,10 @@ typedef          char  s8int;
 #ifndef NULL
 #define NULL ((void*) 0)
 #endif
-
+//TODO: Make the kernel base dynamic
 #define KERNEL_BASE 0xC0000000 
 
-// Efficient min and max operations
+// Efficient min and max operations {Remark from a contributor: Not quite efficient..}
 #define MIN(_a, _b)						\
 ({								\
 	typeof(_a) __a = (_a);					\
@@ -91,5 +91,7 @@ inline uint32_t Higher32(uint64_t val)
 	return b;
 }
 
-
+inline void nop(){
+  volatile asm("nop");
+}
 #endif // COMMON_H
