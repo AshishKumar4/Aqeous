@@ -1,15 +1,8 @@
 #include <vesa.c>
 #include <stddef.h>
 #include <stdint.h>
+#include <graphics.h>
 
-
-extern int widthVESA, heightVESA, depthVESA;
-unsigned int background=90;
-unsigned char *tempbuff;
-unsigned char buffer1=90& 0xff;
-unsigned char buffer2=90& 0xff;
-unsigned char buffer3=90& 0xff;
-extern unsigned char *vga_mem; //pointer where we assign our vga address
 void Init()
 {
     //RectL(0,0,1022,767,90,90,90);
@@ -31,7 +24,7 @@ void Pixel_VESA_BUFF(int x, int y, int C1,int C2, int C3)
     buff[offset+3]=C3& 0xff;
 
 }
-int offset;
+
 void Pixel_VESA(int x, int y, int C1,int C2, int C3)
 {
   /*calculates the offset for a specific point on screen*/
@@ -55,7 +48,7 @@ void RectD(int x, int y, int width, int height, int C1,int C2, int C3)
     for(int j = x; j < width + x; j++)
       Pixel_VESA_BUFF(j, i, C1,C2,C3);
 }
-int width=1022,height=766;
+
 void DBuff()
 {
     memcpy(vga_mem,buff,1024*768*2);
@@ -71,16 +64,19 @@ void DBuff()
            buff[offset+2]=buffer3;
     }
 }
+
 void RectL(int x, int y, int width, int height, int C1,int C2, int C3)
 {
   for(int i = y; i < height + y; i++)
     for(int j = x; j < width + x; j++)
       Pixel_VESA(j, i, C1,C2,C3);
 }
+
 void Creater(int i,int j)
 {
     Pixel_VESA(i,i+j,1000,1000,1000);
 }
+
 void Mouse_Plot(int x,int y)
 {
     for(int i=0;i <20;i++)

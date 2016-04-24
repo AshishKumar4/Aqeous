@@ -131,8 +131,6 @@ int checkAHCI()
       ++ahci;
     }
     console_writestring("\n");
-    if(controllers)
-      register_interrupt_handler(IRQ11,ahci_handler);
     return controllers;
 }
 

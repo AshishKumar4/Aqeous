@@ -55,13 +55,13 @@ struct FACP
 // check if the given address has a valid header
 unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
 {
-   char *sig = "RSD PTR ";
+   char *sig = "RSD PTR";
    struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
    byte *bptr;
    byte check = 0;
    uint32_t i;
 
-   if (memcmp(sig, rsdp, 8) == 0)
+   if (memcmp(sig, rsdp, 7) == 0)
    {
       // check checksum rsdpd
       bptr = (byte *) ptr;
@@ -72,14 +72,14 @@ unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
       }
 
       // found valid rsdpd
-      if (check == 0) {
-         /*
-          if (desc->Revision == 0)
-            wrstr("acpi 1");
+      if (check == 0)
+      {
+          if (rsdp->Revision == 0)
+            printf("\nACPI 1.0 Found\n");
          else
-            wrstr("acpi 2");
-         */
-         return (unsigned int *) rsdp->RsdtAddress;
+            printf("\nACPI 2.0 Found\n");
+
+      return (unsigned int *) rsdp->RsdtAddress;
       }
    }
 
@@ -95,7 +95,7 @@ unsigned int *acpiGetRSDPtr(void)
    unsigned int *rsdp;
 
    // search below the 1mb mark for RSDP signature
-   for (addr = (unsigned int *) 0x000E0000; (int) addr<0x00100000; addr += 0x10/sizeof(addr))
+   for (addr = (unsigned int *) 0x000E0000; (int) addr<0x00100000; addr ++)//= 0x10/sizeof(addr))
    {
       rsdp = acpiCheckRSDPtr(addr);
       if (rsdp != NULL)
@@ -114,7 +114,7 @@ unsigned int *acpiGetRSDPtr(void)
       if (rsdp != NULL)
          return rsdp;
    }
-
+   printf("\nNO RSDPTR FOUND!!!");
    return NULL;
 }
 
@@ -166,16 +166,21 @@ int acpiEnable(void)
                   break;
                sleep(10);
             }
-         if (i<300) {
+         if (i<300)
+         {
             console_writestring("enabled acpi.\n");
             Switch_back_from_System();
             return 0;
-         } else {
+         }
+         else
+         {
             console_writestring("couldn't enable acpi.\n");
             Switch_back_from_System();
             return -1;
          }
-      } else {
+      }
+      else
+      {
          console_writestring("no known way to enable acpi.\n");
          Switch_back_from_System();
          return -1;
@@ -211,8 +216,6 @@ int acpiEnable(void)
 //
 int initAcpi(void)
 {
-   Switch_to_system_dir();//switch_pdirectory(system_dir); //do everything from here, its completely identity mappped.
-
    unsigned int *ptr = acpiGetRSDPtr();
    // check if address is correct  ( if acpi is available on this pc )
    if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
@@ -220,7 +223,7 @@ int initAcpi(void)
       // the RSDT contains an unknown number of pointers to acpi tables
       int entrys = *(ptr + 1);
       entrys = (entrys-36) /4;
-      ptr += 36/4;   // skip header information
+      ptr += 9;   // skip header information
 
       while (0<entrys--)
       {
@@ -290,7 +293,6 @@ int initAcpi(void)
       console_writestring("no acpi.\n");
    }
 
-   Switch_back_from_System();
    return -1;
 }
 

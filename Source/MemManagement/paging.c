@@ -11,10 +11,19 @@ inline void switch_directory(pdirectory *dir)
 inline pdirectory* pgdir_maker()
 {
     Switch_to_system_dir();
-    pdirectory* dir=(pdirectory*)pmalloc(sizeof(ptable));
+    pdirectory* dir=(pdirectory*)pmalloc(2);
+    memset((void*)dir, 0, 4096);
     PgDirs[PgDs].pgdir=dir;
     PgDirs[PgDs].ID=PgDs+1;
     ++PgDs;
+    for(int i=0; i<1024; i++) //Make all page tables in advance to increase performance
+    {
+      dir->m_entries[i] = (table_t)pmalloc(2);
+      memset((void*)dir->m_entries[i], 0, 0x1000);
+      table_t* entry = &dir->m_entries[i];
+      pd_entry_add_attrib (entry, I86_PDE_PRESENT);
+      pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
+    }
     Switch_back_from_System();
     return dir;
 }
@@ -51,7 +60,7 @@ inline void System_dir_setup() ///will use it to manage OS directly
     {
         //printf(" %x",i);
         page_t* page;
-        page=get_page(j,1,system_dir); //kernel Pages;
+        page=get_page(j,0,system_dir); //kernel Pages;
         pt_entry_set_frame ( page, i);
         pt_entry_add_attrib ( page, I86_PTE_PRESENT);
         pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
@@ -277,6 +286,7 @@ inline table_t* get_table(uint32_t index,int make, pdirectory* dir)
       }
       else if(make)
       {
+          printf(" g%x",index);
           dir->m_entries[index] = (table_t)pmalloc(sizeof(ptable));
           memset((void*)dir->m_entries[index], 0, 0x1000);
           table_t* entry = &dir->m_entries [index];
@@ -307,9 +317,6 @@ void initialise_paging()
   user_dir = pgdir_maker();
   curr_pgdir = PgDirs[0];
   _cur_directory = main_dir;
-  //! clear directory table and set it as current
-  memset (main_dir, 0, sizeof (pdirectory));
-  memset (user_dir, 0, sizeof (pdirectory));
 }
 
 void enable_paging()
@@ -323,22 +330,9 @@ void enable_paging()
    //while(1);
    //BITMAP_LOCATION=3072*1024*1024;
    printf("\nDirectory Switched");
-   register_interrupt_handler(14, page_fault);
    pag=1;
    max_mem=0xFFFFFFFF;
    mb_temp=3062;
    printf("\nEnabled paging\n");
    //pmmngr_paging_enable (true);
-}
-
-
-void page_fault(registers_t regs)
-{
-  uint32_t faulting_address;
-  asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-  printf("\npage fault");
-  while(1);
-  Map_non_identity(faulting_address,Phy_alloc(3)*4096,4096,_cur_directory);
-  asm volatile("iret");
-   // PANIC("Page fault");
 }

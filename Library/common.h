@@ -5,6 +5,8 @@
 #include <stdint-gcc.h>
 #include <stdbool.h>
 
+typedef void (*func_t)();	//void function pointer
+
 // Some nice typedefs, to standardise sizes across platforms.
 // These typedefs are written for 32-bit X86.
 typedef 	uint32_t   u32int;
@@ -18,7 +20,7 @@ typedef          char  s8int;
 #define NULL ((void*) 0)
 #endif
 
-#define KERNEL_BASE 0xC0000000 
+#define KERNEL_BASE 0xC0000000
 
 // Efficient min and max operations
 #define MIN(_a, _b)						\
@@ -48,7 +50,8 @@ typedef          char  s8int;
 	(typeof(a)) (ROUNDDOWN((uint64_t) (a) + __n - 1, __n));	\
 })
 
-typedef struct {
+typedef struct
+{
     int inode_num;//This field will be index in the tarfs table
     char filename[100];
     int perm;

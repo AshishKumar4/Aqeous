@@ -1,6 +1,8 @@
 #ifndef KEYBOARD_h
 #define KEYBOARD_h
 
+#include "scancodes.h"
+
 enum KYBRD_ENCODER_IO {
 
 	KYBRD_ENC_INPUT_BUF	=	0x60,
@@ -81,6 +83,41 @@ enum KYBRD_ERROR {
 	KYBRD_ERR_RESEND_CMD			=	0xFE,
 	KYBRD_ERR_KEY					=	0xFF
 };
+
+static int call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0;
+
+//! read status from keyboard controller
+inline uint8_t kybrd_ctrl_read_status ()
+{
+	return inb (KYBRD_CTRL_STATS_REG);
+}
+//! send command byte to keyboard encoder
+inline void kybrd_enc_send_cmd (uint8_t cmd)
+{
+	//! wait for kkybrd controller input buffer to be clear
+	while (1)
+		if ( (kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_IN_BUF) == 0)
+			break;
+
+	//! send command byte to kybrd encoder
+	outb (KYBRD_ENC_CMD_REG, cmd);
+}
+//! sets leds
+inline void kkybrd_set_leds (int num, int caps, int scroll)
+{
+
+	uint8_t data = 0;
+	//! set or clear the bit
+	data = (scroll) ? (data | 1) : (data & 1);
+	data = (num) ? (num | 2) : (num & 2);
+	data = (caps) ? (num | 4) : (num & 4);
+
+	//! send the command -- update keyboard Light Emetting Diods (LEDs)
+	kybrd_enc_send_cmd (KYBRD_ENC_CMD_SET_LED);
+	kybrd_enc_send_cmd (data);
+}
+
+int keyboard_scancodes(int key);
 
 uint8_t getchar();
 

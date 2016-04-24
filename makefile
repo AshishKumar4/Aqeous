@@ -6,7 +6,7 @@ NASM:=nasm/
 NASMARCH:=$(NASM)/arch/x86
 GRAPHICS:=$(SOURCE)/graphics
 OBJ:=objs
-CC:=i686-elf-gcc
+CC:=i686-elf-gcc-4.9.2
 KERNEL:=$(SOURCE)/kernel.o
 VESA:=$(SOURCE)/vesa
 ARCH:=$(SOURCE)/arch/x86
@@ -35,7 +35,7 @@ INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -
 INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
 INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM)
 
-FLAGS:= -Og -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:

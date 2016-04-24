@@ -42,41 +42,33 @@ void timer_callback()
      asm volatile("sti");
     //register_interrupt_handler(IRQ8,timer_task);
  }
-
- unsigned short masterPIC, slavePIC;
-
- void picInit(unsigned short _pic1, unsigned short _pic2)
+/*
+ void apic_start_timer()
  {
- 	masterPIC = _pic1;
- 	slavePIC  = _pic2;
+        // Tell APIC timer to use divider 16
+        write(APIC_REGISTER_TIMER_DIV, 0x3);
 
- 	unsigned short data1 = _pic1 + 1;
- 	unsigned short data2 = _pic2 + 1;
+        // Prepare the PIT to sleep for 10ms (10000µs)
+        pit_prepare_sleep(10000);
 
- 	outb(_pic1, 0x10 + 0x01);	// Init + ICW4 (Set up Cascade mode)
- 	outb(_pic2, 0x10 + 0x01);
+        // Set APIC init counter to -1
+        write(APIC_REGISTER_TIMER_INITCNT, 0xFFFFFFFF);
 
- 	// After this init, the PICs are expecting three additional pieces
- 	// of data; Vector offset, Cascade position, and mode.
+        // Perform PIT-supported sleep
+        pit_perform_sleep();
 
- 	outb(data1, 0x20);	// Relocate pic1 to interrupt 0x20
- 	outb(data2, 0x28);	// Relocate pic2 to interrupt 0x28
+        // Stop the APIC timer
+        write(APIC_REGISTER_LVT_TIMER, APIC_LVT_INT_MASKED);
 
- 	outb(data1, 4);		// Tell Master it has Slave on line 2 (00000100)
- 	outb(data2, 2);		// Tell the Slave it's cascading      (00000010)
+        // Now we know how often the APIC timer has ticked in 10ms
+        uint32_t ticksIn10ms = 0xFFFFFFFF - read(APIC_REGISTER_TIMER_CURRCNT);
 
- 	outb(data1, 1);		// Tell the Pic it's in 8086 mode
- 	outb(data2, 1);
-
- 	// At this point, init is complete, and the pic goes into normal
- 	// Operating mode. But there is still one last thing to do, Set the
- 	// Interrupt Masks so we don't get interrupts until we set up the
- 	// Devices on their respective IRQ Lines.
-
- 	outb(data1, 0xFF);	// Lines 0-7 are all masked
- 	outb(data2, 0xFF);	// Lines 8-15 are now masked too.
- }
-
+        // Start timer as periodic on IRQ 0, divider 16, with the number of ticks we counted
+        write(APIC_REGISTER_LVT_TIMER, 32 | APIC_LVT_TIMER_MODE_PERIODIC);
+        write(APIC_REGISTER_TIMER_DIV, 0x3);
+        write(APIC_REGISTER_TIMER_INITCNT, ticksIn10ms);
+}
+*/
  /**PIT TIMER, working**/
 void init_timer(uint32_t frequency)
  {

@@ -33,7 +33,7 @@ section .text
 [GLOBAL switcher]
 [GLOBAL save_eip]
 [EXTERN helper1]
-[EXTERN scheduler]
+[EXTERN Scheduler]
 [EXTERN save_esp]
 
 save_eip:
@@ -42,6 +42,7 @@ save_eip:
     pop dword [old_eflags]
 
 switcher:
+    call Scheduler
     pusha;
 
     ;mov ax, ds               ; Lower 16-bits of eax = ds.

@@ -1,12 +1,16 @@
 #include "mouse.c"
 #include "console.c"
-#include "interrupts.c"
+#include "descriptors.c"
+#include "int_handlers.c"
+#include "cpu.c"
 #include "multiboot.h"
 #include "vfs.c"
 #include "cmos.c"
 #include "pci.c"
 #include "ahci.c"
+#include "graphics.c"
 #include "timer.c"
+#include "apic.c"
 #include "cpuid.c"
 #include "mem.c"
 #include "paging.c"
@@ -17,6 +21,7 @@
 #include "task.c"
 #include "fs.c"
 #include "fs_alloc.c"
+#include "Scheduler.c"
 
 u32int initial_esp;
 uint32_t initial_ebp;
@@ -29,15 +34,15 @@ void dbug()
 	for(int i=0;i<4;i++)
 	{
 	//	printf("\n\t\tvar %x: ",i+1);
-		a[i]=20;//getint();
+		a[i]=40;//getint();
 	}
-	uint32_t *temp1=(uint32_t*)malloc(a[0]),*temp2=temp1;
+	uint32_t *temp1=(uint32_t*)kmalloc(a[0]),*temp2=temp1;
 	*temp1=4284;
-	//malloc(4096);
-	uint32_t *test1=(uint32_t*)malloc(a[1]),*test2=test1;
-	uint32_t *test3=(uint32_t*)malloc(a[2]);
-	uint32_t *test4=(uint32_t*)malloc(a[3]);
-	uint32_t *test5=(uint32_t*)malloc(128);
+	//kmalloc(4096);
+	uint32_t *test1=(uint32_t*)kmalloc(40),*test2=test1;
+	uint32_t *test3=(uint32_t*)kmalloc(a[2]);
+	uint32_t *test4=(uint32_t*)kmalloc(a[3]);
+	uint32_t *test5=(uint32_t*)kmalloc(128);
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
 	printf("\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<8;i++)
@@ -71,23 +76,25 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-	free(test3);
+//	free(test1);
+	kfree(temp2);
+	kfree(test3);
 
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*temp1);
 		++temp1;
-	}
+	}///*
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*test1);
 		++test1;
-	}
+	}//*/
 	printf(" %x %x ",*test3,*test4);
 	printf(" If you didnt saw any numbers above, It worked!!!\n");
-	uint32_t *tmp1=(uint32_t*)malloc(a[0]),*tmp2=tmp1;
-	//malloc(4096);
-	uint32_t *tst1=(uint32_t*)malloc(a[1]),*tst2=tst1;
+	uint32_t *tmp1=(uint32_t*)kmalloc(40),*tmp2=tmp1;
+	//kmalloc(4096);
+	uint32_t *tst1=(uint32_t*)kmalloc(40),*tst2=tst1;
 	printf("\tLocation of var 1: %x, var 2: %x \n",tmp1,tst1);
 }
 
@@ -97,26 +104,24 @@ void kernel_main();
 
 tss_struct_t *TSS;
 
-void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
+void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	 //Kernel stack located at 200th mb to 250th mb
-    initial_esp = 0xC800000;
+    //initial_esp = 0xC800000;
 		console_init();
+		init_APIC();
     init_descriptor_tables();
-		int_init();
-    printf("DESCRIPTOR TABLES INITIALIZED \n");
+    printf("\nDESCRIPTOR TABLES INITIALIZED \n");
+		printf("\nEnabling ACPI!\n");
+    initAcpi();
+    if(!acpiEnable())
+        printf("\nACPI Initialized\n");
+    else printf("\nACPI CANT BE INITIALIZED\n");
 		mouseinit();
 		printf("\nMouse Drivers initialized\n");
 		keyboard_init();
 		printf("\nKeyboard Drivers Initialized\n");
-		tss_struct_t tss;
-		TSS=&tss;
-		gdt_set_gate(5,(uint32_t)&tss,sizeof(tss_struct_t),0x89,0x40);
-	  gdt_flush((u32int)&gdt_ptr);
-		tss.ss0=0x10;
-		tss.esp0=initial_esp;
-		tss.iomap=sizeof(tss_struct_t);
-		printf("TSS setuped\n");
+
     printf("\nAvailable memory: ");
     printint(mboot_ptr->mem_upper);
     printf("\nMemory Map:");
@@ -139,14 +144,10 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 		bitmap_init();
 		initialise_paging();
 		enable_paging();
+
 		printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
-		printf("\nEnabling ACPI!\n");
-    initAcpi();
-    if(!acpiEnable())
-        printf("\nACPI Initialized\n");
-    else printf("\nACPI CANT BE INITIALIZED\n");
-		Switch_to_system_dir();
+		switch_pdirectory(system_dir);
 		printf("\n\nEnumerating all devices on PCI BUS:\n");
 		checkAllBuses();
 		printf("\nEnabling Hard Disk\n");
@@ -159,7 +160,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 	//  map(AHCI_BASE,1024*1024*50);
 
  	 	detect_cpu();
-		initTasking();
+		//initTasking();
 		asm volatile("sti");
 
 		init_cmos();
@@ -168,12 +169,11 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
 	 vesa=setVesa;
-	 printf("\nsize of task_t: %x",sizeof(task_t));/*
 	 uint32_t a=0;
 	 asm volatile("movl %%cr0, %0":"=r"(a));
 	 printf("\n%x Protected Mode Enabled? ",a);
 	 if(a & (1<<0))
-	 	printint(1);*/
+	 	printint(1);
 
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
@@ -181,7 +181,18 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 	 printf("sizeof Directory_t %x, File_t %x",sizeof(Directory_t),sizeof(File_t));
 
 	 Init_fs();
-	 Switch_back_from_System();
+	 printf("\nsize of task_t: %x",sizeof(struct task_t));
+	 printf("\nsize of File_handle_t: %x",sizeof(File_handle_t));
+	 if(cpuHasMSR()) printf("\nCPU has MSR");//*/
+	// switch_pdirectory(main_dir);
+//
+/*
+	 printf(" %x",3|0x400);
+	 for(int i=0; i<40960; i++)
+	 {
+		 kmalloc(40);
+	 }//*/
+//	 dbug();
 }
 
 void kernel_start()
@@ -280,13 +291,7 @@ uint8_t console_manager(char *inst)
 		//printf("\n\tEnter the timer Value:");
 		//uint32_t timer=getint();
 		Switch_to_system_dir();
-		Scheduler_exec();
-		return 0;
-	}
-	//else if(!strcmp(inst,""))
-	else if(!strcmp(inst,"rand-gen"))
-	{
-		rand_test();
+		//Scheduler_exec();
 		return 0;
 	}
 	printf("\n Command Not Recognized! type help for help\n");

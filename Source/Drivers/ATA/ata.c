@@ -85,7 +85,6 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
                     identdata[idx] = inw( 0x1F0 );
                 }
                 HDD='P';
-                register_interrupt_handler(IRQ14,HDD_A_Handler);
                 outb(0x1F0+ATA_REG_CONTROL,0x02);
                 printf("\nHard Disk Initialized\n");
                 console_writestring(" PATA Info: Heads: ");
@@ -141,7 +140,6 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
                         identdata[idx] = inw( 0x1F0 );
                     }
                     HDD='S';
-                    register_interrupt_handler(IRQ15,HDD_B_Handler);
                     outb(0x1F0+ATA_REG_CONTROL,0x02);
                     printf("\nHard Disk Initialized\n");
                     console_writestring(" PATA Info: Heads: ");

@@ -1,6 +1,6 @@
-[GLOBAL gdt_flush]    ; Allows the C code to call gdt_flush().
+[GLOBAL lgdt]    ; Allows the C code to call gdt_flush().
 
-gdt_flush:
+lgdt:
     mov eax, [esp+4]  ; Get the pointer to the GDT, passed as a parameter.
     lgdt [eax]        ; Load the new GDT pointer
 
@@ -14,9 +14,9 @@ gdt_flush:
 .flush:
     ret
 
-[GLOBAL idt_flush]    ; Allows the C code to call idt_flush().
+[GLOBAL lidt]    ; Allows the C code to call idt_flush().
 
-idt_flush:
+lidt:
     mov eax, [esp+4]  ; Get the pointer to the IDT, passed as a parameter.
     lidt [eax]        ; Load the IDT pointer.
     ret

@@ -78,7 +78,7 @@ typedef struct __attribute__ ((packed)) File_handle
     char* name;
     uint32_t file; //location of loaded file struct in RAM
     uint32_t current_header;
-    uint8_t  ios;
+    uint32_t  ios;
     uint64_t file_location;
     struct File_handle* next;
 }File_handle_t;
