@@ -1,87 +1,127 @@
 #ifndef DESCRIPTORS_H
-#define DESCRIPTOR_H
-#define PIC
+#define DESCRIPTORS_H
+
 #include <common.h>
 #include <stdint.h>
-/*struct gdt_entry_struct
- {
-    uint16_t limit_low;           // The lower 16 bits of the limit.
-    uint16_t base_low;            // The lower 16 bits of the base.
-    uint8_t  base_middle;         // The next 8 bits of the base.
-    uint8_t  access;              // Access flags, determine what ring this segment can be used in.
-    uint8_t  granularity;
-    uint8_t  base_high;           // The last 8 bits of the base.
-    } __attribute__((packed));*/
 
 typedef uint64_t gdt_entry_t;
-
-/*struct gdt_ptr_struct
- {
-    uint16_t limit;               // The upper 16 bits of all selector limits.
-    uint32_t base;                // The address of the first gdt_entry_t struct.
- }
- __attribute__((packed));*/
 
 typedef uint16_t gdt_ptr_t[3];
 
 void init_descriptor_tables();
-/*struct idt_entry_struct
+
+typedef uint64_t idt_entry_t;
+/*
+struct idt_entry_struct
  {
     uint16_t base_lo;             // The lower 16 bits of the address to jump to when this interrupt fires.
     uint16_t sel;                 // Kernel segment selector.
     uint8_t  always0;             // This must always be zero.
     uint8_t  flags;               // More flags. See documentation.
     uint16_t base_hi;             // The upper 16 bits of the address to jump to.
-    } __attribute__((packed));*/
-typedef uint64_t idt_entry_t;
-
-// A struct describing a pointer to an array of interrupt handlers.
-// This is in a format suitable for giving to 'lidt'.
-/*struct idt_ptr_struct
- {
-    uint16_t limit;
-    uint32_t base;                // The address of the first element in our idt_entry_t array.
-    } __attribute__((packed));*/
+ } __attribute__((packed));
+typedef struct idt_entry_struct idt_entry_t;
+*/
 typedef uint16_t idt_ptr_t[3];
 
 //Interrupt handlers
-extern void divByZero_handler();
-extern void debug_handler();
-extern void NMI_handler();
-extern void breakpoint_handler();
-extern void overflow_handler();
-extern void outOfBounds_handler();
-extern void invalidInstr_handler();
-extern void noCoprocessor_handler();
-extern void doubleFault_handler();
-extern void coprocessor_handler();
-extern void badTSS_handler();
-extern void segmentNotPresent_handler();
-extern void stackFault_handler();
-extern void generalProtectionFault_handler();
-extern void pageFault_handler();
-extern void unknownInterrupt_handler();
-extern void coprocessorFault_handler();
-extern void alignmentCheck_handler();
-extern void machineCheck_handler();
-extern void reserved_handler();
+void divByZero_handler();
+void debug_handler();
+void NMI_handler();
+void breakpoint_handler();
+void overflow_handler();
+void outOfBounds_handler();
+void invalidInstr_handler();
+void noCoprocessor_handler();
+void doubleFault_handler();
+void coprocessor_handler();
+void badTSS_handler();
+void segmentNotPresent_handler();
+void stackFault_handler();
+void generalProtectionFault_handler();
+void pageFault_handler();
+void unknownInterrupt_handler();
+void coprocessorFault_handler();
+void alignmentCheck_handler();
+void machineCheck_handler();
+void reserved_handler();
 
-#ifdef PIC
-extern void PIT_handler();
-extern void keyboard_interrupt();
-extern void cascade_handler();//This particular interrupt is never raised
-extern void COM2_handler();
-extern void COM1_handler();
-extern void LPT2_handler();
-extern void FD_handler();
-extern void RTC_handler();
-extern void perpiph1_handler();
-extern void perpiph2_handler();
-extern void perpiph3_handler();
-extern void mouse_handler();
-extern void FPU_handler();
-extern void PHDD_handler();//P -> Primary
-extern void SHDD_handler();//S -> Secondary
-#endif
+//#ifdef PIC
+void PIT_handler();
+void keyboardInterrupt_handler();
+void cascade_handler();//This particular interrupt is never raised
+void COM2_handler();
+void COM1_handler();
+void LPT2_handler();
+void floppyDisk_handler();
+void LPT1_handler();
+void RTC_handler();
+void periph1_handler();
+void periph2_handler();
+void periph3_handler();
+void mouse_handler();
+void FPU_handler();
+void primaryHDD_handler();//P -> Primary
+void secondaryHDD_handler();//S -> Secondary
+//#endif
+
+typedef volatile struct __tss_struct
+{
+    unsigned short   link;
+    unsigned short   link_h;
+
+    unsigned long   esp0;
+    unsigned short   ss0;
+    unsigned short   ss0_h;
+
+    unsigned long   esp1;
+    unsigned short   ss1;
+    unsigned short   ss1_h;
+
+    unsigned long   esp2;
+    unsigned short   ss2;
+    unsigned short   ss2_h;
+
+    unsigned long   cr3;
+    unsigned long   eip;
+    unsigned long   eflags;
+
+    unsigned long   eax;
+    unsigned long   ecx;
+    unsigned long   edx;
+    unsigned long    ebx;
+
+    unsigned long   esp;
+    unsigned long   ebp;
+
+    unsigned long   esi;
+    unsigned long   edi;
+
+    unsigned short   es;
+    unsigned short   es_h;
+
+    unsigned short   cs;
+    unsigned short   cs_h;
+
+    unsigned short   ss;
+    unsigned short   ss_h;
+
+    unsigned short   ds;
+    unsigned short   ds_h;
+
+    unsigned short   fs;
+    unsigned short   fs_h;
+
+    unsigned short   gs;
+    unsigned short   gs_h;
+
+    unsigned short   ldt;
+    unsigned short   ldt_h;
+
+    unsigned short   trap;
+    unsigned short   iomap;
+
+} tss_struct_t;
+
 
 #endif

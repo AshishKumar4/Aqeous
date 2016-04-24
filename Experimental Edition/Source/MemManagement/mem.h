@@ -23,7 +23,7 @@ uint32_t vga;
 
 inline uint32_t Phy_alloc(uint32_t processID); ///Gives frames for pages
 
-uint32_t BlockFinder(uint32_t addr);
+inline void PhyMap_unSet(uint32_t addr);
 
 inline int clearBits(uint32_t map[],uint32_t sz);
 
@@ -51,18 +51,18 @@ uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys);
    General allocation function.
 **/
 uint32_t kmalloc(uint32_t sz);
-task_t* tmalloc(uint32_t sz);
+struct task_t* tmalloc(uint32_t sz);
 uint32_t smalloc(uint32_t sz);
 inline uint32_t Phy_alloc_pg(uint32_t processID);
 
 /**
    General deallocation function.
 **/
-void free(uint32_t* ptr);
-
-uint32_t malloc(uint32_t sz);
+void kfree(uint32_t* ptr);
 
 inline uint32_t pmalloc(uint32_t id);
+
+uint32_t fsalloc(uint32_t sz);
 
 
 #endif // MEM

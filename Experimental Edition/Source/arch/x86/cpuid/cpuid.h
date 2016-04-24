@@ -88,6 +88,8 @@ enum cpuid_requests {
   CPUID_INTELBRANDSTRINGEND,
 };
 
+#define cpuid(in, a, b, c, d) asm volatile("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
+
 static inline void cpuid_(int code, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d);
 static inline int cpuid_string(int code, uint32_t where[4]);
 

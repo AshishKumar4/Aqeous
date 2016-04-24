@@ -1,50 +1,94 @@
 #include "cpuid.h"
 #include "apic.h"
-#define IA32_APIC_BASE_MSR 0x1B
-#define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
-#define IA32_APIC_BASE_MSR_ENABLE 0x800
+#include "sys.h"
 
 bool check_apic()
 {
-   uint32_t eax, edx;
-   cpuid_(1, &eax, &edx);
+   uint32_t eax, ebx, ecx, edx;
+   cpuid(1, eax, ebx, ecx, edx);
    return edx & CPUID_FLAG_APIC;
 }
 
-/* Set the physical address for local APIC registers */
-void cpu_set_apic_base(uintptr_t apic)
+void disable_pic()
 {
-   uint32_t edx = 0;
-   uint32_t eax = (apic & 0xfffff100) | IA32_APIC_BASE_MSR_ENABLE;
-
-#ifdef __PHYSICAL_MEMORY_EXTENSION__
-   edx = (apic >> 32) & 0x0f;
-#endif
-
-   cpu_set_msr(IA32_APIC_BASE_MSR, eax, edx);
+    /* Set OCW1 (interrupt masks) */
+    outb(0x21, 0xff);
+    outb(0xa1, 0xff);
 }
 
-/**
- * Get the physical address of the APIC registers page
- * make sure you map it to virtual memory ;)
- */
-uintptr_t cpu_get_apic_base()
+void init_APIC()
 {
-   uint32_t eax, edx;
-   cpu_get_msr(IA32_APIC_BASE_MSR, &eax, &edx);
+  disable_pic();
+  localapic_write_with_mask(LAPIC_SVR, (1<<8), (1<<8));
+  printf("\nTesting APIC! Local APIC revision: %x Max LVT entry: %x\n",localapic_read(LAPIC_VER)&&0xff, ((localapic_read(LAPIC_VER)>>16) && 0xff)+1);
+  localapic_write(LAPIC_ERROR, 0x1F); /// 0x1F: temporary vector (all other bits: 0)
+  localapic_write(LAPIC_TPR, 0);
 
-#ifdef __PHYSICAL_MEMORY_EXTENSION__
-   return (eax & 0xfffff000) | ((edx & 0x0f) << 32);
-#else
-   return (eax & 0xfffff000);
-#endif
+  localapic_write(LAPIC_DFR, 0xffffffff);
+  localapic_write(LAPIC_LDR, 0x01000000);
+//*/
+  //ioapic_set_irq(14, 0x0020, 14);
+  //while(1);
 }
 
-void enable_apic()
+uint32_t ioapic_read(uint32_t reg) //IO Apic
 {
-    /* Hardware enable the Local APIC if it wasn't enabled */
-    cpu_set_apic_base(cpuGetAPICBase());
+   uint32_t volatile *ioapic = (uint32_t volatile *)APIC_IO_BASE;
+   ioapic[0] = (reg & 0xff);
+   return ioapic[4];
+}
 
-    /* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
-    write_reg(0xF0, ReadRegister(0xF0) | 0x100);
+void ioapic_write(uint32_t reg, uint32_t value) //IO Apic
+{
+   uint32_t volatile *ioapic = (uint32_t volatile *)APIC_IO_BASE;
+   ioapic[0] = (reg & 0xff);
+   ioapic[4] = value;
+}
+
+uint32_t localapic_read(uint32_t reg)
+{
+  uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
+  return *localapic;
+}
+
+void localapic_write(uint32_t reg, uint32_t value)
+{
+  uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
+  *localapic = value;
+}
+
+void localapic_write_with_mask(uint32_t reg, uint32_t mask, uint32_t value)
+{
+  uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
+  *localapic &= ~mask;
+  *localapic |= value;
+}
+
+void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector)
+{
+  const uint32_t low_index = 0x10 + irq*2;
+  const uint32_t high_index = 0x10 + irq*2 + 1;
+
+  uint32_t high = ioapic_read(high_index);
+  // set APIC ID
+  high &= ~0xff000000;
+  high |= apic_id << 24;
+  ioapic_write(high_index, high);
+
+  uint32_t low = ioapic_read(low_index);
+
+  // unmask the IRQ
+  low &= ~(1<<16);
+
+  // set to physical delivery mode
+  low &= ~(1<<11);
+
+  // set to fixed delivery mode
+  low &= ~0x700;
+
+  // set delivery vector
+  low &= ~0xff;
+  low |= vector;
+
+  ioapic_write(low_index, low);
 }

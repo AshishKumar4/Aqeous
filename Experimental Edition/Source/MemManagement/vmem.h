@@ -10,25 +10,22 @@ uint32_t maxmem=0;
 uint32_t memAvailable=0;
 uint16_t blockID=10;
 
-typedef struct __attribute__ ((packed)) __attribute__ ((aligned (8))) PageFrameMap
+typedef struct __attribute__ ((packed)) __attribute__ ((aligned (8))) MemMap
 {
-    uint32_t used;
-    uint32_t frame;
-}FrameMap_t;
-
-FrameMap_t* StartFrame;
-
-typedef struct __attribute__ ((packed)) __attribute__ ((aligned (32))) MemMap
-{
-    uint32_t id;
-    uint32_t map[4];
-    uint32_t addr;
+    uint16_t id;
     uint16_t used;
-    uint16_t reserved;
+    //uint16_t reserved;
     page_t* page;
 }MemMap_t;
 
 MemMap_t *Mblock,*lastBlock,*lastBlockAddr,mblock,*Kblock;
+
+/*obsolete*/
+typedef  struct __attribute__((packed)) memstrip
+{
+    uint16_t magic;
+    uint16_t size;
+}strip_t;
 
 typedef struct memory_region
 {
@@ -51,7 +48,10 @@ char* strMemoryTypes[] = {
 	"ACPI NVS Memory"		//memory_region.type==3
 };
 
-uint32_t VMem_Alloc(uint32_t sz, int align, uint32_t *phys,int purpose,int packed,int processId);
-inline uint32_t BlockFinder(uint32_t addr); /// returns the corresponding memory block for a given physical address
+uint32_t VMem_Alloc(uint32_t sz, int align, int processId);
+inline MemMap_t* BlockFinder(uint32_t addr); /// returns the corresponding memory block for a given physical address
 
+uint32_t abc1(uint32_t sz, int align, int processId);
+uint32_t malloc(uint32_t sz);
+inline uint32_t clearBlks(uint32_t* addr, uint32_t szBlks);
 #endif // VMEM_h

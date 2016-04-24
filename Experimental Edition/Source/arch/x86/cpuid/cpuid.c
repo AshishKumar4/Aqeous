@@ -1,16 +1,5 @@
 #include "cpuid.h"
 #include "stdio.h"
-/** issue a single request to CPUID. Fits 'intel features', for instance
- *  note that even if only "eax" and "edx" are of interest, other registers
- *  will be modified by the operation, so we need to tell the compiler about it.
- */
-
- #define cpuid(in, a, b, c, d) asm volatile("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
-
-static inline void cpuid_(int code, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d)
-{
-  asm volatile("cpuid":"=a"(*a),"=b"(*b),"=c"(*c),"=d"(*d):"a"(code):"ecx","ebx");
-}
 
 /** issue a complete request, storing general registers output as a string
  */
@@ -27,10 +16,11 @@ void printregs(int eax, int ebx, int ecx, int edx);
 
 /* Simply call this function detect_cpu(); */
 int detect_cpu(void)
-{ /* or main() if your trying to port this as an independant application */
+{
 	unsigned long ebx, unused;
 	cpuid(0, unused, ebx, unused, unused);
-	switch(ebx) {
+	switch(ebx)
+  {
 		case 0x756e6547: /* Intel Magic Code */
 		do_intel();
 		break;

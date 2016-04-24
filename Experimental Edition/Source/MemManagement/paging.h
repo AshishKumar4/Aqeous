@@ -25,7 +25,7 @@ enum PAGE_PTE_FLAGS //Pages
 };
 
 //! page table entry
-typedef uint32_t table_t;
+typedef uint_fast32_t table_t;
 
 enum PAGE_PDE_FLAGS
 {
@@ -46,7 +46,7 @@ enum PAGE_PDE_FLAGS
 };
 
 //! a page directery entry
-typedef uint32_t page_t;
+typedef uint_fast32_t page_t;
 
 //! i86 architecture defines 1024 entries per table--do not change
 #define PAGES_PER_TABLE 1024
