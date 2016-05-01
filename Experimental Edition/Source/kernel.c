@@ -104,6 +104,10 @@ void kernel_main();
 
 tss_struct_t *TSS;
 
+extern void get_eax();
+extern void reload_eax();
+extern uint32_t cur_eax;
+
 void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	 //Kernel stack located at 200th mb to 250th mb
@@ -193,6 +197,14 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		 kmalloc(40);
 	 }//*/
 //	 dbug();
+		cur_eax = 4284;
+		reload_eax();
+		get_eax();
+		printf("\n Current eax: %x ",cur_eax);
+		reload_eax();
+		get_eax();
+		printf("\n Current eax: %x ",cur_eax);
+
 }
 
 void kernel_start()

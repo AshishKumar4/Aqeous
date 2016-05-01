@@ -229,7 +229,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
 }
 
 void kfree(uint32_t* ptr)
-{/*
+{
   uint32_t offset = ((uint32_t)ptr)%4096;
   page_t* page = get_page(ptr,0,system_dir);
   uint32_t frame = PAGE_GET_PHYSICAL_ADDRESS(page); ///Physical address
@@ -318,7 +318,7 @@ void kfree(uint32_t* ptr)
         return;
       }
     }
-  }*/
+  }
 }
 
 uint32_t kmalloc_a(uint32_t sz)

@@ -1,4 +1,4 @@
-#include "task.h"
+#include "tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "mem.h"
@@ -10,16 +10,22 @@ void Scheduler_init()
 {
 }
 
+//TODO: Change the Scheduler Algorithm to make it switch  FULL CONTEXT only if the new thread
+//  is not from the same parent process as the old one. Else, do the things as we did normally
 void Scheduler()
 {
   uint_fast32_t* _q=top_queue; ///Always start searching from the top most available queue
-  if(reached_bottom)  ///Already in the lowest queue?
+  if(reached_bottom)  ///Already in the lowest queue? As here, tasks are of low priority, we dont need it to be fast :D
   {
-    uint_fast32_t* tmp=_q+reached_bottom; ///round robin manner
-    current_task=*tmp;
-    if(reached_bottom<1023)
-      ++reached_bottom;
-    else reached_bottom=1;
+    uint_fast32_t* tmp;
+    if(bottom_task<*_q)
+      ++bottom_task;
+    else bottom_task=1;
+    back:
+    tmp=_q+bottom_task; ///round robin manner
+    if(*tmp)
+      current_task=*tmp;
+    else goto back;
   }
   else if(*_q==1) ///Only one task in the queue??
   {
@@ -48,13 +54,14 @@ void Scheduler()
     //top_queue=_q;
   }
 }
-//TODO: REMOVE SAVE_ESP 
-void save_esp() ///USED BY switcher() function in tasking.asm
-{
-    old_task->esp = old_esp;
-    new_esp = current_task->esp;
-    new_eip = current_task->eip;
-    new_cs = current_task->cs;
-    new_eflags = current_task->eflags;
-    new_seg = current_task->segment;
-}
+//TODO: REMOVE SAVE_ESP
+
+//void save_esp() ///USED BY switcher() function in tasking.asm
+//{
+    //old_task->esp = old_esp;
+  //  new_esp = current_task->esp;
+    //new_eip = current_task->eip;
+  //  new_cs = current_task->cs;
+  //  new_eflags = current_task->eflags;
+  //  new_seg = current_task->segment;
+//}

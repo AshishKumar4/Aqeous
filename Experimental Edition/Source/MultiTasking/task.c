@@ -1,9 +1,10 @@
-#include "task.h"
+#include "tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "mem.h"
 #include "vmem.h"
 #include "paging.h"
+#include "process.h"
 
 void create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Process_t* process)  /// Create a New Task for a given Process
 {
@@ -15,18 +16,22 @@ void create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Pro
   process->last_task_entry->next = New_task_entry;
   process->last_task_entry = New_task_entry;
 
-  New_task->pgdir = process->pgdir;
   New_task->priority = priority;
   New_task->eip = (uint_fast32_t)func;
   uint32_t* stack = smalloc(4096); ///TODO:Make this stack take memory alloted to process itself!!!
-  New_task->stack = stack;
+  //New_task->stack = stack;
   New_task->name = name;
   New_task->id = process->processID;
 
   memset((void*)stack,0,4096);
-  stack=(uint32_t*)stack+4096;
+  stack+=1023;
 
   uint32_t base=(uint32_t)stack;
+
+  *--stack = flags; //EFLAGS
+  *--stack = 0x8; //cs
+  *--stack = func; //eip
+
   *--stack = 0; // eax
   *--stack = 0; // ecx
   *--stack = 0; // edx;
@@ -35,7 +40,6 @@ void create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Pro
   *--stack = base; //ebp
   *--stack = 0; //esi
   *--stack = 0; //edi
-//  *--stack = 0x10; // eax
 
   New_task->esp = (uint32_t)stack;
   New_task->cs = 0x8;

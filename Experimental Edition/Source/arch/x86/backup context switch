@@ -1,0 +1,113 @@
+section .bss
+
+global current_task
+current_task: RESD 1
+
+global old_task
+old_task: RESD 1
+
+global new_process
+new_process: RESD 1
+
+global old_process
+old_process: RESD 1
+
+eax_backup: RESD 1
+ebx_backup: RESD 1
+ecx_backup: RESD 1
+edx_backup: RESD 1
+
+global cur_eax
+cur_eax: RESD 1
+
+section .text
+
+[GLOBAL switcher]
+[EXTERN Scheduler]
+
+switcher:
+    mov [eax_backup], eax             ; IMPORTANT because there values are altered in this function
+    mov [ebx_backup], ebx
+    mov [ecx_backup], ecx
+    mov [edx_backup], edx
+
+
+    mov eax, [current_task]
+
+    pop dword [eax]                   ; SAVE ESP, CS, EFLAGS
+    pop dword [eax+4]
+    pop dword [eax+8]
+
+    mov [old_task], eax
+
+
+    call Scheduler                    ; call our scheduler
+
+
+    mov eax, [old_task]
+    mov ebx, [current_task]
+
+    mov eax, [eax+8]                  ; compare the processID of old task and new task.
+    mov ebx, [ebx+8]
+    cmp eax, ebx
+    je context_switch2                ; If both tasks are of same process, No need to do full context switch
+
+
+    mov eax, [eax_backup]             ; IMPORTANT because there values are altered in this function
+    mov ebx, [ebx_backup]
+    mov ecx, [ecx_backup]
+    mov edx, [edx_backup]
+
+
+    pusha                             ; Else, Complete context switch
+
+    mov eax, [old_process]
+    mov ebx, [new_process]
+
+
+    mov [eax+4], esp                  ; TODO: Find out shall each thread should have a seperate stack? if so,
+                                      ; replace old_process with old_task
+
+                                      ; TODO: SWITCH TO New Process's page directory
+
+    mov esp, [ebx+4]
+
+
+    popa
+
+    mov eax, [current_task]
+
+    push dword [eax+8]
+    push dword [eax+4]
+    push dword [eax]
+
+    mov dx, 0x20
+    mov ax, 0x20
+    out dx, ax
+
+    iret
+
+context_switch2:
+    mov eax, [current_task]
+
+    push dword [eax+8]        ; Just load the new EIP, EFLAGS and CS
+    push dword [eax+4]
+    push dword [eax]
+
+    mov dx, 0x20
+    mov ax, 0x20
+    out dx, ax
+
+    iret;
+
+[GLOBAL get_eax]
+
+get_eax:
+    mov [cur_eax], eax
+    ret
+
+[GLOBAL reload_eax]
+
+reload_eax:
+    mov eax, [cur_eax]
+    ret

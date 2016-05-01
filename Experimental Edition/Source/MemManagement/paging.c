@@ -48,8 +48,10 @@ inline pdirectory* system_dir_maker()
 inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a give pdirectory
 {
     map(0,8*1024*1024,dir);
+    map(50331648,5*1024*1024,dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-    Map_non_identity(8*1024*1024,0xC0000000,92*1024*1024,dir);
+    Map_non_identity(8*1024*1024,0xC0000000,41*1024*1024,dir);
+    Map_non_identity(50331648+(5*1024*1024),0xC0000000+(41*1024*1024),45*1024*1024,dir);
     //while(1);
 }
 
