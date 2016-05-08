@@ -45,13 +45,14 @@ inline pdirectory* system_dir_maker()
     return dir;
 }
 
-inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a give pdirectory
+inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdirectory
 {
     map(0,8*1024*1024,dir);
-    map(50331648,5*1024*1024,dir);
+    map(50331648,12*1024*1024,dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-    Map_non_identity(8*1024*1024,0xC0000000,41*1024*1024,dir);
-    Map_non_identity(50331648+(5*1024*1024),0xC0000000+(41*1024*1024),45*1024*1024,dir);
+    Map_non_identity(8*1024*1024,0xC0000000,40*1024*1024,dir);
+    Map_non_identity(50331648+(12*1024*1024),0xC0000000+(40*1024*1024),40*1024*1024,dir);
+    map(0xFF000000,0xFFFFF000-0xFF000000,dir);
     //while(1);
 }
 
@@ -127,7 +128,7 @@ void free_page (page_t* e)
 {
 	void* p = (void*)pt_entry_pfn (*e);
 	if (p)
-		free (p);
+		free(p);
 
 	pt_entry_del_attrib (e, I86_PTE_PRESENT);
 }

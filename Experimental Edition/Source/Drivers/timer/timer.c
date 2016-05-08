@@ -2,7 +2,6 @@
 #include "console.h"
 #include "sys.h"
 
-uint32_t tick = 0;
 
 void timer_idle_task()
 {
@@ -15,7 +14,8 @@ uint32_t timer_task=(uint32_t)timer_idle_task;
 
 void timer_stub()
 {
-  asm volatile("jmp *%0"::"r"(timer_task));
+  //asm volatile("jmp *%0"::"r"(timer_task));
+  ++tick;
 }
 
 void timer_callback()
@@ -42,33 +42,33 @@ void timer_callback()
      asm volatile("sti");
     //register_interrupt_handler(IRQ8,timer_task);
  }
-/*
+
  void apic_start_timer()
  {
         // Tell APIC timer to use divider 16
-        write(APIC_REGISTER_TIMER_DIV, 0x3);
+        localapic_write(LAPIC_TDCR, 0x3);
 
         // Prepare the PIT to sleep for 10ms (10000µs)
-        pit_prepare_sleep(10000);
+        //pit_prepare_sleep(10000);
 
         // Set APIC init counter to -1
-        write(APIC_REGISTER_TIMER_INITCNT, 0xFFFFFFFF);
+        localapic_write(LAPIC_TICR, 0xFFFFFFFF);
 
         // Perform PIT-supported sleep
-        pit_perform_sleep();
-
+        //pit_perform_sleep();
+      //  for(int i=0; i<1024*1024*1024*3; i++);
         // Stop the APIC timer
-        write(APIC_REGISTER_LVT_TIMER, APIC_LVT_INT_MASKED);
+        localapic_write(LAPIC_TIMER, 0x10000);
 
         // Now we know how often the APIC timer has ticked in 10ms
-        uint32_t ticksIn10ms = 0xFFFFFFFF - read(APIC_REGISTER_TIMER_CURRCNT);
+      //  uint32_t ticksIn10ms = 0xFFFFFFFF - localapic_read(LAPIC_TCCR);
 
         // Start timer as periodic on IRQ 0, divider 16, with the number of ticks we counted
-        write(APIC_REGISTER_LVT_TIMER, 32 | APIC_LVT_TIMER_MODE_PERIODIC);
-        write(APIC_REGISTER_TIMER_DIV, 0x3);
-        write(APIC_REGISTER_TIMER_INITCNT, ticksIn10ms);
+        localapic_write(LAPIC_TIMER, 32 | 0x20000);
+        localapic_write(LAPIC_TDCR, 0x3);
+        localapic_write(LAPIC_TICR, 1000);
 }
-*/
+
  /**PIT TIMER, working**/
 void init_timer(uint32_t frequency)
  {

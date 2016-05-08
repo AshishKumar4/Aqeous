@@ -4,6 +4,7 @@
 #define CPUID_FLAG_APIC 1<<9
 #define APIC_LOCAL_BASE 0xfee00000
 #define APIC_IO_BASE 0xfec00000 //ONLY FOR QEMU AND BOCHS
+uint32_t counter=0;
 // ------------------------------------------------------------------------------------------------
 // Local APIC Registers
 #define LAPIC_ID                        0x0020  // Local APIC ID

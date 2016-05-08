@@ -9,6 +9,20 @@ bool check_apic()
    return edx & CPUID_FLAG_APIC;
 }
 
+void enable_pic()
+{
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+    outb(0x21, 0x20);
+    outb(0xA1, 0x28);
+    outb(0x21, 0x04);
+    outb(0xA1, 0x02);
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0);
+}
+
 void disable_pic()
 {
     /* Set OCW1 (interrupt masks) */
@@ -19,16 +33,18 @@ void disable_pic()
 void init_APIC()
 {
   disable_pic();
-  localapic_write_with_mask(LAPIC_SVR, (1<<8), (1<<8));
+  //localapic_write_with_mask(LAPIC_SVR, (1<<8), (1<<8));
   printf("\nTesting APIC! Local APIC revision: %x Max LVT entry: %x\n",localapic_read(LAPIC_VER)&&0xff, ((localapic_read(LAPIC_VER)>>16) && 0xff)+1);
   localapic_write(LAPIC_ERROR, 0x1F); /// 0x1F: temporary vector (all other bits: 0)
   localapic_write(LAPIC_TPR, 0);
 
   localapic_write(LAPIC_DFR, 0xffffffff);
   localapic_write(LAPIC_LDR, 0x01000000);
+  localapic_write(LAPIC_SVR, 0x100|0xff);
 //*/
   //ioapic_set_irq(14, 0x0020, 14);
   //while(1);
+  //enable_pic();
 }
 
 uint32_t ioapic_read(uint32_t reg) //IO Apic

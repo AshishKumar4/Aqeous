@@ -1,5 +1,6 @@
 #include <pci.h>
 #include <mem.h>
+#include <vmem.h>
 #include <sys.h>
 
 #define PCI_CONFIG_ADDRESS 0xCF8
@@ -213,7 +214,7 @@ PciDevice_t checkDevice(uint8_t bus, uint8_t device)
 				++device;
 			 if(pcs->VendorId == 0xFFFF)
 			 {
-				 free((uint32_t*)pcs);
+				 kfree((uint32_t*)pcs);
 			 }
 			 else
 		   {

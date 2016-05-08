@@ -8,41 +8,42 @@
 #include "paging.h"
 #include "stdint.h"
 
-#define QUEUE_START 50331648
-#define LAST_QUEUE 50413568
+#define QUEUE_START 209715200
+#define LAST_QUEUE 209797120
 #define TOTAL_QUEUES 20
 
-uint_fast32_t* top_queue=QUEUE_START,reached_bottom=0,bottom_task=1;
+uint32_t* top_queue=(uint32_t*)LAST_QUEUE;
+uint32_t reached_bottom=0,bottom_task=1;
 
 // This structure defines a 'task' - a process.
-struct __attribute__((packed)) task_t
+typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
 {
-    uint_fast32_t eip;
-    uint_fast32_t cs;
-    uint_fast32_t eflags;
-    uint_fast32_t esp;
-    uint32_t id;                // Process ID.
-    uint32_t* process; //Parent Process Address
+    uint32_t esp;
+    //uint32_t eip;
+    //uint32_t cs;
+    //uint32_t eflags;
+    uint32_t pId;                // Process ID.
+    uint32_t process; //Parent Process Address
     uint16_t priority;
     uint16_t active;
     char* name; //Parent Process name
     //struct task *next;     // The next task in a linked list.
-};
+}task_t;
 
-typedef struct __attribute__((packed)) task_table
-{
-    struct task_t task;
-    struct task_table* next;
-}task_table_t;
+task_t* Idle_task;
 
+#include <process.h>
 
-//struct task_t* current_task,*old_task;
+//task_t* current_task,*old_task;
 
 extern uint32_t current_task;
 extern uint32_t old_task;
 extern uint32_t old_process;
 extern uint32_t new_process;
+extern void Scheduler_init();
 
-void Scheduler();
+//void Activate_task(task_table_t* task_entry);
+void Activate_task_direct(task_t* task);
+task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flags, Process_t* process);
 
 #endif

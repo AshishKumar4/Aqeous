@@ -1,4 +1,4 @@
-#include "task.h"
+#include "tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "mem.h"
@@ -6,7 +6,29 @@
 #include "paging.h"
 #include "process.h"
 
-void create_process(char* name, uint32_t code, uint32_t priority, uint32_t flags)  /// Create a New Task for a given Process
-{
+uint32_t pidcounter = 1;
 
+Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process_t* parent)  /// Create a New Task for a given Process
+{
+  Switch_to_system_dir();
+  Process_t* New_Proc = (Process_t*)tmalloc(sizeof(Process_t));
+  New_Proc->priority = priority;
+
+  New_Proc->code = code;
+
+  New_Proc->pgdir = (uint32_t)pgdir_maker();
+  Kernel_Mapper((pdirectory*)New_Proc->pgdir);
+
+  strcpy(New_Proc->name,name);
+
+  New_Proc->total_tasks = 0;
+
+  New_Proc->parent = parent;
+
+  New_Proc->processID = pidcounter;
+  pidcounter++;
+
+  Switch_back_from_System();
+
+  return New_Proc;
 }

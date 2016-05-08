@@ -2,7 +2,7 @@
 #define AHCI_h
 
 #include <common.h>
-#include <mem.h>
+//#include <mem.h>
 #include <ahci_device_list.h>
 #include <ata.h>
 #include <pci.h>

@@ -19,6 +19,9 @@
 #include "vmem.c"
 #include "keyboard.c"
 #include "task.c"
+#include "tasking.c"
+#include "process.c"
+#include "hpet.c"
 #include "fs.c"
 #include "fs_alloc.c"
 #include "Scheduler.c"
@@ -34,15 +37,15 @@ void dbug()
 	for(int i=0;i<4;i++)
 	{
 	//	printf("\n\t\tvar %x: ",i+1);
-		a[i]=40;//getint();
+		a[i]=4096;//getint();
 	}
-	uint32_t *temp1=(uint32_t*)kmalloc(a[0]),*temp2=temp1;
+	uint32_t *temp1=(uint32_t*)malloc(40),*temp2=temp1;
 	*temp1=4284;
 	//kmalloc(4096);
-	uint32_t *test1=(uint32_t*)kmalloc(40),*test2=test1;
-	uint32_t *test3=(uint32_t*)kmalloc(a[2]);
-	uint32_t *test4=(uint32_t*)kmalloc(a[3]);
-	uint32_t *test5=(uint32_t*)kmalloc(128);
+	uint32_t *test1=(uint32_t*)malloc(40),*test2=test1;
+	uint32_t *test3=(uint32_t*)malloc(8192);
+	uint32_t *test4=(uint32_t*)malloc(a[3]);
+	uint32_t *test5=(uint32_t*)malloc(128);
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
 	printf("\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<8;i++)
@@ -76,26 +79,27 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-//	free(test1);
-	kfree(temp2);
-	kfree(test3);
-
+//	free(test);
+	free(temp2);
+	free(test3);
+/*
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*temp1);
 		++temp1;
-	}///*
+	}///*/
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*test1);
 		++test1;
 	}//*/
-	printf(" %x %x ",*test3,*test4);
+//	printf(" %x %x ",*test3,*test4);
 	printf(" If you didnt saw any numbers above, It worked!!!\n");
-	uint32_t *tmp1=(uint32_t*)kmalloc(40),*tmp2=tmp1;
+	uint32_t *tmp1=(uint32_t*)malloc(40),*tmp2=tmp1;
 	//kmalloc(4096);
-	uint32_t *tst1=(uint32_t*)kmalloc(40),*tst2=tst1;
-	printf("\tLocation of var 1: %x, var 2: %x \n",tmp1,tst1);
+	uint32_t *tst1=(uint32_t*)malloc(4096),*tst2=tst1;
+
+	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,tst1,malloc(8192));
 }
 
 uint32_t initial_eip;
@@ -121,6 +125,10 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
     if(!acpiEnable())
         printf("\nACPI Initialized\n");
     else printf("\nACPI CANT BE INITIALIZED\n");
+		init_hpet();
+		//init_timer(1000);
+		//while(1);
+
 		mouseinit();
 		printf("\nMouse Drivers initialized\n");
 		keyboard_init();
@@ -141,7 +149,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
         mmap_info++;
     }
 		printf("\nInitializing Memory Manager!\n");
-    mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;*/
+    mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 		max_mem=maxmem*1024;
     Mapper();
 		printf("\nMemory block lists prepared!\n");
@@ -165,10 +173,10 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 
  	 	detect_cpu();
 		//initTasking();
-		asm volatile("sti");
+	//	asm volatile("sti");
 
-		init_cmos();
-		printf("\nCMOS Clock Initialized\n");
+	//	init_cmos();
+	//	printf("\nCMOS Clock Initialized\n");
 
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
@@ -184,18 +192,35 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	 printf("\n location of kernel_main: %x ",kernel_main);
 	 printf("sizeof Directory_t %x, File_t %x",sizeof(Directory_t),sizeof(File_t));
 
-	 Init_fs();
-	 printf("\nsize of task_t: %x",sizeof(struct task_t));
-	 printf("\nsize of File_handle_t: %x",sizeof(File_handle_t));
+//	 Init_fs();
+	 printf("\nsize of task_t: %x",sizeof(task_t));
+	 printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
 	 if(cpuHasMSR()) printf("\nCPU has MSR");//*/
-	// switch_pdirectory(main_dir);
+	 //switch_pdirectory(main_dir);
+
+	 printf("\n\nInitializing MultiThreading System");
+	 asm volatile("cli");
+	 init_multitasking();
+	 for(int i=0; i<1024*1024*1024;i++)
+	 	for(int j=0; j<1000; j++);
+	 //enable_pic();
+	 //init_timer(20000);
+	 //while(1);
+	 asm volatile("sti");
+	 while(1)
+	 {
+		 //
+		 asm volatile("cli");
+		 //printf(" idling");
+		 asm volatile("sti");
+	 }
 //
 /*
 	 printf(" %x",3|0x400);
 	 for(int i=0; i<40960; i++)
 	 {
 		 kmalloc(40);
-	 }//*/
+	 }//
 //	 dbug();
 		cur_eax = 4284;
 		reload_eax();
@@ -203,8 +228,8 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		printf("\n Current eax: %x ",cur_eax);
 		reload_eax();
 		get_eax();
-		printf("\n Current eax: %x ",cur_eax);
-
+		printf("\n Current eax: %x ",cur_eax);*/
+	//	dbug();
 }
 
 void kernel_start()
@@ -212,7 +237,7 @@ void kernel_start()
 }
 
 void kernel_main()
-{
+{/*
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
@@ -220,22 +245,16 @@ void kernel_main()
     {
 			//	asm volatile("cli");
 				printf("\n%s>",curr_dir.full_name);
-			  /*uint32_t esp=0;
-			  asm volatile("mov %%esp, %0":"=r"(esp)::"memory");
-				IOLock(IRQ1);
-				taskSleep();
-				asm volatile("cli");
-				printf("abc");*/
 				getline(inst);
 				printf(inst);
-				flg=console_manager(inst);//*/
+				flg=console_manager(inst);
 			//	asm volatile("sti");
     }
 		while(1)
 		{
 			Mouse_Plot(mousex,mousey);
-			DBuff();//*/
-		}
+			DBuff();
+		}*/
 }
 
 uint8_t console_manager(char *inst)

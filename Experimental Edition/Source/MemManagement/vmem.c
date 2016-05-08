@@ -11,13 +11,13 @@ inline MemMap_t* BlockFinder(uint32_t addr) /// returns the corresponding memory
     addr/=4096;
     Block=(MemMap_t*)((uint32_t)Mblock + sizeof(MemMap_t)*(addr));
     Block++; //there was an offset in blocks from the start; first block is at Mblock+sizeof(MemMap_t)
-    return (uint32_t)Block;
+    return Block;
 }
 
 inline uint32_t clearBlks(uint32_t* addr, uint32_t szBlks)
 {
     uint_fast32_t counter = 0, strips = 0;
-    uint16_t *last_strip = addr + 1023;
+    uint16_t *last_strip = (uint16_t*)(addr + 1023);
     uint32_t tmp = 0;
     for(int i=0; i<1024; i++, ++addr)
     {
@@ -34,7 +34,7 @@ inline uint32_t clearBlks(uint32_t* addr, uint32_t szBlks)
         tmp = i;
         counter = 0;
       }
-      else if(strips == *last_strip && 1023-i > szBlks)
+      else if(strips == *last_strip && 1023-(uint32_t)i > szBlks)
       {
         return i;
       }
@@ -66,21 +66,21 @@ void Mapper()
             if(i>maxmem/4096)
             {
               tempBlock2->used=4096;
-              ptr=&tempBlock2->id;
+              ptr=(uint8_t*)&tempBlock2->id;
               ptr++;
               *ptr=1;
             }
             else if(mmap_info)
             {
               tempBlock2->used=(mmap_info->type-1)*4096;
-              ptr=&tempBlock2->id;
+              ptr=(uint8_t*)&tempBlock2->id;
               ptr++;
               *ptr=mmap_info->type-1;
             }
             else
             {
               tempBlock2->used=4096;
-              ptr=&tempBlock2->id;
+              ptr=(uint8_t*)&tempBlock2->id;
               ptr++;
               *ptr=1;
             }/*
@@ -103,7 +103,7 @@ void Mapper()
         tempBlock2->used=4096;
         tempBlock2++;
     }
-    lastBlockAddr = 24*1024*1024;
+    lastBlockAddr = (uint32_t*)(24*1024*1024);
     Kblock=(MemMap_t*)(lastBlockAddr+sizeof(mblock));
     //printf(" a%x",BlockFinder(30*1024*1024)->used);
   //  while(1);
@@ -118,6 +118,8 @@ void bitmap_init()
     {
       if(i<7*1024) ///used
         *ptr=0xFFFFFFFF;
+      else if(i>12000&&i<15000)
+        *ptr=0xFFFFFFFF;
       else if(tmp->used)
       {
         *ptr=tmp->id;
@@ -127,6 +129,7 @@ void bitmap_init()
       ptr++;
       tmp++;
     }
+
 }
 
 uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
@@ -141,8 +144,8 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
     else
     {
       sz4=sz/4;
-      sz4++;
-      sz=sz*4;
+      //sz4++;
+      //sz=sz*4;
     }
     ptable* table;
     page_t* page;
@@ -180,7 +183,7 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
               uint32_t virt_addr=(i*4096*1024)+((j-temp+1)*4096); ///i=table offset, j=page offset
               for(uint32_t k=0;k<temp;k++)
               {
-                phy_mem=Phy_alloc(2)*4096;
+                phy_mem=Phy_alloc(processId)*4096;
                 //pt_entry_set_frame ( page, phy_mem);
                 *page = phy_mem | 1027 | CUSTOM_PTE_AVAIL_2;
                 block=BlockFinder(phy_mem);
@@ -192,15 +195,15 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
               }
               if(tsz4)
               {
-                phy_mem=Phy_alloc(2)*4096;
+                phy_mem=Phy_alloc(processId)*4096;
                 *page = phy_mem | 1027;
                 block=BlockFinder(phy_mem);
                 block->page=page;
                 block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
                 block->used=(tsz4+1)*4;
-                uint32_t* strip = phy_mem + tsz4*4;
+                uint32_t* strip = (uint32_t*)(phy_mem + (tsz4*4));
                 *strip = 42847 | (tsz4 << 16);
-                strip = phy_mem + 4092;
+                strip = (uint32_t*)(phy_mem + 4092);
                 *strip = (1&0xffff) | (42847 << 16);
               }
               blockID++;
@@ -229,15 +232,15 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
           page=&table->m_entries[j];
           if(!*page)//(!(*page & CUSTOM_PTE_AVAIL_1)) //The whole page is unused, so its not been mapped yet
           {
-            phy_mem=Phy_alloc(2)*4096;
+            phy_mem=Phy_alloc(processId)*4096;
             *page = phy_mem | 1027;
             block=BlockFinder(phy_mem);
             block->page=page;
             block->id=(curr_pgdir.ID & 0xff) | (1<<8);
             block->used=(sz4+1)*4;
-            uint32_t* strip = phy_mem + sz4*4;
+            uint32_t* strip = (uint32_t*)(phy_mem + (sz4*4));
             *strip = (42847&0xFFFF) | (sz4 << 16);
-            strip = phy_mem + 4092;
+            strip = (uint32_t*)(phy_mem + 4092);
             *strip = (1&0xffff) | (42847 << 16);
             Switch_back_from_System();
             return (i*4096*1024)+(j*4096);
@@ -248,12 +251,12 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
             block=BlockFinder(phy_mem);
             if(block->used<=(4092-(sz4*4)))
             {
-              clrBlks=clearBlks(phy_mem,sz4+1);
+              clrBlks=clearBlks((uint32_t*)phy_mem,sz4+1);
               if(clrBlks>=0)
               {
-                uint32_t* strip = phy_mem + (sz4*4) + (clrBlks*4);
+                uint32_t* strip = (uint32_t*)(phy_mem + (sz4*4) + (clrBlks*4));
                 *strip = (42847&0xFFFF) | (sz4 << 16);
-                uint16_t* last_strip = phy_mem + 4092;
+                uint16_t* last_strip = (uint16_t*)(phy_mem + 4092);
                 ++*last_strip;
                 block->used+=sz4*4;
                 if(block->used > 4088) //block already full, no space
@@ -275,16 +278,15 @@ void free(uint32_t* ptr)
 {
     Switch_to_system_dir();
     uint32_t offset = ((uint32_t)ptr)%4096;
-    page_t* page = get_page(ptr,0,_prev_directory);
+    page_t* page = get_page((uint32_t)ptr,0,_prev_directory);
     uint32_t frame = PAGE_GET_PHYSICAL_ADDRESS(page); ///Physical address
     uint32_t phy_addr = frame + offset;
-    uint16_t* last_strip = frame + 4092;
+    uint16_t* last_strip = (uint16_t*)(frame + 4092);
     ++last_strip;
-    printf("\nP%x",last_strip);
     MemMap_t* Block = BlockFinder(frame);
     if(*last_strip == 42847) //the block isnt used solely for one allocation
     {
-      strip_t* strip = phy_addr;
+      strip_t* strip = (strip_t*)phy_addr;
       for(int i=0;;i++)
       {
         if(strip->magic == 42847)
@@ -323,7 +325,7 @@ void free(uint32_t* ptr)
           PhyMap_unSet(frame);
           ++page;
           frame = PAGE_GET_PHYSICAL_ADDRESS(page);
-          last_strip = frame + 4092;
+          last_strip = (uint16_t*)(frame + 4092);
           ++last_strip;
           blk->id = 0;
           blk->used = 0;
@@ -332,9 +334,8 @@ void free(uint32_t* ptr)
         }
         else if(blk->id == id)
         {
-          printf("xb");
           phy_addr = frame;
-          strip_t* strip = phy_addr;
+          strip_t* strip = (strip_t*)phy_addr;
           for(int i=0;;i++)
           {
             if(strip->magic == 42847)
@@ -371,72 +372,5 @@ void free(uint32_t* ptr)
 
 uint32_t malloc(uint32_t sz)
 {
-    return VMem_Alloc(sz, 0, 0);
-}
-
-uint32_t abc1(uint32_t sz, int align, int processId)
-{
-  pdirectory* dir=_cur_directory;
-  Switch_to_system_dir();
-  uint32_t sz4=sz/4;
-  ptable* table;
-  page_t* page;
-  MemMap_t* block;
-  uint32_t phy_mem=0;
-  if(!sz4)//if size is less then 32 bytes, roundof it to 32 which is the least memory allocable
-  {
-    sz=4;
-    sz4=1;
-  }
-  {
-    int clrBlks=0;
-    uint32_t phy_mem=0;
-    for(uint32_t i=2; i<1024; i++)
-    {
-      table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(&dir->m_entries[i]);
-      for(uint32_t j=0;j<1024;j++)
-      {
-        page=&table->m_entries[j];
-        if(!*page)//(!(*page & CUSTOM_PTE_AVAIL_1)) //The whole page is unused, so its not been mapped yet
-        {
-          phy_mem=Phy_alloc(2)*4096;
-          *page = phy_mem | 1027;
-          block=BlockFinder(phy_mem);
-          block->page=page;
-          block->id=(curr_pgdir.ID & 0xff) | (1<<8);
-          block->used=(sz4+1)*4;
-          uint32_t* strip = phy_mem + sz4*4;
-          *strip = (42847&0xFFFF) | (sz4 << 16);
-          strip = phy_mem + 4092;
-          *strip = (1&0xffff) | (42847 << 16);
-          Switch_back_from_System();
-          return (i*4096*1024)+(j*4096);
-        }
-        else if(!(*page & CUSTOM_PTE_AVAIL_2))
-        {
-          phy_mem=pt_get_frame(page);
-          block=BlockFinder(phy_mem);
-          if(block->used<=(4092-(sz4*4)))
-          {
-            clrBlks=clearBlks(phy_mem,sz4+1);
-            if(clrBlks>=0)
-            {
-              uint32_t* strip = phy_mem + (sz4*4) + (clrBlks*4);
-              *strip = (42847&0xFFFF) | (sz4 << 16);
-              uint16_t* last_strip = phy_mem + 4092;
-              ++*last_strip;
-              block->used+=sz4*4;
-              if(block->used > 4088) //block already full, no space
-              {
-                pt_entry_add_attrib(page, CUSTOM_PTE_AVAIL_2);
-              }
-              Switch_back_from_System();
-              return ((i*4096*1024)+(j*4096))+(4*clrBlks);
-            }
-          }
-        }
-      }
-    }
-  }
-
+    return VMem_Alloc(sz, 0, 2);
 }

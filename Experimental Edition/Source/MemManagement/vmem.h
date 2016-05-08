@@ -51,7 +51,7 @@ char* strMemoryTypes[] = {
 uint32_t VMem_Alloc(uint32_t sz, int align, int processId);
 inline MemMap_t* BlockFinder(uint32_t addr); /// returns the corresponding memory block for a given physical address
 
-uint32_t abc1(uint32_t sz, int align, int processId);
+void free(uint32_t* ptr);
 uint32_t malloc(uint32_t sz);
 inline uint32_t clearBlks(uint32_t* addr, uint32_t szBlks);
 #endif // VMEM_h

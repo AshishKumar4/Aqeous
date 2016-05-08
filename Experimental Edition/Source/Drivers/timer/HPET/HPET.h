@@ -7,7 +7,7 @@ typedef struct __attribute__((packed)) HPET_descriptor_table
     uint32_t length;            //Length, in bytes, of the entire Event Timer Description Table.
     uint8_t  revision;          //The revision of the HPET Description Table definition; currently 01h.
     uint8_t  checksum;          //Entire table must sum to zero.
-    char     Oem_ID;            //Oem ID
+    char     Oem_ID[6];            //Oem ID
     uint64_t Oem_tableID;       //For the Event Timer Description Table, the table ID is the manufacturer model ID.
     uint32_t Oem_revision_id;   //OEM revision of Event Timer Description Table for supplied OEM Table ID.
     uint32_t Creator_id;        //Vendor ID of utility that created the table. For the DSDT, RSDT, SSDT, and PSDT tables, this is the ID for the ASL Compiler.
@@ -19,5 +19,36 @@ typedef struct __attribute__((packed)) HPET_descriptor_table
     uint8_t  pg_protection;     //Also Oem Attribute. Rest is below
     //The lower 4-bit ( bit <0..3> ) of this field describes the timer hardware capability to guarantee the page protection. This information is required for the OSes that want to expose this timer to the user space:  0 = no guarantee for page protection.  1 = 4KB page protected, access to the adjacent 3KB space will not generate machine check or compromise the system security.  2 = 64KB page protected, access to the adjacent 63KB space will not generate machine check or compromise the system security.  3~ 15 = Reserved for future use.  The upper 4-bit (bits <4..7> of this field is reserved for OEM attributes: OEM can use this field for its implementation specific attributes. *
 }HPET_descriptor_table_t;
+
+typedef struct __attribute__((packed)) HPET_Table
+{
+    uint32_t GCIDReg[2];                        //General Capabilities and ID Register READ ONLY
+    uint32_t reserved1[2];
+    uint32_t GCReg[2];                          //General Configuration Register READ WRITE
+    uint32_t reserved2[2];
+    uint32_t GISReg[2];                         //General Interrupt Status Register READ/WRITE CLEAR. byte 40th.
+    uint32_t reserved3[50];
+    uint32_t Main_Counter_Reg[2];               //Main Counter Value Register, READ/WRITE byte 240
+    uint32_t reserved4[2];
+    uint32_t Timer0CCReg[2];
+    uint32_t Timer0CVReg[2];
+    uint32_t Timer0FSB_IntRReg[2];
+    uint32_t reserved5[2];
+    uint32_t Timer1CCReg[2];
+    uint32_t Timer1CVReg[2];
+    uint32_t Timer1FSB_IntRReg[2];
+    uint32_t reserved6[2];
+    uint32_t Timer2CCReg[2];
+    uint32_t Timer2CVReg[2];
+    uint32_t Timer2FSB_IntRReg[2];
+    uint32_t reserved7[2];
+    uint32_t reserved_Timer3to31[168];
+}HPET_Table_t;
+
+HPET_descriptor_table_t* hpet_sdt;
+
+HPET_Table_t* hpet;
+
+uint32_t* hpet_base = 0;
 
 #endif

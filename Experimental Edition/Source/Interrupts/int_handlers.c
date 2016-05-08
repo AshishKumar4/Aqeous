@@ -1,130 +1,203 @@
 #include "descriptors.h"
 #include "stdio.h"
 #include "string.h"
+#include "apic.h"
+#include "timer.h"
 #include "keyboard.h"
 #include "mouse.h"
+#include "paging.h"
+
+uint32_t* LAPIC_EOI_send = 0x00b0+0xfee00000;
+extern void switcher();
 
 void divByZero_handler()
 {
+  printf("\nFault1");
+  while(1);
   asm volatile("iret");
 }
 
 
 void debug_handler()
 {
+  printf("\nFault2");
+  while(1);
   asm volatile("iret");
 }
 
 
 void NMI_handler()
 {
+  printf("\nFault3");
+  while(1);
   asm volatile("iret");
 }
 
 
 void breakpoint_handler()
 {
+  printf("\nFault4");
+  while(1);
   asm volatile("iret");
 }
 
 
 void overflow_handler()
 {
+  printf("\nFault5");
+  while(1);
   asm volatile("iret");
 }
 
 
 void outOfBounds_handler()
 {
+  printf("\nFault6");
+  while(1);
   asm volatile("iret");
 }
 
 
 void invalidInstr_handler()
 {
+  printf("\nFault7");
+  while(1);
   asm volatile("iret");
 }
 
 
 void noCoprocessor_handler()
 {
+  printf("\nFault8");
+  while(1);
   asm volatile("iret");
 }
 
 
 void doubleFault_handler()
 {
+  printf("\nFault9");
+  while(1);
   asm volatile("iret");
 }
 
 
 void coprocessor_handler()
 {
+  printf("\nFault10");
+  while(1);
   asm volatile("iret");
 }
 
 
 void badTSS_handler()
 {
+  printf("\nFault11");
+  while(1);
   asm volatile("iret");
 }
 
 
 void segmentNotPresent_handler()
 {
+  printf("\nFault12");
+  while(1);
   asm volatile("iret");
 }
 
 
 void stackFault_handler()
 {
-  asm volatile("iret");
-}
-
-
-void generalProtectionFault_handler()
-{
-  asm volatile("iret");
-}
-
-
-void pageFault_handler()
-{
-  asm volatile("sti");
-  uint32_t faulting_address;
-  asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-  printf("\npage fault");
+  printf("\nFault13");
   while(1);
   asm volatile("iret");
 }
 
 
+void generalProtectionFault_handler(registers_t regs)
+{
+  asm volatile("cli");
+  printf("\nFaul14t ticks: %x Ax%x Bx%x %x %x",tick,regs.err_code,regs.eip,regs.cs,regs.eflags);
+  while(1);
+  asm volatile("iret");
+}
+
+void pageFault_handler(registers_t regs)
+{
+  asm volatile("cli");
+    // A page fault has occurred.
+    // The faulting address is stored in the CR2 register.
+    uint32_t faulting_address;
+    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+    // The error code gives us details of what happened.
+    int present   = !(regs.err_code & 0x1); // Page not present
+    int rw = regs.err_code & 0x2;           // Write operation?
+    int us = regs.err_code & 0x4;           // Processor was in user-mode?
+    int reserved = regs.err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
+    int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
+
+    // Output an error message.
+    console_writestring("\nPage fault! ( ");
+    if (present)
+    {
+      console_writestring("present, Allocating page for it ");
+      //MapPage((void*)faulting_address,(void*)faulting_address);
+    }
+    if (rw)
+    {
+        console_writestring("read-only ");
+    }
+    if (us) {console_writestring("user-mode ");}
+    if (reserved) {console_writestring("reserved ");}
+while(1);
+    if (id) {console_writestring("id "); console_write_dec(id);}
+    console_writestring(") at 0x");
+    console_write_dec(faulting_address);
+    console_writestring(" - EIP: ");
+    console_write_dec(regs.eip);
+    console_writestring("\n");
+    asm volatile("sti");
+    asm volatile("iret");
+   // PANIC("Page fault");
+}
+
 void unknownInterrupt_handler()
 {
+  printf("\nFaul15t");
+  while(1);
   asm volatile("iret");
 }
 
 
 void coprocessorFault_handler()
 {
+  printf("\nFault16");
+  while(1);
   asm volatile("iret");
 }
 
 
 void alignmentCheck_handler()
 {
+  printf("\nFault17");
+  while(1);
   asm volatile("iret");
 }
 
 
 void machineCheck_handler()
 {
+  printf("\nFault18");
+  while(1);
   asm volatile("iret");
 }
 
 
 void reserved_handler()
 {
+  printf("\nFault19");
+  while(1);
   asm volatile("iret");
 }
 
@@ -133,6 +206,20 @@ void reserved_handler()
 //#ifdef PIC
 void PIT_handler()
 {
+//  printf("2");
+  //localapic_eoi();
+  //++counter;
+//  switcher();
+/*
+  uint32_t cs1;
+  asm volatile("pop %%eax;\
+  pop %%cs;\
+  mov %%cs, %%eax;\
+  mov %%eax, %0":"=r"(cs1)::"memory");
+  printf(" \nCS: %x",cs1);
+  while(1);*/
+   outb(0x20, 0x20);
+
   asm volatile("iret");
 }
 
@@ -140,7 +227,9 @@ void PIT_handler()
 void keyboardInterrupt_handler()
 {
   asm volatile("cli");
-  printf("\nabc");
+  printf("\nInterrupt 1");
+  while(1);
+
   if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
@@ -221,66 +310,97 @@ void keyboardInterrupt_handler()
         }
       }
   }
+    *LAPIC_EOI_send = 0;
   asm volatile("iret");
 }
 
 
 void cascade_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 2");
+  while(1);
   asm volatile("iret");
 }
 
 //This particular interrupt is never raised
 void COM2_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 3");
+  while(1);
   asm volatile("iret");
 }
 
 
 void COM1_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 4");
+  while(1);
   asm volatile("iret");
 }
 
 
 void LPT2_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 5");
+  while(1);
   asm volatile("iret");
 }
 
 
 void floppyDisk_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 6");
+  while(1);
   asm volatile("iret");
 }
 
 
 void LPT1_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 7");
+  while(1);
   asm volatile("iret");
 }
 
 
 void RTC_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 8");
+  while(1);
   asm volatile("iret");
 }
 
 
 void periph1_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 9");
+  while(1);
   asm volatile("iret");
 }
 
 
 void periph2_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 10");
+  while(1);
   asm volatile("iret");
 }
 
 
 void periph3_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 11");
+  while(1);
   asm volatile("iret");
 }
 
@@ -288,6 +408,8 @@ void periph3_handler()
 void mouse_handler()
 {
   asm volatile("cli");
+  printf("\nInterrupt 12");
+  while(1);
   static unsigned char cycle = 0;
   static char mouse_bytes[3];
   while(cycle<3)
@@ -323,18 +445,27 @@ void mouse_handler()
 
 void FPU_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 13");
+  while(1);
   asm volatile("iret");
 }
 
 
 void primaryHDD_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 14");
+  while(1);
   asm volatile("iret");
 }
 
 //P -> Primary
 void secondaryHDD_handler()
 {
+  asm volatile("cli");
+  printf("\nInterrupt 15");
+  while(1);
   asm volatile("iret");
 }
 

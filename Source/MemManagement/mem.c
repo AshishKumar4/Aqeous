@@ -2,30 +2,6 @@
 #include "paging.h"
 #include "vmem.h"
 
-inline int clearBits(uint32_t map[],uint32_t sz) //gives the output as number of continuous clear bits
-{
-  int count=0;
-
-  for(int i=0;i<128;i++)
-  {
-      if(count*32>=sz)
-      {
-        //printf(" 1 ");
-        return i-(sz/32); //our job is done!
-      }
-      else if(!(map[i/32] & (1<<(i%32))))
-      {
-        ++count;
-      }
-      else
-      {
-        count=0;
-        //++i;
-      }
-  }
-  return -1;
-}
-
 uint32_t processID=10; ///id 4 for paging, rest reserved
 
 inline void PhyMap_unSet(uint32_t addr)
@@ -36,7 +12,7 @@ inline void PhyMap_unSet(uint32_t addr)
     *ptr = 0;
 }
 
-inline uint32_t Phy_alloc(uint32_t processID) ///Gives frames for pages
+inline uint32_t Phy_alloc(uint32_t purpose) ///Gives frames for pages
 {
     uint32_t* ptr=(uint32_t*)(BITMAP_LOCATION);
     ptr+=6144;
@@ -44,8 +20,7 @@ inline uint32_t Phy_alloc(uint32_t processID) ///Gives frames for pages
     {
       if(!*ptr)
       {
-        printf("\n%x",ptr);
-        *ptr=i*4096;
+        *ptr=purpose+1;
     //    printf("\nPhy Frame: %x %x",i,tmp->addr);
         return i; ///return the frame
       }
@@ -64,9 +39,9 @@ inline uint32_t Phy_alloc_pg(uint32_t processID) ///Gives frames for page struct
       if(!*ptr)
       {
         MemMap_t* tmp=(MemMap_t*)BlockFinder(i*4096);
-        tmp->id=processID;
+        tmp->id=processID+1;
         tmp->used=4096;
-        *ptr=i*4096;
+        *ptr=processID;
       //  printf("\nPhy Frame: %x %x",i,tmp->addr);
         return i; ///return the frame
       }
@@ -76,7 +51,7 @@ inline uint32_t Phy_alloc_pg(uint32_t processID) ///Gives frames for page struct
     return 0;
 }
 
-uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int packed,int processId)
+uint32_t kmalloc_int(uint32_t sz, int align)
 {
   /*
     uint32_t mb=0;   ///dont give kernel memory below this point
@@ -93,8 +68,8 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
     else
     {
       sz4=sz/4;
-      sz4++;
-      sz=sz*4;
+      //sz4++;
+      //sz=sz*4;
     }
     ptable* table;
     page_t* page;
@@ -154,9 +129,9 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
                 block->page=page;
                 block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
                 block->used=(tsz4+1)*4;
-                uint32_t* strip = phy_mem + tsz4*4;
+                uint32_t* strip = (uint32_t*)(phy_mem + (tsz4*4));
                 *strip = 42847 | (tsz4 << 16);
-                strip = phy_mem + 4092;
+                strip = (uint32_t*)(phy_mem + 4092);
                 *strip = (1&0xffff) | (42847 << 16);
               }
               blockID++;
@@ -192,9 +167,9 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
               block->page=page;
               block->id=(curr_pgdir.ID & 0xff) | (1<<8);
               block->used=(sz4+1)*4;
-              uint32_t* strip = phy_mem + sz4*4;
+              uint32_t* strip = (uint32_t*)(phy_mem + (sz4*4));
               *strip = (42847&0xFFFF) | (sz4 << 16);
-              strip = phy_mem + 4092;
+              strip = (uint32_t*)(phy_mem + 4092);
               *strip = 1 | (42847 << 16);
               return virt_addr;
             }
@@ -206,12 +181,12 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
             block=BlockFinder(phy_mem);
             if(block->used<=(4092-(sz4*4)))
             {
-              clrBlks=clearBlks(phy_mem,sz4+1);
+              clrBlks=clearBlks((uint32_t*)phy_mem,sz4+1);
               if(clrBlks>=0)
               {
-                uint32_t* strip = phy_mem + (sz4*4) + (clrBlks*4);
+                uint32_t* strip = (uint32_t*)(phy_mem + (sz4*4) + (clrBlks*4));
                 *strip = (42847&0xFFFF) | (sz4 << 16);
-                uint16_t* last_strip = phy_mem + 4092;
+                uint16_t* last_strip = (uint16_t*)(phy_mem + 4092);
                 ++*last_strip;
                 block->used+=sz4*4;
                 if(block->used > 4088) //block already full, no space
@@ -229,17 +204,17 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys,int purpose,int pack
 }
 
 void kfree(uint32_t* ptr)
-{/*
+{
   uint32_t offset = ((uint32_t)ptr)%4096;
-  page_t* page = get_page(ptr,0,system_dir);
+  page_t* page = get_page((uint32_t)ptr,0,system_dir);
   uint32_t frame = PAGE_GET_PHYSICAL_ADDRESS(page); ///Physical address
   uint32_t phy_addr = frame + offset;
-  uint16_t* last_strip = frame + 4092;
+  uint16_t* last_strip = (uint16_t*)(frame + 4092);
   ++last_strip;
   MemMap_t* Block = BlockFinder(frame);
   if(*last_strip == 42847) //the block isnt used solely for one allocation
   {
-    strip_t* strip = phy_addr;
+    strip_t* strip = (strip_t*)phy_addr;
     for(int i=0;;i++)
     {
       if(strip->magic == 42847)
@@ -278,7 +253,7 @@ void kfree(uint32_t* ptr)
         PhyMap_unSet(frame);
         ++page;
         frame+=4096;
-        last_strip = frame + 4092;
+        last_strip = (uint16_t*)(frame + 4092);
         ++last_strip;
         blk->id = 0;
         blk->used = 0;
@@ -288,7 +263,7 @@ void kfree(uint32_t* ptr)
       else if(blk->id == id)
       {
         phy_addr = frame;
-        strip_t* strip = phy_addr;
+        strip_t* strip = (strip_t*)phy_addr;
         for(int i=0;;i++)
         {
           if(strip->magic == 42847)
@@ -318,22 +293,7 @@ void kfree(uint32_t* ptr)
         return;
       }
     }
-  }*/
-}
-
-uint32_t kmalloc_a(uint32_t sz)
-{
-    return kmalloc_int(sz, 1, 0,1,1,0);
-}
-
-uint32_t kmalloc_p(uint32_t sz, uint32_t *phys)
-{
-    return kmalloc_int(sz, 0, phys,1,0,0);
-}
-
-uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys)
-{
-    return kmalloc_int(sz, 1, phys,1,1,0);
+  }
 }
 
 inline uint32_t pmalloc(uint32_t id)
@@ -345,24 +305,37 @@ inline uint32_t pmalloc(uint32_t id)
    return mem;
 }
 
-uint32_t kmalloc(uint32_t sz)
+uint32_t kmalloc_aligned(uint32_t sz)
 {
-    return kmalloc_int(sz, 0, 0,1,0,0);
+    return kmalloc_int(sz, 1);
 }
 
-struct task_t* tmalloc(uint32_t sz) //for tasks(threads)
+uint32_t kmalloc(uint32_t sz)
 {
-    return (struct task_t*)kmalloc_int(sz, 0, 0,3,0,0);
+    return kmalloc_int(sz, 0);
+}
+
+uint32_t st = 210*1024*1024;
+
+uint32_t* tmalloc(uint32_t sz) //for tasks(threads)
+{
+    uint32_t ab = st;
+    st += sz;
+    return (uint32_t*)ab;
+    //return (uint32_t*)kmalloc_int(sz, 0);
 }
 
 uint32_t smalloc(uint32_t sz) //for tasks(threads) Stakcs
 {
-    return kmalloc_int(sz, 0, 0,4,0,0);
+    uint32_t ab = st;
+    st += sz;
+    return (uint32_t*)ab;
+    //return kmalloc_int(sz, 0);
 }
 
 uint32_t fsalloc(uint32_t sz)
 {
-  uint32_t addr=kmalloc_int(sz, 0, 0,1,0,0);
+  uint32_t addr=kmalloc_int(sz, 0);
   //printf(" Ab%x",addr);
   return addr;
 }

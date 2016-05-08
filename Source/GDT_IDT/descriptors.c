@@ -3,7 +3,7 @@
 #include <sys.h>
 #include <string.h>
 
-
+extern void switcher();
 extern void lgdt(void *);
 extern void lidt(void *);
 
@@ -14,7 +14,6 @@ static void init_gdt();
 static void gdt_set_gate(int num,uint32_t base,uint32_t limit,uint8_t access,uint16_t gran);
 static void init_idt();
 static void idtSetEntry(int num, uint32_t base, uint32_t sel, uint32_t flags);
-static void init_pic(uint8_t vector1, uint8_t vector2);
 static uint8_t makeFlagByte();
 
 
@@ -116,7 +115,7 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&keyboardInterrupt_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
