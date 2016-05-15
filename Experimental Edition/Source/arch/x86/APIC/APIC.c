@@ -31,7 +31,7 @@ void disable_pic()
 }
 
 void init_APIC()
-{
+{/*
   disable_pic();
   //localapic_write_with_mask(LAPIC_SVR, (1<<8), (1<<8));
   printf("\nTesting APIC! Local APIC revision: %x Max LVT entry: %x\n",localapic_read(LAPIC_VER)&&0xff, ((localapic_read(LAPIC_VER)>>16) && 0xff)+1);
@@ -44,7 +44,7 @@ void init_APIC()
 //*/
   //ioapic_set_irq(14, 0x0020, 14);
   //while(1);
-  //enable_pic();
+  enable_pic();
 }
 
 uint32_t ioapic_read(uint32_t reg) //IO Apic

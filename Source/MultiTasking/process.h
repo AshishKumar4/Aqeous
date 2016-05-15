@@ -12,6 +12,7 @@
 typedef struct __attribute__((packed)) task_table
 {
     task_t task;
+    uint32_t test;
     struct task_table* next;
 }task_table_t;
 

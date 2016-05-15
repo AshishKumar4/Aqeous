@@ -4,6 +4,7 @@
 #include <string.h>
 
 extern void switcher();
+extern void keyboard_handler();
 extern void lgdt(void *);
 extern void lidt(void *);
 
@@ -115,8 +116,8 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&keyboardInterrupt_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&keyboard_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM1_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
@@ -131,6 +132,8 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&FPU_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&primaryHDD_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&secondaryHDD_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
+
+  idtSetEntry(50, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE)); //IRQ 50--> APIC TIMER
   num = 0;
 
   lidt((void *)&idt_ptr);

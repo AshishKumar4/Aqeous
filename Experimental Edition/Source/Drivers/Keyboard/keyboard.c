@@ -1,6 +1,7 @@
 #include "sys.h"
 #include "keyboard.h"
 #include "scancodes.h"
+#include "mem.h"
 
 int keyboard_scancodes(int key)
 {
@@ -101,66 +102,6 @@ int keyboard_scancodes(int key)
 		}
     return key;
 }
-/* Handles the keyboard interrupt */
-extern void keyboardInterrupt_handler();
-
-int checker(int i)
-{
-  printint(0);
-  if(i) return 1;
-  return 0;
-}
-
-uint8_t getch()
-{
-	asm volatile("sti");
-  while(!call){}
-	asm volatile("cli");
-  uint8_t key=keyboard_scancodes(call);
-  call=0;
-  return key;
-}
-
-uint8_t getchar()
-{
-  back:
-	asm volatile("sti");
-  while(!call){}
-	asm volatile("cli");
-	if(!call)
-		printf("wtf");
-  uint8_t key=keyboard_scancodes(call);
-  if(key!='\r' && key!='\0' && key!='\b')
-    printf("%c",key);
-  call=0;
-  if(key=='\b')
-  {
-    backspace();
-    goto back;
-  }
-  return key;
-}
-
-void getline(char* string)
-{
-  uint8_t buff;
-  for(int i=0;;i++)
-  {
-    buff=getchar();
-		asm volatile("cli");
-    if(buff=='\r')
-    {
-      string[i]='\0';
-      break;
-    }
-    else
-		{
-			string[i]=buff;
-			//printf("a %c ",string[i]);
-		}
-  }
-  printf("\n");
-}
 
 uint32_t StrToInt(char *str)
 {
@@ -178,17 +119,9 @@ uint32_t StrToInt(char *str)
 		return in;
 }
 
-uint32_t getint()
-{
-	uint32_t var=0;
-	char *temp=" ";
-	getline(temp);
-	var=StrToInt(temp);
-	return var;
-}
-
 void keyboard_init()
 {
   kkybrd_set_leds(1,1,1);
+  kb_buf = (uint32_t*)kmalloc(4096);
   scancodes=scancode1;
 }

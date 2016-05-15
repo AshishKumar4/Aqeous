@@ -6,6 +6,18 @@
 #include <common.h>
 #include <acpi.h>
 
+inline uint32_t readl(uint32_t addr)
+{
+    uint32_t* ptr = (uint32_t*)addr;
+    return *ptr;
+}
+
+inline void writel(uint32_t addr, uint32_t val)
+{
+    uint32_t* ptr = (uint32_t*)addr;
+    *ptr = val;
+}
+
 void delay(uint32_t delay)
 {
     float k=0;

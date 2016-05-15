@@ -47,12 +47,12 @@ inline pdirectory* system_dir_maker()
 
 inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdirectory
 {
-    map(0,8*1024*1024,dir);
-    map(50331648,12*1024*1024,dir);
+    map(0, 8*1024*1024, dir);
+  //  map(50331648, 12*1024*1024, dir);
+  //  map(200*1024*1024, 300*1024*1024, dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-    Map_non_identity(8*1024*1024,0xC0000000,40*1024*1024,dir);
-    Map_non_identity(50331648+(12*1024*1024),0xC0000000+(40*1024*1024),40*1024*1024,dir);
-    map(0xFF000000,0xFFFFF000-0xFF000000,dir);
+    Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
+    map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
     //while(1);
 }
 
@@ -327,7 +327,6 @@ void enable_paging()
    //! switch to our main page directory
    Kernel_Mapper(main_dir);
    Kernel_Mapper(user_dir);
-   Map_non_identity(100*1024*1024,100*1024*1024,100*1024*1024,main_dir);
    printf("\nSwitching Directory");
    switch_pdirectory (main_dir);
    //while(1);

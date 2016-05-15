@@ -11,8 +11,6 @@ void Scheduler_init()
 {
 }
 */
-//TODO: Change the Scheduler Algorithm to make it switch  FULL CONTEXT only if the new thread
-//  is not from the same parent process as the old one. Else, do the things as we did normally
 
 void Scheduler()
 {
@@ -29,7 +27,11 @@ void Scheduler()
     tmp=_q+bottom_task; ///round robin manner
     if(*tmp)
       current_task=*tmp;
-    else goto back;
+    else
+    {
+      ++bottom_task;
+      goto back;
+    }
   }
   else if(*_q == 1) ///Only one task in the queue??
   {
@@ -55,21 +57,28 @@ void Scheduler()
     *first_curr=*last_curr; //swap values
     *last_curr=0; //deinitialize it
     current_task=*last_lower;
-  }/*
-  if(!current_task)
-  {
-    printf(" ticks: %x",tick);
-    while(1);
-  }*/
+  }
 }
-//TODO: REMOVE SAVE_ESP
 
-//void save_esp() ///USED BY switcher() function in tasking.asm
-//{
-    //old_task->esp = old_esp;
-  //  new_esp = current_task->esp;
-    //new_eip = current_task->eip;
-  //  new_cs = current_task->cs;
-  //  new_eflags = current_task->eflags;
-  //  new_seg = current_task->segment;
-//}
+/*********************************** SCHEDULER ASSISTANCE SYSTEM ***********************************/
+
+void Task_Promoter() ///Select a task from the end of the base queue, pop it, and promote it to higher queue based on its priority.
+{
+  if(reached_bottom)  ///Already in the lowest queue? As here, tasks are of low priority, we dont need it to be fast :D
+  {
+    uint32_t* tmp;
+    uint32_t* _q = LAST_QUEUE;
+    if(bottom_task == *_q)
+      bottom_task = 1;
+    uint32_t* base_last = _q + (*_q);
+    --(*_q);
+    if(!*_q) reached_bottom = 0;
+    _q=(uint32_t*)QUEUE_START;
+    _q+=(1024*(TOTAL_QUEUES - ((task_t*)*base_last)->priority)); ///Get into the queue required
+    ++(*_q);
+    uint32_t* upper_last = _q + (*_q);
+    *upper_last = *base_last;
+    *base_last = 0;
+    if(_q < top_queue) top_queue = _q;
+  }
+}

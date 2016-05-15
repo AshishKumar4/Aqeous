@@ -84,7 +84,8 @@ enum KYBRD_ERROR {
 	KYBRD_ERR_KEY					=	0xFF
 };
 
-static int call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0;
+volatile uint32_t call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0;
+volatile uint32_t* kb_buf = 0;
 
 //! read status from keyboard controller
 inline uint8_t kybrd_ctrl_read_status ()
@@ -119,15 +120,7 @@ inline void kkybrd_set_leds (int num, int caps, int scroll)
 
 int keyboard_scancodes(int key);
 
-uint8_t getchar();
-
-void getline(char* string);
-
 uint32_t StrToInt(char *str);
-
-uint8_t getchar();
-
-uint32_t getint();
 
 void keyboard_init();
 
