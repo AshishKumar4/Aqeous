@@ -48,6 +48,7 @@ void reserved_handler();
 
 //#ifdef PIC
 void PIT_handler();
+void keyboardInterrupt_handler();
 void cascade_handler();//This particular interrupt is never raised
 void COM2_handler();
 void COM1_handler();

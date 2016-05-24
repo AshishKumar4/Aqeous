@@ -5,14 +5,15 @@
 #include <sys/cdefs.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#include <keyboard.h>
-#include <console.h>
 #include <string.h>
 
-extern void backspace();
+uint32_t* kb_stream_start,* kb_stream_end, *kb_stream;
+
 extern int putchar(int ic);
 extern void printint(uint32_t in);
 extern void print64int(uint64_t in);
+
+int _printf(const char* restrict format, ...);
 
 static void print(const char* data, size_t data_length)
 {
@@ -126,67 +127,6 @@ void itoa(unsigned i,unsigned base,char* buf) {
 int puts(const char* string)
 {
 	return printf("%s\n", string);
-}
-
-
-uint8_t getch()
-{
-	asm volatile("sti");
-	while(!call);
-	asm volatile("cli");
-	uint8_t a = *kb_buf;
-	--kb_buf;
-	printf("%x", a);
-	asm volatile("sti");
-	return a;
-}
-
-char getchar()
-{
-	volatile char key;
-	volatile uint8_t a;
-	back:
-	asm volatile("sti");
-	while(!call);
-	asm volatile("cli");
-	a = call;// *kb_buf;
-	key = (char)keyboard_scancodes(a);
-
-	if(key!='\r' && key!='\0' && key!='\b')
-      printf("%c",key);
-    call=0;
-    if(key=='\b')
-    {
-      backspace();
-  	  --kb_buf;
-      goto back;
-    }
-	--kb_buf;
-	asm volatile("sti");
-    return key;
-}
-
-void getline(char* string)
-{
-  volatile uint8_t buff;
-  call = 0;
-  for(int i=0;;i++)
-  {
-  	asm volatile("sti");
-    buff=getchar();
-	asm volatile("cli");
-    if(buff=='\r')
-    {
-      string[i]='\0';
-      break;
-    }
-    else
-		{
-			string[i]=buff;
-			//printf("a %c ",string[i]);
-		}
-  }
-  printf("\n");
 }
 
 #endif // STDIO_H

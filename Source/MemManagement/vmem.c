@@ -103,7 +103,7 @@ void Mapper()
         tempBlock2->used=4096;
         tempBlock2++;
     }
-    lastBlockAddr = (uint32_t*)(24*1024*1024);
+    lastBlockAddr = (MemMap_t*)(24*1024*1024);
     Kblock=(MemMap_t*)(lastBlockAddr+sizeof(mblock));
     //printf(" a%x",BlockFinder(30*1024*1024)->used);
   //  while(1);
@@ -117,9 +117,20 @@ void bitmap_init()
     for(int i=0;i<1024*1024;i++)
     {
       if(i<7*1024) ///used
+      {
         *ptr=0xFFFFFFFF;
+        tmp->used = 4096;
+      }
       else if(i>12000&&i<15000)
+      {
         *ptr=0xFFFFFFFF;
+        tmp->used = 4096;
+      }
+      else if(i>125*1024&&i<127*1024)
+      {
+        *ptr=0xFFFFFFFF;
+        tmp->used = 4096;
+      }
       else if(tmp->used)
       {
         *ptr=tmp->id;
@@ -129,7 +140,6 @@ void bitmap_init()
       ptr++;
       tmp++;
     }
-
 }
 
 uint32_t VMem_Alloc(uint32_t sz, int align, int processId)

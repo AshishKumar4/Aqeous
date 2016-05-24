@@ -89,13 +89,13 @@ void init_timer(uint32_t frequency)
     outb(0x40, h);
 }
 
-float delay_dump=0;
+float volatile delay_dump=0;
 
-void volatile delay1(uint32_t ms)
+void delay1(uint32_t ms)
 {
     srandInit();
     float volatile k=0;
-    for(int i=0; i<ms*1024;i++)
+    for(uint32_t i=0; i<ms*1024;i++)
       {
         srand(i+100);
         for(int j=0; j<500; j++)

@@ -421,6 +421,7 @@ void Init_fs()
     root_location=boot->partition_locations[0];
     printf("\nabc %s %x",boot->name,root_location);
     set_curr_dir(root_location);
+    /*
     find_dir(0);
     find_dir("Aqeous");
 
@@ -431,14 +432,8 @@ void Init_fs()
     char str[]="Hello!!! This is Aqeous OS Speaking And I am Testing the Filesystem. I need a really very very very big message to test the I/O operations of my file system's file handling.";//" So please let me do what I want. This is a completely new FileSystem and thus needs a lot of testing. There are Several bugs and I am gonna fix them all!!! As I Said that I need a really very long message to test wether the file handling can actually manage reading writing operations with data bigger then the sector size, that is 512 bytes, so thats why I am writing this long test. The text should be longer then 512 bytes, That is the text should contains 512 characters. I am writing this in block alignmnet to manage space :3 This filesystem can be potentially better then FAT and so Its necessary to remove allthe bugs before releasing it. Thats obvious LOL xD .So please be patient. Thank you :)";
     file_write((uint32_t)str,strlen(str),"test.txt");
     file_flush("test.txt");
-  /*  char bcd[]="Abcd testing";
-    fwrite((uint32_t)bcd,strlen(bcd),"test2.txt");
-    file_flush("test2.txt");
-    fwrite((uint32_t)bcd,strlen(bcd),"test3.txt");
-    file_flush("test3.txt");//*/
-  //  file_load("test.txt",app);
     uint32_t buffer=fsalloc(8192);
-    file_read(buffer,0,550,"test.txt");
+    file_read(buffer,0,550,"test.txt");*/
 
 }
 

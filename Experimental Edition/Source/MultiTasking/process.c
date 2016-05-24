@@ -18,7 +18,7 @@ Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process
 
   New_Proc->pgdir = (uint32_t)pgdir_maker();
   Kernel_Mapper((pdirectory*)New_Proc->pgdir);
-  map((uint32_t)New_Proc,4096,New_Proc->pgdir);
+  map((uint32_t)New_Proc,4096,(pdirectory*)New_Proc->pgdir);
 
   strcpy(New_Proc->name,name);
 

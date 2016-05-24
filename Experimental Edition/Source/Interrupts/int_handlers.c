@@ -6,6 +6,8 @@
 #include "keyboard.h"
 #include "mouse.h"
 #include "paging.h"
+#include "shell.h"
+#include "tasking.h"
 
 uint32_t* LAPIC_EOI_send = 0x00b0+0xfee00000;
 extern void switcher();
@@ -117,7 +119,7 @@ void stackFault_handler()
 void generalProtectionFault_handler(registers_t regs)
 {
   asm volatile("cli");
-  printf("\nFaul14t ticks: %x ",tick);
+  printf("\nFaul14t ticks: %x Ax%x Bx%x %x %x",tick,regs.err_code,regs.eip,regs.cs,regs.eflags);
   while(1);
   asm volatile("iret");
 }
@@ -206,13 +208,29 @@ void reserved_handler()
 //#ifdef PIC
 void PIT_handler()
 {
-  outb(0x20, 0x20);
-  asm volatile("iret":::"memory");
+  printf("ABCD");
+  //localapic_eoi();
+  //++counter;
+//  switcher();
+/*
+  uint32_t cs1;
+  asm volatile("pop %%eax;\
+  pop %%cs;\
+  mov %%cs, %%eax;\
+  mov %%eax, %0":"=r"(cs1)::"memory");
+  printf(" \nCS: %x",cs1);*/
+  while(1);
+  // outb(0x20, 0x20);
+
+    *LAPIC_EOI_send = 0;
+  asm volatile("iret");
 }
 
 
 void keyboardInterrupt_handler()
 {
+  asm volatile("cli");
+
   if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
@@ -246,6 +264,7 @@ void keyboardInterrupt_handler()
       }
       else //it is a make code
       {
+        /*
         int key=scancodes[scancode];
         //printint(scancode);
         //! test if a special key has been released & set it
@@ -275,29 +294,34 @@ void keyboardInterrupt_handler()
 
     					case KEY_CAPSLOCK:
     						_capslock = (_capslock) ? false : true;
-    						//kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
     						break;
 
     					case KEY_KP_NUMLOCK:
     						_numlock = (_numlock) ? false : true;
-    						//kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
     						break;
 
     					case KEY_SCROLLLOCK:
     						_scrolllock = (_scrolllock) ? false : true;
-    						//kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
     						break;
               default:
               call=key;
-              ++kb_buf;
-              *kb_buf = key;
-    			}
+    			}*/
+          *kb_stream = scancode;
+          ++kb_stream;
+          if(kb_stream == kb_stream_end)
+            kb_stream = kb_stream_start;
+          //Priority_promoter((uint32_t*)Shell_task);
+          //TODO: MASK interrupt 50 for a moment
         }
       }
   }
-//    *LAPIC_EOI_send = 0;
-}
 
+  *LAPIC_EOI_send = 0;
+  asm volatile("iret");
+}
 
 void cascade_handler()
 {
@@ -391,9 +415,9 @@ void periph3_handler()
 
 void mouse_handler()
 {
-  //asm volatile("cli");
-  /*;\
-  pusha");
+  asm volatile("cli");
+  printf("\nInterrupt 12");
+  while(1);
   static unsigned char cycle = 0;
   static char mouse_bytes[3];
   while(cycle<3)
@@ -415,16 +439,15 @@ void mouse_handler()
    // if (mouse_bytes[0] & 0x1)
       //RectD(100,100,50,100,1000,90,2000);  //Another Mouse Button Clicked
     /*if(mouse_bytes[1]>=1||mouse_bytes>=1)
-        RectD(10,10,50,50,1000,1000,90);//
+        RectD(10,10,50,50,1000,1000,90);*/
     deltax=mouse_bytes[1]/2;
     deltay=mouse_bytes[2]/2;
     mousex+=(deltax);
     mousey-=(deltay);
     //asm volatile("sti");
    // WriteText(mouse_bytes[0],100,200,1000,0);
- }*/
-  outb(0x20, 0x20);
-  asm volatile("iret":::"memory");
+  }
+  asm volatile("sti");
 }
 
 

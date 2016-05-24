@@ -1,0 +1,9 @@
+location   purpose
+0xC0000000  kernel start
++0x400000   reserved
++0x400000   reserved
++0x400000   Physical memory map
++0x01000000   memory map blocks
+
+0xCD000000 --> Console buffer location
+500MB --> Console buffer PHYSICAL location

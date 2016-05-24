@@ -25,6 +25,7 @@
 #include "fs.c"
 #include "fs_alloc.c"
 #include "Scheduler.c"
+#include "Shell.c"
 
 u32int initial_esp;
 uint32_t initial_ebp;
@@ -108,6 +109,10 @@ void kernel_main();
 
 tss_struct_t *TSS;
 
+extern void get_eax();
+extern void reload_eax();
+extern uint32_t cur_eax;
+
 void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	 //Kernel stack located at 200th mb to 250th mb
@@ -121,7 +126,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
     if(!acpiEnable())
         printf("\nACPI Initialized\n");
     else printf("\nACPI CANT BE INITIALIZED\n");
-	//	init_hpet();
+		//init_hpet();
 		//init_timer(1000);
 		//while(1);
 
@@ -162,8 +167,14 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		checkAHCI();
 		if(!ahci_found)
 			init_ata();
+		//printf(" %x %x ",satatest,abcd);
+		//printf(" %x %x %x  ",sizeof(unsigned short),sizeof(unsigned long),sizeof(unsigned long int));s
+	//	while(1);
+	//  map(AHCI_BASE,1024*1024*50);
 
  	 	detect_cpu();
+		//initTasking();
+	//	asm volatile("sti");
 
 	//	init_cmos();
 	//	printf("\nCMOS Clock Initialized\n");
@@ -189,11 +200,9 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	 //switch_pdirectory(main_dir);
 
 	 printf("\n\nInitializing MultiThreading System");
-	 asm volatile("cli");
 	 init_multitasking();
 	 while(1);
-	 //enable_pic();
-	 //init_timer(20000);
+//
 /*
 	 printf(" %x",3|0x400);
 	 for(int i=0; i<40960; i++)

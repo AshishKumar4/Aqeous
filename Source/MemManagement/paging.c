@@ -1,5 +1,6 @@
 #include <paging.h>
 #include <vmem.h>
+#include <console.h>
 #include <mem.h>
 
 inline void switch_directory(pdirectory *dir)
@@ -51,8 +52,10 @@ inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdire
   //  map(50331648, 12*1024*1024, dir);
   //  map(200*1024*1024, 300*1024*1024, dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-    Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
+    //Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
+    Map_non_identity((uint32_t)VGA_buffer, 0xCF000000, 8*1024*1024, dir);
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
+    map((uint32_t)VGA_buffer, 8192*1024, dir);
     //while(1);
 }
 

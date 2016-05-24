@@ -39,7 +39,7 @@ uint32_t kmalloc_a(uint32_t sz);
 **/
 uint32_t kmalloc(uint32_t sz);
 uint32_t* tmalloc(uint32_t sz);
-uint32_t smalloc(uint32_t sz);
+uint32_t* smalloc(uint32_t sz);
 inline uint32_t Phy_alloc_pg(uint32_t processID);
 
 /**

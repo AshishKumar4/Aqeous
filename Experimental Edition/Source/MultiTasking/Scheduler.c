@@ -18,7 +18,6 @@ void Scheduler()
 
   if(reached_bottom)  ///Already in the lowest queue? As here, tasks are of low priority, we dont need it to be fast :D
   {
-    //while(1);
     uint32_t* tmp;
     if(bottom_task<(*_q))
       ++bottom_task;
@@ -45,6 +44,7 @@ void Scheduler()
     current_task=*last_lower;
     top_queue=_q;
     if((uint32_t)_q==LAST_QUEUE) reached_bottom=1;
+    ((task_t*)current_task)->active = (uint32_t)last_lower;
   }
   else ///General
   {
@@ -57,6 +57,7 @@ void Scheduler()
     *first_curr=*last_curr; //swap values
     *last_curr=0; //deinitialize it
     current_task=*last_lower;
+    ((task_t*)current_task)->active = (uint32_t)last_lower;
   }
 }
 
@@ -66,7 +67,7 @@ void Task_Promoter() ///Select a task from the end of the base queue, pop it, an
 {
   if(reached_bottom)  ///Already in the lowest queue? As here, tasks are of low priority, we dont need it to be fast :D
   {
-    uint32_t* tmp;
+  //  uint32_t* tmp;
     uint32_t* _q = LAST_QUEUE;
     if(bottom_task == *_q)
       bottom_task = 1;

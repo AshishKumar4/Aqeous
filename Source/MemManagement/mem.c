@@ -325,7 +325,7 @@ uint32_t* tmalloc(uint32_t sz) //for tasks(threads)
     //return (uint32_t*)kmalloc_int(sz, 0);
 }
 
-uint32_t smalloc(uint32_t sz) //for tasks(threads) Stakcs
+uint32_t* smalloc(uint32_t sz) //for tasks(threads) Stakcs
 {
     uint32_t ab = st;
     st += sz;

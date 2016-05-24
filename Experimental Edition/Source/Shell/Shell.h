@@ -11,7 +11,7 @@ typedef struct CommandDiscription
 {
     char* description;
 }Description_t;
-*/
+
 typedef struct Command
 {
     char *name;
@@ -24,11 +24,15 @@ Command_t Command_table[MAX_COMMANDS];
 uint32_t Number_of_commands=0;
 
 char* Input;
-
+*/
 void init_shell();
 
-void shell();
+//void shell();
 
-void Add_command(char* name,char* discription,void* function);
+//void Add_command(char* name,char* discription,void* function);
+
+void Shell_task();
+
+void Console_Writer();
 
 #endif
