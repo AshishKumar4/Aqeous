@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <console.h>
 #include <acpi.h>
+#include <vesa.h>
 
 #include <vga.h>
 

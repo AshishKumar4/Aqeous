@@ -7,6 +7,7 @@
 #include "vmem.h"
 #include "paging.h"
 #include "stdint.h"
+#include "fs.h"
 
 #define QUEUE_START 209715200
 #define LAST_QUEUE 209797120
@@ -27,7 +28,7 @@ typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU
     char* name; //Parent Process name
 }task_t;
 
-task_t* Idle_task;
+task_t* Idle_task,* Shell_task;
 
 
 typedef struct __attribute__((packed)) task_table

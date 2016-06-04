@@ -55,7 +55,7 @@ inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdire
     //Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
     Map_non_identity((uint32_t)VGA_buffer, 0xCF000000, 8*1024*1024, dir);
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
-    map((uint32_t)VGA_buffer, 8192*1024, dir);
+  //  map((uint32_t)VGA_buffer, 8192*1024, dir);
     //while(1);
 }
 

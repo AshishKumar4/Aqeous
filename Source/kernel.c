@@ -26,6 +26,10 @@
 #include "fs_alloc.c"
 #include "Scheduler.c"
 #include "Shell.c"
+#include "kb_queue.c"
+#include "Qalloc.c"
+#include "queues.c"
+#include "vesa.c"
 
 u32int initial_esp;
 uint32_t initial_ebp;
@@ -40,13 +44,13 @@ void dbug()
 	//	printf("\n\t\tvar %x: ",i+1);
 		a[i]=4096;//getint();
 	}
-	uint32_t *temp1=(uint32_t*)malloc(40),*temp2=temp1;
+	uint32_t *temp1=(uint32_t*)kmalloc(512),*temp2=temp1;
 	*temp1=4284;
 	//kmalloc(4096);
-	uint32_t *test1=(uint32_t*)malloc(40),*test2=test1;
-	uint32_t *test3=(uint32_t*)malloc(8192);
-	uint32_t *test4=(uint32_t*)malloc(a[3]);
-	uint32_t *test5=(uint32_t*)malloc(128);
+	uint32_t *test1=(uint32_t*)kmalloc(26),*test2=test1;
+	uint32_t *test3=(uint32_t*)kmalloc(256);
+	uint32_t *test4=(uint32_t*)kmalloc(a[3]);
+	uint32_t *test5=(uint32_t*)kmalloc(128);
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
 	printf("\tPutting Magic Numbers into first two addresses\n");
 	for(int i=0;i<8;i++)
@@ -81,8 +85,8 @@ void dbug()
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
 //	free(test);
-	free(temp2);
-	free(test3);
+	kfree(temp2);
+	kfree(test3);
 /*
 	for(int i=0;i<8;i++)
 	{
@@ -96,9 +100,9 @@ void dbug()
 	}//*/
 //	printf(" %x %x ",*test3,*test4);
 	printf(" If you didnt saw any numbers above, It worked!!!\n");
-	uint32_t *tmp1=(uint32_t*)malloc(40),*tmp2=tmp1;
+	uint32_t *tmp1=(uint32_t*)kmalloc(40),*tmp2=tmp1;
 	//kmalloc(4096);
-	uint32_t *tst1=(uint32_t*)malloc(4096),*tst2=tst1;
+	uint32_t *tst1=(uint32_t*)kmalloc(4096),*tst2=tst1;
 
 	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,tst1,malloc(8192));
 }
@@ -109,15 +113,12 @@ void kernel_main();
 
 tss_struct_t *TSS;
 
-extern void get_eax();
-extern void reload_eax();
-extern uint32_t cur_eax;
-
 void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	 //Kernel stack located at 200th mb to 250th mb
     //initial_esp = 0xC800000;
 		console_init();
+		//setVesa(0x108);
 		init_APIC();
     init_descriptor_tables();
     printf("\nDESCRIPTOR TABLES INITIALIZED \n");
@@ -133,6 +134,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		mouseinit();
 		printf("\nMouse Drivers initialized\n");
 		keyboard_init();
+		kb_io_init();
 		printf("\nKeyboard Drivers Initialized\n");
 
     printf("\nAvailable memory: ");
@@ -157,6 +159,8 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		bitmap_init();
 		initialise_paging();
 		enable_paging();
+		switch_pdirectory(system_dir);
+	//	dbug();
 
 		printf("\n Paging Has been Enabled Successfully!");
 		printf("\n Available Memory: %x KB\n",maxmem);
@@ -167,17 +171,8 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		checkAHCI();
 		if(!ahci_found)
 			init_ata();
-		//printf(" %x %x ",satatest,abcd);
-		//printf(" %x %x %x  ",sizeof(unsigned short),sizeof(unsigned long),sizeof(unsigned long int));s
-	//	while(1);
-	//  map(AHCI_BASE,1024*1024*50);
 
  	 	detect_cpu();
-		//initTasking();
-	//	asm volatile("sti");
-
-	//	init_cmos();
-	//	printf("\nCMOS Clock Initialized\n");
 
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
@@ -202,22 +197,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	 printf("\n\nInitializing MultiThreading System");
 	 init_multitasking();
 	 while(1);
-//
-/*
-	 printf(" %x",3|0x400);
-	 for(int i=0; i<40960; i++)
-	 {
-		 kmalloc(40);
-	 }//
-//	 dbug();
-		cur_eax = 4284;
-		reload_eax();
-		get_eax();
-		printf("\n Current eax: %x ",cur_eax);
-		reload_eax();
-		get_eax();
-		printf("\n Current eax: %x ",cur_eax);*/
-	//	dbug();
+	 //We shall never get back here, Not until the universe ends. ;)
 }
 
 void kernel_start()
@@ -225,7 +205,7 @@ void kernel_start()
 }
 
 void kernel_main()
-{
+{/*
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
@@ -242,7 +222,7 @@ void kernel_main()
 		{
 			Mouse_Plot(mousex,mousey);
 			DBuff();
-		}
+		}*/
 }
 
 uint8_t console_manager(char *inst)

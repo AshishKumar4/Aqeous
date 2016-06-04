@@ -1,4 +1,4 @@
-#include <vesa.c>
+#include <vesa.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <graphics.h>

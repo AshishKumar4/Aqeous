@@ -3,13 +3,27 @@
 #include "mem.h"
 #include "stdio.h"
 #include "queues.h"
+#include "shell.h"
+
+void kb_io_init()
+{
+  Start_q = 0;
+  Last_q = 0;
+}
 
 void kb_getline(char* str, uint32_t length)
 {
-  asm volatile('cli');
+  asm volatile("cli");
   kb_queue_t* new_entry = kb_Qalloc();
   Last_q->next = new_entry;
   Last_q = new_entry;
+  Last_q->next = 0;
+
+  if(!Start_q)
+  {
+    Start_q = Last_q;
+    Shell_sleep();
+  }
 
   ++q_elements;
 
@@ -25,17 +39,8 @@ void kb_getline(char* str, uint32_t length)
 
   //TODO: Create a better way of doing this shit instead of this way!!!
 
-  asm volatile('sti;\
-  int $50;');
+  asm volatile("sti;\
+  int $50;");
 
-  while(1)
-  {
-    asm volatile('cli');
-    if(kb_end)
-    {
-      asm volatile('sti');
-      return;
-    }
-    asm volatile('sti');
-  }
+  return;
 }

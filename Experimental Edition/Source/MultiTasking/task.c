@@ -108,6 +108,7 @@ void kill()
   //in the top queue BEFORE being prempted, it would be at the LAST of the CURRENT TOP queue. Thus, We just need to remove
   //the task from there.
   asm volatile("cli");
+  Switch_to_system_dir();
   uint32_t* _q = top_queue;
   if(reached_bottom)  //Deal it with differently.
   {
@@ -119,6 +120,7 @@ void kill()
     current_task = (uint32_t)Idle_task; //As if there was never such a task!
 
     //TODO: Call the Switcher ANYHOW!
+    Switch_back_from_System();
     asm volatile("sti;\
     int $50");
   }
@@ -133,6 +135,7 @@ void kill()
     current_task = (uint32_t)Idle_task; //As if there was never such a task!
 
     //TODO: Call the Switcher ANYHOW!
+    Switch_back_from_System();
     asm volatile("sti;\
     int $50");
   }
@@ -148,6 +151,7 @@ void kill()
     current_task = (uint32_t)Idle_task; //As if there was never such a task!
 
     //TODO: Call the Switcher ANYHOW!
+    Switch_back_from_System();
     asm volatile("sti;\
     int $50");
   }
@@ -171,4 +175,28 @@ void Priority_promoter(task_t* task)
 
   if(_q<top_queue)  //If the Top most queue earlier was below this queue,
     top_queue = _q; //Put it as the top most queue
+}
+
+void Task_wakeup(task_t* task)
+{
+//  Switch_to_system_dir(); ///Get into the Kernel!!!
+  //TODO: Complete the algorithm to put a task into appropriate queue based on its priority, to the END of the QUEUE
+
+  uint32_t* _q=(uint32_t*)top_queue;
+  --_q;
+  //printf("\nAx%x ",_q);#
+  //printf(" Bx%x %x ",_q, *_q);
+  ++(*_q); ///Create a new entry, extend the queue
+  //printf(" Cx%x ",*_q);
+
+  ///TODO: Implement what to do when tasks in a queue become more then 1024!!!
+
+  uint32_t* q_entry = _q + (*_q); ///Get the pointer to the new entry
+  //printf(" Dx%x ",q_entry);
+  *q_entry = (uint32_t)task; ///Fill in the Entry with the address of the new Task!!!
+  task->active = (uint32_t)q_entry;
+  ///TODO: The Other things to do while making a queue entry!!!
+  if(_q<top_queue)  //If the Top most queue earlier was below this queue,
+    top_queue = _q; //Put it as the top most queue
+  //Switch_back_from_System(); ///Get back now
 }

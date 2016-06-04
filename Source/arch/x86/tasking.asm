@@ -36,10 +36,10 @@ switcher:                             ; Main Scheduler + context swithcher
     mov eax, [system_dir]
     mov cr3, eax
 
-    mov eax, [current_task]           ; Save the old task i.e, current task *
+    mov eax, [current_task]           ; Save the old task i.e, current task 
     mov [old_task], eax
 
-    mov [eax], esp                    ; *
+    mov [eax], esp
     mov esp, 0xCD00000                ; Change to some temporary stack, I dont want to take risk
 
 

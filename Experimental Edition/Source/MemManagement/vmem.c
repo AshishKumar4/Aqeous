@@ -153,6 +153,7 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
     }
     else
     {
+      sz+=(4-(sz%4));
       sz4=sz/4;
       //sz4++;
       //sz=sz*4;

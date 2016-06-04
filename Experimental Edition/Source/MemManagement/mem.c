@@ -67,6 +67,7 @@ uint32_t kmalloc_int(uint32_t sz, int align)
     }
     else
     {
+      sz+=(4-(sz%4));
       sz4=sz/4;
       //sz4++;
       //sz=sz*4;
