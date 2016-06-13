@@ -14,15 +14,21 @@ void kb_io_init()
 void kb_getline(char* str, uint32_t length)
 {
   asm volatile("cli");
+  Switch_to_system_dir();
   kb_queue_t* new_entry = kb_Qalloc();
-  Last_q->next = new_entry;
-  Last_q = new_entry;
-  Last_q->next = 0;
 
-  if(!Start_q)
+  if(!q_elements)
   {
-    Start_q = Last_q;
+    Start_q = new_entry;
+    Last_q = Start_q;
+    Start_q->next = 0;
     Shell_sleep();
+  }
+  else
+  {
+    Last_q->next = new_entry;
+    Last_q = new_entry;
+    Last_q->next = 0;
   }
 
   ++q_elements;
@@ -35,12 +41,7 @@ void kb_getline(char* str, uint32_t length)
 
   uint32_t* place_holder = ((task_t*)current_task)->active;
   *place_holder = Spurious_task; //Spurious task is a task which would kill itself to remove the void.
-
-
-  //TODO: Create a better way of doing this shit instead of this way!!!
-
+  Switch_back_from_System();
   asm volatile("sti;\
   int $50;");
-
-  return;
 }

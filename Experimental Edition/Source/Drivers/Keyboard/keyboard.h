@@ -118,17 +118,15 @@ inline void kkybrd_set_leds (int num, int caps, int scroll)
 }
 
 int keyboard_scancodes(int key);
-
+/*
 uint8_t getchar();
 
 void getline(char* string);
 
-uint32_t StrToInt(char *str);
-
 uint8_t getchar();
 
 uint32_t getint();
-
+*/
 void keyboard_init();
 
 #endif

@@ -30,6 +30,7 @@
 #include "Qalloc.c"
 #include "queues.c"
 #include "vesa.c"
+#include "pic.c"
 
 u32int initial_esp;
 uint32_t initial_ebp;
@@ -104,7 +105,7 @@ void dbug()
 	//kmalloc(4096);
 	uint32_t *tst1=(uint32_t*)kmalloc(4096),*tst2=tst1;
 
-	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,tst1,malloc(8192));
+	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,tst1,kmalloc(8192));
 }
 
 uint32_t initial_eip;
@@ -118,7 +119,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	 //Kernel stack located at 200th mb to 250th mb
     //initial_esp = 0xC800000;
 		console_init();
-		//setVesa(0x108);
+		//setVesa(0x117);
 		init_APIC();
     init_descriptor_tables();
     printf("\nDESCRIPTOR TABLES INITIALIZED \n");
@@ -127,11 +128,8 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
     if(!acpiEnable())
         printf("\nACPI Initialized\n");
     else printf("\nACPI CANT BE INITIALIZED\n");
-		//init_hpet();
-		//init_timer(1000);
-		//while(1);
-
-		mouseinit();
+		ioapic_init();
+	//	mouseinit();
 		printf("\nMouse Drivers initialized\n");
 		keyboard_init();
 		kb_io_init();
@@ -177,19 +175,12 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
    printf("\nLOADING MAIN KERNEL...\n");
 	 mdbug=dbug;
 	 vesa=setVesa;
-	 uint32_t a=0;
-	 asm volatile("movl %%cr0, %0":"=r"(a));
-	 printf("\n%x Protected Mode Enabled? ",a);
-	 if(a & (1<<0))
-	 	printint(1);
 
 	 printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 	 printf("\n\tType mdbug to test the Memory Manager");
-	 printf("\n location of kernel_main: %x ",kernel_main);
-	 printf("sizeof Directory_t %x, File_t %x",sizeof(Directory_t),sizeof(File_t));
 
-	 //Init_fs();
-	 printf("\nsize of task_t: %x",sizeof(task_t));
+	 Init_fs();
+	 find_dir(0);
 	 printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
 	 if(cpuHasMSR()) printf("\nCPU has MSR");//*/
 	 //switch_pdirectory(main_dir);
@@ -205,10 +196,13 @@ void kernel_start()
 }
 
 void kernel_main()
-{/*
+{
+	while(1);
+	/*
 		printf("\n");
 		char *inst=" ";
 		uint8_t flg=0;
+		//while(1);
     while(!flg)
     {
 			//	asm volatile("cli");
@@ -222,77 +216,5 @@ void kernel_main()
 		{
 			Mouse_Plot(mousex,mousey);
 			DBuff();
-		}*/
-}
-
-uint8_t console_manager(char *inst)
-{
-	if(!strcmp(inst,"help"))
-	{
-		printf("\nAvialable Commands are:\n");
-		printf("\n\thelp         To get all the available commands");
-		printf("\n\tmdbug        To test the Memory Managment System");
-		printf("\n\tshutdown     To ACPI Power off the system (may not work on few machines)");
-		printf("\n\tstart vesa   To enter VESA Super VGA Mode");
-		printf("\n\tmemmap       To view the Physical Memory Map of the system");
-		printf("\n\ttest multi   To Test multitasking");
-		printf("\n\tls           To show the current directory's contents");
-		printf("\n\tcd <dir>     To move to a directory ('0' for root, '..' to move to parent)");
-		printf("\n\tcreate <type> <name>  To create a file or a directory ('file' for file, 'dir' for directory)\n");
-		printf("\n\tedit <name> {<data>}  To edit a file");
-		printf("\n\tdel <name>    To delete a file");
-		printf("\n\tremove        To remove a directory");
-		printf("\n\tother commands\n");
-		return 0;
-	}
-	else if(!strcmp(inst,"shutdown"))
-	{
-			printf("\n Turning Power off");
-			Switch_to_system_dir();
-			acpiPowerOff();
-			return 0;
-	}
-	else if(!strcmp(inst,"mdbug"))
-	{
-			printf("\n Testing Virtual Memory Manager");
-			Switch_to_system_dir();
-			mdbug();
-			Switch_back_from_System();
-			return 0;
-	}
-	else if(!strcmp(inst,"start vesa"))
-	{
-		printf("\n Entering VESA SVGA mode 1024*768");
-		Switch_to_system_dir();
-		vesa(0x117);
-		Switch_back_from_System();
-		return 1;
-	}
-	else if(!strcmp(inst,"memmap"))
-	{
-    printf("\nMemory Map:");
-    MemRegion_t* memmap_info=mmap_info;
-		Switch_to_system_dir();
-
-    for(int i=0;i<15;i++)
-    {
-        if(memmap_info->startLo==0) break;
-        printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,memmap_info->startHi,memmap_info->sizeHi,
-               memmap_info->type,strMemoryTypes[memmap_info->type-1]);
-        memmap_info++;
-    }
-		Switch_back_from_System();
-		return 0;
-	}
-	else if(!strcmp(inst,"test multi"))
-	{
-		//schedule=switch_task;
-		//printf("\n\tEnter the timer Value:");
-		//uint32_t timer=getint();
-		Switch_to_system_dir();
-		//Scheduler_exec();
-		return 0;
-	}
-	printf("\n Command Not Recognized! type help for help\n");
-	return 0;
+		}//*/
 }

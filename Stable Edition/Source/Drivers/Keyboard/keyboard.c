@@ -103,7 +103,7 @@ int keyboard_scancodes(int key)
 }
 /* Handles the keyboard interrupt */
 extern void keyboardInterrupt_handler();
-
+/*
 int checker(int i)
 {
   printint(0);
@@ -116,7 +116,7 @@ uint8_t getch()
 	asm volatile("sti");
   while(!call){}
 	asm volatile("cli");
-  uint8_t key=keyboard_scancodes(call);
+  uint8_t key=call;
   call=0;
   return key;
 }
@@ -129,9 +129,9 @@ uint8_t getchar()
 	asm volatile("cli");
 	if(!call)
 		printf("wtf");
-  uint8_t key=keyboard_scancodes(call);
-  if(key!='\r' && key!='\0' && key!='\b')
-    printf("%c",key);
+  uint8_t key=call;
+//  if(key!='\r' && key!='\0' && key!='\b')
+  //  printf("%c",key);
   call=0;
   if(key=='\b')
   {
@@ -161,23 +161,6 @@ void getline(char* string)
   }
   printf("\n");
 }
-
-uint32_t StrToInt(char *str)
-{
-    uint32_t in=0;
-    int ln=strlen(str);
-    int arr[999],a=1;
-    for(int i=0;i<=ln;i++) a=a*10;
-    a=a/100;
-    for(int i=0;i<=ln;i++)
-    {
-        arr[i]=str[i]-48;
-        in=in+arr[i]*a;
-        a=a/10;
-    }
-		return in;
-}
-
 uint32_t getint()
 {
 	uint32_t var=0;
@@ -185,7 +168,7 @@ uint32_t getint()
 	getline(temp);
 	var=StrToInt(temp);
 	return var;
-}
+}*/
 
 void keyboard_init()
 {

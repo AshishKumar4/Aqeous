@@ -8,8 +8,9 @@
 #include "paging.h"
 #include "shell.h"
 #include "tasking.h"
+#include "console.h"
 
-uint32_t* LAPIC_EOI_send = 0x00b0+0xfee00000;
+uint32_t* LAPIC_EOI_send = (uint32_t*)(0x00b0+0xfee00000);
 extern void switcher();
 
 void divByZero_handler()
@@ -208,29 +209,14 @@ void reserved_handler()
 //#ifdef PIC
 void PIT_handler()
 {
-  printf("ABCD");
-  //localapic_eoi();
-  //++counter;
-//  switcher();
-/*
-  uint32_t cs1;
-  asm volatile("pop %%eax;\
-  pop %%cs;\
-  mov %%cs, %%eax;\
-  mov %%eax, %0":"=r"(cs1)::"memory");
-  printf(" \nCS: %x",cs1);*/
-  while(1);
-  // outb(0x20, 0x20);
-
-    *LAPIC_EOI_send = 0;
+  asm volatile("cli");
+  outb(0x20,0x20);
   asm volatile("iret");
 }
 
-
 void keyboardInterrupt_handler()
 {
-  asm volatile("cli");
-
+  Switch_to_system_dir();
   if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
@@ -245,7 +231,6 @@ void keyboardInterrupt_handler()
     		//! test if a special key has been released & set it
     		switch (key)
         {
-
     					case KEY_LCTRL:
     					case KEY_RCTRL:
     						_ctrl = 0;
@@ -264,7 +249,6 @@ void keyboardInterrupt_handler()
       }
       else //it is a make code
       {
-        /*
         int key=scancodes[scancode];
         //printint(scancode);
         //! test if a special key has been released & set it
@@ -307,20 +291,35 @@ void keyboardInterrupt_handler()
     						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
     						break;
               default:
-              call=key;
-    			}*/
-          *kb_stream = scancode;
-          ++kb_stream;
-          if(kb_stream == kb_stream_end)
-            kb_stream = kb_stream_start;
-          //Priority_promoter((uint32_t*)Shell_task);
-          //TODO: MASK interrupt 50 for a moment
+                call = keyboard_scancodes(key);
+                if(call == '\r')
+                {
+                  enter_pressed = 1;
+                }
+                else if(call == '\b') //TODO: Backspace is hit!
+                {
+                  if(kb_buff)
+                  {
+                    --Istream_ptr;
+                    *Istream_ptr = 0;
+                    --kb_buff;
+                    backspace();
+                  }
+                }
+                else
+                {
+                  *(Istream_ptr) = call;
+                  ++Istream_ptr;
+                  ++kb_buff;
+                  if((uint32_t)Istream_ptr == Istream_end)
+                    Istream_ptr = (uint32_t*)Input_stream;   //Reset
+                  _putchar((int)call);
+                }
+          }
         }
       }
   }
-
-  *LAPIC_EOI_send = 0;
-  asm volatile("iret");
+  Switch_back_from_System();
 }
 
 void cascade_handler()

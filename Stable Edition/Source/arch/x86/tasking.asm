@@ -17,9 +17,14 @@ pdir_backup: RESD 1
 global kernel_stack
 kernel_stack: RESD 1
 
+global temp_dir
+temp_dir: RESD 1
+
 extern tick
 extern system_dir
 extern main_dir
+extern _cur_directory
+extern _prev_directory
 
 section .text
 
@@ -33,13 +38,16 @@ switcher:                             ; Main Scheduler + context swithcher
     cli
     pusha                             ; PUSH ALL REGISTERS ON THE STACK
 
+    mov eax, cr3                      ; *Remove these lines once userspace has been implemented.
+    mov [temp_dir], eax
+
     mov eax, [system_dir]
     mov cr3, eax
 
-    mov eax, [current_task]           ; Save the old task i.e, current task *
+    mov eax, [current_task]           ; Save the old task i.e, current task
     mov [old_task], eax
 
-    mov [eax], esp                    ; *
+    mov [eax], esp
     mov esp, 0xCD00000                ; Change to some temporary stack, I dont want to take risk
 
 
@@ -65,8 +73,16 @@ switcher:                             ; Main Scheduler + context swithcher
     mov [new_process], eax
                                       ; replace old_process with old_task
 
+;    mov eax, [eax]
+;    mov [_cur_directory], eax
+;    mov eax, cr3
+;    mov [_prev_directory], eax
+;    mov eax, [_cur_directory]
+;    mov cr3, eax                     ; SWITCH TO New Process's page directory
+
     mov eax, [eax]
     mov cr3, eax                      ; SWITCH TO New Process's page directory
+    mov [_cur_directory], eax
 
 
     mov eax, [current_task]
@@ -74,9 +90,17 @@ switcher:                             ; Main Scheduler + context swithcher
 
     popa
 
+;    push eax
+;    mov eax, 0xFEE000B0               ; APIC End Of Interrupt
+;    mov dword [eax], 0
+;    pop eax
+
     push eax
-    mov eax, 0xFEE000B0               ; APIC End Of Interrupt
-    mov dword [eax], 0
+    push edx
+    mov dx, 0x20                      ; PIC Timer End Of Interrupt
+    mov ax, 0x20
+    out dx, ax
+    pop edx
     pop eax
 
     iretd
@@ -87,6 +111,9 @@ context_switch2:
     mov eax, [current_task]
     mov esp, [eax]                    ; Load new esp
 
+    mov eax, [temp_dir]
+    mov cr3, eax
+
     popa                              ; Popa
 
   ;  mov eax, 1                       ; A functionality to DBUG scheduler at any given cycle 'x' where x = 1,2,3....
@@ -94,14 +121,18 @@ context_switch2:
   ;  cmp eax,ebx
   ;  je secondout
 
-    push eax
-    mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
-    mov dword [eax], 0
-    pop eax
+;    push eax
+;    mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
+;    mov dword [eax], 0
+;    pop eax
 
-  ;  mov dx, 0x20                      ; PIT Timer End Of Interrupt
-  ;  mov ax, 0x20
-  ;  out dx, ax
+    push eax
+    push edx
+    mov dx, 0x20                      ; PIC Timer End Of Interrupt
+    mov ax, 0x20
+    out dx, ax
+    pop edx
+    pop eax
 
     iretd
 

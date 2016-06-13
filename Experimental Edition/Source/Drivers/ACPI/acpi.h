@@ -65,6 +65,22 @@ struct FACP
    byte PM1_CNT_LEN;
 };
 
+typedef struct MADT
+{
+  char Signature[4];
+  uint32_t Length;
+  uint8_t revision;
+  uint8_t checksum;
+  char OEMID[6];
+  char OEM_table_id[8];
+  uint32_t OEMRevision;
+  uint32_t CreatorID;
+  uint32_t CreatorREV;
+  uint32_t local_controller_addr;
+  uint32_t flags;
+  uint8_t rest_fields;
+}MADT_t;
+
 
 void acpiPowerOff(void);
 

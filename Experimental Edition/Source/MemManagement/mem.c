@@ -202,6 +202,8 @@ uint32_t kmalloc_int(uint32_t sz, int align)
         }
       }
     }
+    printf("\n Something went wrong");
+    //while(1);
 }
 
 void kfree(uint32_t* ptr)

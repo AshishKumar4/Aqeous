@@ -12,6 +12,8 @@ void Scheduler_init()
 }
 */
 
+//TODO: Extend Base Queue size so that it can store 20480 tasks.
+
 void Scheduler()
 {
   uint32_t* _q=top_queue; ///Always start searching from the top most available queue
@@ -25,7 +27,10 @@ void Scheduler()
     back:
     tmp=_q+bottom_task; ///round robin manner
     if(*tmp)
+    {
       current_task=*tmp;
+      ((task_t*)current_task)->active = (uint32_t)tmp;
+    }
     else
     {
       ++bottom_task;

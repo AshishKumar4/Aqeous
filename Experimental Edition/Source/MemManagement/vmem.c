@@ -283,6 +283,8 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
         }
       }
     }
+    printf("\n Something went wrong");
+    //while(1);
 }
 
 void free(uint32_t* ptr)

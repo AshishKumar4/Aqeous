@@ -7,11 +7,14 @@
 #include <stdarg.h>
 #include <string.h>
 
-uint32_t* kb_stream_start,* kb_stream_end, *kb_stream;
+extern volatile bool multitasking_ON;
 
 extern int putchar(int ic);
 extern void printint(uint32_t in);
 extern void print64int(uint64_t in);
+static void _print(const char* data, size_t data_length);
+extern void _printint(uint32_t in);
+extern int _putchar(int ic);
 
 int _printf(const char* restrict format, ...);
 
@@ -23,79 +26,152 @@ static void print(const char* data, size_t data_length)
 
 int printf(const char* restrict format, ...)
 {
-	va_list parameters;
-	va_start(parameters, format);
-
-	int written = 0;
-	size_t amount;
-	bool rejected_bad_specifier = false;
-
-	while ( *format != '\0' )
+	if(multitasking_ON)
 	{
-		if ( *format != '%' )
+		va_list parameters;
+		va_start(parameters, format);
+
+		int written = 0;
+		size_t amount;
+		bool rejected_bad_specifier = false;
+
+		while ( *format != '\0' )
 		{
-		print_c:
-			amount = 1;
-			while ( format[amount] && format[amount] != '%' )
-				amount++;
-			print(format, amount);
-			format += amount;
-			written += amount;
-			continue;
+			if ( *format != '%' )
+			{
+			_print_c:
+				amount = 1;
+				while ( format[amount] && format[amount] != '%' )
+					amount++;
+				_print(format, amount);
+				format += amount;
+				written += amount;
+				continue;
+			}
+
+			const char* format_begun_at = format;
+
+			if ( *(++format) == '%' )
+				goto _print_c;
+
+			if ( rejected_bad_specifier )
+			{
+			_incomprehensible_conversion:
+				rejected_bad_specifier = true;
+				format = format_begun_at;
+				goto _print_c;
+			}
+
+			if ( *format == 'c' )
+			{
+				format++;
+				char c = (char) va_arg(parameters, int /* char promotes to int */);
+				_print(&c, sizeof(c));
+			}
+			else if ( *format == 's' )
+			{
+				format++;
+				const char* s = va_arg(parameters, const char*);
+				_print(s, strlen(s));
+			}
+	        else if(*format == 'i' ||*format == 'd')
+	        {
+	            format++;
+	            int c = va_arg (parameters, int);
+	            _printint(c);
+	        }
+	        else if(*format == 'l'||*format == 'x') //uint32_t
+	        {
+	            format++;
+	            uint32_t c = va_arg (parameters, uint32_t);
+	            _printint(c);
+	        }
+			else
+			{
+				goto _incomprehensible_conversion;
+			}
 		}
 
-		const char* format_begun_at = format;
+		va_end(parameters);
 
-		if ( *(++format) == '%' )
-			goto print_c;
-
-		if ( rejected_bad_specifier )
-		{
-		incomprehensible_conversion:
-			rejected_bad_specifier = true;
-			format = format_begun_at;
-			goto print_c;
-		}
-
-		if ( *format == 'c' )
-		{
-			format++;
-			char c = (char) va_arg(parameters, int /* char promotes to int */);
-			print(&c, sizeof(c));
-		}
-		else if ( *format == 's' )
-		{
-			format++;
-			const char* s = va_arg(parameters, const char*);
-			print(s, strlen(s));
-		}
-        else if(*format == 'i' ||*format == 'd')
-        {
-            format++;
-            int c = va_arg (parameters, int);
-            printint(c);
-        }
-        else if(*format == 'l'||*format == 'x') //uint32_t
-        {
-            format++;
-            uint32_t c = va_arg (parameters, uint32_t);
-            printint(c);
-        }
-        else if(*format == 'a'||*format == 'L') //uint32_t
-        {
-            format++;
-            uint64_t c = va_arg (parameters, uint64_t);
-            print64int(c);
-        }
-		else
-		{
-			goto incomprehensible_conversion;
-		}
+		return written;
 	}
+	else
+	{
+		va_list parameters;
+		va_start(parameters, format);
 
-	va_end(parameters);
+		int written = 0;
+		size_t amount;
+		bool rejected_bad_specifier = false;
 
-	return written;
+		while ( *format != '\0' )
+		{
+			if ( *format != '%' )
+			{
+			print_c:
+				amount = 1;
+				while ( format[amount] && format[amount] != '%' )
+					amount++;
+				print(format, amount);
+				format += amount;
+				written += amount;
+				continue;
+			}
+
+			const char* format_begun_at = format;
+
+			if ( *(++format) == '%' )
+				goto print_c;
+
+			if ( rejected_bad_specifier )
+			{
+			incomprehensible_conversion:
+				rejected_bad_specifier = true;
+				format = format_begun_at;
+				goto print_c;
+			}
+
+			if ( *format == 'c' )
+			{
+				format++;
+				char c = (char) va_arg(parameters, int /* char promotes to int */);
+				print(&c, sizeof(c));
+			}
+			else if ( *format == 's' )
+			{
+				format++;
+				const char* s = va_arg(parameters, const char*);
+				print(s, strlen(s));
+			}
+	        else if(*format == 'i' ||*format == 'd')
+	        {
+	            format++;
+	            int c = va_arg (parameters, int);
+	            printint(c);
+	        }
+	        else if(*format == 'l'||*format == 'x') //uint32_t
+	        {
+	            format++;
+	            uint32_t c = va_arg (parameters, uint32_t);
+	            printint(c);
+	        }
+	        else if(*format == 'a'||*format == 'L') //uint32_t
+	        {
+	            format++;
+	            uint64_t c = va_arg (parameters, uint64_t);
+	            print64int(c);
+	        }
+			else
+			{
+				goto incomprehensible_conversion;
+			}
+		}
+
+		va_end(parameters);
+
+		return written;
+	}
 }
 
 char tbuf[32];

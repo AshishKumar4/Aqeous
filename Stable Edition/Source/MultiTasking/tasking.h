@@ -7,13 +7,16 @@
 #include "vmem.h"
 #include "paging.h"
 #include "stdint.h"
+#include "fs.h"
 
 #define QUEUE_START 209715200
 #define LAST_QUEUE 209797120
 #define TOTAL_QUEUES 20
 
-uint32_t* top_queue=(uint32_t*)LAST_QUEUE;
-uint32_t reached_bottom=0,bottom_task=1;
+uint32_t* volatile top_queue=(uint32_t*)LAST_QUEUE;
+uint32_t volatile reached_bottom=0,bottom_task=1;
+int volatile cli_already = 0;
+bool volatile multitasking_ON = false;
 
 // This structure defines a 'task' - a process.
 typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
@@ -27,7 +30,7 @@ typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU
     char* name; //Parent Process name
 }task_t;
 
-task_t* Idle_task;
+task_t* Idle_task, *Shell_task, *Spurious_task;
 
 
 typedef struct __attribute__((packed)) task_table
@@ -80,14 +83,10 @@ extern void Scheduler_init();
 void Activate_task_direct(task_t* task);
 task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flags, Process_t* process);
 
-void Spurious_task()
-{
-    asm volatile("cli");
-    //TODO: REMOVE ITSELF FROM SCHEDULING LOOP!!!
-    asm volatile("sti");
-    while(1);
-}
+void Spurious_task_func();
 
 void Priority_promoter(task_t* task);
+
+void test_process();
 
 #endif

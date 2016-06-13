@@ -70,7 +70,7 @@ void apic_start_timer()
 
  /**PIT TIMER, working**/
 void init_timer(uint32_t frequency)
- {
+{
     //Our PIT timer handler is already especially hard coded in asm in interrupts.s
     // The value we send to the PIT is the value to divide it's input clock
     // (1193180 Hz) by, to get our required frequency. Important to note is

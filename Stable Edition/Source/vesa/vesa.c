@@ -1,81 +1,8 @@
-
 #include <common.h>
 #include <mem.h>
 #include <paging.h>
 #include <string.h>
-
-#define wVESA     1024
-#define hVESA     768
-#define dVESA     32
-
-
-typedef struct __attribute__ ((packed)) {
-  unsigned short di, si, bp, sp, bx, dx, cx, ax;
-  unsigned short gs, fs, es, ds, eflags;
-} regs16_t;
-
-int widthVESA, heightVESA, depthVESA;
-
-unsigned char *vga_mem;
-
-unsigned char *buff;
-
-typedef struct MODE_INFO
-{
-  unsigned short ModeAttributes       __attribute__ ((packed));
-  unsigned char  WinAAttributes;
-  unsigned char  WinBAttributes;
-  unsigned short WinGranularity       __attribute__ ((packed));
-  unsigned short WinSize              __attribute__ ((packed));
-  unsigned short WinASegment          __attribute__ ((packed));
-  unsigned short WinBSegment          __attribute__ ((packed));
-  unsigned long  WinFuncPtr           __attribute__ ((packed));
-  unsigned short BytesPerScanLine     __attribute__ ((packed));
-  unsigned short XResolution          __attribute__ ((packed));
-  unsigned short YResolution          __attribute__ ((packed));
-  unsigned char  XCharSize;
-  unsigned char  YCharSize;
-  unsigned char  NumberOfPlanes;
-  unsigned char  BitsPerPixel;
-  unsigned char  NumberOfBanks;
-  unsigned char  MemoryModel;
-  unsigned char  BankSize;
-  unsigned char  NumberOfImagePages;
-  unsigned char  Reserved_page;
-  unsigned char  RedMaskSize;
-  unsigned char  RedMaskPos;
-  unsigned char  GreenMaskSize;
-  unsigned char  GreenMaskPos;
-  unsigned char  BlueMaskSize;
-  unsigned char  BlueMaskPos;
-  unsigned char  ReservedMaskSize;
-  unsigned char  ReservedMaskPos;
-  unsigned char  DirectColorModeInfo;
-  unsigned long  PhysBasePtr          __attribute__ ((packed));
-  unsigned long  OffScreenMemOffset   __attribute__ ((packed));
-  unsigned short OffScreenMemSize     __attribute__ ((packed));
-  unsigned char  Reserved[206];
-} MODE_INFO;
-
-typedef struct VESA_INFO
-{
-  unsigned char  VESASignature[4];//     __attribute__ ((packed));
-  unsigned short VESAVersion          __attribute__ ((packed));
-  unsigned long  OEMStringPtr         __attribute__ ((packed));
-  unsigned char  Capabilities[4];//      __attribute__ ((packed));
-  unsigned long  VideoModePtr         __attribute__ ((packed));
-  unsigned short TotalMemory          __attribute__ ((packed));
-  unsigned short OemSoftwareRev       __attribute__ ((packed));
-  unsigned long  OemVendorNamePtr     __attribute__ ((packed));
-  unsigned long  OemProductNamePtr    __attribute__ ((packed));
-  unsigned long  OemProductRevPtr     __attribute__ ((packed));
-  unsigned char  Reserved[222];//        __attribute__ ((packed));
-  unsigned char  OemData[256];//         __attribute__ ((packed));
-} VESA_INFO;
-
-VESA_INFO *vbeInfo;
-MODE_INFO *vbeModeInfo;
- void int32(u8int intnum, regs16_t *regs);
+#include "vesa.h"
 
 void setBank(int bankNo)
 {
@@ -88,6 +15,15 @@ void setBank(int bankNo)
   int32(0x10, &regs);
 }
 
+uint32_t vesa_alloc_base = 0x1000;
+
+inline uint32_t vesa_malloc()
+{
+  uint32_t ab = vesa_alloc_base;
+  vesa_alloc_base += 0x1000;
+  return ab;
+}
+
 void setVesa(uint32_t mode)
 {
   asm volatile("cli");
@@ -95,11 +31,11 @@ void setVesa(uint32_t mode)
 
   regs16_t *regs;
 
-  /**Gets VESA information**/
-
-  vbeInfo = (VESA_INFO*)(kmalloc(sizeof(VESA_INFO)) & 0xFFFFF);
+  vbeInfo = (VESA_INFO*)vesa_malloc();
+//  printf("\n vbeInfo:%x %x", vbeInfo, sizeof(VESA_INFO));
   u32int buffer = (uint32_t)vbeInfo;
-  regs = (regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
+  regs = (regs16_t*)vesa_malloc();
+//  printf("\n regs:%x %x", regs, sizeof(regs16_t));
 
   memcpy((void*)buffer, "VBE2", 4);
 
@@ -107,10 +43,12 @@ void setVesa(uint32_t mode)
   regs->di = buffer & 0xF;
   regs->es = (buffer>>4) & 0xFFFF;
   int32(0x10, regs);
-//*/
-  vbeModeInfo=(MODE_INFO*)(kmalloc(sizeof(MODE_INFO)) & 0xFFFFF);
+  //*/
+  vbeModeInfo=(MODE_INFO*)vesa_malloc();
+//  printf("\n vbeModeInfo:%x %x", vbeModeInfo, sizeof(MODE_INFO));
   u32int modeBuffer = (uint32_t)vbeModeInfo;
-  regs=(regs16_t*)(kmalloc(sizeof(regs)) & 0xFFFFF);
+  regs=(regs16_t*)vesa_malloc();
+//  printf("\n regs:%x", regs);
   //memset(&regs, 0, sizeof(regs));
   regs->ax = 0x4f01;
   regs->di = modeBuffer & 0xF;
@@ -121,16 +59,15 @@ void setVesa(uint32_t mode)
   regs->ax = 0x4f02;
   regs->bx = (mode | 0x4000);
   int32(0x10, regs);
-  vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
+  vga_mem = (uint8_t*)vbeModeInfo->PhysBasePtr;
   widthVESA=vbeModeInfo->XResolution;
   heightVESA=vbeModeInfo->YResolution;
   depthVESA=vbeModeInfo->BitsPerPixel;
-  buff=(u8int*)kmalloc(1024*768*2);
-  map(vbeModeInfo->PhysBasePtr,1024*768*2,system_dir);
-  asm volatile("sti");
+  //asm volatile("sti");
 }
 
 void vesa_lfb()
 {
-    buff=(u8int*)kmalloc(1024*768*4);
+  buff=(uint8_t*)kmalloc(1024*768*2);
+  map(vbeModeInfo->PhysBasePtr,1024*768*2,system_dir);
 }

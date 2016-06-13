@@ -1,9 +1,11 @@
 #ifndef APIC_h
 #define APIC_h
 
+#include "acpi.h"
+
 #define CPUID_FLAG_APIC 1<<9
-#define APIC_LOCAL_BASE 0xfee00000
-#define APIC_IO_BASE 0xfec00000 //ONLY FOR QEMU AND BOCHS
+uint32_t APIC_LOCAL_BASE=0xfee00000;
+uint32_t APIC_IO_BASE=0xfec00000; //ONLY FOR QEMU AND BOCHS
 uint32_t counter=0;
 // ------------------------------------------------------------------------------------------------
 // Local APIC Registers
@@ -69,6 +71,43 @@ uint32_t counter=0;
 // Destination Field
 #define ICR_DESTINATION_SHIFT           24
 
+typedef struct __attribute__((packed)) MADT_ENTRY
+{
+  uint8_t type;
+  uint8_t record_length;
+  uint32_t rest_field[];
+}madt_entry_t;
+
+typedef struct __attribute__((packed)) IOAPIC_MADT_ENTRY
+{
+  uint8_t id;
+  uint8_t reserved;
+  uint32_t address;
+  uint32_t gsib; //GLOBAL SYSTEM INTERRUPT BASE
+  uint32_t rest_fields[];
+}ioapic_entry_t;
+
+typedef struct __attribute__((packed)) LAPIC_MADT_ENTRY
+{
+  uint8_t id;
+  uint8_t reserved;
+  uint32_t flags;
+  uint32_t rest_fields[];
+}lapic_entry_t;
+
+typedef struct __attribute__((packed)) ISD_MADT_ENTRY
+{
+  uint8_t bus_source;
+  uint8_t irq_source;
+  uint32_t global_sys_int;
+  uint16_t flags; //GLOBAL SYSTEM INTERRUPT BASE
+  uint32_t rest_fields[];
+}isd_entry_t;
+
+ioapic_entry_t volatile *IOAPIC_entry;
+lapic_entry_t volatile *LAPIC_entry;
+isd_entry_t volatile *ISD_entry;
+
 uint32_t localapic_read(uint32_t reg);
 void localapic_write(uint32_t reg, uint32_t value);
 void localapic_write_with_mask(uint32_t reg, uint32_t mask, uint32_t value);
@@ -76,5 +115,6 @@ void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector);
 void ioapic_write(uint32_t reg, uint32_t value);
 uint32_t ioapic_read(uint32_t reg);
 
+MADT_t* madt;
 
 #endif

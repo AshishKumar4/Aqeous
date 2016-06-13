@@ -407,6 +407,11 @@ void Init_fs()
     curr_ahci=ahci_start;
     curr_disk=&curr_ahci->Disk[1];
     curr_port=&abar->ports[1];
+    if(!curr_disk||!curr_port)
+    {
+      printf("\nNo DISK Found");
+      return;
+    }
     SATA_ident_t* info=(SATA_ident_t*)curr_disk->info;
     sectors=info->lba_capacity;
     printf("\nTotal Sectors: %x\n",sectors);
@@ -419,7 +424,12 @@ void Init_fs()
     read(curr_port,0,2,(DWORD)buf);
     Boot_sectors_t* boot=(Boot_sectors_t*)buf;
     root_location=boot->partition_locations[0];
-    printf("\nabc %s %x",boot->name,root_location);
+    printf("\n %s %x",boot->name,root_location);
+    if(!boot->name)
+    {
+      printf("Filesystem Not supported/Disk not partitioned\n");
+      return;
+    }
     set_curr_dir(root_location);
     /*
     find_dir(0);

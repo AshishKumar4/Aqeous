@@ -59,7 +59,7 @@ void setVesa(uint32_t mode)
   regs->ax = 0x4f02;
   regs->bx = (mode | 0x4000);
   int32(0x10, regs);
-  vga_mem = (u8int*)vbeModeInfo->PhysBasePtr;
+  vga_mem = (uint8_t*)vbeModeInfo->PhysBasePtr;
   widthVESA=vbeModeInfo->XResolution;
   heightVESA=vbeModeInfo->YResolution;
   depthVESA=vbeModeInfo->BitsPerPixel;
@@ -68,6 +68,6 @@ void setVesa(uint32_t mode)
 
 void vesa_lfb()
 {
-  buff=(u8int*)kmalloc(1024*768*2);
+  buff=(uint8_t*)kmalloc(1024*768*2);
   map(vbeModeInfo->PhysBasePtr,1024*768*2,system_dir);
 }

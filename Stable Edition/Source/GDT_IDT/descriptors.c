@@ -44,7 +44,7 @@ static void init_gdt()
     uint16_t* ptr = gdt_ptr;
     *ptr = ((sizeof(gdt_entry_t) * 5) - 1);
     ++ptr;
-    uint32_t* ptr2=ptr;
+    uint32_t* ptr2=(uint32_t*)ptr;
     *ptr2 = ((uint32_t)&gdt_entries);
     //*(gdt_ptr+2)  = ((((uint32_t)&gdt_entries) & (0xFFFF0000)) >> 16);
 
@@ -77,7 +77,7 @@ static void init_idt()
   uint16_t* ptr = idt_ptr;
   *ptr = ((sizeof(idt_entry_t) * 256) - 1);
   ++ptr;
-  uint32_t* ptr2=ptr;
+  uint32_t* ptr2=(uint32_t*)ptr;
   *ptr2 = ((uint32_t)&idt_entries);
   //We need to make sure the interrupt values are nulled out, else BAD things may happen
   memset(&idt_entries, 0, sizeof(idt_entry_t)*256);
@@ -115,8 +115,8 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM1_handler, 0x08, makeFlagByte(1, KERNEL_MODE));

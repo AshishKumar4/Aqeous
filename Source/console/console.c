@@ -22,7 +22,7 @@ void console_init(void)
 			console_buffer[index] = make_vgaentry(' ', console_color);
 		}
 	}
-	VGA_buffer = 500*1024*1024;
+	VGA_buffer = (uint16_t*)(500*1024*1024);
 }
 
 void console_setcolor(uint8_t color)
@@ -141,13 +141,7 @@ void printint(uint32_t in)
 
 void print64int(uint64_t in)
 {
-//	console_write_dec(u);
-}
-
-void backspace()
-{
-		--consolecolumn;
-		console_putentryat(' ', console_color, consolecolumn, consolerow);
+	console_write_dec(in);
 }
 
 /*************************************/
@@ -225,6 +219,17 @@ void _console_write_dec(uint32_t in)
     }
     a[i]='\0';
     _printf(a);
+}
+
+void backspace()
+{
+		--consolecolumn;
+		if(!consolecolumn)
+		{
+			--consolerow;
+			consolecolumn = VGA_WIDTH;
+		}
+		_console_putentryat(' ', console_color, consolecolumn, consolerow);
 }
 
 void _printint(uint32_t in)
