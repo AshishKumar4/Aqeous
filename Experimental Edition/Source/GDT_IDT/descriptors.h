@@ -49,6 +49,8 @@ void reserved_handler();
 //#ifdef PIC
 void PIT_handler();
 extern void kb_handle();
+extern void Scheduler_Promoter_assistance();
+extern void switcher_manual();
 void keyboardInterrupt_handler();
 void cascade_handler();//This particular interrupt is never raised
 void COM2_handler();

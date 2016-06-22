@@ -115,7 +115,7 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
-  idtSetEntry(num++, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(num++, (uint32_t)&Scheduler_Promoter_assistance, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
@@ -133,7 +133,8 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&secondaryHDD_handler, 0x08, makeFlagByte(1, KERNEL_MODE));
 
 
-  idtSetEntry(50, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(51, (uint32_t)&switcher, 0x08, makeFlagByte(1, KERNEL_MODE));
+  idtSetEntry(50, (uint32_t)&switcher_manual, 0x08, makeFlagByte(1, KERNEL_MODE));
   num = 0;
 
   lidt((void *)&idt_ptr);

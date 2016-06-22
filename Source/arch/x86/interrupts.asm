@@ -22,12 +22,12 @@ kb_handle:
 
     popa
 
-  ;  push eax
-  ;  mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
-  ;  mov dword [eax], 0
-  ;  pop eax
-
     push eax
+    mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
+    mov dword [eax], 0
+;    pop eax
+
+;    push eax
     push edx
     mov dx, 0x20                      ; PIT Timer End Of Interrupt
     mov ax, 0x20

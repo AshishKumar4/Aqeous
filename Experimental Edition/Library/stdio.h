@@ -7,14 +7,12 @@
 #include <stdarg.h>
 #include <string.h>
 
-extern volatile bool multitasking_ON;
-
-extern int putchar(int ic);
-extern void printint(uint32_t in);
+extern volatile int multitasking_ON;
+int putchar(int ic);
+void printint(uint32_t in);
 extern void print64int(uint64_t in);
-static void _print(const char* data, size_t data_length);
-extern void _printint(uint32_t in);
-extern int _putchar(int ic);
+void _printint(uint32_t in);
+int _putchar(char ic);
 
 int _printf(const char* restrict format, ...);
 
@@ -22,6 +20,12 @@ static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
 		putchar((int) ((const unsigned char*) data)[i]);
+}
+
+static void _print(const char* data, size_t data_length)
+{
+	for ( size_t i = 0; i < data_length; i++ )
+		_putchar((char)((const unsigned char*) data)[i]);
 }
 
 int printf(const char* restrict format, ...)

@@ -9,6 +9,9 @@
 #include "vesa.h"
 #include "fs.h"
 #include "graphics.h"
+#include "PIC.h"
+#include "memfunc.h"
+#include "Default_Commands.c"
 
 uint32_t VGA_size;
 
@@ -20,27 +23,48 @@ void init_shell()
 //  VGA_buffer_ptr = VGA_buffer;
   Switch_to_system_dir();
   consolerow = 0;
-	consolecolumn = 0;
+  consolecolumn = 0;
 //  console_buffer = vga_mem;
-  memset((void*)VGA_buffer, 0, 4194304);
-  VGA_size = VGA_WIDTH*VGA_HEIGHT*2;
+  memset_fast((void*)console_dbuffer, 0, 4194304);
+  VGA_size = VGA_WIDTH*VGA_HEIGHT/2;
   shell_buf = (char*)kmalloc(4096);
+  Shell_Commands_list = (uint32_t*)kmalloc(8192);
+  console_manager_init();
   Switch_back_from_System();
 }
 
-void Console_Writer()
+void __attribute__((optimize("O0"))) Shell_Double_buffer()
 {
-  while(1)
-  {
-    asm volatile("cli");
+   uint32_t* _s, *_c;
+   while(1)
+   {
+     //asm volatile("cli");
 
-    //TODO: COPY THE VGA_BUFFER TO THE ACTUAL VGA BUFFER (console_buffer)
-
-    memcpy((void*)console_buffer, (void*)VGA_buffer, VGA_size);
-
-    asm volatile("sti;\
-    int $50");
-  }
+     //TODO: COPY THE VGA_BUFFER TO THE ACTUAL VGA BUFFER (console_buffer)
+     _s = (uint32_t*)console_buffer;
+     _c = (uint32_t*)console_dbuffer;
+     for ( int _n = VGA_size; _n != 0; _n--)
+     {
+      *_s++ = *_c++;
+     }
+     //asm volatile("cli");
+     if(console_skip)
+     {
+      console_dbuffer += (VGA_WIDTH*console_skip);
+      consolerow -= console_skip;
+      console_skip = 0;
+      if((uint32_t)console_dbuffer >= console_dbuffer_limit)   //TODO: Make the console buffer mapping in such a way so that this method isnt required.
+      {
+         console_dbuffer = (uint16_t*)console_dbuffer_original;
+         _s = (uint32_t*)console_dbuffer;
+         for ( int _n = 4194304; _n != 0; _n--)
+         {
+          *_s++ = 0;
+         }
+      }
+     }
+     asm volatile("int $50");
+   }
 }
 
 void Shell_Input()
@@ -52,164 +76,205 @@ void Shell_Input()
     {
       if(kb_buff)
       {
-        _printf("\n");
+        _putchar((int)'\n');
         *(Istream_ptr) = '\0';
         if(q_elements)
         {
-          char* tmp = Istream_ptr - kb_buff;
-          strcpy(Start_q->buffer, tmp);
+          char* tmp = (char*)(Istream_ptr - kb_buff);
+          strcpy((char*)Start_q->buffer, tmp);
           kb_buff = 0;
 
           Task_wakeup(Start_q->task);
-          memset((void*)Start_q, 0, 16);
+          Shell_wakeup();
+          memset_faster((uint32_t*)Start_q, 0, 4);
           Start_q = Start_q->next;
           --q_elements;
           //TODO: Load the next element
           Current_buf = (uint8_t*)Start_q->buffer;
           Current_strlen = 0;
         }
-        else  //TODO: Give all input to the Shell Directly!
+        else if(shell_awake)  //TODO: Give all input to the Shell Directly!
         {
           Priority_promoter(Shell_task);
           shell_in = 1;
           shell_buf = Istream_ptr - kb_buff;
           kb_buff = 0;
         }
+        else
+        {
+          _printf("ALERT");
+        }
       }
       enter_pressed = 0;
     }
-    asm volatile("sti;\
-    int $50");
+    asm volatile("int $50");
+  }
+}
+/*
+void Shell_Finput()
+{
+  while(1)
+  {
+
   }
 }
 
-extern uint8_t console_manager(char* inst);
-
-void Shell()
+void Shell_Foutput()
 {
-  char* tmp = shell_buf;
-  uint8_t flg=0;
   while(1)
   {
-    _printf("\n%s>",curr_dir.full_name);
-    while(!shell_in)
+
+  }
+}
+*/
+void Shell()
+{
+  while(1)
+  {
+    if(shell_awake)
     {
-      asm volatile("int $50");
+      _printf("\n%s>",curr_dir.full_name);
+      while(!shell_in)
+      {
+        asm volatile("int $50");
+      }
+      //asm volatile("cli");
+      //console_manager((char*)shell_buf);
+      Shell_command_locator((char*)shell_buf);
+      *Shell_Istream = (uint32_t)shell_buf;
+      ++Shell_Istream;
+      shell_in = 0;
+      shell_buf = 0;
     }
-    asm volatile("cli");
-    flg=console_manager(shell_buf);
-    shell_in = 0;
-    shell_buf = 0;
-    asm volatile("sti;\
-    int $50");
+    asm volatile("int $50");
   }
 }
 
 void Shell_sleep()  //TODO: Make the Shell task to sleep.
 {
-  if(shell_awake)
+  asm volatile("cli");
+  if(!shell_sleeping)
   {
     Switch_to_system_dir();
-    uint32_t* volatile shell_place_holder = Shell_task->active;
-    *shell_place_holder = Spurious_task;
-    shell_awake = false;
+    uint32_t* shell_place_holder = (uint32_t*)Shell_task->active;
+    *shell_place_holder = (uint32_t)Spurious_task;
+    Shell_task->active = 0;
+    shell_awake = 0;
     Switch_back_from_System();
   }
+  ++shell_sleeping;
+  asm volatile("sti");
 }
 
 void Shell_wakeup()
 {
-  Task_wakeup(Shell_task);
+  asm volatile("cli");
+  --shell_sleeping;
+  if(!shell_sleeping)
+  {
+    Task_wakeup(Shell_task);
+    shell_awake = 1;
+  }
+  asm volatile("sti");
 }
 
-extern void dbug();
-
-uint8_t console_manager(char *inst)
+int Shell_command_locator(char *inst)
 {
-	if(!strcmp(inst,"help"))
-	{
-		_printf("\nAvialable Commands are:\n");
-		_printf("\n\thelp         To get all the available commands");
-		_printf("\n\tmdbug        To test the Memory Managment System");
-		_printf("\n\tshutdown     To ACPI Power off the system (may not work on few machines)");
-		_printf("\n\tstart vesa   To enter VESA Super VGA Mode");
-		_printf("\n\tmemmap       To view the Physical Memory Map of the system");
-		_printf("\n\ttest multi   To Test multitasking");
-		_printf("\n\tls           To show the current directory's contents");
-		_printf("\n\tcd <dir>     To move to a directory ('0' for root, '..' to move to parent)");
-		_printf("\n\tcreate <type> <name>  To create a file or a directory ('file' for file, 'dir' for directory)\n");
-		_printf("\n\tedit <name> {<data>}  To edit a file");
-		_printf("\n\tdel <name>    To delete a file");
-		_printf("\n\tremove        To remove a directory");
-		_printf("\n\tother commands\n");
-		return 0;
-	}
-	else if(!strcmp(inst,"shutdown"))
-	{
-			_printf("\n Turning Power off");
-			Switch_to_system_dir();
-			acpiPowerOff();
-			return 0;
-	}
-	else if(!strcmp(inst,"mdbug"))
-	{
-			_printf("\n Testing Virtual Memory Manager");
-			//Switch_to_system_dir();
-			dbug();
-			//Switch_back_from_System();
-			return 0;
-	}
-	else if(!strcmp(inst,"start vesa"))
-	{
-		_printf("\n Entering VESA SVGA mode 1024*768");
-		Switch_to_system_dir();
-		vesa(0x117);
-    Activate_task_direct(create_task("Vesa_test_buf", vesa_test_dbuf, 10, 0x202, Shell_proc));
-		Switch_back_from_System();
-		return 1;
-	}
-	else if(!strcmp(inst,"memmap"))
-	{
-    _printf("\nMemory Map:");
-    MemRegion_t* memmap_info=mmap_info;
-		Switch_to_system_dir();
-
-    for(int i=0;i<15;i++)
-    {
-        if(memmap_info->startLo==0) break;
-        _printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,memmap_info->startHi,memmap_info->sizeHi,
-               memmap_info->type,strMemoryTypes[memmap_info->type-1]);
-        memmap_info++;
-    }
-		Switch_back_from_System();
-		return 0;
-	}
-  else if(!strcmp(inst,"test multi"))
-  {
-    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
-    return 0;
-  }
-  else if(!strcmp(inst,"ls"))
-  {
-    find_dir(0);
-    return 0;
-  }
-  else if(!strncmp(inst,"cd",2))
-  {
-    
-    return 0;
-  }
-	_printf("\n Command Not Recognized! type help for help\n");
-	return 0;
+   uint32_t tmp = 0;
+   char* tmpstr = strtok(inst, " ");
+   uint32_t spaces = stroccr(inst, " ");
+   //int tmp2 = 0;
+   /*
+   for( int i = 0 ; inst[i]!='\0' ; i++ )    //Alternate Algorithm
+   {
+      tmp2 = (((int)inst[i])-((int)inst[i+1]));
+      if(tmp2 >= 0)
+         tmp += tmp2*(i+1);
+      else
+         tmp += (-tmp2)*(i+1);
+}*/
+   int i;
+   for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )
+   {
+      if((uint32_t)tmpstr[i] >= 97)
+         tmp += (((uint32_t)tmpstr[i]) - 97)*(i+1);
+      else
+         tmp += (((uint32_t)tmpstr[i]) - 65)*(i+1);
+   }
+   if(tmp <= 2048)
+   {
+      uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
+      if(ptr)
+      {
+         func_t func = ((Shell_Commands_t*)ptr)->func;
+         /*
+         if(!strncmp(inst, ((Shell_Commands_t*)ptr)->command, i))
+            func();
+         else
+         {
+              _printf("\n Command Not Recognized! type help for help\n");
+             return -1;
+         }*/
+         uint32_t* tmp2 = Main_CSI_struct->entries;
+         uint32_t* tot_entries = Main_CSI_struct->total_entries;
+         for(; ;)
+         {
+            tmpstr = strtok(NULL, "-");
+            if(tmpstr== NULL) break;
+            *tmp2 = (uint32_t)tmpstr;
+            ++tmp2;
+            ++(*tot_entries);
+            tmpstr = strtok(NULL, " ");
+            if(tmpstr== NULL) break;
+            *tmp2 = (uint32_t)tmpstr;
+            ++tmp2;
+            ++(*tot_entries);
+         }
+         func();
+         memset_faster(CSI_mem_start, 0, 66);
+         return ((Shell_Commands_t*)ptr)->reserved;
+      }
+      else
+      {
+    	    _printf("\n Command Not Recognized! type help for help\n"); //TODO: Search within other possible files/executables like in the PATH string.
+          return -1;
+      }
+   }
+   else
+   {
+      _printf("\n Command Not Recognized! type help for help\n");
+      return -1;
+   }
 }
 
-void vesa_test_dbuf()
+void Shell_Add_Commands(func_t func, uint32_t command_no, int flag, char* name)
 {
-  while(1)
-  {
-    asm volatile("cli");
-    DBuff();
-    asm volatile("sti;");
-  //  int $50");
-  }
+   Shell_Commands_t* command = (Shell_Commands_t*)kmalloc(sizeof(Shell_Commands_t));
+   command->func = func;
+   command->reserved = flag;
+   Shell_Commands_list[command_no] = (uint32_t)command;
+   strcpy(command->command, name);
+}
+
+void console_manager_init()
+{
+	Shell_Add_Commands(Command_help, 108, 0, "help");
+   Shell_Add_Commands(Command_shutdown, 525, 0, "shutdown");
+   Shell_Add_Commands(Command_mdbug, 131, 0, "mdbug");
+   //Shell_Add_Commands(Command_start_vesa, 2042, 1);
+   Shell_Add_Commands(Command_memmap, 194, 0, "memmap");
+   //Shell_Add_Commands(Command_start_counter, 0);
+   Shell_Add_Commands(Command_counter, 380, 0, "counter");
+   Shell_Add_Commands(Command_timeslice, 351, 0, "timeslice");
+   Shell_Add_Commands(Command_topq, 156, 0, "topq");
+   Shell_Add_Commands(Command_test, 157, 0, "test");
+   //Shell_Add_Commands(Command_test_multi, 1759, 0);
+   Shell_Add_Commands(Command_ls, 47, 0, "ls");
+   Shell_Add_Commands(Command_cd, 8, 0, "cd");
+   Shell_Add_Commands(Command_clrscr, 259, 0, "clrscr");
+   Shell_Add_Commands(Command_baseln, 204, 0, "baseln");
+   Shell_Add_Commands(Command_baseshow, 477, 0, "baseshow");
+   Shell_Add_Commands(Command_qelements, 562, 0, "qelements");
+   Shell_Add_Commands(Command_dbuffplusplus, 1344, 0, "dbuffplusplus");
+   memset_faster(CSI_mem_start, 0, 66);
 }

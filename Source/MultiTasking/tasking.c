@@ -15,6 +15,7 @@ void idle()
   //scheduler();
   while(1)
   {
+    asm volatile("int $50");
   }
 }
 
@@ -193,13 +194,16 @@ void test_process()
   _printf("\nThis is a test process to test the capabilities of the this New System.\nI am now Gonna get some input from you.");
   _printf("\nType your name below to check if the system and the keyboard drivers are working.\n-->");
   asm volatile("cli");
-  char* test_str = kmalloc(100);
+  uint32_t* test_str = (uint32_t*)kmalloc(10);
   asm volatile("sti");
-  kb_getline(test_str, 10);
-  _printf("\nYou entered: %s\n", test_str);
+  kb_getline((char*)test_str, 20);
+  _printf("\nYou entered: %s\n", (char*)test_str);
   Shell_wakeup();
 //  while(1);
+  asm volatile("cli");
+  kfree(test_str);
   kill();
+  while(1);
 }
 
 void tasking_initiator()
@@ -207,19 +211,20 @@ void tasking_initiator()
   current_task = (uint32_t)Idle_task;
   printf("\n\n\n\t\t--------------MISSION ACCOMPLISHED--------------\n\n\t--------------Welcome to the MultiThreading World!!!--------------\n");
   printf("\n\t-----------Launching the Shell and input/output processes-----------\n\t\t\t\tStarting in 3...2...1... GO...\n\n");
-  delay1(30);
-  init_shell();
+  delay1(1);
   kb_io_init();
+  init_shell();
+  multitasking_ON = 1;
   //setVesa(0x110); //TEXT MODE VESA :v
   //init_hpet();
-  //apic_start_timer();       //The respective Timer initialization function of the timer of choice
+  apic_start_timer();       //The respective Timer initialization function of the timer of choice
 
-  clearIRQMask(0);
   clearIRQMask(1);
-  init_timer(30000);
-  multitasking_ON = true;
+//  init_timer(1000);
   //Here it goes, The entry to the multitasking world.
-  asm volatile("sti");
+  asm volatile("sti;\
+  int $50");
+  kill();
   while(1);
 }
 
@@ -229,25 +234,31 @@ void init_multitasking()
 {
   asm volatile("cli");
   kernel_proc = create_process("microkernel", 0, 1, 0);
-  kernel_proc->pgdir = system_dir;
+  kernel_proc->pgdir = (uint32_t)system_dir;
 
   new_process = (uint32_t)kernel_proc;
 
-  current_task = (uint32_t)create_task("initiating_task",tasking_initiator, 15, 0x202, kernel_proc);  //Scheduler initalization task
+  current_task = (uint32_t)create_task("initiating_task",tasking_initiator, 0, 0x202, kernel_proc);  //Scheduler initalization task
   old_task = current_task;
 
-  Spurious_task = create_task("Spurious_task", Spurious_task_func, 10, 0x202, kernel_proc);
+  Spurious_task = create_task("Spurious_task", Spurious_task_func, 0, 0x202, kernel_proc);
+  Spurious_task->special = 1;
 
-  Idle_task = create_task("System_idle_task",idle, 15, 0x202, kernel_proc);  //default task, this dosent run
-
-  Activate_task_direct(create_task("Main_Kernel",kernel_main, 10, 0x202, kernel_proc));
-//  Activate_task_direct(create_task("idle2_test",test_task, 10, 0x202, kernel_proc));
+  Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
+  Idle_task->special = 1;
 
   Shell_proc = create_process("Shell", 0, 1, kernel_proc);
-  Activate_task_direct(create_task("Shell_Ostream", Console_Writer, 10, 0x202, Shell_proc)); //This is the task which would make printing to console possible!
-  Activate_task_direct(create_task("Shell_Istream", Shell_Input, 10, 0x202, Shell_proc));
-  Shell_task = create_task("Shell_task", Shell, 10, 0x202, Shell_proc);
+  Shell_Ostream_task = create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc);
+  Activate_task_direct(Shell_Ostream_task); //This is the task which would make printing to console possible!
+  Shell_Istream_task = create_task("Shell_Istream", Shell_Input, 1, 0x202, Shell_proc);
+  Activate_task_direct(Shell_Istream_task); //This would manage keyboard input and delivery to the required process.
+  //Shell_Istream_task->special = 1;
+  Shell_task = create_task("Shell_task", Shell, 5, 0x202, Shell_proc);  //Main shell task.
+  //Shell_task->special = 1;
   Activate_task_direct(Shell_task);
+
+  SAS_proc = create_process("SAS", 0, 1, kernel_proc); //Scheduler Assistance System process.
+  Activate_task_direct(create_task("SAS_init", SAS_init, 1, 0x202, SAS_proc)); //Initialization of SAS system.
 
   reached_bottom = 0;
   Scheduler_init(); // Let the FUN Begin :D Lets Switch from the old monotasking world to Multitasking World :D defined in tasking.asm
@@ -256,7 +267,8 @@ void init_multitasking()
 
 void Spurious_task_func()
 {
-    //TODO: REMOVE ITSELF FROM SCHEDULING LOOP!!!
-    kill();
-  //  while(1);
+  while(1) //Dont worry; It would eventually sink to the bottom queue where it would be removed by some other task.
+  {
+    asm volatile("int $50");
+  }
 }

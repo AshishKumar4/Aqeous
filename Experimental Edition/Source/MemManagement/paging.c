@@ -13,14 +13,14 @@ inline pdirectory* pgdir_maker()
 {
     Switch_to_system_dir();
     pdirectory* dir=(pdirectory*)pmalloc(2);
-    memset((void*)dir, 0, 4096);
+    memset_fast((void*)dir, 0, 4096);
     PgDirs[PgDs].pgdir=dir;
     PgDirs[PgDs].ID=PgDs+1;
     ++PgDs;
     for(int i=0; i<1024; i++) //Make all page tables in advance to increase performance
     {
       dir->m_entries[i] = (table_t)pmalloc(2);
-      memset((void*)dir->m_entries[i], 0, 0x1000);
+      memset_fast((void*)dir->m_entries[i], 0, 0x1000);
       table_t* entry = &dir->m_entries[i];
       pd_entry_add_attrib (entry, I86_PDE_PRESENT);
       pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
@@ -50,10 +50,10 @@ inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdire
 {
     map(0, 8*1024*1024, dir);
   //  map(50331648, 12*1024*1024, dir);
-  //  map(200*1024*1024, 300*1024*1024, dir);
+    map(200*1024*1024, 15*1024*1024, dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
     //Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
-    Map_non_identity((uint32_t)VGA_buffer, 0xCF000000, 8*1024*1024, dir);
+    Map_non_identity((uint32_t)console_dbuffer_original, 0xCF000000, 8*1024*1024, dir);
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
   //  map((uint32_t)VGA_buffer, 8192*1024, dir);
     //while(1);
@@ -79,15 +79,25 @@ inline void System_dir_setup() ///will use it to manage OS directly
 
 inline void Switch_to_system_dir()
 {
+  if(!in_system_dir)
+  {
     asm volatile("mov %0, %%cr3":: "r"((uint32_t)system_dir):"memory");
     _prev_directory=_cur_directory;
     _cur_directory=system_dir;
+    in_system_dir=1;
+  }
 }
 
 inline void Switch_back_from_System()
 {
+  if(in_system_dir)
+  {
+    if(!_prev_directory)
+      _prev_directory = (pdirectory*)((Process_t*)new_process)->pgdir;
     asm volatile("mov %0, %%cr3":: "r"((uint32_t)_prev_directory):"memory");
     _cur_directory=_prev_directory;
+    in_system_dir=0;
+  }
 }
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, pdirectory* dir)
@@ -266,7 +276,7 @@ inline page_t* get_page(uint32_t addr,int make, pdirectory* dir)
       else if(make)
       {
           dir->m_entries[table_idx] = (table_t)pmalloc(sizeof(ptable));
-          memset((void*)dir->m_entries[table_idx], 0, 0x1000);
+          memset_fast((void*)dir->m_entries[table_idx], 0, 0x1000);
           table_t* entry = &dir->m_entries [table_idx];
           ptable* table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(entry);
           pd_entry_add_attrib (entry, I86_PDE_PRESENT);
@@ -294,7 +304,7 @@ inline table_t* get_table(uint32_t index,int make, pdirectory* dir)
       {
           printf(" g%x",index);
           dir->m_entries[index] = (table_t)pmalloc(sizeof(ptable));
-          memset((void*)dir->m_entries[index], 0, 0x1000);
+          memset_fast((void*)dir->m_entries[index], 0, 0x1000);
           table_t* entry = &dir->m_entries [index];
           pd_entry_add_attrib (entry, I86_PDE_PRESENT);
           pd_entry_add_attrib (entry, I86_PDE_WRITABLE);

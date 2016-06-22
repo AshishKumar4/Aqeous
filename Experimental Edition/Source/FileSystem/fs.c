@@ -373,6 +373,7 @@ void set_curr_dir(uint64_t location)
     for(i=0;strcmp(temp->name,"root")!=0;i++)
     {
       dir_name[i]=temp->name;
+      printf("\n%s",dir_name[i]);
       read(curr_port,tmp/512,1,(DWORD)buf);
       temp=(Directory_t*)(buf+(uint32_t)(tmp%512));
       tmp=temp->parent;

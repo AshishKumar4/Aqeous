@@ -29,7 +29,7 @@ inline void *memcpy(void * _dest, const void *_src, size_t _n)
 	return _dest;
 }
 
-void* memmove(void* dstptr, const void* srcptr, size_t size)
+inline void* memmove(void* dstptr, const void* srcptr, size_t size)
 {
 	unsigned char* dst = (unsigned char*) dstptr;
 	const unsigned char* src = (const unsigned char*) srcptr;
@@ -43,9 +43,59 @@ void* memmove(void* dstptr, const void* srcptr, size_t size)
 }
 
 
-void memset(void *_s, int _c, size_t _n)
+inline void memset(void *_s, int _c, size_t _n)
 {
     char *temp = (char*) _s;
+    for ( ; _n != 0; _n--) {
+		*temp++ = _c;
+	}
+}
+
+int memcmp_fast(const void *_s1, const void *_s2, size_t _n)
+{
+	const uint_fast32_t *us1 = (const uint_fast32_t *)_s1;
+	const uint_fast32_t *us2 = (const uint_fast32_t *)_s2;
+	_n /= sizeof(uint_fast32_t);
+	while(_n-- != 0) {
+		if(*us1 != *us2){
+			return (*us1 < *us2) ? -1 : +1;
+		}
+		us1++;
+		us2++;
+	}
+	return 0;
+}
+
+inline void *memcpy_fast(void * _dest, const void *_src, size_t _n)
+{
+    uint_fast32_t *sp = (uint_fast32_t*) _src;
+    uint_fast32_t *dp = (uint_fast32_t*) _dest;
+		_n /= sizeof(uint_fast32_t);
+    for(; _n != 0; _n--) {
+		*dp++ = *sp++;
+	}
+	return _dest;
+}
+
+inline void* memmove_fast(void* dstptr, const void* srcptr, size_t size)
+{
+	uint_fast32_t* dst = (uint_fast32_t*) dstptr;
+	const uint_fast32_t* src = (const uint_fast32_t*) srcptr;
+	size /= sizeof(uint_fast32_t);
+	if ( dst < src )
+		for ( size_t i = 0; i < size; i++ )
+			dst[i] = src[i];
+	else
+		for ( size_t i = size; i != 0; i-- )
+			dst[i-1] = src[i-1];
+	return dstptr;
+}
+
+
+inline void memset_fast(void *_s, int _c, size_t _n)
+{
+    uint_fast32_t *temp = (uint_fast32_t*) _s;
+		_n /= sizeof(uint_fast32_t);
     for ( ; _n != 0; _n--) {
 		*temp++ = _c;
 	}
@@ -188,5 +238,18 @@ char *strstr(const char *_haystack, const char *_needle)
 	}
 	return NULL;
 }
+
+uint32_t stroccr(char* str, const char c)
+{
+	uint32_t i = 0;
+	for(;*str!='\0';)
+	{
+		if(*str == c)	i++;
+		++str;
+	}
+	return i;
+}
+
+
 
 #endif // STRING_H

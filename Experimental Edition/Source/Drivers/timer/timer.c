@@ -3,25 +3,6 @@
 #include "sys.h"
 #include "rand.h"
 
-void timer_idle_task()
-{
-  outb(0x20, 0x20);
-  asm volatile("sti");
-  asm volatile("iret");
-}
-
-uint32_t timer_task=(uint32_t)timer_idle_task;
-
-void timer_stub()
-{
-  //asm volatile("jmp *%0"::"r"(timer_task));
-  ++tick;
-}
-
-void timer_callback()
- {
-    tick++;
- }
  /**REAL TIMER RTC, might not work**/
  void init_timer_RTC()
  {
@@ -62,16 +43,15 @@ void apic_start_timer()
     // Now we know how often the APIC timer has ticked in 10ms
   //  uint32_t ticksIn10ms = 0xFFFFFFFF - localapic_read(LAPIC_TCCR);
 
-    // Start timer as periodic on IRQ 0, divider 4, with the number of ticks we counted
-    localapic_write(LAPIC_TIMER, 50 | 0x20000);
+    // Start timer as periodic on IRQ 50, divider 4, with the number of ticks we counted
+    localapic_write(LAPIC_TIMER, 51 | 0x00000); //One - Shot
     localapic_write(LAPIC_TDCR, 0x3);
-    localapic_write(LAPIC_TICR, 700);
+    localapic_write(LAPIC_TICR, 1);
 }
 
  /**PIT TIMER, working**/
 void init_timer(uint32_t frequency)
 {
-    //Our PIT timer handler is already especially hard coded in asm in interrupts.s
     // The value we send to the PIT is the value to divide it's input clock
     // (1193180 Hz) by, to get our required frequency. Important to note is
     // that the divisor must be small enough to fit into 16-bits.

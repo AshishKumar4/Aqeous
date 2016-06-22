@@ -4,7 +4,7 @@
 #include <common.h>
 #include <interrupts.h>
 
-uint32_t mb_temp=0,max_mem;
+uint32_t mb_temp=0,max_mem,in_system_dir=0;
 
 enum PAGE_PTE_FLAGS //Pages
 {

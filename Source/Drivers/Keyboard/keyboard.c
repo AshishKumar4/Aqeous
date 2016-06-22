@@ -173,5 +173,5 @@ uint32_t getint()
 void keyboard_init()
 {
   kkybrd_set_leds(1,1,1);
-  scancodes=scancode1;
+  scancodes=Main_key_codes;
 }

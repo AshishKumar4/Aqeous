@@ -2,11 +2,13 @@ SOURCE:=Source
 LIBRARY:=Library
 CONSOLE:=$(SOURCE)/console
 CONSOLEVGA:=$(CONSOLE)/arch/x86
-NASM:=nasm/
-NASMARCH:=$(NASM)/arch/x86
 GRAPHICS:=$(SOURCE)/graphics
 OBJ:=objs
-CC:=i686-elf-gcc-4.9.2
+CC:=i686-elf-gcc
+LD:=i686-elf-ld
+AS:=i686-elf-as
+NASM:=nasm
+
 KERNEL:=$(SOURCE)/kernel.o
 VESA:=$(SOURCE)/vesa
 ARCH:=$(SOURCE)/arch/x86
@@ -35,13 +37,13 @@ IOQUEUE:=$(SOURCE)/IOQueues
 KBQUEUE:=$(IOQUEUE)/Keyboard
 
 OBJS:= $(OBJ)/*.o
-INCLUDED:=-ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
+INCLUDED:= -ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I./
 INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
 INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM) -I$(HPET) -I$(BASICSHELL) -I$(IOQUEUE) -I$(KBQUEUE)
 INCLUDED:=$(INCLUDED) -I$(PIC)
 
-FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -std=gnu11 -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:
@@ -49,16 +51,19 @@ clean:
 
 build-nasm:
 	mkdir -p objs
-	nasm -f elf $(NASMARCH)/v86.asm -o $(OBJ)/v86.o
-	nasm -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
-	nasm -f elf $(ARCH)/tasking.asm -o $(OBJ)/tasking.o
-	nasm -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
-	i686-elf-as $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o
+	$(NASM) -f elf $(ARCH)/v86.asm -o $(OBJ)/v86.o
+	$(NASM) -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
+	$(NASM) -f elf $(ARCH)/tasking.asm -o $(OBJ)/tasking.o
+	$(NASM) -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
+	$(AS) $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o
 
 build-kernel: $(KERNEL) linker.ld
-	$(CC) -T linker.ld -o $(OBJ)/Aqeous $(FLAGS) $(KERNEL) $(OBJS)
+	$(LD) -T linker.ld -o $(OBJ)/Aqeous $(OBJS) $(KERNEL) -O0
 %.o: %.c
-	$(CC) -c $< -o $@ -std=gnu11 $(FLAGS)
+	$(CC) -c $< -o $@ $(FLAGS)
+
+%.o: %.asm
+	$(NASM)	-f elf $c -o $@
 
 %.o: %.S
-	$(CC) -c $< -o $@ $(FLAGS)
+	$(AS) $< -o $@

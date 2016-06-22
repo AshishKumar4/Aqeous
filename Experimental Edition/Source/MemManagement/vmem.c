@@ -4,6 +4,7 @@
 #include "string.h"
 #include "mem.h"
 #include "paging.h"
+#include "memfunc.c"
 
 inline MemMap_t* BlockFinder(uint32_t addr) /// returns the corresponding memory block for a given physical address
 {
@@ -54,14 +55,14 @@ void Mapper()
     uint32_t i=0;
     MemMap_t NullBlock;
     uint8_t* ptr;
-    memset((void*)&NullBlock,0,sizeof(MemMap_t));
+    memset_fast((void*)&NullBlock,0,sizeof(MemMap_t));
     for(i=0;i<(1024);i++) //Make blocks!!!
     {
         for(uint32_t j=0;j<1024;j++)
         {
             tempBlock2++;
             *tempBlock2=NullBlock;
-            //memset((void*)tempBlock2,0,sizeof(MemMap_t));
+            //memset_fast((void*)tempBlock2,0,sizeof(MemMap_t));
           //  tempBlock2->addr=(j+(i*1024))*4096;
             if(i>maxmem/4096)
             {
@@ -284,6 +285,7 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
       }
     }
     printf("\n Something went wrong");
+    return 0;
     //while(1);
 }
 
@@ -304,7 +306,7 @@ void free(uint32_t* ptr)
       {
         if(strip->magic == 42847)
         {
-          memset((void*)phy_addr,0,(i+1)*4);
+          memset_faster((uint32_t*)phy_addr,0,i+1);
           Block->used -= (i+1)*4;
           --last_strip;
           --*last_strip;
@@ -333,7 +335,7 @@ void free(uint32_t* ptr)
       {
         if(blk->id == id && *last_strip != 42847)
         {
-          memset((void*)frame, 0, 4096);
+          memset_fast((void*)frame, 0, 4096);
           *page = 0;
           PhyMap_unSet(frame);
           ++page;
@@ -353,7 +355,7 @@ void free(uint32_t* ptr)
           {
             if(strip->magic == 42847)
             {
-              memset((void*)phy_addr,0,(i+1)*4);
+              memset_faster((uint32_t*)phy_addr,0,i+1);
               blk->used -= (i+1)*4;
               --last_strip;
               --*last_strip;

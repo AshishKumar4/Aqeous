@@ -1,6 +1,7 @@
 #include "mem.h"
 #include "paging.h"
 #include "vmem.h"
+#include "memfunc.h"
 
 uint32_t processID=10; ///id 4 for paging, rest reserved
 
@@ -203,6 +204,7 @@ uint32_t kmalloc_int(uint32_t sz, int align)
       }
     }
     printf("\n Something went wrong");
+    return 0;
     //while(1);
 }
 
@@ -222,7 +224,7 @@ void kfree(uint32_t* ptr)
     {
       if(strip->magic == 42847)
       {
-        memset((void*)phy_addr,0,(i+1)*4);
+        memset_faster((uint32_t*)phy_addr,0,i+1);
         Block->used -= (i+1)*4;
         --last_strip;
         --*last_strip;
@@ -250,7 +252,7 @@ void kfree(uint32_t* ptr)
     {
       if(blk->id == id && *last_strip != 42847)
       {
-        memset((void*)frame, 0, 4096);
+        memset_fast((void*)frame, 0, 4096);
         pt_entry_del_attrib(page,CUSTOM_PTE_AVAIL_1);
         pt_entry_del_attrib(page,CUSTOM_PTE_AVAIL_2);
         PhyMap_unSet(frame);
@@ -271,7 +273,7 @@ void kfree(uint32_t* ptr)
         {
           if(strip->magic == 42847)
           {
-            memset((void*)phy_addr,0,(i+1)*4);
+            memset_faster((uint32_t*)phy_addr,0,i+1);
             blk->used -= (i+1)*4;
             --last_strip;
             --*last_strip;
@@ -318,7 +320,7 @@ uint32_t kmalloc(uint32_t sz)
     return kmalloc_int(sz, 0);
 }
 
-uint32_t st = 210*1024*1024;
+uint32_t st = 220*1024*1024;
 
 uint32_t* tmalloc(uint32_t sz) //for tasks(threads)
 {

@@ -22,10 +22,12 @@ void console_init(void)
 			console_buffer[index] = make_vgaentry(' ', console_color);
 		}
 	}
-	VGA_buffer = (uint16_t*)(500*1024*1024);
+	console_dbuffer_original = (500*1024*1024);
+	console_dbuffer = (uint16_t*)console_dbuffer_original;
+	console_dbuffer_limit = console_dbuffer_original + 4194304;
 }
 
-void console_setcolor(uint8_t color)
+inline void console_setcolor(uint8_t color)
 {
 	console_color = color;
 }
@@ -150,10 +152,47 @@ void print64int(uint64_t in)
 void _console_putentryat(char c, uint8_t color, size_t x, size_t y)
 {
 	const size_t index = y * VGA_WIDTH + x;
-	VGA_buffer[index] = make_vgaentry(c, color);
+	console_dbuffer[index] = make_vgaentry(c, color);
 }
 
-int _putchar(int ic)
+int __attribute__((optimize("O0"))) _putchar(char ic)
+{
+	if(ic == '\n')
+	{
+		consolecolumn = 0;
+		++consolerow;
+		if(consolerow >= VGA_HEIGHT)
+		{
+			//--consolerow;
+			++console_rows_skipped;
+			++console_skip;
+		}
+		return (int)ic;
+	}
+	else if(ic == '\t')
+	{
+		consolecolumn += 5;
+	}
+	else
+	{
+		_console_putentryat(ic, console_color, consolecolumn, consolerow);
+	}
+	if(++consolecolumn >= VGA_WIDTH)
+	{
+		consolecolumn = 0;
+		++consolerow;
+		if(consolerow >= VGA_HEIGHT)
+		{
+			//--consolerow;
+			++console_rows_skipped;
+			++console_skip;
+		}
+		return (int)ic;
+	}
+	return (int)ic;
+}
+
+int _putchar_old(int ic)
 {
 	char c = (char) ic;
 
@@ -168,27 +207,27 @@ int _putchar(int ic)
 		{
 				--consolerow;
 				uint16_t buff[((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1];
-				for(size_t x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
-						{
-								buff[x] = 0;
-						}
-				for ( size_t y = 0; y < VGA_HEIGHT; y++ )
-						{
-								for ( size_t x = 0; x < VGA_WIDTH; x++ )
-								{
-										const size_t index = y * VGA_WIDTH + x;
-										buff[index] = VGA_buffer[index];
-								}
-						}
-						for ( size_t y = 0; y < VGA_HEIGHT; y++ )
-						{
-								for ( size_t x = 0; x < VGA_WIDTH; x++ )
-								{
-										const size_t index = y * VGA_WIDTH + x;
-										const size_t backindex = (y+1) * VGA_WIDTH + x;
-										VGA_buffer[index] = buff[backindex];
-								}
-						}
+		      for(size_t x=0;x<(((VGA_HEIGHT+1)*VGA_WIDTH)+VGA_WIDTH+1);x++)
+		      {
+		            buff[x] = 0;
+		      }
+		      for ( size_t y = 0; y < VGA_HEIGHT; y++ )
+		      {
+		            for ( size_t x = 0; x < VGA_WIDTH; x++ )
+		            {
+		                  const size_t index = y * VGA_WIDTH + x;
+		                  buff[index] = console_dbuffer[index];
+		            }
+		      }
+		      for ( size_t y = 0; y < VGA_HEIGHT; y++ )
+		      {
+		            for ( size_t x = 0; x < VGA_WIDTH; x++ )
+		            {
+		                  const size_t index = y * VGA_WIDTH + x;
+		                  const size_t backindex = (y+1) * VGA_WIDTH + x;
+		                  console_dbuffer[index] = buff[backindex];
+		            }
+		      }
 		}
 	}
 	else if(a=='\t')
@@ -249,12 +288,6 @@ void _printint(uint32_t in)
         _console_write_dec(in/d);
         _console_write_dec(in%d);
     }
-}
-
-static void _print(const char* data, size_t data_length)
-{
-	for ( size_t i = 0; i < data_length; i++ )
-		_putchar((int) ((const unsigned char*) data)[i]);
 }
 
 int _printf(const char* restrict format, ...)

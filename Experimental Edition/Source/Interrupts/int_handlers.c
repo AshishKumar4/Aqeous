@@ -159,7 +159,7 @@ void pageFault_handler(registers_t regs)
     console_writestring(" - EIP: ");
     console_write_dec(regs.eip);
     console_writestring("\n");
-while(1);
+    while(1);
     asm volatile("sti");
     asm volatile("iret");
    // PANIC("Page fault");
@@ -217,107 +217,110 @@ void PIT_handler()
 void keyboardInterrupt_handler()
 {
   Switch_to_system_dir();
-  if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
+  //if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
-		if (scancode == 0xE0 || scancode == 0xE1)
-      printf("extended ");
-    else
+    if(scancode&0x80) //break code
     {
-      if(scancode&0x80) //break code
+      scancode-=0x80; //make it make code
+      int key=Special_key_codes[scancode];
+      //! test if a special key has been released & set it
+      switch (key)
       {
-        scancode-=0x80; //make it make code
-        int key=scancodes[scancode];
-    		//! test if a special key has been released & set it
-    		switch (key)
-        {
-    					case KEY_LCTRL:
-    					case KEY_RCTRL:
-    						_ctrl = 0;
-    						break;
+            case KEY_LCTRL:
+            case KEY_RCTRL:
+              _ctrl = 0;
+              break;
 
-    					case KEY_LSHIFT:
-    					case KEY_RSHIFT:
-    						_shift = 0;
-    						break;
+            case KEY_LSHIFT:
+            case KEY_RSHIFT:
+              _shift = 0;
+              break;
 
-    					case KEY_LALT:
-    					case KEY_RALT:
-    						_alt = 0;
-    						break;
-    			}
-      }
-      else //it is a make code
+            case KEY_LALT:
+            case KEY_RALT:
+              _alt = 0;
+              break;
+        }
+    }
+    else //it is a make code
+    {
+      int key=scancodes[scancode];
+      if(!key)
       {
-        int key=scancodes[scancode];
-        //printint(scancode);
-        //! test if a special key has been released & set it
-    		switch (key)
+        key = Special_key_codes[scancode];
+        switch (key)
         {
 
-    					case KEY_LCTRL:
+              case KEY_LCTRL:
                 _ctrl = 1;
                 break;
-    					case KEY_RCTRL:
-    						_ctrl = 2;
-    						break;
+              case KEY_RCTRL:
+                _ctrl = 2;
+                break;
 
-    					case KEY_LSHIFT:
+              case KEY_LSHIFT:
                 _shift = 1;
                 break;
-    					case KEY_RSHIFT:
-    						_shift = 2;
-    						break;
+              case KEY_RSHIFT:
+                _shift = 2;
+                break;
 
-    					case KEY_LALT:
+              case KEY_LALT:
                 _alt = 1;
                 break;
-    					case KEY_RALT:
-    						_alt = 2;
-    						break;
+              case KEY_RALT:
+                _alt = 2;
+                break;
 
-    					case KEY_CAPSLOCK:
-    						_capslock = (_capslock) ? false : true;
-    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
-    						break;
+              case KEY_CAPSLOCK:
+                _capslock = (_capslock) ? false : true;
+                kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+                break;
 
-    					case KEY_KP_NUMLOCK:
-    						_numlock = (_numlock) ? false : true;
-    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
-    						break;
+              case KEY_KP_NUMLOCK:
+                _numlock = (_numlock) ? false : true;
+                kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+                break;
 
-    					case KEY_SCROLLLOCK:
-    						_scrolllock = (_scrolllock) ? false : true;
-    						kkybrd_set_leds (_numlock, _capslock, _scrolllock);
-    						break;
+              case KEY_SCROLLLOCK:
+                _scrolllock = (_scrolllock) ? false : true;
+                kkybrd_set_leds (_numlock, _capslock, _scrolllock);
+                break;
               default:
-                call = keyboard_scancodes(key);
-                if(call == '\r')
-                {
-                  enter_pressed = 1;
-                }
-                else if(call == '\b') //TODO: Backspace is hit!
-                {
-                  if(kb_buff)
-                  {
-                    --Istream_ptr;
-                    *Istream_ptr = 0;
-                    --kb_buff;
-                    backspace();
-                  }
-                }
-                else
-                {
-                  *(Istream_ptr) = call;
-                  ++Istream_ptr;
-                  ++kb_buff;
-                  if((uint32_t)Istream_ptr == Istream_end)
-                    Istream_ptr = (uint32_t*)Input_stream;   //Reset
-                  _putchar((int)call);
-                }
+                break;
           }
         }
+        else
+        {
+          call = keyboard_scancodes(key);
+          //  call = key;
+          if(call == '\r')
+          {
+            enter_pressed = 1;
+            Priority_promoter(Shell_Istream_task);
+          }
+          else if(call == '\b') //TODO: Backspace is hit!
+          {
+            if(kb_buff)
+            {
+              --Istream_ptr;
+              *Istream_ptr = 0;
+              --kb_buff;
+              backspace();
+            }
+          }
+          else
+          {
+            *(Istream_ptr) = call;
+            ++Istream_ptr;
+            ++kb_buff;
+            if((uint32_t)Istream_ptr == Istream_end)
+             Istream_ptr = (char*)Input_stream;   //Reset
+            _putchar((int)call);
+        }
       }
+    }
   }
   Switch_back_from_System();
 }
