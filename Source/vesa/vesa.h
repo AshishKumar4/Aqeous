@@ -78,7 +78,7 @@ typedef struct VESA_INFO
 
 VESA_INFO *vbeInfo;
 MODE_INFO *vbeModeInfo;
-void int32(u8int intnum, regs16_t *regs);
+void int32(uint8_t intnum, regs16_t *regs);
 
 
 void setBank(int bankNo);

@@ -9,12 +9,12 @@
 task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Process_t* process)  /// Create a New Task for a given Process
 {
   Switch_to_system_dir();
-  task_table_t* New_task_entry = (task_table_t*)tmalloc(8192);
+  task_table_t* New_task_entry = (task_table_t*)mtalloc(4);
   New_task_entry->test = 2;
   task_t* New_task = &New_task_entry->task;
   New_task_entry->next=NULL;
 
-  map((uint32_t)New_task_entry,8192,(pdirectory*)process->pgdir);
+  map((uint32_t)New_task_entry,8192*2,(pdirectory*)process->pgdir);
 
   process->last_task_entry->next = New_task_entry;
   process->last_task_entry = New_task_entry;
@@ -29,7 +29,10 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
   New_task->process = (uint32_t*)process;
   New_task->pgdir = process->pgdir;
 
-  stack+=2048;
+  New_task->main_pgdir = process->pgdir;
+  New_task->mem_used = 0;
+
+  stack+=4096;
 
   uint32_t base=(uint32_t)stack;
 
@@ -112,10 +115,14 @@ void Activate_task_direct(task_t* task) /// Put a given Task_entry into an appro
 
 void kill()
 {
+  asm volatile("cli");
+  Switch_to_system_dir();
   uint32_t *place_holder = (uint32_t *)((task_t*)current_task)->active;
   *place_holder = (uint32_t)Spurious_task;
   memset_fast((void *)current_task, 0, 16);
-//    Switch_back_from_System();
+  mtfree(current_task, 2);
+  current_task = Idle_task;
+  _cur_directory = system_dir;
   asm volatile("int $50");
   while(1);
 }

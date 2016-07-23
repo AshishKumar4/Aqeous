@@ -56,6 +56,31 @@ typedef struct __attribute__ ((packed)) File_Header
     uint64_t Previous_Header;
 }File_Header_t;
 
+typedef struct __attribute__ ((packed)) Identity_Sectors
+{
+    char name[8];  //Storage media Name
+    uint16_t active_partition;
+    //uint8_t partitions; //partitions i.e, number of root directories.
+    //uint32_t Number_of_sectors;
+    //uint32_t bytes_per_sector;
+    //uint64_t partition_locations[32]; //locations of the partitions. 32 partitions on 1 disk supported
+    //uint64_t reserved;
+}Identity_Sectors_t;
+
+typedef struct __attribute__((packed)) Partition_struct
+{
+  uint8_t boot_indicator;
+  uint8_t starting_head; //255
+  uint8_t starting_sector; //63
+  uint8_t starting_cylinder; //1023
+  uint8_t sys_id; //Use C2 or ED
+  uint8_t ending_end;
+  uint8_t ending_sector;
+  uint8_t ending_cylinder;
+  uint32_t relative_sector;
+  uint32_t total_sectors;
+}Partition_struct_t;
+
 typedef struct Special_dirs
 {
     Directory_t dir;
@@ -63,22 +88,12 @@ typedef struct Special_dirs
     char full_name[100];
 }Special_Dirs_t;
 
-typedef struct __attribute__ ((packed)) Boot_sectors
-{
-    char name[32];  //Storage media Name
-    uint8_t partitions; //partitions i.e, number of root directories.
-    uint32_t Number_of_sectors;
-    uint32_t bytes_per_sector;
-    uint64_t partition_locations[32]; //locations of the partitions. 32 partitions on 1 disk supported
-    uint64_t reserved;
-}Boot_sectors_t;
-
 typedef struct __attribute__ ((packed)) File_handle
 {
     char* name;
     uint32_t file; //location of loaded file struct in RAM
     uint32_t current_header;
-    uint8_t  ios;
+    uint32_t  ios;
     uint64_t file_location;
     struct File_handle* next;
 }File_handle_t;
@@ -96,6 +111,10 @@ Disk_dev_t* curr_disk;
 ahci_t* curr_ahci;
 
 uint32_t sectors;
+
+uint32_t bytemap_off;
+
+uint32_t bytemap_end;
 
 File_t curr_file;
 

@@ -1,7 +1,7 @@
 typedef struct deviceinfo
 {
-    u16int vendor;
-    u16int device;
+    uint16_t vendor;
+    uint16_t device;
     char *name;
 }device_info;
 

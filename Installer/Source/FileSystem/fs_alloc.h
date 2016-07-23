@@ -3,11 +3,11 @@
 
 #include "fs.h"
 
-uint32_t bytes;
+volatile uint32_t bytes;
 
-uint32_t off;
+volatile uint32_t off;
 
-uint32_t start_off;
+volatile uint32_t start_off;
 
 void fs_alloc_init();
 

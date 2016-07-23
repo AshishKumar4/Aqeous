@@ -88,7 +88,7 @@ unsigned int bus,device,func;
 HBA_MEM *abar;
 bool AHCI;
 
-char *get_device_info(u16int vendorID, u16int deviceID)
+char *get_device_info(uint16_t vendorID, uint16_t deviceID)
 {
 	const device_info *info;
 	for (info = kSupportedDevices; info->vendor; info++)
@@ -116,6 +116,7 @@ int checkAHCI()
     ahci_start=ahci;
     Disk_dev=(Disk_dev_t*)kmalloc(4096);
     Disk_dev_start=Disk_dev;
+	 AHCI_BASE = kmalloc(1024*1024);
     for(uint32_t ahcis=0;ahcis<TotalAHCIDevices;ahcis++)
     {
       ++controllers;

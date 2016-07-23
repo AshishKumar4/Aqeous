@@ -22,6 +22,7 @@ void init_shell()
 // (uint16_t*)VGA_buffer_location;
 //  VGA_buffer_ptr = VGA_buffer;
   Switch_to_system_dir();
+
   consolerow = 0;
   consolecolumn = 0;
 //  console_buffer = vga_mem;
@@ -29,6 +30,13 @@ void init_shell()
   VGA_size = VGA_WIDTH*VGA_HEIGHT/2;
   shell_buf = (char*)kmalloc(4096);
   Shell_Commands_list = (uint32_t*)kmalloc(8192);
+  Shell_Istream = kmalloc(4096*1024);
+  Input_stream = (uint32_t)Shell_Istream;
+  Istream_end = ((uint32_t)Shell_Istream) + (4096*1024);
+  Istream_ptr = (volatile char*)Input_stream;
+  memset_faster(CSI_mem_start, 0, 18);
+  CSI_entries_ptr = &Main_CSI_struct->entries;
+  tot_entries = &Main_CSI_struct->total_entries;
   console_manager_init();
   Switch_back_from_System();
 }
@@ -134,6 +142,7 @@ void Shell()
     if(shell_awake)
     {
       _printf("\n%s>",curr_dir.full_name);
+      //_printf("\n>");
       while(!shell_in)
       {
         asm volatile("int $50");
@@ -183,15 +192,15 @@ int Shell_command_locator(char *inst)
    uint32_t tmp = 0;
    char* tmpstr = strtok(inst, " ");
    uint32_t spaces = stroccr(inst, " ");
-   //int tmp2 = 0;
+   //int CSI_entries_ptr = 0;
    /*
    for( int i = 0 ; inst[i]!='\0' ; i++ )    //Alternate Algorithm
    {
-      tmp2 = (((int)inst[i])-((int)inst[i+1]));
-      if(tmp2 >= 0)
-         tmp += tmp2*(i+1);
+      CSI_entries_ptr = (((int)inst[i])-((int)inst[i+1]));
+      if(CSI_entries_ptr >= 0)
+         tmp += CSI_entries_ptr*(i+1);
       else
-         tmp += (-tmp2)*(i+1);
+         tmp += (-CSI_entries_ptr)*(i+1);
 }*/
    int i;
    for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )
@@ -204,6 +213,7 @@ int Shell_command_locator(char *inst)
    if(tmp <= 2048)
    {
       uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
+      printf(" Ax%x ",tmp);
       if(ptr)
       {
          func_t func = ((Shell_Commands_t*)ptr)->func;
@@ -215,23 +225,26 @@ int Shell_command_locator(char *inst)
               _printf("\n Command Not Recognized! type help for help\n");
              return -1;
          }*/
-         uint32_t* tmp2 = Main_CSI_struct->entries;
-         uint32_t* tot_entries = Main_CSI_struct->total_entries;
-         for(; ;)
+         *tot_entries = 0;
+         for(; ;) //Provide them the options and values provided by the user.
          {
             tmpstr = strtok(NULL, "-");
             if(tmpstr== NULL) break;
-            *tmp2 = (uint32_t)tmpstr;
-            ++tmp2;
-            ++(*tot_entries);
+            *CSI_entries_ptr = (uint32_t)tmpstr;
+            ++CSI_entries_ptr;
+            ++*tot_entries;
+            //_printf(" %s", tmpstr);
             tmpstr = strtok(NULL, " ");
             if(tmpstr== NULL) break;
-            *tmp2 = (uint32_t)tmpstr;
-            ++tmp2;
-            ++(*tot_entries);
+            *CSI_entries_ptr = (uint32_t)tmpstr;
+            ++CSI_entries_ptr;
+            ++*tot_entries;
+            //printf(" %s", tmpstr);
          }
          func();
-         memset_faster(CSI_mem_start, 0, 66);
+
+         memset_faster(CSI_mem_start, 0, 2 + *tot_entries);
+         CSI_entries_ptr = &Main_CSI_struct->entries;
          return ((Shell_Commands_t*)ptr)->reserved;
       }
       else
@@ -256,19 +269,29 @@ void Shell_Add_Commands(func_t func, uint32_t command_no, int flag, char* name)
    strcpy(command->command, name);
 }
 
+uint32_t* CSI_Read(uint32_t entry)
+{
+  uint32_t* tmp = &Main_CSI_struct->entries;
+  if(entry)
+  {
+    return (uint32_t*)tmp[entry - 1];
+  }
+}
+
 void console_manager_init()
 {
-	Shell_Add_Commands(Command_help, 108, 0, "help");
+	 Shell_Add_Commands(Command_help, 108, 0, "help");
    Shell_Add_Commands(Command_shutdown, 525, 0, "shutdown");
    Shell_Add_Commands(Command_mdbug, 131, 0, "mdbug");
    //Shell_Add_Commands(Command_start_vesa, 2042, 1);
    Shell_Add_Commands(Command_memmap, 194, 0, "memmap");
-   //Shell_Add_Commands(Command_start_counter, 0);
+   Shell_Add_Commands(Command_start_counter, 1423, 0, "counter_start");
    Shell_Add_Commands(Command_counter, 380, 0, "counter");
    Shell_Add_Commands(Command_timeslice, 351, 0, "timeslice");
    Shell_Add_Commands(Command_topq, 156, 0, "topq");
+   Shell_Add_Commands(Command_test_structs, 1309, 0, "test_structs");
    Shell_Add_Commands(Command_test, 157, 0, "test");
-   //Shell_Add_Commands(Command_test_multi, 1759, 0);
+   Shell_Add_Commands(Command_test_multi, 858, 0, "test_multi");
    Shell_Add_Commands(Command_ls, 47, 0, "ls");
    Shell_Add_Commands(Command_cd, 8, 0, "cd");
    Shell_Add_Commands(Command_clrscr, 259, 0, "clrscr");
@@ -276,5 +299,6 @@ void console_manager_init()
    Shell_Add_Commands(Command_baseshow, 477, 0, "baseshow");
    Shell_Add_Commands(Command_qelements, 562, 0, "qelements");
    Shell_Add_Commands(Command_dbuffplusplus, 1344, 0, "dbuffplusplus");
+   Shell_Add_Commands(Command_detect_cpu, 177, 0, "decpu");
    memset_faster(CSI_mem_start, 0, 66);
 }

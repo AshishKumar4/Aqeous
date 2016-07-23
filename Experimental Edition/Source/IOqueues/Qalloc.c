@@ -9,3 +9,10 @@ uint32_t kb_Qalloc()
   ax_add+=32;
   return a;
 }
+
+/*
+uint32_t kb_Qalloc()
+{
+   return kmalloc(32);
+}
+*/

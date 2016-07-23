@@ -20,7 +20,7 @@
 #define AHCI_DEV_PM 3
 #define HBA_PORT_DET_PRESENT 3
 #define HBA_PORT_IPM_ACTIVE 1
-#define AHCI_BASE   50*1024*1024    //50-100mb
+//#define AHCI_BASE   50*1024*1024    //50-100mb
 #define HBA_PxCMD_CR            (1 << 15) /* CR - Command list Running */
 #define HBA_PxCMD_FR            (1 << 14) /* FR - FIS receive Running */
 #define HBA_PxCMD_FRE           (1 <<  4) /* FRE - FIS Receive Enable */
@@ -39,7 +39,7 @@
 #define ATA_CMD_WRITE_DMA_EX     0x35
 
 char test[20] = "6317065029";
-
+uint32_t AHCI_BASE = 0;
 
 #define AHCI_PCI_BAR		0x24
 #define AHCI_MAX_SG		56 /* hardware max is 64K */

@@ -154,6 +154,7 @@ void kernel_early(struct multiboot *mboot_ptr,u32int initial_stack)
 	 printf("\n location of kernel_main: %x ",kernel_main);
 	 printf("sizeof Directory_t %x, File_t %x",sizeof(Directory_t),sizeof(File_t));
 	 Init_fs();
+	 printf("asdas");
 	 //Scheduler_exec();
 }
 

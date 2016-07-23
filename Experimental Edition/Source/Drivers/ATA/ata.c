@@ -169,7 +169,7 @@ void init_ata() /** this 1 uses IDENTITY COMMAND to detect drives **/
     }
 }
 
-void read_ata(unsigned int addr,u8int *buffer)
+void read_ata(unsigned int addr,uint8_t *buffer)
 {
     read_sector(addr);
     while (!(inb(0x1F7) & 0x08)) {}
@@ -238,7 +238,7 @@ mbr_t mbr;
 
 int read_partition_map()
 {
-	read_ata(0,(u8int*)&mbr);
+	read_ata(0,(uint8_t*)&mbr);
 
 	if (mbr.signature[0] == 0x55 && mbr.signature[1] == 0xAA) {
 		console_writestring("Partition table found.");

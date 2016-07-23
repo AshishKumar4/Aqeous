@@ -169,3 +169,5 @@ void __attribute__((optimize("O0"))) SAS_void_eraser()
     asm volatile("int $50");
   }
 }
+
+//TODO: CREATE AN ADVANCED INTEGRATED SYSTEM WHICH WOULD CONTROL THE WHOLE MULTITASKING SYSTEM AND THE SCHEDULER, The Timer, the Interrupts etc Literally!. It should act as the BOSS of the Scheduler!!!

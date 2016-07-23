@@ -4,19 +4,17 @@
 
 void fs_alloc_init()
 {
-    Switch_to_system_dir();
     uint32_t buf=fsalloc(512);
     memset((void*)buf,0,512);
-    for(uint64_t i=start_off;i<=bytes/512;i++)
+    for(uint32_t i=start_off;i<=bytemap_end;i++)
     {
       write(curr_port,i,1,(DWORD)buf);
     }
     memset((void*)buf,0xff,512);
-    for(uint64_t i=start_off;i<off;i++)
+    for(uint32_t i=start_off;i<bytemap_off;i++)
     {
       write(curr_port,i,1,(DWORD)buf);
     }
-    Switch_back_from_System();
 }
 
 uint64_t fs_alloc(uint32_t blocks)
@@ -25,7 +23,7 @@ uint64_t fs_alloc(uint32_t blocks)
     uint8_t* ptr=(uint8_t*)buf;
     uint64_t block=0;
     uint32_t tmp=0;
-    for(uint64_t i=off+start_off;i<=bytes/512;i++)
+    for(uint64_t i=bytemap_off;i<=(bytemap_end);i++)
     {
       ptr=(uint8_t*)buf;
       memset((void*)buf,0,512);
@@ -38,7 +36,7 @@ uint64_t fs_alloc(uint32_t blocks)
           {
             if(tmp==blocks-1)
             {
-              block=(k+(j*8)+(i*8*512))-blocks;
+              block=(k+(j*8)+((i-start_off)*8*512))-blocks;
               block--;
               *ptr|=(1<<k);
               write(curr_port,i,1,(DWORD)buf);
@@ -52,6 +50,9 @@ uint64_t fs_alloc(uint32_t blocks)
         ++ptr;
       }
     }
+    printf("\nNo Memory left!");
+    while(1);
+    return 0;
     out:
     //printf("\nFound :D at block %x ",block*64);
     return block*64;
@@ -64,7 +65,7 @@ uint64_t sec_alloc(uint32_t blocks) //gives 1024 bytes aligned address only
     uint16_t* tmp;
     uint64_t block=0;
     uint32_t stmp=0;
-    for(uint64_t i=off+start_off;i<=bytes/512;i++)
+    for(uint64_t i=bytemap_off;i<=(bytemap_end);i++)
     {
       ptr=(uint16_t*)buf;
       memset((void*)buf,0,512);
@@ -80,10 +81,10 @@ uint64_t sec_alloc(uint32_t blocks) //gives 1024 bytes aligned address only
         else stmp=0;
         if(stmp==blocks)
         {
-          block=j+(256*i)+2;
+          block=j+(256*(i-start_off))+2;
           block-=blocks;
           ptr=tmp;
-          for(uint32_t i=0;i<blocks;i++,ptr++)
+          for(uint32_t m=0;m<blocks;m++,ptr++)
             *ptr=0xffff;
           write(curr_port,i,1,(DWORD)buf);
           goto out;
@@ -91,6 +92,9 @@ uint64_t sec_alloc(uint32_t blocks) //gives 1024 bytes aligned address only
         ++ptr;
       }
     }
+    printf("\nNo Memory left!");
+    while(1);
+    return 0;
     out:
   //  printf("\n block %x ",block*1024);
     return block*1024;

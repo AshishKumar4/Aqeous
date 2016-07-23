@@ -6,6 +6,8 @@
 #include "paging.h"
 #include "memfunc.c"
 
+extern void Command_memmap();
+
 inline MemMap_t* BlockFinder(uint32_t addr) /// returns the corresponding memory block for a given physical address
 {
     MemMap_t *Block;
@@ -54,6 +56,7 @@ void Mapper()
     MemMap_t* tempBlock2=Mblock;
     uint32_t i=0;
     MemMap_t NullBlock;
+    MemRegion_t* memmap_info=mmap_info;
     uint8_t* ptr;
     memset_fast((void*)&NullBlock,0,sizeof(MemMap_t));
     for(i=0;i<(1024);i++) //Make blocks!!!
@@ -71,12 +74,12 @@ void Mapper()
               ptr++;
               *ptr=1;
             }
-            else if(mmap_info)
+            else if(memmap_info)
             {
-              tempBlock2->used=(mmap_info->type-1)*4096;
+              tempBlock2->used=(memmap_info->type-1)*4096;
               ptr=(uint8_t*)&tempBlock2->id;
               ptr++;
-              *ptr=mmap_info->type-1;
+              *ptr=memmap_info->type-1;
             }
             else
             {
@@ -90,13 +93,14 @@ void Mapper()
               tempBlock2->used=4096;
             }*/
             uint32_t add=((j+(i*1024))*4096);
-            if(add>=(mmap_info->startHi+mmap_info->sizeHi))
+            if(add>=(memmap_info->startHi+memmap_info->sizeHi))
             {
-                 ++mmap_info;
+                 ++memmap_info;
             }
         }
         //printf(" ");
     }
+
     lastBlock=tempBlock2;
     tempBlock2=Mblock;
     for(uint32_t i=0; i<6*1024; i++)
@@ -117,17 +121,7 @@ void bitmap_init()
     MemMap_t* tmp=Mblock;
     for(int i=0;i<1024*1024;i++)
     {
-      if(i<7*1024) ///used
-      {
-        *ptr=0xFFFFFFFF;
-        tmp->used = 4096;
-      }
-      else if(i>12000&&i<15000)
-      {
-        *ptr=0xFFFFFFFF;
-        tmp->used = 4096;
-      }
-      else if(i>125*1024&&i<127*1024)
+      if(i<15*1024) ///used
       {
         *ptr=0xFFFFFFFF;
         tmp->used = 4096;
@@ -163,7 +157,8 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
     page_t* page;
     MemMap_t* block;
     uint32_t phy_mem=0;
-    if(!sz4)//if size is less then 4 bytes, roundof it to 4 which is the least memory allocable
+    uint32_t virt_addr=0;
+    if(!sz4)//if size is less then 32 bytes, roundof it to 32 which is the least memory allocable
     {
       sz=4;
       sz4=1;
@@ -182,52 +177,114 @@ uint32_t VMem_Alloc(uint32_t sz, int align, int processId)
       for(uint32_t i=2;i<1024;i++)
       {
         table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(&dir->m_entries[i]);
-        page=&table->m_entries[0];
-        for(uint32_t j=0;j<1024;j++)
+        if(!(dir->m_entries[i] & CUSTOM_PDE_AVAIL_2))
         {
-          //page=&table->m_entries[j];
-          if(!*page)//(!(*page & CUSTOM_PTE_AVAIL_1)
+          for(uint32_t j=0;j<1024;j++)
           {
-            ++temp;
-            if(temp>=pgs)
+            page=&table->m_entries[j];
+            if(!page)
             {
-              page=&table->m_entries[j-temp+1];
-              uint32_t virt_addr=(i*4096*1024)+((j-temp+1)*4096); ///i=table offset, j=page offset
-              for(uint32_t k=0;k<temp;k++)
+              temp++;
+              if(temp==pgs)
               {
-                phy_mem=Phy_alloc(processId)*4096;
-                //pt_entry_set_frame ( page, phy_mem);
-                *page = phy_mem | 1027 | CUSTOM_PTE_AVAIL_2;
-                block=BlockFinder(phy_mem);
-                block->page=page;
-                block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
-                block->used=4096;
-                ++block;
-                ++page;
+                virt_addr=(i*4096*1024)+((j-temp+1)*4096); ///i=table offset, j=page offset
+                if(j+1 >= temp)
+                {
+                   //printf("\nA");
+                   //printf(" i=%x, j=%x, temp=%x tsz4=%x pgs=%x", i, j, temp, tsz4, pgs);
+                   page=&table->m_entries[j-temp+1];
+                   phy_mem = virt_addr;
+                   for(uint32_t k=0;k<temp;k++)
+                   {
+                     //pt_entry_set_frame ( page, phy_mem);
+                     phy_mem=Phy_alloc(processId)*4096;
+                     //pt_entry_set_frame ( page, phy_mem);
+                     *page = phy_mem | 1027 | CUSTOM_PTE_AVAIL_2;
+                     block=BlockFinder(phy_mem);
+                     block->page=page;
+                     block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
+                     block->used=4096;
+                     ++block;
+                     ++page;
+                   }
+                   if(tsz4)
+                   {
+                     phy_mem=Phy_alloc(processId)*4096;
+                     *page = phy_mem | 1027;
+                     block=BlockFinder(phy_mem);
+                     block->page=page;
+                     block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
+                     block->used=(tsz4+1)*4;
+                     uint32_t* strip = (uint32_t*)(phy_mem + (tsz4*4));
+                     *strip = 42847 | (tsz4 << 16);
+                     strip = (uint32_t*)(phy_mem + 4092);
+                     *strip = (1&0xffff) | (42847 << 16);
+                   }
+                }
+                else
+                {
+                   //printf("\nB");
+              //     printf("\n Hello");
+                   //printf(" i=%x, j=%x, temp=%x tsz4=%x pgs=%x", i, j, temp, tsz4, pgs);
+                   //while(1);
+                  //
+                  // block=BlockFinder(PAGE_GET_PHYSICAL_ADDRESS(page));
+                   if(tsz4)
+                   {
+                      //printf(" Ab");
+                     // while(1);
+                     phy_mem = Phy_alloc(processId)*4096;
+                     *page = phy_mem | 1027;
+                     block->page=page;
+                     block->id=(1 & 0xff) | ((blockID&0xff)<<8);
+                     block->used=(tsz4+1)*4;
+                     uint32_t* strip = (uint32_t*)(phy_mem + (tsz4*4));
+                     *strip = 42847 | (tsz4 << 16);
+                     strip = (uint32_t*)(phy_mem + 4092);
+                     *strip = (1&0xffff) | (42847 << 16);
+                     --page;
+                     --j;
+                     --temp;
+                   }
+                   uint32_t tmp_var = j + 1;
+                   for(uint32_t m = i + 1; m && temp ; --m)
+                   {
+                    //  printf(" xA");
+                      for(uint32_t n = tmp_var; n && temp ; --n)
+                      {
+                        // printf(" xB");
+                        phy_mem = Phy_alloc(processId)*4096;
+                        *page = phy_mem | 1027 | CUSTOM_PTE_AVAIL_2;
+                         block->page=page;
+                         block->id=(1 & 0xff) | ((blockID&0xff)<<8);
+                         block->used=4096;
+                         --block;
+                         --page;
+                         --temp;
+                      }
+                     tmp_var = 1024;
+                     table=(ptable*)PAGE_GET_PHYSICAL_ADDRESS(&dir->m_entries[m-2]);
+                     page=&table->m_entries[1023];
+                     block=BlockFinder(PAGE_GET_PHYSICAL_ADDRESS(page));
+                     dir->m_entries[m-2] |= CUSTOM_PTE_AVAIL_2;
+                   }
+                   //while(1);
+                }
+                blockID++;
+                Switch_back_from_System();
+                return virt_addr;
               }
-              if(tsz4)
-              {
-                phy_mem=Phy_alloc(processId)*4096;
-                *page = phy_mem | 1027;
-                block=BlockFinder(phy_mem);
-                block->page=page;
-                block->id=(curr_pgdir.ID & 0xff) | ((blockID&0xff)<<8);
-                block->used=(tsz4+1)*4;
-                uint32_t* strip = (uint32_t*)(phy_mem + (tsz4*4));
-                *strip = 42847 | (tsz4 << 16);
-                strip = (uint32_t*)(phy_mem + 4092);
-                *strip = (1&0xffff) | (42847 << 16);
-              }
-              blockID++;
-              Switch_back_from_System();
-              return virt_addr;
             }
+            else
+            {
+              temp=0;
+            }
+            ++page;
           }
-          else
-          {
-            temp=0;
-          }
-          ++page;
+        }
+        else
+        {
+          temp=0;
         }
       }
     }

@@ -24,7 +24,7 @@ void Setup_fs()
     curr_dir.type=1;
     strcpy(curr_dir.full_name,"root");
     write(curr_port,root_location/512,1,(DWORD)buf);
-    free((uint32_t*)buf);
+    //kfree((uint32_t*)buf);
 }
 
 void create_directory(char *name, uint16_t perm, char* destination)
@@ -77,7 +77,7 @@ void create_directory(char *name, uint16_t perm, char* destination)
         Directory_t* dir2=(Directory_t*)(buf+(uint32_t)(tm%512));
         dir2->Next_Friend=dir->location;
         write(curr_port,tm/512,1,(DWORD)buf);
-        free((uint32_t*)buf);
+        //kfree((uint32_t*)buf);
     }
     else
     {
@@ -90,9 +90,9 @@ void create_directory(char *name, uint16_t perm, char* destination)
     printf("\nFolder \"%s\" Created Successfully\n",name);
     name=0;
     destination=0;
-    free((uint32_t*)dest);
-    free((uint32_t*)buff);
-    free((uint32_t*)buff2);
+    //kfree((uint32_t*)dest);
+    //kfree((uint32_t*)buff);
+    //kfree((uint32_t*)buff2);
 }
 
 void create_file(char *name,uint16_t perm, char* destination)
@@ -146,7 +146,7 @@ void create_file(char *name,uint16_t perm, char* destination)
         File_t* file2=(File_t*)(buf+(uint32_t)(tm%512));
         file2->Next_Friend=file->location;
         write(curr_port,tm/512,1,(DWORD)buf);
-        free((uint32_t*)buf);
+        //kfree((uint32_t*)buf);
     }
     else
     {
@@ -159,9 +159,9 @@ void create_file(char *name,uint16_t perm, char* destination)
     printf("\nFile \"%s\" Created Successfully\n",name);
     name=0;
     destination=0;
-    free((uint32_t*)dest);
-    free((uint32_t*)buff);
-    free((uint32_t*)buff2);
+    //kfree((uint32_t*)dest);
+    //kfree((uint32_t*)buff);
+    //kfree((uint32_t*)buff2);
 }
 
 void find_dir(char* name)
@@ -197,7 +197,7 @@ void find_dir(char* name)
       printf("\n\t \\%s",temp->name);
       tmp=temp->Next_Friend;
     }
-    free((uint32_t*)buf);
+    //kfree((uint32_t*)buf);
     printf("\n");
 }
 
@@ -262,7 +262,7 @@ File_handle_t* file_loader(char* name)
     memcpy((void*)tb,(void*)temp,sizeof(File_t));
     handle->file=(uint32_t)tb;
     handle->name=tb->name;
-    free((uint32_t*)buf);
+    //kfree((uint32_t*)buf);
     return handle;
 }
 
@@ -327,7 +327,7 @@ void file_close(char *name)
         if(!i)
             start_handle=temp->next;
         else temp2->next=temp->next;
-        free((uint32_t*)temp);
+        //kfree((uint32_t*)temp);
         goto out;
       }
       if(!temp->next) break;
@@ -373,6 +373,7 @@ void set_curr_dir(uint64_t location)
     for(i=0;strcmp(temp->name,"root")!=0;i++)
     {
       dir_name[i]=temp->name;
+      printf("\n%s",dir_name[i]);
       read(curr_port,tmp/512,1,(DWORD)buf);
       temp=(Directory_t*)(buf+(uint32_t)(tmp%512));
       tmp=temp->parent;
@@ -387,20 +388,30 @@ void set_curr_dir(uint64_t location)
     strcat(name,dir_name[0]);
     strcpy(curr_dir.full_name,name);
     printf("\ncurr dir: %s",name);
-    free((uint32_t*)buf);
+    //kfree((uint32_t*)buf);
 }
 
 void make_boot_sector()
 {
     uint32_t buf=(uint32_t)fsalloc(1024);
-    Boot_sectors_t* boot=(Boot_sectors_t*)(buf);
-    strcpy(boot->name,"Yureka 1 :D");
-    boot->Number_of_sectors=sectors;
-    boot->partitions=1;
-    boot->partition_locations[0]=root_location;
-    boot->bytes_per_sector=512;
-    write(curr_port,0,2,(DWORD)buf);
+    memset(buf,0,1024);
+    read(curr_port,0,2,(DWORD)buf);
+    Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
+    strcpy(identity->name,"AFS1.472");
+    identity->active_partition = 446; //Partition 1
+
+    uint8_t* boot_ptr = buf;
+    boot_ptr += 510;
+    *boot_ptr = 0x55;
+    ++boot_ptr;
+    *boot_ptr = 0xAA;
+    write(curr_port,0,2,(DWORD)buf); //2nd sector.
+    memset(buf,0,1024);
+    uint32_t* tmp = buf;
+    *tmp = root_location;
+    write(curr_port,start_off,2,(DWORD)buf);
 }
+
 void Init_fs()
 {
     curr_ahci=ahci_start;
@@ -409,11 +420,13 @@ void Init_fs()
     SATA_ident_t* info=(SATA_ident_t*)curr_disk->info;
     sectors=info->lba_capacity;
     printf("\nTotal Sectors: %x\n",sectors);
-    memset((void*)BASE,0,512);
-    start_off=2;
+    start_off=10240;
     bytes=sectors;
     off=(bytes/512)/512;
+    off += 16;
     ++off;
+    bytemap_off = off+start_off;
+    bytemap_end = start_off + (bytes/512);
 
     start_handle=0;
     printf("\nFormating and Partitioning the Disk, May take a few minutes...\n");
@@ -421,6 +434,7 @@ void Init_fs()
     printf("\nFile System formated successfully");
     root_location=fs_alloc(2);
     make_boot_sector();
+
     printf("\nMaster Partition made successfully");
     Setup_fs();
     printf("\nLoaded the root directory");
@@ -437,7 +451,8 @@ void Init_fs()
     create_file("test5.txt",1,0);
     create_file("test6.txt",1,0);
     create_file("test7.txt",1,0);
-    create_file("test8.txt",1,0);
+    create_file("test8.txt",1,0);//*/
+    find_dir(0);
 }
 
 File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks)
@@ -456,7 +471,7 @@ File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks)
     File_Header_t* header2=(File_Header_t*)buf;
     header2->Next_Header=header->location;
     write(curr_port,file->last_header/512,1,(DWORD)buf);
-    free((uint32_t*)buf);
+    //kfree((uint32_t*)buf);
     if(!file->first_header)
     {
       file->first_header=header->location;
@@ -498,7 +513,7 @@ void file_flush(char* name)
     File_t* ftmp=(File_t*)(buff +(uint32_t)(file->location%512));
     memcpy((void*)ftmp,(void*)file,sizeof(File_t));
     write(curr_port,file->location/512,1,(DWORD)buff);
-    free((uint32_t*)buff);
+    //kfree((uint32_t*)buff);
 }
 
 void file_write(uint32_t buffer,uint32_t size, char* file_name) //new
@@ -529,7 +544,7 @@ void file_write(uint32_t buffer,uint32_t size, char* file_name) //new
       read(curr_port,location+((header->spread-1)*2),2,(DWORD)tmb);
       memcpy((void*)(tmb+tmp2),(void*)(tbuf),MIN(tmp1,sz));
       write(curr_port,location+((header->spread-1)*2),2,(DWORD)tmb);
-      free((uint32_t*)tmb);
+      //kfree((uint32_t*)tmb);
       tbuf+=MIN(tmp1,sz);
       header->used+=MIN(tmp1,sz);
       write(curr_port,location,1,(DWORD)buf);
@@ -555,7 +570,7 @@ void file_write(uint32_t buffer,uint32_t size, char* file_name) //new
         uint32_t abuf=fsalloc(512);
         memcpy((void*)abuf,(void*)tbuf,sz-((blocks-1)*2));
         write(curr_port,location+blocks,1,(DWORD)abuf);
-        free((uint32_t*)abuf);
+        //kfree((uint32_t*)abuf);
         header->used+=sz;
         write(curr_port,location,1,(DWORD)header);
         goto out;
@@ -571,7 +586,6 @@ void file_write(uint32_t buffer,uint32_t size, char* file_name) //new
     }
     out:
     file->sz+=size;
-
     //printf("\nInfo written to the file %s Successfully\n",file->name);
 }
 
@@ -582,13 +596,17 @@ void file_read(uint32_t buffer, uint32_t size, uint32_t offset, char* name)
     uint32_t buf=buffer;
     char* str2=(char*)buffer;
     File_t* file=(File_t*)handle->file;
+    if(file->sz-file->headers*sizeof(File_Header_t)<offset)
+    {
+      printf("\nThe Requested offset is beyond the actual file size");
+      return;
+    }
     if(!size)
     {
       size=file->sz-offset;
-      size-=(file->headers*sizeof(File_Header_t));
-      printf("\nSize of File: %x %s %x %x",size,file->name,file->sz,file->headers);
+      size-=file->headers*sizeof(File_Header_t);
     }
-    if(file->sz-(file->headers*sizeof(File_Header_t))<(size+offset))
+    if(file->sz<size+offset)
     {
       printf("\nThe Requested size is beyond the actual file size");
       return;
@@ -615,10 +633,8 @@ void file_read(uint32_t buffer, uint32_t size, uint32_t offset, char* name)
     }
     tmp2+=512;
     tmp2-=header->spread*1024;
-    printf("\n%x",tmp2);
     uint32_t off=offset-tmp2;
     uint32_t roff=off/512;
-    printf("\n:%x",roff);
     roff=off-roff;
     uint32_t t=fsalloc(512);
     read(curr_port,tmp+(off/512)+1,1,(DWORD)t);

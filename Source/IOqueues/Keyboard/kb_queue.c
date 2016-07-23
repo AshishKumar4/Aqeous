@@ -37,8 +37,6 @@ void kb_getline(char* str, uint32_t length)
   new_entry->buffer = (uint32_t*)str;
   new_entry->str_ln = length;
 
-  //TODO: Remove the Current task from the Scheduing Queue!!!
-
   uint32_t* place_holder = (uint32_t*)((task_t*)current_task)->active;
   *place_holder = (uint32_t)Spurious_task; //Spurious task is a task which would kill itself to remove the void.
   ((task_t*)current_task)->active = 0;

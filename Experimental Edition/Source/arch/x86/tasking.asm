@@ -74,11 +74,12 @@ switcher:                             ; Main Scheduler + context swithcher
     mov [new_process], eax
 
     mov eax, [current_task]
-    mov ebx, [eax+12]
-    mov cr3, ebx
-    mov [_cur_directory], ebx
-
     mov esp, [eax]
+    
+    mov eax, [eax+12]
+    mov cr3, eax
+    mov [_cur_directory], eax
+
 
     popa
 

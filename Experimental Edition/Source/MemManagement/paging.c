@@ -24,6 +24,8 @@ inline pdirectory* pgdir_maker()
       table_t* entry = &dir->m_entries[i];
       pd_entry_add_attrib (entry, I86_PDE_PRESENT);
       pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
+      pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_1);
+      pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_2);
     }
     Switch_back_from_System();
     return dir;
@@ -41,6 +43,8 @@ inline pdirectory* system_dir_maker()
       table_t* entry = &dir->m_entries[i];
       pd_entry_add_attrib (entry, I86_PDE_PRESENT);
       pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
+      pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_1);
+      pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_2);
       //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[i]);
     }
     return dir;
@@ -50,10 +54,11 @@ inline void Kernel_Mapper(pdirectory* dir) ///To Map the Kernel in a given pdire
 {
     map(0, 8*1024*1024, dir);
   //  map(50331648, 12*1024*1024, dir);
-    map(200*1024*1024, 15*1024*1024, dir);
+    map(32*1024*1024, 60*1024*1024, dir);
+  //  map(220*1024*1024, 300*1024*1024, dir);
+  //  map(209715200, 10*1024*1024, dir);
     /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-    //Map_non_identity(8*1024*1024, 0xC0000000, 91*1024*1024, dir);
-    Map_non_identity((uint32_t)console_dbuffer_original, 0xCF000000, 8*1024*1024, dir);
+//    Map_non_identity((uint32_t)console_dbuffer_original, 0xCF000000, 8*1024*1024, dir);
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
   //  map((uint32_t)VGA_buffer, 8192*1024, dir);
     //while(1);
@@ -84,7 +89,14 @@ inline void Switch_to_system_dir()
     asm volatile("mov %0, %%cr3":: "r"((uint32_t)system_dir):"memory");
     _prev_directory=_cur_directory;
     _cur_directory=system_dir;
-    in_system_dir=1;
+    if(multitasking_ON)
+    {
+      ((task_t*)current_task)->pgdir = system_dir;
+    }
+    else
+    {
+        in_system_dir=1;
+    }
   }
 }
 
@@ -92,11 +104,18 @@ inline void Switch_back_from_System()
 {
   if(in_system_dir)
   {
-    if(!_prev_directory)
-      _prev_directory = (pdirectory*)((Process_t*)new_process)->pgdir;
-    asm volatile("mov %0, %%cr3":: "r"((uint32_t)_prev_directory):"memory");
-    _cur_directory=_prev_directory;
-    in_system_dir=0;
+    if(multitasking_ON)
+    {
+      _cur_directory = ((task_t*)current_task)->main_pgdir;
+      ((task_t*)current_task)->pgdir = _cur_directory;
+    }
+    else
+    {
+      _cur_directory=_prev_directory;
+      in_system_dir=0;
+    }
+    _prev_directory = system_dir;
+    asm volatile("mov %0, %%cr3":: "r"((uint32_t)_cur_directory):"memory");
   }
 }
 
@@ -153,7 +172,7 @@ inline page_t* ptable_lookup_entry (ptable* p,uint32_t addr)
 	return 0;
 }
 
-inline page_t* pdirectory_lookup_entry (pdirectory* p, uint32_t addr)
+inline table_t* pdirectory_lookup_entry (pdirectory* p, uint32_t addr)
 {
 	if (p)
 		return &p->m_entries[ PAGE_TABLE_INDEX (addr) ];

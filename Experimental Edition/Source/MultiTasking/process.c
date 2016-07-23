@@ -11,7 +11,7 @@ uint32_t pidcounter = 1;
 Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process_t* parent)  /// Create a New Task for a given Process
 {
   Switch_to_system_dir();
-  Process_t* New_Proc = (Process_t*)tmalloc(4096);
+  Process_t* New_Proc = (Process_t*)mtalloc(1);
   New_Proc->priority = priority;
 
   New_Proc->code = code;

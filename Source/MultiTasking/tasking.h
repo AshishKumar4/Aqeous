@@ -9,8 +9,8 @@
 #include "stdint.h"
 #include "fs.h"
 
-#define QUEUE_START 209715200
-#define LAST_QUEUE 209797120
+#define QUEUE_START 33554432//209715200
+#define LAST_QUEUE 33636352//209797120
 #define TOTAL_QUEUES 20
 const uint32_t TIME_MASK=0x000ff000;
 
@@ -20,21 +20,23 @@ int volatile cli_already = 0;
 volatile int multitasking_ON = 0;
 
 // This structure defines a 'task' - a process.
-typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
+typedef struct _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
 {
     uint32_t esp;
     uint32_t pId;                // Process ID.
     uint32_t* process; //Parent Process Address
     uint32_t pgdir;
-  //  uint32_t prev_pgdir;
     //uint32_t kernel_stack;
     uint32_t priority;
     uint32_t tokens;
     uint32_t active;
     uint32_t special;
+    uint32_t main_pgdir;
+    uint32_t mem_used;
     char* name; //Parent Process name
 }task_t;
 
+task_t *Kernel_task;
 task_t *Idle_task, *Shell_task, *Spurious_task, *SAS_booster, *SAS_eraser, *Shell_Istream_task, *Shell_Ostream_task;
 
 

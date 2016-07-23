@@ -100,6 +100,7 @@ inline void Switch_to_system_dir();
 inline void Switch_back_from_System();
 inline pdirectory* system_dir_maker();
 int Switch_Page_Directory(pdirectory* dir);
+inline table_t* pdirectory_lookup_entry (pdirectory* p, uint32_t addr);
 void page_fault(registers_t regs);
 inline page_t* MapPage(void* phys, void* virt, pdirectory* dir);
 void map(uint32_t phy,size_t size, pdirectory* dir);

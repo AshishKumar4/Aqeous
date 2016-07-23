@@ -43,11 +43,13 @@ INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) 
 INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM) -I$(HPET) -I$(BASICSHELL) -I$(IOQUEUE) -I$(KBQUEUE)
 INCLUDED:=$(INCLUDED) -I$(PIC)
 
-FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -O1 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:
 	rm -f build-kernel *.o */*.o */*/*.o
+	rm -rfv objs
+	rm -rfv isodir
 
 build-nasm:
 	mkdir -p objs
@@ -59,6 +61,18 @@ build-nasm:
 
 build-kernel: $(KERNEL) linker.ld
 	$(LD) -T linker.ld -o $(OBJ)/Aqeous $(OBJS) $(KERNEL) -O0
+	cp $(OBJ)/Aqeous Aqeous.bin
+	make clean
+	echo -e "\n\n\n\n\tKernel Built Successfully! Run it using Qemu_aqeous.bat. \n\tBe sure to modify it accordingly!!!"
+
+build-iso:
+	sh grub_config.sh
+	grub-mkrescue -o aqeous.iso --modules="multiboot normal ext2 part_msdos" isodir
+
+build-installer:
+	cd installer
+	make
+
 %.o: %.c
 	$(CC) -c $< -o $@ $(FLAGS)
 

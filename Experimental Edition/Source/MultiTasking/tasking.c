@@ -190,11 +190,12 @@ void idle6()
 
 void test_process()
 {
+//  Switch_to_system_dir();
   Shell_sleep();
   _printf("\nThis is a test process to test the capabilities of the this New System.\nI am now Gonna get some input from you.");
   _printf("\nType your name below to check if the system and the keyboard drivers are working.\n-->");
   asm volatile("cli");
-  uint32_t* test_str = (uint32_t*)kmalloc(10);
+  uint32_t* test_str = (uint32_t*)malloc(10);
   asm volatile("sti");
   kb_getline((char*)test_str, 20);
   _printf("\nYou entered: %s\n", (char*)test_str);
@@ -206,9 +207,13 @@ void test_process()
   while(1);
 }
 
+extern void kernel_main();
+
 void tasking_initiator()
 {
-  current_task = (uint32_t)Idle_task;
+  Kernel_task = create_task("Main_Kernel",kernel_main, 0, 0x202, kernel_proc);
+  Kernel_task->special = 2;
+  current_task = (uint32_t)Kernel_task;
   printf("\n\n\n\t\t--------------MISSION ACCOMPLISHED--------------\n\n\t--------------Welcome to the MultiThreading World!!!--------------\n");
   printf("\n\t-----------Launching the Shell and input/output processes-----------\n\t\t\t\tStarting in 3...2...1... GO...\n\n");
   delay1(1);
@@ -223,7 +228,7 @@ void tasking_initiator()
 //  init_timer(1000);
   //Here it goes, The entry to the multitasking world.
   asm volatile("sti;\
-  int $50");
+   int $50");
   kill();
   while(1);
 }
@@ -233,6 +238,7 @@ extern void kernel_main();
 void init_multitasking()
 {
   asm volatile("cli");
+
   kernel_proc = create_process("microkernel", 0, 1, 0);
   kernel_proc->pgdir = (uint32_t)system_dir;
 

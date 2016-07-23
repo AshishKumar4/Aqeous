@@ -38,18 +38,21 @@ uint32_t kmalloc_a(uint32_t sz);
    General allocation function.
 **/
 uint32_t kmalloc(uint32_t sz);
-uint32_t* tmalloc(uint32_t sz);
-uint32_t* smalloc(uint32_t sz);
+
+uint32_t mtalloc(uint32_t pages);
+
 inline uint32_t Phy_alloc_pg(uint32_t processID);
+
+inline uint32_t pmalloc(uint32_t id);
+
+uint32_t fsalloc(uint32_t sz);
 
 /**
    General deallocation function.
 **/
 void kfree(uint32_t* ptr);
 
-inline uint32_t pmalloc(uint32_t id);
-
-uint32_t fsalloc(uint32_t sz);
+void mtfree(uint32_t addr, uint32_t size);
 
 
 #endif // MEM

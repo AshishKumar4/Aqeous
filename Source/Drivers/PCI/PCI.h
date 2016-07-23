@@ -196,7 +196,7 @@ typedef struct _PciDevice
 	uint32_t Type;
 
 	/* Location */
- 	s32int Bus;
+ 	int32_t Bus;
 	uint32_t Device;
 	uint32_t Function;
 

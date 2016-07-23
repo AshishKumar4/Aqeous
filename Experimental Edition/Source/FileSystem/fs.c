@@ -1,6 +1,8 @@
 #include "fs.h"
 #include "fs_alloc.h"
 
+extern volatile int multitasking_ON;
+
 uint64_t root_location;
 
 void Setup_fs()
@@ -360,13 +362,13 @@ File_handle_t* file_search(char* name)
 
 void set_curr_dir(uint64_t location)
 {
-    uint32_t buf=fsalloc(512);
+    uint32_t buf=fsalloc(4096);
     read(curr_port,location/512,1,(DWORD)buf);
     Directory_t* dir=(Directory_t*)(buf+(uint32_t)(location%512));
     curr_dir.dir=*dir;
     char** dir_name;
     char name[32]="";
-    buf=fsalloc(512);
+    buf=fsalloc(4096);
     Directory_t* temp=dir;
     uint64_t tmp=dir->parent;
     int i;
@@ -388,19 +390,13 @@ void set_curr_dir(uint64_t location)
     strcat(name,dir_name[0]);
     strcpy(curr_dir.full_name,name);
     printf("\ncurr dir: %s",name);
+  //  if(multitasking_ON)
+  //    while(1);
     //kfree((uint32_t*)buf);
 }
 
 void make_boot_sector()
 {
-    uint32_t buf=(uint32_t)fsalloc(1024);
-    Boot_sectors_t* boot=(Boot_sectors_t*)(buf);
-    strcpy(boot->name,"Yureka 1 :D");
-    boot->Number_of_sectors=sectors;
-    boot->partitions=1;
-    boot->partition_locations[0]=root_location;
-    boot->bytes_per_sector=512;
-    write(curr_port,0,2,(DWORD)buf);
 }
 
 void Init_fs()
@@ -408,30 +404,63 @@ void Init_fs()
     curr_ahci=ahci_start;
     curr_disk=&curr_ahci->Disk[1];
     curr_port=&abar->ports[1];
-    if(!curr_disk||!curr_port)
+    if(!curr_disk||!curr_port||!sata)
     {
       printf("\nNo DISK Found");
+      Directory_t* root = fsalloc(4096);
+      strcpy(root->name,"no_disk");
+      root->perm=0;
+      root->files=0;
+      root->folders=0;
+      root->location=root_location;
+      root->Next_Friend=0;
+      root->last_child=0;
+      root->First_child=0;
+      root->First_file=0;
+      root->last_file=0;
+      //Next_available+=sizeof(Directory_t);
+      current_=*root;
+      curr_dir.dir=*root;
+      curr_dir.type=1;
+      strcpy(curr_dir.full_name,"no_disk");
       return;
     }
     SATA_ident_t* info=(SATA_ident_t*)curr_disk->info;
     sectors=info->lba_capacity;
     printf("\nTotal Sectors: %x\n",sectors);
-    memset((void*)BASE,0,512);
-    start_off=2;
+    start_off=10240;
     bytes=sectors;
     off=(bytes/512)/512;
+    off += 16;
     ++off;
+    bytemap_off = off+start_off;
+    bytemap_end = start_off + (bytes/512);
     uint32_t buf=fsalloc(1024);
+
     read(curr_port,0,2,(DWORD)buf);
-    Boot_sectors_t* boot=(Boot_sectors_t*)buf;
-    root_location=boot->partition_locations[0];
-    printf("\n %s %x",boot->name,root_location);
-    if(!boot->name)
+
+    Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
+    if(!strcmp(identity->name, "AFS1.472"))
     {
       printf("Filesystem Not supported/Disk not partitioned\n");
       return;
     }
+    read(curr_port,start_off,2,(DWORD)buf);
+
+    uint32_t* tmp = (uint32_t*)buf;
+
+    root_location = (*tmp);
+    //Partition_struct_t* act_part = (Partition_struct_t*)(identity->active_partition + buf);
+
+    //memcpy((void*)&root_location, (void*)&act_part->relative_sector, 6);
+
+    printf("\n %s %x",identity->name,root_location);
+
+    if(!root_location)  return;
+    //while(1);
     set_curr_dir(root_location);
+  	find_dir(0);
+  //  while(1);
     /*
     find_dir(0);
     find_dir("Aqeous");

@@ -32,48 +32,48 @@ void delay(uint32_t delay)
     }
 }
 
-inline void outb(u16int port, u8int val)
+inline void outb(uint16_t port, uint8_t val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
 }
 
-inline u8int inb(u16int port)
+inline uint8_t inb(uint16_t port)
 {
-    u8int ret;
+    uint8_t ret;
     asm volatile ( "inb %1, %0" : "=a"(ret) : "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
     return ret;
 }
 
-inline void outw(u16int port, u16int val)
+inline void outw(uint16_t port, uint16_t val)
 {
     asm volatile ( "outw %0, %1" : : "a"(val), "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
 }
 
-inline u16int inw(u16int port)
+inline uint16_t inw(uint16_t port)
 {
-    u16int ret;
+    uint16_t ret;
     asm volatile ( "inw %1, %0" : "=a"(ret) : "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
     return ret;
 }
 
-inline void outpd(u16int port, u16int val)
+inline void outpd(uint16_t port, uint16_t val)
 {
     asm volatile ( "outpd %0, %1" : : "a"(val), "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
 }
 
-inline u16int inpd(u16int port)
+inline uint16_t inpd(uint16_t port)
 {
-    u16int ret;
+    uint16_t ret;
     asm volatile ( "inpd %1, %0" : "=a"(ret) : "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
@@ -81,16 +81,16 @@ inline u16int inpd(u16int port)
 }
 
 
-inline void outl(u16int port, u32int val)
+inline void outl(uint16_t port, uint32_t val)
 {
     asm volatile ( "outl %0, %1" : : "a"(val), "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */
 }
 
-inline u32int inl(u16int port)
+inline uint32_t inl(uint16_t port)
 {
-    u32int ret;
+    uint32_t ret;
     asm volatile ( "inl %1, %0" : "=a"(ret) : "Nd"(port) );
     /* TODO: Is it wrong to use 'N' for the port? It's not a 8-bit constant. */
     /* TODO: Should %1 be %w1? */

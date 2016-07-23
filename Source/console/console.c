@@ -22,9 +22,6 @@ void console_init(void)
 			console_buffer[index] = make_vgaentry(' ', console_color);
 		}
 	}
-	console_dbuffer_original = (500*1024*1024);
-	console_dbuffer = (uint16_t*)console_dbuffer_original;
-	console_dbuffer_limit = console_dbuffer_original + 4194304;
 }
 
 inline void console_setcolor(uint8_t color)

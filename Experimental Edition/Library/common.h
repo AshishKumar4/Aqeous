@@ -7,15 +7,6 @@
 
 typedef void (*func_t)();	//void function pointer
 
-// Some nice typedefs, to standardise sizes across platforms.
-// These typedefs are written for 32-bit X86.
-typedef 	uint32_t   u32int;
-typedef          int   s32int;
-typedef 	  uint16_t u16int;
-typedef          short s16int;
-typedef   	  uint8_t  u8int;
-typedef          char  s8int;
-
 #ifndef NULL
 #define NULL ((void*) 0)
 #endif

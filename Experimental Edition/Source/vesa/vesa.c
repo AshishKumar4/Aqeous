@@ -33,7 +33,7 @@ void setVesa(uint32_t mode)
 
   vbeInfo = (VESA_INFO*)vesa_malloc();
 //  printf("\n vbeInfo:%x %x", vbeInfo, sizeof(VESA_INFO));
-  u32int buffer = (uint32_t)vbeInfo;
+  uint32_t buffer = (uint32_t)vbeInfo;
   regs = (regs16_t*)vesa_malloc();
 //  printf("\n regs:%x %x", regs, sizeof(regs16_t));
 
@@ -46,7 +46,7 @@ void setVesa(uint32_t mode)
   //*/
   vbeModeInfo=(MODE_INFO*)vesa_malloc();
 //  printf("\n vbeModeInfo:%x %x", vbeModeInfo, sizeof(MODE_INFO));
-  u32int modeBuffer = (uint32_t)vbeModeInfo;
+  uint32_t modeBuffer = (uint32_t)vbeModeInfo;
   regs=(regs16_t*)vesa_malloc();
 //  printf("\n regs:%x", regs);
   //memset(&regs, 0, sizeof(regs));
