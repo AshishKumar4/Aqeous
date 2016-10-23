@@ -5,7 +5,27 @@
 
 #include <stddef.h>
 
-int memcmp(const void *_s1, const void *_s2, size_t _n)
+inline void *faster_memcpy(void * _dest, const void *_src, uint32_t _n)
+{
+    uint_fast32_t *sp = (uint_fast32_t*) _src;
+    uint_fast32_t *dp = (uint_fast32_t*) _dest;
+	//	_n /= sizeof(uint_fast32_t);
+    for(; _n != 0; _n--) {
+		*dp++ = *sp++;
+	}
+	return _dest;
+}
+
+inline void faster_memset(void *_s, uint32_t _c, size_t _n)
+{
+    uint_fast32_t *temp = (uint_fast32_t*) _s;
+    for ( ; _n != 0; _n--)
+    {
+		    *temp++ = _c;
+	  }
+}
+
+inline int memcmp(const void *_s1, const void *_s2, size_t _n)
 {
 	const unsigned char *us1 = (const unsigned char *)_s1;
 	const unsigned char *us2 = (const unsigned char *)_s2;
@@ -101,7 +121,7 @@ inline void memset_fast(void *_s, int _c, size_t _n)
 	}
 }
 
-size_t strlen(const char *_s)
+inline size_t strlen(const char *_s)
 {
    size_t n;
    for(n=0; _s[n] != '\0'; n++) {
@@ -110,7 +130,7 @@ size_t strlen(const char *_s)
    return n;
 }
 
-int strcmp(const char *_s1, const char *_s2)
+inline int strcmp(const char *_s1, const char *_s2)
 {
     for(; *_s1 == *_s2; ++_s1, ++_s2) {
         if(*_s1 == 0) {
@@ -120,7 +140,7 @@ int strcmp(const char *_s1, const char *_s2)
     return *(unsigned char *)_s1 < *(unsigned char *)_s2 ? -1 : 1;
 }
 
-int strncmp(const char *_s1, const char *_s2, size_t _n)
+inline int strncmp(const char *_s1, const char *_s2, size_t _n)
 {
 	unsigned char uc1, uc2;
 	if (_n==0)
@@ -137,15 +157,16 @@ int strncmp(const char *_s1, const char *_s2, size_t _n)
 	return ((uc1 < uc2) ? -1 : (uc1 > uc2));
 }
 
-char *strcpy(char *_dest, const char *_src)
+inline char *strcpy(char *_dest, const char *_src)
 {
     do {
       *_dest++ = *_src++;
     } while (*_src != 0);
+  *_dest = '\0';
 	return _dest;
 }
 
-char *strcat(char *_dest, const char *_src)
+inline char *strcat(char *_dest, const char *_src)
 {
    size_t n;
 
@@ -155,7 +176,7 @@ char *strcat(char *_dest, const char *_src)
    return _dest;
 }
 
-int strcmpy(const char *c1, const char *c2)
+inline int strcmpy(const char *c1, const char *c2)
 {
     uint32_t buff=0;
     for(uint32_t i=0;i<=strlen(c1);i++)
@@ -174,7 +195,7 @@ int strcmpy(const char *c1, const char *c2)
     return 1;
 }
 
-char *strchr(const char *_s, int _c)
+inline char *strchr(const char *_s, int _c)
 {
 	while (*_s != (char)_c) {
 		if (!*_s++) {
@@ -184,7 +205,7 @@ char *strchr(const char *_s, int _c)
 	return (char *)_s;
 }
 
-size_t strspn(const char *_s, const char *_accept)
+inline size_t strspn(const char *_s, const char *_accept)
 {
 	size_t ret=0;
 	while(*_s && strchr(_accept,*_s++)) {
@@ -193,7 +214,7 @@ size_t strspn(const char *_s, const char *_accept)
 	return ret;
 }
 
-size_t strcspn(const char *_s, const char *_reject)
+inline size_t strcspn(const char *_s, const char *_reject)
 {
 	size_t ret=0;
 	while(*_s) {
@@ -223,7 +244,7 @@ char *strtok(char *_s, const char *_delim)
 	return _s;
 }
 
-char *strstr(const char *_haystack, const char *_needle)
+inline char *strstr(const char *_haystack, const char *_needle)
 {
 	size_t needleLen;
 	if(*_needle == '\0') {

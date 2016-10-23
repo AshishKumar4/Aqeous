@@ -5,10 +5,15 @@
 #include "timer.h"
 #include "keyboard.h"
 #include "mouse.h"
-#include "paging.h"
+#include "stdlib.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
+#include "phy_mm/mem.h"
 #include "shell.h"
 #include "tasking.h"
 #include "console.h"
+#include "sys.h"
+#include "graphics.h"
 
 uint32_t* LAPIC_EOI_send = (uint32_t*)(0x00b0+0xfee00000);
 extern void switcher();
@@ -129,11 +134,10 @@ void stackFault_handler()
   asm volatile("iret");
 }
 
-
 void generalProtectionFault_handler(registers_t regs)
 {
   asm volatile("cli");
-  printf("\nFaul14t ticks: %x Ax%x Bx%x %x %x",tick,regs.err_code,regs.eip,regs.cs,regs.eflags);
+  printf("\nGeneral Protection Fault! ticks: %x Ax%x Bx%x %x %x",tick,regs.err_code,regs.eip,regs.cs,regs.eflags);
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -234,9 +238,11 @@ void PIT_handler()
   asm volatile("iret");
 }
 
+uint32_t ag = 1,ab = 0;
+
 void keyboardInterrupt_handler()
 {
-  Switch_to_system_dir();
+  //Switch_to_system_dir();
   //if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
     int scancode=inb(0x60);
@@ -260,6 +266,12 @@ void keyboardInterrupt_handler()
             case KEY_LALT:
             case KEY_RALT:
               _alt = 0;
+              break;
+            case KEY_UP:
+              _arrow_up = 0;
+              break;
+            case KEY_DOWN:
+              _arrow_down = 0;
               break;
         }
     }
@@ -307,6 +319,34 @@ void keyboardInterrupt_handler()
                 _scrolllock = (_scrolllock) ? false : true;
                 kkybrd_set_leds (_numlock, _capslock, _scrolllock);
                 break;
+              case KEY_UP:
+                _arrow_up = 1;
+                up_input = 1;
+                /*for(;kb_buff;kb_buff--)
+                {
+                  --Istream_ptr;
+                  *Istream_ptr = 0;
+                  backspace();
+                  printf("asd");
+                }
+                char* tmp = (char*)((uint32_t)Istream_ptr);
+                --tmp;
+                kb_buff = (uint32_t)(*tmp);
+              //  --tmp;
+                tmp-=kb_buff;
+                printf("%s %x",tmp, kb_buff);
+                Shell_Double_buffer();
+                for(int i=0; i<kb_buff; i++)
+                {
+                  *(Istream_ptr) = (*tmp);
+                  ++Istream_ptr;
+                  ++tmp;
+                }*/
+                break;
+              case KEY_DOWN:
+                _arrow_down = 1;
+                break;
+
               default:
                 break;
           }
@@ -342,7 +382,7 @@ void keyboardInterrupt_handler()
       }
     }
   }
-  Switch_back_from_System();
+  //Switch_back_from_System();
 }
 
 void cascade_handler()
@@ -434,26 +474,32 @@ void periph3_handler()
   asm volatile("iret");
 }
 
-
 void mouse_handler()
 {
-  asm volatile("cli");
-  printf("\nInterrupt 12");
-  while(1);
-  static unsigned char cycle = 0;
-  static char mouse_bytes[3];
+  //asm volatile("cli");
+  ////Switch_to_system_dir();
+  //  RectD(100,100,1000,1000,000,100,1000);
+//  ab+=5;
+//  Pixel_VESA(ab,ab,9,9,9);
+//  ag = 0;
+
+  //printf("\nInterrupt 12");
+  //while(1);
+///*
   while(cycle<3)
-  mouse_bytes[cycle++] = inb(0x60);
-  int deltax=0,deltay=0;
-  if (cycle == 3) { // if we have all the 3 bytes...
+    mouse_bytes[cycle++] = inb(0x60);
+//  mousedeltax=0;
+//  mousedeltay=0;
+//  if (cycle == 3)
+  { // if we have all the 3 bytes...
     cycle = 0; // reset the counter
     // do what you wish with the bytes, this is just a sample
     if ((mouse_bytes[0] & 0x80) || (mouse_bytes[0] & 0x40))
       return; // the mouse only sends information about overflowing, do not care about it and return
     if (!(mouse_bytes[0] & 0x20))
-      deltay |= 0xFFFFFF00; //delta-y is a negative value
+      mousedeltay |= 0xFFFFFF00; //delta-y is a negative value
     if (!(mouse_bytes[0] & 0x10))
-      deltax |= 0xFFFFFF00; //delta-x is a negative value
+      mousedeltax |= 0xFFFFFF00; //delta-x is a negative value
    // if (mouse_bytes[0] & 0x4)
       //RectD(100,100,50,50,000,100,1000); //A Mouse button click
     //if (mouse_bytes[0] & 0x2)
@@ -462,16 +508,14 @@ void mouse_handler()
       //RectD(100,100,50,100,1000,90,2000);  //Another Mouse Button Clicked
     /*if(mouse_bytes[1]>=1||mouse_bytes>=1)
         RectD(10,10,50,50,1000,1000,90);*/
-    deltax=mouse_bytes[1]/2;
-    deltay=mouse_bytes[2]/2;
-    mousex+=(deltax);
-    mousey-=(deltay);
-    //asm volatile("sti");
-   // WriteText(mouse_bytes[0],100,200,1000,0);
+    mousedeltax=mouse_bytes[1];
+    mousedeltay=mouse_bytes[2];
+  //  mousex+=(deltax);
+  //  mousey-=(deltay);
   }
-  asm volatile("sti");
+  //asm volatile("sti");*/
+  ////Switch_back_from_System();
 }
-
 
 void FPU_handler()
 {

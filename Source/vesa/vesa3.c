@@ -1,5 +1,0 @@
-#include "stdio.h"
-#include "vesa.h"
-#include "mem.h"
-#include "vmem.h"
-#include "paging.h"

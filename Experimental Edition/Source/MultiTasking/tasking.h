@@ -3,9 +3,10 @@
 
 #include "string.h"
 #include "stdio.h"
-#include "mem.h"
-#include "vmem.h"
-#include "paging.h"
+#include "stdlib.h"
+#include "phy_mm\mem.h"
+#include "virt_mm\vmem.h"
+#include "virt_mm\paging.h"
 #include "stdint.h"
 #include "fs.h"
 
@@ -13,6 +14,8 @@
 #define LAST_QUEUE 33636352//209797120
 #define TOTAL_QUEUES 20
 const uint32_t TIME_MASK=0x000ff000;
+
+//func_t Shell_dbuff;
 
 uint32_t* volatile top_queue=(uint32_t*)LAST_QUEUE;
 volatile uint32_t reached_bottom=0,bottom_task=1;
@@ -33,6 +36,7 @@ typedef struct _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make cha
     uint32_t special;
     uint32_t main_pgdir;
     uint32_t mem_used;
+    uint32_t task_id;
     char* name; //Parent Process name
 }task_t;
 
@@ -67,6 +71,7 @@ typedef struct __attribute__((packed)) Process
     task_table_t* first_task_entry; ///First Made Task
     task_table_t* last_task_entry; ///Last Made Task
     uint32_t total_tasks;
+    uint32_t counter;
     Process_File_wrapper_t* First_file;
     struct Process* parent;
     //uint32_t ss; //stack segment registers
@@ -107,9 +112,13 @@ void Task_wakeup(task_t* task);
 
 task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flags, Process_t* process);
 
+void Priority_changer(task_t* task, uint32_t new_priority);
+
 void Spurious_task_func();
 
 void Priority_promoter(task_t* task);
+
+void test_ab(uint32_t s, uint32_t d);
 
 //void SAS_Catalouge_handler();
 

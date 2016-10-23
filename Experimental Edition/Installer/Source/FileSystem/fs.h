@@ -1,11 +1,12 @@
+/*** AqFS File System, Aqeous OS's default FS ***/
+
 #ifndef FS_h
 #define FS_h
 
 #include "ahci.h"
 #include "ata.h"
 
-#define BASE        167772160 //160*1024*1024
-#define BASE_SIZE   41943040 //40*1024*1024
+#define FHR_MAGIC 0xAFE472
 
 typedef enum
 {
@@ -48,13 +49,22 @@ typedef struct __attribute__ ((packed)) file
 
 typedef struct __attribute__ ((packed)) File_Header
 {
-    uint16_t used;
-    uint16_t spread; // number of continuous sectors it spans.
+    uint32_t used;
+    uint32_t spread; // Amount of memory the header can have.
+    uint32_t reserved;
+    uint32_t magic;
     uint64_t File_location;
     uint64_t location;
     uint64_t Next_Header;
     uint64_t Previous_Header;
 }File_Header_t;
+
+typedef struct Special_dirs
+{
+    Directory_t dir;
+    uint16_t type;
+    char full_name[100];
+}Special_Dirs_t;
 
 typedef struct __attribute__ ((packed)) Identity_Sectors
 {
@@ -80,13 +90,6 @@ typedef struct __attribute__((packed)) Partition_struct
   uint32_t relative_sector;
   uint32_t total_sectors;
 }Partition_struct_t;
-
-typedef struct Special_dirs
-{
-    Directory_t dir;
-    uint16_t type;
-    char full_name[100];
-}Special_Dirs_t;
 
 typedef struct __attribute__ ((packed)) File_handle
 {
@@ -120,7 +123,20 @@ File_t curr_file;
 
 uint32_t fsbuf;
 
-void find_dir(char* name);
+size_t header_data=1024-sizeof(File_Header_t);
+
+void find_friendDirs(char* name);
+void find_childFiles(char* name);
+
+inline void flush_header(File_Header_t* header);
+
+//File_Header_t* file_header_search(uint32_t foffset, File_t* file);
+
+int del_header(File_Header_t* header);
+
+File_Header_t* get_header(uint64_t location);
+
+File_Header_t* nx_header(File_Header_t* prev_header);
 
 void create_directory(char *name, uint16_t perm, char* destination);
 
@@ -136,11 +152,11 @@ Directory_t* search_folder(char* name);
 
 File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks);
 
-size_t header_data=1024-sizeof(File_Header_t);
+File_Header_t* File_Header_Creator_sdw(File_t* file, File_Header_t* left_header,  uint16_t blocks);
 
 File_handle_t* file_search(char* name);
 
-void file_load(char *name, uint8_t ios);
+void file_load(char *name);
 
 void file_truncate(File_handle_t* handle);
 
@@ -148,8 +164,10 @@ void file_flush(char* name);
 
 void file_close(char *name);
 
-void file_read(uint32_t buffer, uint32_t size, uint32_t offset, char* name);
+int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* file_name); //Read file content and write to memory.
 
-void file_write(uint32_t buffer,uint32_t size, char* file_name);
+int file_writeAppend(uint32_t* buffer, uint32_t size, char* file_name); //Write to a file from memory.
+
+int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsize, char* file_name);
 
 #endif

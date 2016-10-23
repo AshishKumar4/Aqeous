@@ -238,7 +238,7 @@ static int Main_key_codes [] = {
 	OTHER_key,	//0x45
 	OTHER_key,	//0x46
 	OTHER_key,		//0x47
-	KEY_KP_8,		//0x48	//keypad up arrow
+	OTHER_key,		//0x48	//keypad up arrow
 	OTHER_key,		//0x49
 	KEY_KP_2,		//0x50	//keypad down arrow
 	KEY_KP_3,		//0x51	//keypad page down
@@ -326,7 +326,7 @@ static int Special_key_codes [] = {
 	KEY_KP_NUMLOCK,	//0x45
 	KEY_SCROLLLOCK,	//0x46
 	KEY_HOME,		//0x47
-	KEY_KP_8,		//0x48	//keypad up arrow
+	KEY_UP,		//0x48	//keypad up arrow
 	KEY_PAGEUP,		//0x49
 	KEY_KP_2,		//0x50	//keypad down arrow
 	KEY_KP_3,		//0x51	//keypad page down

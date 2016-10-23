@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef void (*func_t)();	//void function pointer
+typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 2 arguments
 
 #ifndef NULL
 #define NULL ((void*) 0)
@@ -41,6 +42,11 @@ typedef void (*func_t)();	//void function pointer
 	(typeof(a)) (ROUNDDOWN((uint64_t) (a) + __n - 1, __n));	\
 })
 
+#define sgn(x) ((x<0)?-1:((x>0)?1:0)) /* macro to return the sign of a
+                                         number */
+#define abs(x) ((x<0)?-x:x) /* macro to return the absolute magnitude of a
+																				number */
+
 typedef struct
 {
     int inode_num;//This field will be index in the tarfs table
@@ -73,6 +79,11 @@ typedef void (*irq_t)();
 
 #define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
 
+extern void memcpy_rep(uint32_t s, uint32_t d, uint32_t sz);
+extern void Enable_SSE();
+extern void memcpy_sse(uint32_t s, uint32_t d, uint32_t sz);
+extern void memset_sse(uint32_t s, int a, uint32_t sz);
+
 inline uint32_t Lower32(uint64_t val)
 {
 	uint32_t a=val&0xffffffff;
@@ -85,5 +96,14 @@ inline uint32_t Higher32(uint64_t val)
 	return b;
 }
 
+#define TRUE    1  //define a few variable
+#define ON      1
+#define FALSE   0
+#define OFF     0
+
+int posix_time()
+{
+	return 0xffff;
+}
 
 #endif // COMMON_H

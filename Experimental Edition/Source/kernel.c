@@ -4,7 +4,7 @@
 #include "int_handlers.c"
 #include "cpu.c"
 #include "multiboot.h"
-#include "vfs.c"
+//#include "vfs.c"
 #include "cmos.c"
 #include "pci.c"
 #include "ahci.c"
@@ -12,11 +12,11 @@
 #include "timer.c"
 #include "apic.c"
 #include "cpuid.c"
-#include "mem.c"
-#include "paging.c"
+#include "phy_mm/mem.c"
+#include "virt_mm/paging.c"
 #include "ata.c"
 #include "acpi.c"
-#include "vmem.c"
+#include "virt_mm/vmem.c"
 #include "keyboard.c"
 #include "task.c"
 #include "tasking.c"
@@ -26,11 +26,21 @@
 #include "fs_alloc.c"
 #include "Scheduler.c"
 #include "Shell.c"
-#include "kb_queue.c"
+#include "kb_handle.c"
+#include "parallels.c"
+#include "serials.c"
+#include "std_iohandling.c"
+#include "FS_Handling.c"
 #include "Qalloc.c"
 #include "queues.c"
 #include "vesa.c"
 #include "pic.c"
+#include "fonts.c"
+#include "memfunc.c"
+#include "math.c"
+
+//#include "std_fs.c"
+#include "ext2\ext2_fs.c"
 
 uint32_t initial_esp;
 uint32_t initial_ebp;
@@ -38,19 +48,13 @@ uint8_t calle=0;
 
 void dbug()
 {
-	int a[4];
-	//printf("\n\tEnter the size of: ");
-	for(int i=0;i<4;i++)
-	{
-	//	printf("\n\t\tvar %x: ",i+1);
-		a[i]=4096;//getint();
-	}
-	uint32_t *temp1=(uint32_t*)kmalloc(28),*temp2=temp1;
+	uint32_t *temp1=(uint32_t*)kmalloc(810),*temp2=temp1;
 	*temp1=4284;
 	//kmalloc(4096);
-	uint32_t *test1=(uint32_t*)kmalloc(36),*test2=test1;
-	uint32_t *test3=(uint32_t*)kmalloc(1024);
+	uint32_t *test1=(uint32_t*)kmalloc(1024),*test2=test1;
+	uint32_t *test3=(uint32_t*)kmalloc(1024*1024);
 	uint32_t *test4=(uint32_t*)kmalloc(432);
+	//printf("Ax%x",kmalloc(1024*1024*40));
 	uint32_t *test5=(uint32_t*)kmalloc(128);
 
 	printf("\n\tLocation of var 1: %x, var 2: %x var 3: %x var 4: %x var 5: %x \n",temp1,test1,test3,test4,test5);
@@ -87,10 +91,10 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-//	free(test);
+	kfree(test1);
 	kfree(temp2);
-	kfree(test3);
-/*
+	//free(test3);
+///*
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*temp1);
@@ -130,9 +134,9 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	else printf("\nACPI CANT BE INITIALIZED\n");
 		ioapic_init();
 
+	mouseinit();
 	printf("\nMouse Drivers initialized\n");
 	keyboard_init();
-	kb_io_init();
 	printf("\nKeyboard Drivers Initialized\n");
 
 	printf("\nAvailable memory: ");
@@ -147,23 +151,40 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 		if(mmap_info->startLo==0) break;
 			printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
 			mmap_info->type,strMemoryTypes[mmap_info->type-1]);
+			mmap_info->reservedt = 0xFFE42;
 			mmap_info++;
 	}
 	printf("\nInitializing Memory Manager!\n");
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	max_mem=maxmem*1024;
 
-	Mapper();
+	/*Mapper();
 
 	printf("\nMemory block lists prepared!\n");
 	bitmap_init();
 	initialise_paging();
 	enable_paging();
-	switch_pdirectory(system_dir);
-
+	switch_pdirectory(system_dir);*/
+	Setup_Paging();
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-	switch_pdirectory(system_dir);
+/*
+	printf("C %x D %x %x", phy_alloc4K(),phy_alloc4K(), phy_alloc4K());
+
+	CustomCSRB_M_header_t* cst = system_pdirCap->csrb_f;
+	CustomCSRB_M_t* tmp = cst->head;
+
+	for(int i=0; i < 20; i++)
+	{
+		tmp = tmp->addr;
+		printf("A%x-%x  ",tmp->begin,tmp->size);
+		++tmp;
+	}
+*/
+
+//	dbug();
+//	while(1);
+
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
 	printf("\nEnabling Hard Disk\n");
@@ -183,15 +204,17 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	Init_fs();
 	//while(1);
 	printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
-	if(cpuHasMSR()) printf("\nCPU has MSR");//*/
+	if(cpuHasMSR()) printf("\nCPU has MSR");
 	//switch_pdirectory(main_dir);
-
+	
 	console_dbuffer_original = kmalloc(4096*1024);
 	console_dbuffer = (uint16_t*)console_dbuffer_original;
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
 	printf("\n\nInitializing MultiThreading System");
-	init_multitasking();
+	init_multitasking();//*/
 	while(1);
+
+//	RectL(0,0,1200,900,90,90,90);
 	//We shall never get back here, Not until the universe ends. ;)
 }
 

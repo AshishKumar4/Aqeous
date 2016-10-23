@@ -6,6 +6,7 @@
 #include "interrupts.h"
 
 uint32_t tick = 0;
+uint32_t rtc_timer = 0;
 
 void init_timer();
 

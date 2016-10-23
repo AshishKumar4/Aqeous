@@ -34,9 +34,9 @@ void init_APIC()
 void ioapic_init()
 {
   printf("\nInitializing IO APIC!!!");
-  uint_fast32_t *ptr = acpiGetRSDPtr();
+  uint_fast32_t *ptr = (uint_fast32_t*)acpiGetRSDPtr();
   // check if address is correct  ( if acpi is available on this pc )
-  if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
+  if (ptr != NULL && acpiCheckHeader((uint32_t*)ptr, "RSDT") == 0)
   {
     //Get the APIC and HPET tables!!!
     struct RSDT* rsdt = (struct RSDT*)ptr;
@@ -46,10 +46,10 @@ void ioapic_init()
 
     for(uint32_t i=0; i<entries; i++)
     {
-      if (acpiCheckHeader(*ptr, "APIC") == 0)
+      if (acpiCheckHeader((uint32_t*)*ptr, "APIC") == 0)
       {
         printf("\nGot the MADT Structure");
-        madt = *ptr;
+        madt = (MADT_t*)*ptr;
         madt_entry_t* madt_entry = (madt_entry_t*)&madt->rest_fields;
         for(int i=0;!i;)
         {
@@ -57,19 +57,19 @@ void ioapic_init()
           {
             case 0 :
               printf("\n\tLocal APIC Found");
-              LAPIC_entry = &madt_entry->rest_field;
+              LAPIC_entry = (lapic_entry_t*)&madt_entry->rest_field;
               madt_entry = (madt_entry_t*)LAPIC_entry->rest_fields;
               break;
             case 1 :
               printf("\n\tIO APIC Found");
-              IOAPIC_entry = &madt_entry->rest_field;
+              IOAPIC_entry = (ioapic_entry_t*)&madt_entry->rest_field;
               printf(" id: %x, address: %x, GSIB: %x",IOAPIC_entry->id, IOAPIC_entry->address, IOAPIC_entry->gsib);
               APIC_IO_BASE = IOAPIC_entry->address;
               madt_entry = (madt_entry_t*)IOAPIC_entry->rest_fields;
               break;
             case 2 :
               printf("\n\tInterrupt Source Override Found");
-              ISD_entry = &madt_entry->rest_field;
+              ISD_entry = (isd_entry_t*)&madt_entry->rest_field;
               madt_entry = (madt_entry_t*)ISD_entry->rest_fields;
               break;
             default:

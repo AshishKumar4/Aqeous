@@ -1,5 +1,9 @@
+/*** AqFS File System, Aqeous OS's default FS ***/
+
 #include "fs.h"
 #include "fs_alloc.h"
+
+extern volatile int multitasking_ON;
 
 uint64_t root_location;
 
@@ -24,7 +28,7 @@ void Setup_fs()
     curr_dir.type=1;
     strcpy(curr_dir.full_name,"root");
     write(curr_port,root_location/512,1,(DWORD)buf);
-    //kfree((uint32_t*)buf);
+    ////kfree((uint32_t*)buf);
 }
 
 void create_directory(char *name, uint16_t perm, char* destination)
@@ -46,7 +50,7 @@ void create_directory(char *name, uint16_t perm, char* destination)
     }
     uint64_t parent=dest->location;
     uint32_t buff=fsalloc(512);
-    uint64_t Next_available=fs_alloc(2);
+    uint64_t Next_available=sec_alloc(1);
     read(curr_port,Next_available/512,1,(DWORD)buff);
     Directory_t* dir=(Directory_t*)((buff)+(uint32_t)(Next_available%512));
     dir->files=0;
@@ -77,7 +81,7 @@ void create_directory(char *name, uint16_t perm, char* destination)
         Directory_t* dir2=(Directory_t*)(buf+(uint32_t)(tm%512));
         dir2->Next_Friend=dir->location;
         write(curr_port,tm/512,1,(DWORD)buf);
-        //kfree((uint32_t*)buf);
+        ////kfree((uint32_t*)buf);
     }
     else
     {
@@ -90,9 +94,9 @@ void create_directory(char *name, uint16_t perm, char* destination)
     printf("\nFolder \"%s\" Created Successfully\n",name);
     name=0;
     destination=0;
-    //kfree((uint32_t*)dest);
-    //kfree((uint32_t*)buff);
-    //kfree((uint32_t*)buff2);
+    ////kfree((uint32_t*)dest);
+    ////kfree((uint32_t*)buff);
+    ////kfree((uint32_t*)buff2);
 }
 
 void create_file(char *name,uint16_t perm, char* destination)
@@ -115,7 +119,7 @@ void create_file(char *name,uint16_t perm, char* destination)
     uint64_t parent=dest->location;
     uint32_t buff=fsalloc(512);
     memset((void*)buff,0,512);
-    uint64_t Next_available=fs_alloc(2);
+    uint64_t Next_available=sec_alloc(1);
     read(curr_port,Next_available/512,1,(DWORD)buff);
     File_t* file=(File_t*)(buff+(uint32_t)(Next_available%512));
     file->location=Next_available;
@@ -146,7 +150,7 @@ void create_file(char *name,uint16_t perm, char* destination)
         File_t* file2=(File_t*)(buf+(uint32_t)(tm%512));
         file2->Next_Friend=file->location;
         write(curr_port,tm/512,1,(DWORD)buf);
-        //kfree((uint32_t*)buf);
+        ////kfree((uint32_t*)buf);
     }
     else
     {
@@ -159,12 +163,12 @@ void create_file(char *name,uint16_t perm, char* destination)
     printf("\nFile \"%s\" Created Successfully\n",name);
     name=0;
     destination=0;
-    //kfree((uint32_t*)dest);
-    //kfree((uint32_t*)buff);
-    //kfree((uint32_t*)buff2);
+    ////kfree((uint32_t*)dest);
+    ////kfree((uint32_t*)buff);
+    ////kfree((uint32_t*)buff2);
 }
 
-void find_dir(char* name)
+void find_friendDirs(char* name)
 {
     Directory_t* dest;
     if(name)
@@ -197,8 +201,39 @@ void find_dir(char* name)
       printf("\n\t \\%s",temp->name);
       tmp=temp->Next_Friend;
     }
-    //kfree((uint32_t*)buf);
+    ////kfree((uint32_t*)buf);
     printf("\n");
+}
+
+void find_childFiles(char* name)
+{
+  Directory_t* dest;
+  if(name)
+  {
+    dest=search_folder(name);
+    if(!dest)
+    {
+      printf("\nSearched Folder %s Not found",name);
+      return;
+    }
+  }
+  else
+  {
+    dest=(Directory_t*)fsalloc(sizeof(Directory_t));
+    *dest=curr_dir.dir;
+  }
+  uint32_t buf= fsalloc(512);
+  read(curr_port, dest->First_file/512, 1, buf);
+  File_t* file = (File_t*)(buf + (uint32_t)(dest->First_file%512));
+
+  printf("\nShowing %x files of %s\\",dest->files, dest->name);
+  for(uint32_t i = 0; i<dest->files; i++)
+  {
+    printf("\n\t\t \\%s",file->name);
+    read(curr_port, file->Next_Friend/512, 1, buf);
+    file = (File_t*)(buf + (uint32_t)(file->Next_Friend%512));
+  }
+  printf("\n");
 }
 
 Directory_t* search_folder(char* name)
@@ -262,11 +297,11 @@ File_handle_t* file_loader(char* name)
     memcpy((void*)tb,(void*)temp,sizeof(File_t));
     handle->file=(uint32_t)tb;
     handle->name=tb->name;
-    //kfree((uint32_t*)buf);
+    ////kfree((uint32_t*)buf);
     return handle;
 }
 
-void file_load(char *name, uint8_t ios)
+void file_load(char *name)
 {
     File_handle_t* handle=file_loader(name);
     if(!handle)
@@ -281,38 +316,7 @@ void file_load(char *name, uint8_t ios)
     else
       current->next=handle;
     current=handle;
-    current->ios=ios;
     current->next=0;
-  /*  if(ios & open)
-    {
-      file_truncate(current);
-    }*/
-    //***Load the File requested into the Memory***//
-    /*
-    File_t* file=(File_t*)handle->file;
-    uint32_t buf=0;
-    if(ios & in)
-    {
-      buf+=(file->sz-(file->headers*sizeof(File_Header_t)));
-      handle->put_ptr=(file->sz-(file->headers*sizeof(File_Header_t)));
-    }
-    if(ios & out)
-    {
-      if(ios & app)
-      {
-        buf+=4096;
-        handle->put_ptr=0;
-      }
-      else if(ios & ate)
-      {
-        buf+=(file->sz-(file->headers*sizeof(File_Header_t)))+4096;
-        handle->put_ptr=(file->sz-(file->headers*sizeof(File_Header_t)));
-      }
-    }
-    handle->buf=malloc(buf);
-    file_read(handle->buf,0,0,name);
-    handle->get_ptr=0;
-    handle->buf_pot=0;*/
     printf("\nFile %s Loaded \n",name);
 }
 
@@ -327,7 +331,7 @@ void file_close(char *name)
         if(!i)
             start_handle=temp->next;
         else temp2->next=temp->next;
-        //kfree((uint32_t*)temp);
+        ////kfree((uint32_t*)temp);
         goto out;
       }
       if(!temp->next) break;
@@ -360,13 +364,13 @@ File_handle_t* file_search(char* name)
 
 void set_curr_dir(uint64_t location)
 {
-    uint32_t buf=fsalloc(512);
+    uint32_t buf=fsalloc(4096);
     read(curr_port,location/512,1,(DWORD)buf);
     Directory_t* dir=(Directory_t*)(buf+(uint32_t)(location%512));
     curr_dir.dir=*dir;
     char** dir_name;
     char name[32]="";
-    buf=fsalloc(512);
+    buf=fsalloc(4096);
     Directory_t* temp=dir;
     uint64_t tmp=dir->parent;
     int i;
@@ -388,7 +392,429 @@ void set_curr_dir(uint64_t location)
     strcat(name,dir_name[0]);
     strcpy(curr_dir.full_name,name);
     printf("\ncurr dir: %s",name);
-    //kfree((uint32_t*)buf);
+  //  if(multitasking_ON)
+  //    while(1);
+    ////kfree((uint32_t*)buf);
+}
+
+File_Header_t* nx_header(File_Header_t* prev_header)
+{
+  if(!prev_header || !prev_header->Next_Header) return 0;
+  File_Header_t* tmp = fsalloc(512);
+  read(curr_port, (prev_header->Next_Header/512), 1, tmp);
+  if(tmp->magic == FHR_MAGIC)
+    return tmp;
+  //kfree(tmp);
+  return 0;
+}
+
+File_Header_t* get_header(uint64_t location)
+{
+  if(!location) return 0;
+  File_Header_t* tmp = fsalloc(512);
+  read(curr_port, location/512, 1, tmp);
+  if(tmp->magic == FHR_MAGIC)
+    return tmp;
+  //kfree(tmp);
+  return 0;
+}
+
+int del_header(File_Header_t* header)
+{
+  File_Header_t* pheader = get_header(header->Previous_Header);
+  File_Header_t* nheader = get_header(header->Next_Header);
+
+  pheader->Next_Header = nheader->location;
+  nheader->Previous_Header = pheader->location;
+  flush_header(nheader);
+  flush_header(nheader);
+}
+
+File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks) //Creates a header at the last of the file.
+{
+    //printf("\nAdding more available data space for the file %s \n",curr_file.name);
+    fsbuf=fsalloc(512);
+    File_Header_t* header=(File_Header_t*)fsbuf;
+    header->File_location = file->location;
+    header->Next_Header=0;
+    header->used=0;
+    header->location=sec_alloc(blocks+2);
+    header->spread=blocks*512;
+    header->magic = FHR_MAGIC;
+    header->Previous_Header=file->last_header;
+    if(file->last_header)
+    {
+      uint32_t buf=fsalloc(512);
+      read(curr_port,file->last_header/512,1,(DWORD)buf);
+      File_Header_t* header2=(File_Header_t*)(buf+(uint32_t)(file->last_header%512));
+      header2->Next_Header=header->location;
+      write(curr_port,file->last_header/512,1,(DWORD)buf);
+    }
+    else
+    {
+      file->first_header=header->location;
+    }
+    write(curr_port,header->location/512,1,(DWORD)fsbuf);
+
+    file->last_header=header->location;
+    file->headers++;
+    file->sz+=sizeof(File_Header_t);
+
+    return header;
+}
+
+File_Header_t* File_Header_Creator_sdw(File_t* file, File_Header_t* left_header,  uint16_t blocks) //Sandwiched Header creator (in between two existing headers)
+{
+    //printf("\nAdding more available data space for the file %s \n",curr_file.name);
+    fsbuf=fsalloc(512);
+    File_Header_t* header=(File_Header_t*)fsbuf;
+    header->File_location = file->location;
+    header->Next_Header=left_header->Next_Header;
+    header->used=0;
+    header->location=sec_alloc(blocks+2); //Extra for extra assurance
+    header->spread=blocks*512;
+    header->magic = FHR_MAGIC;
+    header->Previous_Header=left_header->location;
+    uint32_t buf=fsalloc(512);
+    left_header->Next_Header=header->location;
+    write(curr_port,left_header->location/512,1,(DWORD)buf);
+
+    header->Previous_Header = left_header->location;
+
+    write(curr_port,header->location/512,1,(DWORD)fsbuf);
+    //kfree(buf);
+
+    if(!file->first_header)
+    {
+      file->first_header=header->location;
+    }
+    file->last_header=header->location;
+    file->headers++;
+    file->sz+=sizeof(File_Header_t);
+
+    return header;
+}
+
+void file_flush(char* name)
+{
+    File_handle_t* handle=file_search(name);
+    if(!handle) return;
+    uint32_t buff=fsalloc(512);
+    File_t* file=(File_t*)handle->file;
+    read(curr_port,file->location/512,1,(DWORD)buff);
+    File_t* ftmp=(File_t*)(buff +(uint32_t)(file->location%512));
+    memcpy((void*)ftmp,(void*)file,sizeof(File_t));
+    write(curr_port,file->location/512,1,(DWORD)buff);
+    ////kfree((uint32_t*)buff);
+}
+
+void file_truncate(File_handle_t* handle)
+{
+    File_t* file=(File_t*)handle->file;
+    uint32_t buf=fsalloc(1024);
+    File_Header_t* header=(File_Header_t*)buf;
+    uint32_t buff=fsalloc(1024);
+    memset((void*)buff,0,1024);
+    uint64_t temp=file->first_header;
+    for(uint32_t i=0;i<file->headers;i++)
+    {
+      read(curr_port,temp/512,2,(DWORD)buf);
+      write(curr_port,temp/512,2,(DWORD)buff);
+      temp=header->Next_Header;
+    }
+    file->sz=0;
+    file->first_header=0;
+    file->headers=0;
+}
+
+File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the header of a file which contains the memory regions of the offset
+{
+  uint32_t* tm = fsalloc(1024);
+  read(curr_port, file->first_header/512, 1, tm);
+  File_Header_t* tmp = (File_Header_t*)(tm + (uint32_t)(file->first_header%512));
+
+  uint32_t ts = 0;
+  uint64_t tmp2 = 0;
+  for(int i = 0; i < file->headers; i++)
+  {
+    ts += tmp->used;
+    if(ts >= foffset)
+    {
+      tmp->reserved = ts - foffset; //Offset into header
+      return tmp;
+    }
+    tmp2 = tmp->Next_Header;
+    read(curr_port,tmp2/512,1,(DWORD)tm);
+    tmp = (File_Header_t*)(tm + (uint32_t)(file->first_header%512));
+  }
+  return -1;
+}
+
+inline void flush_header(File_Header_t* header)
+{
+  write(curr_port, header->location/512, 1, (uint32_t)header);
+}
+
+int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* file_name) //Read file content and write to memory.
+{
+  File_handle_t* handle=file_search(file_name);
+  if(!handle) return -1; //File not loaded yet.
+
+  File_t* file_st = handle->file;
+  File_Header_t* header = file_header_search(offset, file_st); //find which header has the offset memory.
+
+  if(!header) return -1; //Some error!!!!
+
+  if(header->magic != FHR_MAGIC)
+  {
+    //kfree(header);
+    return -2; //Not a valid Header.
+  }
+
+  uint32_t a1 = MIN(header->reserved, size);
+  uint32_t b1 = header->used - header->reserved; //Local offset
+
+  uint32_t tbuff = fsalloc(ROUNDUP(a1,1024));
+
+  read(curr_port, (1 + ((header->location+b1)/512)), (a1/512)+2, tbuff); //Read the first part of buffer.
+
+  uint32_t cpdone = 0;
+
+  uint32_t bb = (uint32_t)buffer;
+  memcpy(buffer, tbuff + (b1%512), a1); //Get to the local offset and copy the data which has to be copied.
+
+  //kfree(tbuff);
+  cpdone += a1;
+
+  uint32_t left = size - cpdone;
+
+  while(left)   //Keep extracting data from file until we extract all the required data successfully.
+  {
+    header = nx_header(header);
+
+    if(!header) return 0; //The Size requested from offset is more then the size of the file/Invalid header.
+
+    if(left < header->used) //Only 1 header left to be read.
+    {
+      tbuff = fsalloc(ROUNDUP(left,512));
+      read(curr_port, 1 + (header->location/512), 1 + (left/512), tbuff);
+
+      memcpy((bb + cpdone), tbuff, left);
+
+      //kfree(tbuff);
+      //kfree(header);
+      return 1; //Everything went fine.
+    }
+    tbuff = fsalloc(header->used);
+    read(curr_port, 1 + (header->location/512), 1 + (header->used/512), tbuff);
+
+    memcpy((bb+cpdone), tbuff, header->used);
+
+    cpdone += header->used;
+    //kfree(tbuff);
+
+    left -= header->used;
+  }
+  //kfree(header);
+  return 1; //Everything went fine.
+}
+
+int file_writeAppend(uint32_t* buffer, uint32_t size, char* file_name) //Write to a file from memory.
+{
+  File_handle_t* handle=file_search(file_name);
+  if(!handle) return -1; //File not loaded yet.
+
+  uint32_t bb = buffer;
+  File_t* file_st = handle->file;
+  File_Header_t* header;
+  if(file_st->last_header)
+  {
+    uint32_t buf = fsalloc(512);
+    read(curr_port, file_st->last_header/512, 1, buf);
+    header = (File_Header_t*)(buf);
+
+    //printf("\nheader->spread: %x %x %x\n", header->spread, header->used, file_st->headers);
+
+    if(header->magic != FHR_MAGIC) return -3;
+    int t = header->spread - header->used;
+    if(t) //If there is some space in the last header, fill it.
+    {
+      uint32_t tbuff = fsalloc(header->spread);
+      memset(tbuff,0,header->spread);
+
+      read(curr_port, 1 + (header->location/512), 1 + (header->used/512), tbuff);
+      memcpy(tbuff + header->used, buffer, MIN(size, t));
+      write(curr_port, 1 + (header->location/512), 1 + (header->spread/512), tbuff);
+      header->used += MIN(size,t);
+      size -= MIN(size, t);
+      bb += MIN(size, t);
+      buffer = bb;
+
+      flush_header(header);
+      //kfree(tbuff);
+      //kfree(header);
+
+      if(!size) return 1;
+    }
+  }
+  uint32_t blks = ROUNDUP(size,512)/512;
+
+  header = File_Header_Creator(file_st, blks);
+  if(!header) return -1;
+
+  uint32_t tbuff = fsalloc(ROUNDUP(size,512));
+  memcpy(tbuff, buffer, size);
+
+  write(curr_port, 1 + (header->location/512), blks, tbuff);
+  //kfree(tbuff);
+  header->used = size;
+  flush_header(header);
+  //kfree(header);
+
+  return 1;
+}
+
+int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsize, char* file_name)
+{
+  File_handle_t* handle=file_search(file_name);
+  if(!handle) return -1; //File not loaded yet.
+
+  File_t* file_st = handle->file;
+  File_Header_t* header = file_header_search(offset, file_st); //find which header has the offset memory.
+
+  if(!header) return -1; //Some error!!!!
+
+  if(header->magic != FHR_MAGIC)
+  {
+    //kfree(header);
+    return -2; //Not a valid Header.
+  }
+
+  uint32_t left_end = header->used - header->reserved;
+
+  uint32_t sz = header->spread - left_end;
+  uint32_t bb = (uint32_t)buffer;
+
+  uint32_t tl = header->spread - left_end;
+  uint32_t cpdone = 0;
+
+  //Several cases are possible->
+  // [********------], [******------    ], [********-----****   ], [*****------][-----******]
+
+  if(left_end + osize <= header->used)  // [********------], [******------    ], [********-----****], [*******----***   ]
+  {
+    //Local header offset [********----*****_____]
+    //                            ^    ^   ^
+    //                            1    2    3
+    //  1 = left_end, 2 = a1, 3 - 2 = b1.
+
+    uint32_t a1 = left_end + osize;
+    uint32_t b1 = header->used - a1;
+
+
+
+    uint32_t buff = fsalloc(ROUNDUP(fsize + b1, 1024));
+    read(curr_port, 1 + ((header->location + left_end)/512), 1, buff);
+
+    memcpy(buff+(left_end%512), bb, fsize);
+
+    if(b1)
+    {
+      uint32_t tbuff = fsalloc(ROUNDUP(b1,1024));
+      read(curr_port, 1 + ((header->location + a1)/512), 2 + (b1/512), tbuff);
+
+      memcpy(buff+(left_end%512)+fsize, tbuff + (a1%512), b1);
+      //kfree(tbuff);
+    }
+
+    fsize += b1;
+
+    write(curr_port, 1 + ((header->location + left_end)/512), ROUNDUP(tl, 512)/512, buff);
+    cpdone += tl;
+
+    if(fsize > tl)
+    {
+      uint32_t tdone = fsize - tl;
+      File_Header_t* nxHeader = File_Header_Creator_sdw(file_st, header, (tdone/512)+1);
+      nxHeader->used = tdone;
+      write(curr_port, 1 + (nxHeader->location/512), 1 + (tdone/512), buff+cpdone);
+      flush_header(nxHeader);
+      //kfree(nxHeader);
+    }
+
+    flush_header(header);
+    //kfree(buff);
+    //kfree(header);
+    return 1;
+  }
+  else
+  {
+    // cases:        [*****------][-----******], [*******-----][-------][-----*****], [*******-----][-------][**********],
+    //               [*******-----__][-------__][-----*****], [*****----][-----][-----**    ]
+
+
+    //    [******-------][--------][------*****____]
+    //           ^                       ^    ^
+    //           1                       2    3
+    // 1 = left_end, 2 = a1, 3 - 2 = b1, 2-1 = osize
+
+    uint32_t cp = header->used - left_end;
+
+    File_Header_t* theader = nx_header(header);
+    File_Header_t* tmp = nx_header(theader);
+
+    while(1)
+    {
+      if(!theader) return -1;
+
+      cp += theader->used;
+
+      if(cp >= osize) break;
+
+      del_header(theader);
+      theader = tmp;
+      tmp = nx_header(tmp);
+    }
+
+    uint32_t b1 = cp - osize;
+    uint32_t a1 = header->used - b1;
+
+    uint32_t bb = fsalloc(ROUNDUP(fsize + b1, 1024));
+
+    read(curr_port, 1 + (header->location/512), 1, bb);
+    memcpy(bb+(left_end%512), buffer, fsize);
+
+    if(b1)
+    {
+      uint32_t tbuff = fsalloc(ROUNDUP(b1, 1024));
+      read(curr_port, 1 + ((theader->location+a1)/512), 2 + (b1/512), tbuff);
+      memcpy(bb+(left_end%512)+fsize, tbuff + (a1%512), b1);
+
+      //kfree(tbuff);
+      fsize += b1;
+    }
+    del_header(theader);
+
+
+    write(curr_port, 1 + ((header->location + left_end)/512), ROUNDUP(tl, 512)/512, bb);
+    cpdone += tl;
+
+    if(fsize > tl)
+    {
+      uint32_t tdone = fsize - tl;
+      File_Header_t* nxHeader = File_Header_Creator_sdw(file_st, header, (tdone/512)+1);
+      nxHeader->used = tdone;
+      write(curr_port, 1 + (nxHeader->location/512), 1 + (tdone/512), bb+cpdone);
+      flush_header(nxHeader);
+      //kfree(nxHeader);
+    }
+
+    flush_header(header);
+    //kfree(bb);
+    //kfree(header);
+    return 1;
+  }
+
 }
 
 void make_boot_sector()
@@ -397,7 +823,7 @@ void make_boot_sector()
     memset(buf,0,1024);
     read(curr_port,0,2,(DWORD)buf);
     Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
-    strcpy(identity->name,"AFS1.472");
+    strcpy(identity->name,"AqFS472");
     identity->active_partition = 446; //Partition 1
 
     uint8_t* boot_ptr = buf;
@@ -448,225 +874,7 @@ void Init_fs()
     create_file("test2.txt",1,0);
     create_file("test3.txt",1,0);
     create_file("test4.txt",1,0);
-    create_file("test5.txt",1,0);
-    create_file("test6.txt",1,0);
-    create_file("test7.txt",1,0);
-    create_file("test8.txt",1,0);//*/
-    find_dir(0);
-}
-
-File_Header_t* File_Header_Creator(File_t* file, uint16_t blocks)
-{
-    //printf("\nAdding more available data space for the file %s \n",curr_file.name);
-    fsbuf=fsalloc(512);
-    File_Header_t* header=(File_Header_t*)fsbuf;
-    header->File_location = file->location;
-    header->Next_Header=0;
-    header->used=512;
-    header->location=sec_alloc(blocks);
-    header->spread=blocks;
-    header->Previous_Header=file->last_header;
-    uint32_t buf=fsalloc(512);
-    read(curr_port,file->last_header/512,1,(DWORD)buf);
-    File_Header_t* header2=(File_Header_t*)buf;
-    header2->Next_Header=header->location;
-    write(curr_port,file->last_header/512,1,(DWORD)buf);
-    //kfree((uint32_t*)buf);
-    if(!file->first_header)
-    {
-      file->first_header=header->location;
-    }
-    file->last_header=header->location;
-    file->headers++;
-    file->sz+=sizeof(File_Header_t);
-
-  //  strcpy(file->name,"abc");
-    return header;
-}
-
-void file_truncate(File_handle_t* handle)
-{
-    File_t* file=(File_t*)handle->file;
-    uint32_t buf=fsalloc(1024);
-    File_Header_t* header=(File_Header_t*)buf;
-    uint32_t buff=fsalloc(1024);
-    memset((void*)buff,0,1024);
-    uint64_t temp=file->first_header;
-    for(uint32_t i=0;i<file->headers;i++)
-    {
-      read(curr_port,temp/512,2,(DWORD)buf);
-      write(curr_port,temp/512,2,(DWORD)buff);
-      temp=header->Next_Header;
-    }
-    file->sz=0;
-    file->first_header=0;
-    file->headers=0;
-}
-
-void file_flush(char* name)
-{
-    File_handle_t* handle=file_search(name);
-    if(!handle) return;
-    uint32_t buff=fsalloc(512);
-    File_t* file=(File_t*)handle->file;
-    read(curr_port,file->location/512,1,(DWORD)buff);
-    File_t* ftmp=(File_t*)(buff +(uint32_t)(file->location%512));
-    memcpy((void*)ftmp,(void*)file,sizeof(File_t));
-    write(curr_port,file->location/512,1,(DWORD)buff);
-    //kfree((uint32_t*)buff);
-}
-
-void file_write(uint32_t buffer,uint32_t size, char* file_name) //new
-{
-    File_handle_t* handle=file_search(file_name);
-    if(!handle) return;
-    File_t* file=(File_t*)handle->file;
-    File_Header_t* header;
-    uint32_t sz=size;
-    uint32_t tbuf=buffer;
-    uint64_t location;
-    uint32_t blocks=sz/512;
-    blocks++;
-    if(!file->first_header)
-    {
-      header=File_Header_Creator(file,MIN((int)(blocks/2)+1,65535));
-      location=header->location/512;
-    }
-    else
-    {
-      uint32_t buf=fsalloc(512);
-      read(curr_port,file->last_header/512,1,(DWORD)buf);
-      header=(File_Header_t*)buf;
-      location=header->location/512;
-      uint32_t tmp1=(header->spread*1024)-header->used;
-      uint32_t tmp2=1024-tmp1;//header->used-((header->spread-1)*1024);
-      uint32_t tmb=fsalloc(1024);
-      read(curr_port,location+((header->spread-1)*2),2,(DWORD)tmb);
-      memcpy((void*)(tmb+tmp2),(void*)(tbuf),MIN(tmp1,sz));
-      write(curr_port,location+((header->spread-1)*2),2,(DWORD)tmb);
-      //kfree((uint32_t*)tmb);
-      tbuf+=MIN(tmp1,sz);
-      header->used+=MIN(tmp1,sz);
-      write(curr_port,location,1,(DWORD)buf);
-      if(sz<=tmp1)
-      {
-        goto out;
-      }
-      sz-=tmp1;
-      blocks=sz/512;
-      blocks++;
-      header=File_Header_Creator(file,MIN((int)(blocks/2)+1,65535));
-      location=header->location/512;
-    }
-    for(int i=0;;i++)
-    {
-      if(blocks<65535*2)
-      {
-        if(blocks>1)
-        {
-          write(curr_port,location+1,(blocks)-1,(DWORD)tbuf);
-          tbuf+=(blocks-1)*512;
-        }
-        uint32_t abuf=fsalloc(512);
-        memcpy((void*)abuf,(void*)tbuf,sz-((blocks-1)*2));
-        write(curr_port,location+blocks,1,(DWORD)abuf);
-        //kfree((uint32_t*)abuf);
-        header->used+=sz;
-        write(curr_port,location,1,(DWORD)header);
-        goto out;
-      }
-      write(curr_port,location+1,((65535)),(DWORD)tbuf);
-      header->used+=65535;
-      write(curr_port,location,1,(DWORD)header);
-      header=File_Header_Creator(file,MIN((int)(blocks/2)+1,65535));
-      location=header->location/512;
-      tbuf+=(65535)*1024;
-      blocks-=(65535)*2;
-      sz-=(67107850);
-    }
-    out:
-    file->sz+=size;
-    //printf("\nInfo written to the file %s Successfully\n",file->name);
-}
-
-void file_read(uint32_t buffer, uint32_t size, uint32_t offset, char* name)
-{
-    File_handle_t* handle=file_search(name);
-    if(!handle) return;
-    uint32_t buf=buffer;
-    char* str2=(char*)buffer;
-    File_t* file=(File_t*)handle->file;
-    if(file->sz-file->headers*sizeof(File_Header_t)<offset)
-    {
-      printf("\nThe Requested offset is beyond the actual file size");
-      return;
-    }
-    if(!size)
-    {
-      size=file->sz-offset;
-      size-=file->headers*sizeof(File_Header_t);
-    }
-    if(file->sz<size+offset)
-    {
-      printf("\nThe Requested size is beyond the actual file size");
-      return;
-    }
-    File_Header_t* header=(File_Header_t*)fsalloc(512);
-    uint64_t tmp=file->first_header/512;
-    uint32_t tmp2=0;
-    uint32_t sz=(size);
-    for(int i=0;;i++)
-    {
-      if(!header)
-      {
-        printf("\nThe offset is beyond the size of the file");
-        return;
-      }
-      read(curr_port,tmp,1,(DWORD)header);
-      tmp2+=header->spread*1024;
-      tmp2-=512;
-      if(offset<=tmp2)
-      {
-        break;
-      }
-      tmp=header->Next_Header/512;
-    }
-    tmp2+=512;
-    tmp2-=header->spread*1024;
-    uint32_t off=offset-tmp2;
-    uint32_t roff=off/512;
-    roff=off-roff;
-    uint32_t t=fsalloc(512);
-    read(curr_port,tmp+(off/512)+1,1,(DWORD)t);
-    memcpy((void*)buf,(void*)(t+roff),MIN(sz,512-roff));
-    if(sz<512-roff)
-    {
-      goto out;
-    }
-    buf+=(512-roff);
-    sz-=(512-roff);
-    uint32_t blocks=sz/512;
-    blocks++;
-    tmp++;
-    uint32_t temp=(header->spread*2)-1;
-    --temp;
-    for(;;)
-    {
-      if(temp)
-      {
-        read(curr_port,tmp+1,MIN(blocks,temp),(DWORD)buf);
-        buf+=MIN(blocks,temp)*512;
-        --blocks;
-      }
-      if(!blocks)
-      {
-        goto out;
-      }
-      tmp=header->Next_Header/512;
-      read(curr_port,tmp,1,(DWORD)header);
-      temp=(header->spread*2)-1;
-    }
-    out:
-    printf("\nFile reads as: %s \nFile size: %x",buffer,file->sz);
-    return;
+    printf("\nASDASDASDADASD");
+    find_friendDirs(0);
+    find_childFiles(0);
 }

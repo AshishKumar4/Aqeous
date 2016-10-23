@@ -5,7 +5,7 @@
 #include <system.h>
 
 // check if the given address has a valid header
-unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
+uint32_t *acpiCheckRSDPtr(uint32_t *ptr)
 {
    char *sig = "RSD PTR";
    struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
@@ -31,7 +31,7 @@ unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
          else
             printf("\nACPI 2.0 Found\n");
 
-      return (unsigned int *) rsdp->RsdtAddress;
+      return (uint32_t *) rsdp->RsdtAddress;
       }
    }
 
@@ -41,13 +41,13 @@ unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
 
 
 // finds the acpi header and returns the address of the rsdt
-unsigned int *acpiGetRSDPtr(void)
+uint32_t *acpiGetRSDPtr(void)
 {
-   unsigned int *addr;
-   unsigned int *rsdp;
+   uint32_t *addr;
+   uint32_t *rsdp;
 
    // search below the 1mb mark for RSDP signature
-   for (addr = (unsigned int *) 0x000E0000; (int) addr<0x00100000; addr ++)//= 0x10/sizeof(addr))
+   for (addr = (uint32_t *) 0x000E0000; (int) addr<0x00100000; addr ++)//= 0x10/sizeof(addr))
    {
       rsdp = acpiCheckRSDPtr(addr);
       if (rsdp != NULL)
@@ -60,7 +60,7 @@ unsigned int *acpiGetRSDPtr(void)
    ebda = ebda*0x10 &0x000FFFFF;   // transform segment into linear address
 
    // search Extended BIOS Data Area for the Root System Description Pointer signature
-   for (addr = (unsigned int *) ebda; (int) addr<ebda+1024; addr+= 0x10/sizeof(addr))
+   for (addr = (uint32_t *) ebda; (int) addr<ebda+1024; addr+= 0x10/sizeof(addr))
    {
       rsdp = acpiCheckRSDPtr(addr);
       if (rsdp != NULL)
@@ -73,7 +73,7 @@ unsigned int *acpiGetRSDPtr(void)
 
 
 // checks for a given header and validates checksum
-int acpiCheckHeader(unsigned int *ptr, char *sig)
+int acpiCheckHeader(uint32_t *ptr, char *sig)
 {
    if (memcmp(ptr, sig, 4) == 0)
    {
@@ -95,55 +95,49 @@ int acpiCheckHeader(unsigned int *ptr, char *sig)
 
 int acpiEnable(void)
 {
-   Switch_to_system_dir();
    // check if acpi is enabled
-   if ( (inw((unsigned int) PM1a_CNT) &SCI_EN) == 0 )
+   if ( (inw((uint32_t) PM1a_CNT) &SCI_EN) == 0 )
    {
       // check if acpi can be enabled
       if (SMI_CMD != 0 && ACPI_ENABLE != 0)
       {
-         outb((unsigned int) SMI_CMD, ACPI_ENABLE); // send acpi enable command
+         outb((uint32_t) SMI_CMD, ACPI_ENABLE); // send acpi enable command
          // give 3 seconds time to enable acpi
          int i;
          for (i=0; i<300; i++ )
          {
-            if ( (inw((unsigned int) PM1a_CNT) &SCI_EN) == 1 )
+            if ( (inw((uint32_t) PM1a_CNT) &SCI_EN) == 1 )
                break;
             sleep(10);
          }
          if (PM1b_CNT != 0)
             for (; i<300; i++ )
             {
-               if ( (inw((unsigned int) PM1b_CNT) &SCI_EN) == 1 )
+               if ( (inw((uint32_t) PM1b_CNT) &SCI_EN) == 1 )
                   break;
                sleep(10);
             }
          if (i<300)
          {
             console_writestring("enabled acpi.\n");
-            Switch_back_from_System();
             return 0;
          }
          else
          {
             console_writestring("couldn't enable acpi.\n");
-            Switch_back_from_System();
             return -1;
          }
       }
       else
       {
          console_writestring("no known way to enable acpi.\n");
-         Switch_back_from_System();
          return -1;
       }
    } else {
       printf("acpi was already enabled.\n");
-      Switch_back_from_System();
       return 0;
    }
    printf("done");
-   Switch_back_from_System();
 }
 
 
@@ -168,7 +162,7 @@ int acpiEnable(void)
 //
 int initAcpi(void)
 {
-   unsigned int *ptr = acpiGetRSDPtr();
+   uint32_t *ptr = acpiGetRSDPtr();
    // check if address is correct  ( if acpi is available on this pc )
    if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
    {
@@ -180,11 +174,11 @@ int initAcpi(void)
       while (0<entrys--)
       {
          // check if the desired table is reached
-         if (acpiCheckHeader((unsigned int *) *ptr, "FACP") == 0)
+         if (acpiCheckHeader((uint32_t *) *ptr, "FACP") == 0)
          {
             entrys = -2;
             struct FACP *facp = (struct FACP *) *ptr;
-            if (acpiCheckHeader((unsigned int *) facp->DSDT, "DSDT") == 0)
+            if (acpiCheckHeader((uint32_t *) facp->DSDT, "DSDT") == 0)
             {
                // search the \_S5 package in the DSDT
                char *S5Addr = (char *) facp->DSDT +36; // skip header
@@ -226,7 +220,6 @@ int initAcpi(void)
                      SLP_EN = 1<<13;
                      SCI_EN = 1;
 
-                     Switch_back_from_System();
                      return 0;
                   } else {
                      console_writestring("\\_S5 parse error.\n");
@@ -259,9 +252,9 @@ void acpiPowerOff(void)
    acpiEnable();
 
    // send the shutdown command
-   outw((unsigned int) PM1a_CNT, SLP_TYPa | SLP_EN );
+   outw((uint32_t) PM1a_CNT, SLP_TYPa | SLP_EN );
    if ( PM1b_CNT != 0 )
-      outw((unsigned int) PM1b_CNT, SLP_TYPb | SLP_EN );
+      outw((uint32_t) PM1b_CNT, SLP_TYPb | SLP_EN );
 
    console_writestring("acpi poweroff failed.\n");
 }

@@ -7,6 +7,7 @@
 #include <ata.h>
 #include <pci.h>
 
+#define SECTOR_SIZE 512
 
 #define KERNBASE 4096*1024
 #define SATA_SIG_ATA    0x00000101  // SATA drive
@@ -658,6 +659,13 @@ extern HBA_MEM *abar;
 
 int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
 int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
+
+inline int disk_read(HBA_PORT *port, QWORD start, DWORD count, uint32_t* buf);
+inline int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, QWORD start);
+
+int sec_read_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
+int sec_write_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
+
 char fs_buf[1024];
 int check_type(HBA_PORT *port);
 void port_rebase(HBA_PORT *port, int portno);

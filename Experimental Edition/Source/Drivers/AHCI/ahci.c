@@ -1,7 +1,9 @@
 #include <ahci.h>
 #include <string.h>
 #include <sys.h>
-#include <mem.h>
+#include "phy_mm\mem.h"
+#include "virt_mm\vmem.h"
+#include "virt_mm\paging.h"
 #include <ata.h>
 ahci_t *test1;
 /**
@@ -398,6 +400,67 @@ inline int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
   }
   return 1;
 }
+
+
+/*** FOR EXT2 DRIVERS***/
+inline int disk_read(HBA_PORT *port, QWORD start, DWORD count, uint32_t* buf)
+{
+  count /= SECTOR_SIZE;
+  ++count;
+
+  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+	if (port->is & HBA_PxIS_TFES)
+	{
+		printf("Read disk error\n");
+		return 0;
+	}
+	return 1;
+
+}
+
+inline int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, QWORD start)
+{
+  count /= SECTOR_SIZE;
+  ++count;
+
+  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+  // Check again
+  if (port->is & HBA_PxIS_TFES)
+  {
+      printf("Write disk error\n");
+      return 0;
+  }
+  return 1;
+}
+
+
+/*** STATIC READ/WRITE ***/
+int sec_read_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
+{
+  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+	if (port->is & HBA_PxIS_TFES)
+	{
+		printf("Read disk error\n");
+		return 0;
+	}
+	return 1;
+
+}
+
+int sec_write_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
+{
+
+  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+  // Check again
+  if (port->is & HBA_PxIS_TFES)
+  {
+      printf("Write disk error\n");
+      return 0;
+  }
+  return 1;
+}
+
+
 
 int SATA_Commander(HBA_PORT *port, WORD Command, BYTE rw, DWORD buf, DWORD prdtl, DWORD dbc, DWORD startl, DWORD starth, DWORD count)
 {

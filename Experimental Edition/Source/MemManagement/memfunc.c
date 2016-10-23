@@ -1,6 +1,8 @@
-#include "mem.h"
-#include "vmem.h"
-#include "paging.h"
+
+#include "stdlib.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
 
 inline void *memcpy_faster(void * _dest, const void *_src, uint32_t _n)
 {

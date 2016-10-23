@@ -49,6 +49,6 @@ HPET_descriptor_table_t* hpet_sdt;
 
 HPET_Table_t* hpet;
 
-uint32_t* hpet_base = 0,hpet_virt_address=0;
+uint32_t* hpet_base = 0,hpet_virt_address=0,*HPET_main_counter;
 
 #endif

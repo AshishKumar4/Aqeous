@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <console.h>
 #include <common.h>
+#include <tasking.h>
 
 //#define MAX_COMMANDS 100
 //#define Output_stream 524288000
@@ -16,6 +17,7 @@
 
 
 volatile uint32_t* Shell_Commands_list;
+volatile uint32_t up_input = 0;
 
 typedef struct __attribute__((packed)) Shell_Commands
 {
@@ -31,12 +33,12 @@ typedef struct __attribute__((packed)) CSI_struct
     uint32_t entries[64];
 }CSI_struct_t;
 
-volatile const CSI_struct_t* Main_CSI_struct = 52428800;
+volatile const CSI_struct_t* Main_CSI_struct = (CSI_struct_t*)52428800;
 
 uint32_t* CSI_entries_ptr;
 uint32_t* tot_entries;
 
-volatile const uint32_t* CSI_mem_start = 52428800;
+volatile const uint32_t* CSI_mem_start = (volatile const uint32_t*)52428800;
 volatile bool key_pressed = false;
 volatile int enter_pressed = 0;
 volatile char* Istream_ptr;
@@ -69,6 +71,8 @@ int Shell_command_locator(char *inst);
 void console_manager_init();
 
 uint32_t* CSI_Read(uint32_t entry);
+
+uint32_t* CSI_ReadAPS(char* str); //Read As the Provided String!
 
 void Shell_Add_Commands(func_t func, uint32_t command_no, int flag, char* name);
 

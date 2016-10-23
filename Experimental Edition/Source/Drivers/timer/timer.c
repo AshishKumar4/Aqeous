@@ -20,7 +20,7 @@
      outb(0x70, 0x8A);		// reset index to A
      outb(0x71, (prev & 0xF0) | rate); //write only our rate to A. Note, rate is the bottom 4 bits.
 
-     asm volatile("sti");
+     //asm volatile("sti");
     //register_interrupt_handler(IRQ8,timer_task);
  }
 
@@ -55,6 +55,7 @@ void init_timer(uint32_t frequency)
     // The value we send to the PIT is the value to divide it's input clock
     // (1193180 Hz) by, to get our required frequency. Important to note is
     // that the divisor must be small enough to fit into 16-bits.
+    asm volatile("cli");
     uint32_t divisor = 1193180 / frequency;
 
     // Send the command byte.
@@ -67,6 +68,7 @@ void init_timer(uint32_t frequency)
     // Send the frequency divisor.
     outb(0x40, l);
     outb(0x40, h);
+    clearIRQMask(0);
 }
 
 float volatile delay_dump=0;

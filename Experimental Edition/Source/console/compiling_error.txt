@@ -1,0 +1,4 @@
+C:\cygwinFINAL\home\ashish\ProjectOS\sysroot\usr\Aqeous\Experimental Edition\Source\console\console.c:5:21: fatal error: console.h: No such file or directory
+ #include <console.h>
+                     ^
+compilation terminated.

@@ -1,14 +1,19 @@
 #include "tasking.h"
 #include "string.h"
 #include "stdio.h"
-#include "mem.h"
-#include "vmem.h"
-#include "paging.h"
+#include "stdlib.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
 #include "process.h"
 #include "sys.h"
 #include "Shell.h"
 #include "vesa.h"
-#include "kb_queue.h"
+#include "kb_handle.h"
+#include "stdlib.h"
+#include "FS_Handling.h"
+#include "apic.h"
+#include "pic.h"
 
 void idle()
 {
@@ -19,190 +24,32 @@ void idle()
   }
 }
 
-void idle2()
+inline int tf(uint32_t a, uint32_t b)
 {
-  //scheduler();
-  /**/
-  uint32_t i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i>1024*50) break;
-    ++i;
-    if(i%2)
-      _printf("2");
-    //asm volatile("sti");
-  }
-  i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i%2)
-      _printf("--2%x--",i);
-    ++i;
-    //asm volatile("sti");
-  }
-  //kill();
-  /**/
-  while(1)
-  {
-    asm volatile("cli");
-    _printf(" 2-x-");
-    asm volatile("sti");
-  }//*/
-}
-
-void idle3()
-{
-  //scheduler();
-  /**/
-  uint32_t i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i>1024*30) break;
-    i++;
-    if(i%2)
-      _printf("3");
-    //asm volatile("sti");
-  }
-  i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i%2)
-      _printf("--3%x--",i);
-    ++i;
-    //asm volatile("sti");
-  }/**/
-  while(1)
-  {
-    //asm volatile("cli");
-    _printf(" 3-x-");
-    //asm volatile("sti");
-  }//*/
-}
-
-void idle4()
-{
-  //scheduler();
-/**/
-  uint32_t i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i>1024*10) break;
-    i++;
-    if(i%2)
-      _printf("4");
-    //asm volatile("sti");
-  }
-  i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i%2)
-      _printf("--4%x--",i);
-    i++;
-    //asm volatile("sti");
-  }/**/
-  while(1)
-  {
-    asm volatile("cli");
-    _printf(" 4-x-");
-    asm volatile("sti");
-  }//*/
-}
-
-void idle5()
-{
-  //asm volatile("cli");
-  //while(1);
-  //scheduler();
-/**/
-  uint32_t i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i>1024*100) break;
-    i++;
-    if(i%2)
-      _printf("5");
-    //asm volatile("sti");
-  }
-  i=0;
-  while(1)
-  {
-  //  kill();
-    //asm volatile("cli");
-    if(i%2)
-      _printf("--5%x--",i);
-    i++;
-    //asm volatile("sti");
-  }
-  _printf("\neverything worked fine :D MULTITASKING WORKS :D \n");
-  /**/
-  while(1)
-  {
-    asm volatile("cli");
-    _printf(" 5-x-");
-    asm volatile("sti");
-  }//*/
-}
-
-void idle6()
-{
-  //asm volatile("cli");
-  //int ij=0;
-  //while(1)
-  //ij++;
-  //scheduler();
-/**/
-  uint32_t i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i>1024*70) break;
-    i++;
-    if(i%2)
-      _printf("6");
-    //asm volatile("sti");
-  }
-  i=0;
-  while(1)
-  {
-    //asm volatile("cli");
-    if(i%2)
-      _printf("--6%x--",i);
-    i++;
-    //asm volatile("sti");
-  }
-  _printf("\neverything worked fine :D MULTITASKING WORKS :D \n");
-
-/**/
-  while(1)
-  {
-    asm volatile("cli");
-    _printf(" 6-x-");
-    asm volatile("sti");
-  }//*/
+  return MAX(a,b)%MIN(a,b);
 }
 
 void test_process()
 {
 //  Switch_to_system_dir();
-  Shell_sleep();
-  _printf("\nThis is a test process to test the capabilities of the this New System.\nI am now Gonna get some input from you.");
-  _printf("\nType your name below to check if the system and the keyboard drivers are working.\n-->");
-  asm volatile("cli");
+  Shell_sleep();/*
+
+  printf("\nEnter 1st Number: ");
+  uint32_t a = 0;
   uint32_t* test_str = (uint32_t*)malloc(10);
-  asm volatile("sti");
   kb_getline((char*)test_str, 20);
-  _printf("\nYou entered: %s\n", (char*)test_str);
+  a = StrToInt((char*)test_str);
+
+  printf("\nEnter 2nd Number: ");
+  uint32_t b = 0;
+  test_str = (uint32_t*)malloc(10);
+  kb_getline((char*)test_str, 20);
+  b = StrToInt((char*)test_str);
+*/
+  /* MY CODE */
   Shell_wakeup();
-//  while(1);
   asm volatile("cli");
-  kfree(test_str);
+//  kfree(test_str);
   kill();
   while(1);
 }
@@ -222,11 +69,13 @@ void tasking_initiator()
   multitasking_ON = 1;
   //setVesa(0x110); //TEXT MODE VESA :v
   //init_hpet();
-  apic_start_timer();       //The respective Timer initialization function of the timer of choice
+  //apic_start_timer();       //The respective Timer initialization function of the timer of choice
 
-  clearIRQMask(1);
+  setIRQMask(0);
 //  init_timer(1000);
   //Here it goes, The entry to the multitasking world.
+  //enable_pic();
+  //disable_pic();
   asm volatile("sti;\
    int $50");
   kill();

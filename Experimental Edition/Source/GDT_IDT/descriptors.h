@@ -22,7 +22,10 @@ struct idt_entry_struct
  } __attribute__((packed));
 typedef struct idt_entry_struct idt_entry_t;
 */
+
 typedef uint16_t idt_ptr_t[3];
+
+//extern void Test_Timer();
 
 //Interrupt handlers
 void divByZero_handler();
@@ -49,8 +52,9 @@ void reserved_handler();
 //#ifdef PIC
 void PIT_handler();
 extern void kb_handle();
-extern void Scheduler_Promoter_assistance();
-extern void switcher_manual();
+//extern void Scheduler_Promoter_assistance();
+extern void switcher_ksp();
+extern void switcher_ksp2();
 void keyboardInterrupt_handler();
 void cascade_handler();//This particular interrupt is never raised
 void COM2_handler();
@@ -62,7 +66,7 @@ void RTC_handler();
 void periph1_handler();
 void periph2_handler();
 void periph3_handler();
-void mouse_handler();
+void mouse_handle();
 void FPU_handler();
 void primaryHDD_handler();//P -> Primary
 void secondaryHDD_handler();//S -> Secondary

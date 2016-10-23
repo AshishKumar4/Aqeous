@@ -4,9 +4,8 @@
 #include <tasking.h>
 #include "string.h"
 #include "stdio.h"
-#include "mem.h"
-#include "vmem.h"
-#include "paging.h"
+#include "stdlib.h"
+#include "virt_mm/paging.h"
 #include "fs.h"
 
 #endif

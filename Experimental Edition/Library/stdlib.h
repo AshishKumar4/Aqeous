@@ -13,6 +13,7 @@ void abort(void)
 
 uint32_t StrToInt(char *str)
 {
+		if(!str) return 0;
     uint32_t in=0;
     int ln=strlen(str);
     int arr[999],a=1;
@@ -26,5 +27,10 @@ uint32_t StrToInt(char *str)
     }
 		return in;
 }
+
+uint32_t (*kmalloc)(uint32_t);
+uint32_t (*malloc)(uint32_t);
+void (*free)(uint32_t);
+void (*kfree)(uint32_t);
 
 #endif

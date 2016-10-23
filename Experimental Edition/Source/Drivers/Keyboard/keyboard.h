@@ -84,7 +84,7 @@ enum KYBRD_ERROR {
 	KYBRD_ERR_KEY					=	0xFF
 };
 
-static int call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0;
+static int call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0, _arrow_up = 0, _arrow_down = 0;
 
 //! read status from keyboard controller
 inline uint8_t kybrd_ctrl_read_status ()

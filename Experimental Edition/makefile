@@ -5,6 +5,7 @@ CONSOLEVGA:=$(CONSOLE)/arch/x86
 GRAPHICS:=$(SOURCE)/graphics
 OBJ:=objs
 CC:=i686-elf-gcc
+CPP:=i686-elf-g++
 LD:=i686-elf-ld
 AS:=i686-elf-as
 NASM:=nasm
@@ -17,7 +18,7 @@ DESCRIPTORS:=$(SOURCE)/GDT_IDT
 INTERRUPTS:=$(SOURCE)/Interrupts
 DRIVERS:=$(SOURCE)/Drivers
 TIMER:=$(DRIVERS)/timer
-VFS:=$(SOURCE)/vfs
+#VFS:=$(SOURCE)/vfs
 MULTIBOOT:=$(SOURCE)/multiboot
 MULTITASK:=$(SOURCE)/multitasking
 MEMMANAGEMENT:=$(SOURCE)/MemManagement
@@ -33,17 +34,24 @@ PIC:=$(ARCH)/PIC
 FILESYSTEM:=$(SOURCE)/FileSystem
 HPET:=$(TIMER)/HPET
 BASICSHELL:=$(SOURCE)/Shell
-IOQUEUE:=$(SOURCE)/IOQueues
-KBQUEUE:=$(IOQUEUE)/Keyboard
+IOHANDLING:=$(SOURCE)/IO_Handling
+IO_DEVICES:=$(IOHANDLING)/IO_Devices
+KBHANDLE:=$(IO_DEVICES)/Keyboard
+FSHANDLE:=$(IO_DEVICES)/FileSystem
+PARALLEL_IO:=$(IOHANDLING)/Parallel_Processing
+SERIAL_IO:=$(IOHANDLING)/Serial_Processing
+FONT_ENGINE:=$(GRAPHICS)/Font_Engine
+GUI_SHELL:=$(BASICSHELL)/GUI
+AQFS:=$(FILESYSTEM)/AqFS
 
 OBJS:= $(OBJ)/*.o
-INCLUDED:= -ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(VESA) -I$(GRAPHICS) -I$(CONSOLEVGA)
+INCLUDED:= -ILibrary -I$(SOURCE) -I$(LIBARCH) -I$(VESA) -I$(GRAPHICS) -I$(FONT_ENGINE) -I$(CONSOLEVGA) -I$(FONT_ENGINE)
 INCLUDED:=$(INCLUDED) -I$(CONSOLE) -I$(TIMER) -I$(DESCRIPTORS) -I$(INTERRUPTS) -I$(ARCH) -I./
-INCLUDED:=$(INCLUDED) -I$(VFS) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
-INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM) -I$(HPET) -I$(BASICSHELL) -I$(IOQUEUE) -I$(KBQUEUE)
-INCLUDED:=$(INCLUDED) -I$(PIC)
+INCLUDED:=$(INCLUDED) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) -I$(PCI) -I$(AHCI) -I$(ACPI) -I$(MOUSE)
+INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM) -I$(AQFS) -I$(HPET) -I$(BASICSHELL) -I$(IOHANDLING) -I$(KBHANDLE) -I$(FSHANDLE)
+INCLUDED:=$(INCLUDED) -I$(PIC) -I$(PARALLEL_IO) -I$(SERIAL_IO) -I$(GUI_SHELL)
 
-FLAGS:= -O1 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:
@@ -57,10 +65,11 @@ build-nasm:
 	$(NASM) -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
 	$(NASM) -f elf $(ARCH)/tasking.asm -o $(OBJ)/tasking.o
 	$(NASM) -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
+	$(NASM) -f elf $(ARCH)/asmlibrary.asm -o $(OBJ)/asmlibrary.o
 	$(AS) $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o
 
 build-kernel: $(KERNEL) linker.ld
-	$(LD) -T linker.ld -o $(OBJ)/Aqeous $(OBJS) $(KERNEL) -O0
+	$(LD) -T linker.ld -o $(OBJ)/Aqeous $(OBJS) $(KERNEL)
 	cp $(OBJ)/Aqeous Aqeous.bin
 	make clean
 	echo -e "\n\n\n\n\tKernel Built Successfully! Run it using Qemu_aqeous.bat. \n\tBe sure to modify it accordingly!!!"
@@ -73,8 +82,14 @@ build-installer:
 	cd installer
 	make
 
+build-assembly:
+	$(CC) -T linker.ld $(FLAGS) -S -m32 $(SOURCE)/kernel.c
+
 %.o: %.c
 	$(CC) -c $< -o $@ $(FLAGS)
+
+%.o: %.cpp
+	$(CPP) -c $< -o $@ $(FLAGS)
 
 %.o: %.asm
 	$(NASM)	-f elf $c -o $@

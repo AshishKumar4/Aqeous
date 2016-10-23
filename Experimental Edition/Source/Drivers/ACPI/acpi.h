@@ -5,7 +5,7 @@
 typedef unsigned char byte;
 typedef unsigned short word;
 typedef unsigned long dword;
-typedef unsigned int qword;
+typedef uint32_t qword;
 
 dword *SMI_CMD;
 byte ACPI_ENABLE;
@@ -84,10 +84,10 @@ typedef struct MADT
 
 void acpiPowerOff(void);
 
-int acpiCheckHeader(unsigned int *ptr, char *sig);
+int acpiCheckHeader(uint32_t *ptr, char *sig);
 
-unsigned int *acpiGetRSDPtr(void);
+uint32_t *acpiGetRSDPtr(void);
 
-unsigned int *acpiCheckRSDPtr(unsigned int *ptr);
+uint32_t *acpiCheckRSDPtr(uint32_t *ptr);
 
 #endif // ACPI_h

@@ -268,6 +268,11 @@ void backspace()
 		_console_putentryat(' ', console_color, consolecolumn, consolerow);
 }
 
+void clrline()
+{
+
+}
+
 void _printint(uint32_t in)
 {
     if(in<=999999999)
