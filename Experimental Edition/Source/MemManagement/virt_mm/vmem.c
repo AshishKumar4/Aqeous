@@ -9,18 +9,18 @@
 
 void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for kernel memory address space (System Directory)
 {
-	uint32_t new_buff = dcap->csrb_f; //Allocate 4kb space.    Free blocks
+	uint32_t new_buff = (uint32_t)dcap->csrb_f; //Allocate 4kb space.    Free blocks
 	CustomCSRB_M_header_t* nb_f = (CustomCSRB_M_header_t*)new_buff;
-	nb_f->head = (CustomCSRB_M_header_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
+	nb_f->head = (uint32_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
 
-	new_buff = dcap->csrb_u; //Allocate 4kb space.     Used blocks
-	CustomCSRB_M_header_t* nb_u = (CustomCSRB_M_header_t*)new_buff;     
-	nb_u->head = (CustomCSRB_M_header_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
+	new_buff = (uint32_t)dcap->csrb_u; //Allocate 4kb space.     Used blocks
+	CustomCSRB_M_header_t* nb_u = (CustomCSRB_M_header_t*)new_buff;
+	nb_u->head = (uint32_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
 
-	nb_u->other = nb_f;
-	nb_f->other = nb_u;
+	nb_u->changed = 0;
+	nb_f->changed = 0;
 
-	MemRegion_t* mm = mmap_info;
+	//MemRegion_t* mm = mmap_info;
 	CustomCSRB_M_t* tmp_f = (CustomCSRB_M_t*)nb_f->head;
 	CustomCSRB_M_t* tmp_u = (CustomCSRB_M_t*)nb_u->head;
 	for(int i = 0; mmap_info; i++)
@@ -43,10 +43,10 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 		}
 		++mmap_info;
 	}
-	nb_f->tail = (uint32_t*)tmp_f; 
+	nb_f->tail = (uint32_t*)tmp_f;
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
-	
-	nb_u->tail = (uint32_t*)tmp_u; 
+
+	nb_u->tail = (uint32_t*)tmp_u;
 	tmp_u->addr = nb_u->head;   //Make last one to point to first one.
 }
 
@@ -58,7 +58,7 @@ uint32_t vmem(uint32_t size)
 
 	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
 
-	uint32_t* tail = csrb_f->tail;
+	//uint32_t* tail = csrb_f->tail;
 	uint32_t* head = csrb_f->head;
 
 	CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)curr_cap->csrb_u;
@@ -71,9 +71,9 @@ uint32_t vmem(uint32_t size)
 		if(tm->size >= size)
 		{
 			tm->size -= size;
-			baddr = tm->begin;
+			baddr = (uint32_t)tm->begin;
 
-			/****/  //TODO: Create an entry in used CSRB.   
+			/****/  //TODO: Create an entry in used CSRB.
 			CustomCSRB_M_t* tmp = (CustomCSRB_M_t*)csrb_u->tail;
 			tmp->size = size;
 			tmp->begin = baddr;
@@ -82,8 +82,8 @@ uint32_t vmem(uint32_t size)
 			++csrb_u->entries;
 			if(!(((uint32_t)(tmp) + 16)%4096))
 			{
-				tmp->addr = phy_alloc4K();
-				tmp = tmp->addr;
+				tmp->addr = (uint32_t*)phy_alloc4K();
+				tmp = (CustomCSRB_M_t*)tmp->addr;
 				++csrb_u->entries;
 			}
 			tmp->addr = csrb_u->head;
@@ -108,10 +108,10 @@ uint32_t vmem(uint32_t size)
 		pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_1);
 		pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_2);
 	}
-	else 
+	else
 	{
-		PageTable_t* pt = PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
-		//Create the page. 
+		PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
+		//Create the page.
 		page_t* pg = &pt->page_entry[pt_off];
 		uint32_t i;
 		for(i =  pg_frame; i<(size/4096) + pg_frame; i++)
@@ -127,7 +127,7 @@ uint32_t vmem(uint32_t size)
 					pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_1);
 					pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_2);
 				}
-				pt = PAGE_GET_PHYSICAL_ADDRESS(entry);
+				pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
 				pg = &pt->page_entry[0];
 			}
 			*pg = 1027 | CUSTOM_PTE_AVAIL_2 | phy_alloc4K();
@@ -136,22 +136,74 @@ uint32_t vmem(uint32_t size)
 	}
 	if(size%4096)
 	{
-		PageTable_t* pt = PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
-		//Create the page. 
+		PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
+		//Create the page.
 		page_t* pg = &pt->page_entry[pt_off];
 		if(!pg)
 		{
 			uint32_t phy_mem = phy_alloc4K();
 			*pg = 1027 | CUSTOM_PTE_AVAIL_1 | phy_mem;
 		}
-		
+
 		//Make appropriate memory strips.
 	}
 	//SwitchFrom_SysDir();
 	return baddr;
 }
 
-int vfree(uint32_t address)
+void vfree(void* addr)
 {
+	uint32_t address = (uint32_t)addr;
+	Pdir_Capsule_t* curr_cap = system_pdirCap;
+	//PageDirectory_t* dir = system_dir;
+	//SwitchTo_SysDir();
 
+	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
+
+	//uint32_t* tail_f = csrb_f->tail;
+	uint32_t* head_f = csrb_f->head;
+
+	CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)curr_cap->csrb_u;
+
+	//uint32_t* tail_u = csrb_u->tail;
+	uint32_t* head_u = csrb_u->head;
+
+	CustomCSRB_M_t* tmf = (CustomCSRB_M_t*)head_f;
+	CustomCSRB_M_t* tmu = (CustomCSRB_M_t*)head_u;
+	//printf("\n%x %x",csrb_u->entries,csrb_f->entries);
+//	return;
+	for(uint32_t i = 0; i < csrb_u->entries; i++)
+	{
+		tmu = (CustomCSRB_M_t*)tmu->addr;
+		//printf("\tA%x Ax%x Sx%x ",address, tmu->begin, tmu->size);
+		if(tmu->begin == address)
+		{
+			tmf = (CustomCSRB_M_t*)csrb_f->tail;
+			tmf->addr = (uint32_t*)tmf;
+			tmf->size = tmu->size;
+			tmf->begin = tmu->begin;
+			tmf->reserved = 0;
+			++csrb_f->entries;
+			++tmf;
+			if(!(((uint32_t)(tmf) + 16)%4096))
+			{
+				tmf->addr = (uint32_t*)phy_alloc4K();
+				CustomCSRB_M_t* tmp2 =tmf;
+				tmf = (CustomCSRB_M_t*)tmf->addr;
+				tmf->addr = (uint32_t*)tmp2;
+				++tmf;
+				++csrb_u->entries;
+			}
+			tmf->addr = csrb_f->head;
+			csrb_f->tail = (uint32_t*)tmf;
+			memset((void*)tmu->begin, 0, tmu->size);
+			tmu->begin = 0;
+			tmu->size = 0;
+			tmu->reserved = 1;
+			--csrb_u->entries;
+			return;
+		}
+		++tmu;
+	}
+	return;
 }

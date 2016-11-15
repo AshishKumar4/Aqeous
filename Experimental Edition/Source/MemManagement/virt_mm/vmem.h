@@ -1,4 +1,4 @@
-#ifndef VMEM_h 
+#ifndef VMEM_h
 #define VMEM_h
 
 #include "phy_mm\mem.h"
@@ -8,12 +8,12 @@
 #include "string.h"
 #include "CustomCSRB\csrb_custom.h"
 
-#include "virt_mm\paging.h" 
+#include "virt_mm\paging.h"
 
 void Setup_VMEM(Pdir_Capsule_t* dcap);
 
 uint32_t vmem(uint32_t size);
 
-int vfree(uint32_t address);
+void vfree(void* addr);
 
 #endif

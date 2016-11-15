@@ -25,7 +25,7 @@ typedef struct __attribute__((packed)) CustomCSRB_M //Custom Circular Self Refre
 typedef struct __attribute__((packed)) CustomCSRB_M_header // Custom CSRB Header for Memory Management
 {
     uint32_t entries;
-    uint32_t other;
+    uint32_t changed;
     uint32_t* tail;
     uint32_t* head;
 }CustomCSRB_M_header_t;

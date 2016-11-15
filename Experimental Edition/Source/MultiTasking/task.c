@@ -1,11 +1,12 @@
 #include "tasking.h"
+#include "task.h"
+#include "process.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
-#include "process.h"
 
 task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Process_t* process)  /// Create a New Task for a given Process
 {
@@ -13,6 +14,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 	New_task_entry->test = 2;
 	task_t* New_task = &New_task_entry->task;
 	New_task_entry->next=NULL;
+	//Process_t* process = process_ptr;
 
 	map((uint32_t)New_task_entry,8192*2,(PageDirectory_t*)process->pgdir);
 
@@ -57,7 +59,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 //  New_task->kernel_stack = (uint32_t)tmalloc(4096);
 	//New_task->cs = 0x8;
 	//TODO: Complete this function, check everything thrice
-	
+
 	return New_task;
 }
 
@@ -129,7 +131,7 @@ void __attribute__((optimize("O0"))) test_ab(uint32_t s, uint32_t d)
 {
 	uint32_t a = s;
 	uint32_t b = d;
-	//printf(a);
+	printf("%d %d",a,b);
 }
 
 void kill_with_func(func_t func)

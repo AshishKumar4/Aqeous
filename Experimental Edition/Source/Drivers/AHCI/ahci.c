@@ -118,7 +118,7 @@ int checkAHCI()
     ahci_start=ahci;
     Disk_dev=(Disk_dev_t*)kmalloc(4096);
     Disk_dev_start=Disk_dev;
-	 AHCI_BASE = kmalloc(1024*1024);
+	  AHCI_BASE = (uint32_t)kmalloc(1024*1024);
     for(uint32_t ahcis=0;ahcis<TotalAHCIDevices;ahcis++)
     {
       ++controllers;

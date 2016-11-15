@@ -11,7 +11,7 @@
 
 #include "virt_mm\paging.h"
 
-#define FRAME_STACK_START 10240*1024 //8th M 
+#define FRAME_STACK_START 10240*1024 //8th M
 
 uint32_t vga;
 uint32_t maxmem=0;
@@ -34,11 +34,11 @@ MemRegion_t *mmap_info, *Fmemmap;
 //! different memory regions (in memory_region.type)
 char* strMemoryTypes[] = {
 
-	"Available",			//memory_region.type==0
-	"Reserved",			//memory_region.type==1
-	"ACPI Reclaim",		//memory_region.type==2
-	"ACPI NVS Memory"		//memory_region.type==3
-	"Kernel Reserved"		//memory_region.type==4
+	"Available",				//memory_region.type==0
+	"Reserved",					//memory_region.type==1
+	"ACPI Reclaim",				//memory_region.type==2
+	"ACPI NVS Memory"			//memory_region.type==3
+	"Kernel Reserved"			//memory_region.type==4
 	"Kernel Page Directory"		//memory_region.type==4
 };
 
@@ -50,17 +50,17 @@ void setup_frameStack();
 
 inline uint32_t pop_frameStack();
 
-inline void push_frameStack(uint32_t fr);
+void push_frameStack(uint32_t fr);
 
 uint32_t phy_alloc4K();
 
 void Setup_PhyMEM();
 
-uint32_t pmem(uint32_t size);
+void* pmem(uint32_t size);
 
-void pfree(uint32_t address);
+void pfree(void* addr);
 
-inline uint32_t pmalloc(uint32_t id);
+inline uint32_t pmalloc();
 
 uint32_t mtalloc(uint32_t pages);
 

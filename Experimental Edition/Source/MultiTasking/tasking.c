@@ -14,6 +14,7 @@
 #include "FS_Handling.h"
 #include "apic.h"
 #include "pic.h"
+#include "MManager/mmanagerSys.h"
 
 void idle()
 {
@@ -66,6 +67,7 @@ void tasking_initiator()
   delay1(1);
   kb_io_init();
   init_shell();
+  Setup_MMADS();
   multitasking_ON = 1;
   //setVesa(0x110); //TEXT MODE VESA :v
   //init_hpet();
@@ -87,6 +89,8 @@ extern void kernel_main();
 void init_multitasking()
 {
   asm volatile("cli");
+  
+  init_Processing();
 
   kernel_proc = create_process("microkernel", 0, 1, 0);
   kernel_proc->pgdir = (uint32_t)system_dir;

@@ -5,21 +5,22 @@
 #include "string.h"
 //#include "streams.h"
 #include "CustomCSRB\csrb_custom.h"
+#include "MManager\mmanagerSys.h"
 
 #include "virt_mm\paging.h"
 
 /*
-	[0-4MB] = KERNEL 
+	[0-4MB] = KERNEL
 	[4-8MB] = KERNEL MAIN PAGE DIRECTORY (sys_dir)
 	[8-12MB] = FRAME STACK FOR PHYSICAL FRAME ALLOCATION
-	[12-14MB] = FREE
-	[14-16MB] = RESERVED 
+	[12-14MB] = MMAD Structures
+	[14-16MB] = RESERVED
 	[>3GB] = RESERVED
 */
 
 void memmap_generator()
 {
-	MemRegion_t* OS_MMap = phy_alloc4K();
+	MemRegion_t* OS_MMap = (MemRegion_t*)phy_alloc4K();
 	Fmemmap = OS_MMap;
 	OS_MMap->startHi = 0;
 	OS_MMap->sizeHi = 4*1024*1024;
@@ -57,7 +58,7 @@ void memmap_generator()
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 600*1024*1024;
-	OS_MMap->sizeHi = 2472*1024*1024;
+	OS_MMap->sizeHi = 0x9A800000;
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 	printf("\nOS Specific Memory Regions Preallocated!");
@@ -68,7 +69,7 @@ void setup_frameStack()
 	printf("\nSetting up Frame Stack!");
 
 	//Setup the Stack frame at 10th MB!
-	uint32_t* frame_stack_ptr = 10240*1024;
+	uint32_t* frame_stack_ptr = (uint32_t*)0xA00000;
 	uint32_t i = 786432; //3rd GB
 	for(; i > 4096; --i) //more then 50th MB
 	{
@@ -86,7 +87,7 @@ inline uint32_t pop_frameStack()
 	return fr;
 }
 
-inline void push_frameStack(uint32_t fr)
+void push_frameStack(uint32_t fr)
 {
 	++frame_stack_end;
 	*frame_stack_end = fr;
@@ -104,16 +105,16 @@ uint32_t phy_alloc4K()
 
 void Setup_PhyMEM()     //Sets up the allocation buffers for kernel memory address space (System Directory)
 {
-	uint32_t new_buff = system_pdirCap->csrb_f; //Allocate 4kb space.    Free blocks
+	uint32_t new_buff = (uint32_t)system_pdirCap->csrb_f; //Allocate 4kb space.    Free blocks
 	CustomCSRB_M_header_t* nb_f = (CustomCSRB_M_header_t*)new_buff;
-	nb_f->head = (CustomCSRB_M_header_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
+	nb_f->head = (uint32_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
 
-	new_buff = system_pdirCap->csrb_u; //Allocate 4kb space.     Used blocks
-	CustomCSRB_M_header_t* nb_u = (CustomCSRB_M_header_t*)new_buff;     
-	nb_u->head = (CustomCSRB_M_header_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
+	new_buff = (uint32_t)system_pdirCap->csrb_u; //Allocate 4kb space.     Used blocks
+	CustomCSRB_M_header_t* nb_u = (CustomCSRB_M_header_t*)new_buff;
+	nb_u->head = (uint32_t*)(new_buff + sizeof(CustomCSRB_M_header_t));
 
-	nb_u->other = nb_f;
-	nb_f->other = nb_u;
+	nb_u->changed = 0;
+	nb_f->changed = 0;
 
 	nb_f->entries = 0;
 	nb_u->entries = 0;
@@ -145,25 +146,29 @@ void Setup_PhyMEM()     //Sets up the allocation buffers for kernel memory addre
 		++mm;
 		if(mm->reservedt != 0xFFE42) break;
 	}
-	nb_f->tail = (uint32_t*)tmp_f; 
+	nb_f->tail = (uint32_t*)tmp_f;
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
 	printf("\nB%x", tmp_f->size);
-	
-	nb_u->tail = (uint32_t*)tmp_u; 
+
+	nb_u->tail = (uint32_t*)tmp_u;
 	tmp_u->addr = nb_u->head;   //Make last one to point to first one.
 	//printf("\nA1");
 	//while(1);
 }
 
-uint32_t pmem(uint32_t size)
+void* pmem(uint32_t size)
 {
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
 	PageDirectory_t* dir = system_dir;
+
+	mmads_stack_end = ((task_t*)current_task)->process;
+	++mmads_stack_end;
+	++mmads_stack_size;
 	//SwitchTo_SysDir();
 
 	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
 
-	uint32_t* tail = csrb_f->tail;
+//	uint32_t* tail = csrb_f->tail;
 	uint32_t* head = csrb_f->head;
 
 	CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)curr_cap->csrb_u;
@@ -177,7 +182,7 @@ uint32_t pmem(uint32_t size)
 		if(tm->size >= size)
 		{
 			tm->size -= size;
-			if(!tm->size) 
+			if(!tm->size)
 			{
 				tm->reserved = 1;
 				--csrb_f->entries;
@@ -194,12 +199,15 @@ uint32_t pmem(uint32_t size)
 			++csrb_u->entries;
 			if(!(((uint32_t)(tmp) + 16)%4096))
 			{
-				tmp->addr = phy_alloc4K();
-				tmp = tmp->addr;
+				tmp->addr = (uint32_t*)phy_alloc4K();
+				CustomCSRB_M_t* tmp2 = tmp;
+				tmp = (CustomCSRB_M_t*)tmp->addr;
+				tmp->addr = (uint32_t*)tmp2;
+				++tmp;
 				++csrb_u->entries;
 			}
 			tmp->addr = csrb_u->head;
-			csrb_u->tail = tmp;
+			csrb_u->tail = (uint32_t*)tmp;
 			/****/
 
 			tm->begin += size;
@@ -213,53 +221,54 @@ uint32_t pmem(uint32_t size)
 	uint32_t pd_off = pg_frame/1024;
 	uint32_t pt_off = pg_frame%1024;
 	table_t* tentry = &dir->table_entry[pd_off];
-	PageTable_t* pt = PAGE_GET_PHYSICAL_ADDRESS(tentry);
-	//Create the page. 
+	PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(tentry);
+	//Create the page.
 	page_t* pg = &pt->page_entry[pt_off];
-	for(int i =  pg_frame; i<(size/4096) + pg_frame; i++)
+	for(uint32_t i =  pg_frame; i<(size/4096) + pg_frame; i++)
 	{
 		if(!(i%1024))   //Whenever crossing page table boundries, just switch to next page tables.
 		{
 			tentry = &dir->table_entry[i/1024];
-			pt = PAGE_GET_PHYSICAL_ADDRESS(tentry);
+			pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(tentry);
 			pg = &pt->page_entry[0];
 		}
 		*pg |= 1027 | CUSTOM_PTE_AVAIL_2;
 		++pg;
 	}
 	//SwitchFrom_SysDir();
-	return baddr;
-	
+	return (void*)baddr;
+
 }
 
-void pfree(uint32_t address)
+void pfree(void* addr)
 {
+	uint32_t address = (uint32_t)addr;
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
-	PageDirectory_t* dir = system_dir;
+	//PageDirectory_t* dir = system_dir;
 	//SwitchTo_SysDir();
 
 	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
 
-	uint32_t* tail_f = csrb_f->tail;
+	//uint32_t* tail_f = csrb_f->tail;
 	uint32_t* head_f = csrb_f->head;
 
 	CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)curr_cap->csrb_u;
-	
-	uint32_t* tail_u = csrb_u->tail;
+
+	//uint32_t* tail_u = csrb_u->tail;
 	uint32_t* head_u = csrb_u->head;
 
 	CustomCSRB_M_t* tmf = (CustomCSRB_M_t*)head_f;
 	CustomCSRB_M_t* tmu = (CustomCSRB_M_t*)head_u;
 	//printf("\n%x %x",csrb_u->entries,csrb_f->entries);
 //	return;
-	for(int i = 0; i < csrb_u->entries; i++)
+	for(uint32_t i = 0; i < csrb_u->entries; i++)
 	{
-		tmu = tmu->addr;
+		tmu = (CustomCSRB_M_t*)tmu->addr;
 		//printf("\tA%x Ax%x Sx%x ",address, tmu->begin, tmu->size);
 		if(tmu->begin == address)
 		{
-			tmf = csrb_f->tail;
-			tmf->addr = tmf;
+			tmf = (CustomCSRB_M_t*)csrb_f->tail;
+			tmf->addr = (uint32_t*)tmf;
 			tmf->size = tmu->size;
 			tmf->begin = tmu->begin;
 			tmf->reserved = 0;
@@ -267,13 +276,16 @@ void pfree(uint32_t address)
 			++tmf;
 			if(!(((uint32_t)(tmf) + 16)%4096))
 			{
-				tmf->addr = phy_alloc4K();
-				tmf = tmf->addr;
-				++csrb_f->entries;
+				tmf->addr = (uint32_t*)phy_alloc4K();
+				CustomCSRB_M_t* tmp2 =tmf;
+				tmf = (CustomCSRB_M_t*)tmf->addr;
+				tmf->addr = (uint32_t*)tmp2;
+				++tmf;
+				++csrb_u->entries;
 			}
 			tmf->addr = csrb_f->head;
-			csrb_f->tail = tmf;
-			memset(tmu->begin, 0, tmu->size);
+			csrb_f->tail = (uint32_t*)tmf;
+			memset((void*)tmu->begin, 0, tmu->size);
 			tmu->begin = 0;
 			tmu->size = 0;
 			tmu->reserved = 1;
@@ -286,7 +298,7 @@ void pfree(uint32_t address)
 }
 
 
-inline uint32_t pmalloc(uint32_t id)
+inline uint32_t pmalloc()
 {
     //return kmalloc_int(sz, 1, 0,2,1,4);
     uint32_t mem=phy_alloc4K();
@@ -326,8 +338,7 @@ uint32_t mtalloc(uint32_t pages)
       ++table_entry;
    }
    _printf("\nCould not find memory, sorry. Try kmalloc()");
-   return kmalloc(pages*4096);
-   return 0;
+   return (uint32_t)kmalloc(pages*4096);
    //_printf("\n%x %x", PAGE_GET_PHYSICAL_ADDRESS(page), mtalc_start);
 }
 
@@ -353,7 +364,7 @@ void mtfree(uint32_t addr, uint32_t size)
 
 uint32_t fsalloc(uint32_t sz)
 {
-  uint32_t addr=pmem(sz);
+  uint32_t addr=(uint32_t)pmem(sz);
   //printf(" Ab%x",addr);
   return addr;
 }

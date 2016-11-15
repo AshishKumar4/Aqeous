@@ -95,7 +95,7 @@ inline page_t* MapPage (void* phys, void* virt, PageDirectory_t* dir)
    if (!*e)
    {
       //! page table not present, allocate it
-      PageTable_t* table = (PageTable_t*) pmalloc(4096);
+      PageTable_t* table = (PageTable_t*) pmalloc();
       if (!table)
          return 0;
 

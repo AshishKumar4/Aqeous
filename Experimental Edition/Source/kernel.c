@@ -21,6 +21,8 @@
 #include "task.c"
 #include "tasking.c"
 #include "process.c"
+#include "ProcManager/ProcManager.c"
+#include "MManager/mmanagerSys.c"
 #include "hpet.c"
 #include "fs.c"
 #include "fs_alloc.c"
@@ -158,32 +160,10 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	max_mem=maxmem*1024;
 
-	/*Mapper();
 
-	printf("\nMemory block lists prepared!\n");
-	bitmap_init();
-	initialise_paging();
-	enable_paging();
-	switch_pdirectory(system_dir);*/
 	Setup_Paging();
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-/*
-	printf("C %x D %x %x", phy_alloc4K(),phy_alloc4K(), phy_alloc4K());
-
-	CustomCSRB_M_header_t* cst = system_pdirCap->csrb_f;
-	CustomCSRB_M_t* tmp = cst->head;
-
-	for(int i=0; i < 20; i++)
-	{
-		tmp = tmp->addr;
-		printf("A%x-%x  ",tmp->begin,tmp->size);
-		++tmp;
-	}
-*/
-
-//	dbug();
-//	while(1);
 
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
@@ -206,7 +186,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
 	if(cpuHasMSR()) printf("\nCPU has MSR");
 	//switch_pdirectory(main_dir);
-	
+
 	console_dbuffer_original = kmalloc(4096*1024);
 	console_dbuffer = (uint16_t*)console_dbuffer_original;
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
@@ -225,23 +205,4 @@ void kernel_start()
 void kernel_main()
 {
 	while(1);
-	/*
-		printf("\n");
-		char *inst=" ";
-		uint8_t flg=0;
-		//while(1);
-    while(!flg)
-    {
-			//	asm volatile("cli");
-				printf("\n%s>",curr_dir.full_name);
-				getline(inst);
-				printf(inst);
-				flg=console_manager(inst);
-			//	asm volatile("sti");
-    }
-		while(1)
-		{
-			Mouse_Plot(mousex,mousey);
-			DBuff();
-		}//*/
 }

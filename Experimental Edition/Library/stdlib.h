@@ -28,9 +28,9 @@ uint32_t StrToInt(char *str)
 		return in;
 }
 
-uint32_t (*kmalloc)(uint32_t);
+void* (*kmalloc)(uint32_t);
 uint32_t (*malloc)(uint32_t);
-void (*free)(uint32_t);
-void (*kfree)(uint32_t);
+void (*free)(void*);
+void (*kfree)(void*);
 
 #endif
