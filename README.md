@@ -1,4 +1,7 @@
 # Aqeous
+
+*INSTALLER BUILD IS OBSOLETE NOW!!! MAIN KERNEL RECIDES IN SOURCE DIRECTORY!!!*
+
 The ZIP File contains these two files-> 
 hdd.img --> Hard Disk Image with both, kernel and grub built in, as well as AFS filesystem also made.
 HDD_Template.img --> Template image with only Kernel and grub built in. Use when hdd.img corrupts. Copy it and rename it as 'hdd.img'
