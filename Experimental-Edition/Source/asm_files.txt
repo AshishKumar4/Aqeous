@@ -1,0 +1,7 @@
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/#v86.asm#
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/descriptors.asm
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/v86.asm
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/tasking.asm
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/interrupts.asm
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/asmlibrary.asm
+/home/shahe/Development/C/Aqeous/Experimental-Edition/Source/arch/x86/boot.S

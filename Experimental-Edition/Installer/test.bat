@@ -1,0 +1,1 @@
+qemu-system-x86_64 -m 1500M -smp 8 -monitor stdio -drive file=disk.img,if=none,id=hdd0 -device ich9-ahci,id=ahci -device ide-drive,drive=hdd0,bus=ahci.1 
