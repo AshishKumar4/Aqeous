@@ -1,4 +1,0 @@
-C:\cygwinFINAL\home\ashish\ProjectOS\sysroot\usr\Aqeous\Experimental Edition\Source\Shell\Commands\Default_Commands.c:1:19: fatal error: shell.h: No such file or directory
- #include "shell.h"
-                   ^
-compilation terminated.

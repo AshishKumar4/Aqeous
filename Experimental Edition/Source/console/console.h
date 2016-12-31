@@ -10,6 +10,7 @@ uint32_t volatile console_dbuffer_original, console_dbuffer_limit;
 volatile uint32_t console_rows_skipped = 0;
 volatile int console_skip = 0;
 uint16_t volatile *console_buffer;
+uint32_t default_console_color;
 
 void (*mdbug)();
 void (*vesa)(uint32_t mode);

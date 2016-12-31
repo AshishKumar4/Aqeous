@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
+#include <console.h>
 
 extern volatile int multitasking_ON;
 int putchar(int ic);
@@ -28,8 +29,12 @@ static void _print(const char* data, size_t data_length)
 		_putchar((char)((const unsigned char*) data)[i]);
 }
 
+int plock = 0;
+
 int printf(const char* restrict format, ...)
 {
+	while(plock);
+	plock = 1;
 	if(multitasking_ON)
 	{
 		va_list parameters;
@@ -90,6 +95,15 @@ int printf(const char* restrict format, ...)
 	            uint32_t c = va_arg (parameters, uint32_t);
 	            _printint(c);
 	        }
+	        else if(*format == 'p'||*format == 'g') //color
+	        {
+	            format++;
+	            int c = va_arg (parameters, int);
+							if(!c)
+								console_color = default_console_color;
+							else
+								console_color = c;
+	        }
 			else
 			{
 				goto _incomprehensible_conversion;
@@ -97,7 +111,7 @@ int printf(const char* restrict format, ...)
 		}
 
 		va_end(parameters);
-
+		plock = 0;
 		return written;
 	}
 	else
@@ -166,6 +180,15 @@ int printf(const char* restrict format, ...)
 	            uint64_t c = va_arg (parameters, uint64_t);
 	            print64int(c);
 	        }
+	        else if(*format == 'p'||*format == 'g') //color
+	        {
+	            format++;
+	            int c = va_arg (parameters, int);
+							if(!c)
+								console_color = default_console_color;
+							else
+								console_color = c;
+	        }
 			else
 			{
 				goto incomprehensible_conversion;
@@ -174,6 +197,7 @@ int printf(const char* restrict format, ...)
 
 		va_end(parameters);
 
+		plock = 0;
 		return written;
 	}
 }

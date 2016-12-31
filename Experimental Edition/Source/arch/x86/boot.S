@@ -25,7 +25,6 @@ stack_top:
 _start:
 	#movl $0xC800000, %esp //The Kernel stack shall be from 200th mb to 250th mb
 	;push %esp
-	push %ebx
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early
 

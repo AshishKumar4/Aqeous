@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-inline void SystemDir_Mapper() ///will use it to manage OS directly
+void SystemDir_Mapper() ///will use it to manage OS directly
 {
     //Map_non_identity(0,0,4095*1024*1024,system_dir);
     for(uint32_t i=0,j=0;i<0xFFFFF000;i+=4096,j+=4096) //Make the pages and page tables for the whole kernel memory (higher Half)
@@ -29,7 +29,7 @@ void Setup_SystemDir()
 
 	for(int i=0;i<1024;i++)
 	{
-	  dir->table_entry[i] = (table_t)(((i+1)*4096)+4194304+8192);
+	  dir->table_entry[i] = (table_t)(((i+1)*4096)+(4194304+8192));
 	  table_t* entry = &dir->table_entry[i];
 	  pd_entry_add_attrib (entry, I86_PDE_PRESENT);
 	  pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
@@ -37,7 +37,7 @@ void Setup_SystemDir()
 	  pd_entry_del_attrib (entry, CUSTOM_PDE_AVAIL_2);
 	  //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[i]);
 	}
-    SystemDir_Mapper();
+  SystemDir_Mapper();
 }
 
 Pdir_Capsule_t* pgdir_maker()
@@ -146,7 +146,7 @@ inline page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
       if (dir->table_entry[table_idx]) // If this table is already assigned
       {
           //printf("1 ");
-          table_t* entry = &dir->table_entry [table_idx];
+          table_t* entry = &dir->table_entry[table_idx];
           PageTable_t* table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
           return &table->page_entry[addr%1024];
       }
@@ -212,7 +212,7 @@ inline PageTable_t* get_table(uint32_t addr)
 
 void Setup_Paging()
 {
-    memmap_generator();
+  memmap_generator();
 	setup_frameStack();
 	Setup_SystemDir();
 	Setup_PhyMEM();
@@ -220,8 +220,17 @@ void Setup_Paging()
 	malloc = vmem;
 	free = vfree;
 	kfree = pfree;
-    _cur_dir = system_dir;
-    _cur_pdirCap = system_pdirCap;
-    _prev_dir = system_dir;
+  _cur_dir = system_dir;
+  _cur_pdirCap = system_pdirCap;
+  _prev_dir = system_dir;
+
+  for(int i = 0; i < total_CPU_Cores - 1; i++)
+  {
+    *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x4284;
+  }
+
 	switch_directory(system_dir);
+  asm volatile("mov %cr0, %eax;\
+                or $0x80000000, %eax;\
+                mov %eax, %cr0;");
 }

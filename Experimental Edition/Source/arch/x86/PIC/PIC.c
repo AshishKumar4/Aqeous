@@ -1,5 +1,5 @@
 #include "pic.h"
-#include "cpuid.h"
+#include "cpuid_c.h"
 #include "sys.h"
 #include "common.h"
 

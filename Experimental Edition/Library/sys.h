@@ -105,6 +105,25 @@ inline void io_wait(void)
     /* TODO: Is there any reason why al is forced? */
 }
 
+static inline bool are_interrupts_enabled()
+{
+    unsigned long flags;
+    asm volatile ( "pushf\n\t"
+                   "pop %0"
+                   : "=g"(flags) );
+    return flags & (1 << 9);
+}
+
+static inline void lidt_n(void* base, uint16_t size)
+{   // This function works in 32 and 64bit mode
+    struct {
+        uint16_t length;
+        void*    base;
+    } __attribute__((packed)) IDTR = { size, base };
+
+    asm ( "lidt %0" : : "m"(IDTR) );  // let the compiler choose an addressing mode
+}
+
 inline void sysManager(unsigned int todo) // 1 : reboot; 2 : shutdown; 3 : reserved
 {
     if(todo==1)

@@ -2,7 +2,7 @@
 #include "console.c"
 #include "descriptors.c"
 #include "int_handlers.c"
-#include "cpu.c"
+#include "cpu/cpu.c"
 #include "multiboot.h"
 //#include "vfs.c"
 #include "cmos.c"
@@ -25,8 +25,9 @@
 #include "MManager/mmanagerSys.c"
 #include "hpet.c"
 #include "fs.c"
+#include "lowlvl_Lib/lib.c"
 #include "fs_alloc.c"
-#include "Scheduler.c"
+#include "Scheduler/Scheduler.c"
 #include "Shell.c"
 #include "kb_handle.c"
 #include "parallels.c"
@@ -40,6 +41,9 @@
 #include "fonts.c"
 #include "memfunc.c"
 #include "math.c"
+#include "Intel_MP\mp.c"
+
+#include "LocalAPIC\lapic.c"
 
 //#include "std_fs.c"
 #include "ext2\ext2_fs.c"
@@ -93,7 +97,7 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-	kfree(test1);
+//	kfree(test1);
 	kfree(temp2);
 	//free(test3);
 ///*
@@ -126,17 +130,21 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	console_init();
 	//setVesa(0x117);
-	init_APIC();
-	init_descriptor_tables();
+	init_descriptor_tables();	// Setup Descriptor tables for BSP
+	
+	detect_cpu();
+
+	BasicCPU_Init();		// Initialize all the processing units in the System
+//	while(1);
 	printf("\nDESCRIPTOR TABLES INITIALIZED \n");
 	printf("\nEnabling ACPI!\n");
-	initAcpi();
+/*	initAcpi();
 	if(!acpiEnable())
 		printf("\nACPI Initialized\n");
 	else printf("\nACPI CANT BE INITIALIZED\n");
-		ioapic_init();
-
-	mouseinit();
+		//ioapic_init();
+*/
+//	mouseinit();
 	printf("\nMouse Drivers initialized\n");
 	keyboard_init();
 	printf("\nKeyboard Drivers Initialized\n");
@@ -169,16 +177,13 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	checkAllBuses();
 	printf("\nEnabling Hard Disk\n");
 	checkAHCI();
-//	if(!ahci_found)
-	//	init_ata();
-
-	detect_cpu();
 
 	printf("\nLOADING MAIN KERNEL...\n");
 	mdbug=dbug;
 	vesa=setVesa;
 
 	printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
+
 	printf("\n\tType mdbug to test the Memory Manager");
 //while(1);
 	Init_fs();
@@ -191,6 +196,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	console_dbuffer = (uint16_t*)console_dbuffer_original;
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
 	printf("\n\nInitializing MultiThreading System");
+	asm volatile("sti");
 	init_multitasking();//*/
 	while(1);
 

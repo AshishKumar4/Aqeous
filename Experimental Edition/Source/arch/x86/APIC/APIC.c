@@ -1,7 +1,11 @@
-#include "cpuid.h"
+#include "cpuid_c.h"
 #include "apic.h"
 #include "sys.h"
 #include "pic.h"
+#include "tasking.h"
+#include "cpu\cpu.h"
+
+#include "localapic\lapic.h"
 
 bool check_apic()
 {
@@ -10,28 +14,50 @@ bool check_apic()
    return edx & CPUID_FLAG_APIC;
 }
 
-void init_APIC()
+uint32_t* cpu_get_apic_base()
 {
-  enable_pic();
-  disable_pic();
+   uint32_t eax, edx;
+   cpuGetMSR(IA32_APIC_BASE_MSR, &eax, &edx);
+  // cpuSetMSR((IA32_APIC_BASE_MSR)|(1<<11), &eax, &edx);
+
+   return (eax & 0xfffff000);
+}
+
+void __attribute__((optimize("O0"))) BSP_init_LAPIC(uint32_t base)
+{
 //  clearIRQMask(0);
 //  clearIRQMask(1);
   //localapic_write_with_mask(LAPIC_SVR, (1<<8), (1<<8));
 
-  printf("\nTesting APIC! Local APIC revision: %x Max LVT entry: %x\n",localapic_read(LAPIC_VER)&&0xff, ((localapic_read(LAPIC_VER)>>16) && 0xff)+1);
-  localapic_write(LAPIC_ERROR, 0x1F); /// 0x1F: temporary vector (all other bits: 0)
-  localapic_write(LAPIC_TPR, 0);
+//  printf("\n\nTesting APIC! Local APIC revision: %x Max LVT entry: %x\n",localapic_read(base, LAPIC_VER)&0xff, ((localapic_read(base, LAPIC_VER)>>16) & 0xff)+1);
+  localapic_write(base, LAPIC_ERROR, 0x1F); /// 0x1F: temporary vector (all other bits: 0)
+  localapic_write(base, LAPIC_TPR, 0);
 
-  localapic_write(LAPIC_DFR, 0xffffffff);
-  localapic_write(LAPIC_LDR, 0x01000000);
-  localapic_write(LAPIC_SVR, 0x100|0xff);
-//*/
-//  ioapic_set_irq(33, 0x0020, 33);
-//  ioapic_set_irq(1, 0x0020, 1);
-  //while(1);
+  localapic_write(base, LAPIC_DFR, 0xffffffff);
+  localapic_write(base, LAPIC_LDR, 0x01000000);
+  localapic_write(base, LAPIC_SVR, 0x100|0xff);
+
+
+//  uint32_t eax, edx;
+//  cpuGetMSR(IA32_APIC_BASE_MSR, &eax, &edx);
+//  cpuSetMSR((IA32_APIC_BASE_MSR)|(1<<11), &eax, &edx);
+
+  Lapic = base;
+  uint32_t version_lapic = Lapic->lapicVER_Reg[0];
+  version_lapic &= 0xff;
 }
 
-void ioapic_init()
+void __attribute__((optimize("O0"))) AP_init_LAPIC()
+{
+  localapic_write(APIC_LOCAL_BASE, LAPIC_ERROR, 0x1F); /// 0x1F: temporary vector (all other bits: 0)
+  localapic_write(APIC_LOCAL_BASE, LAPIC_TPR, 0);
+
+  localapic_write(APIC_LOCAL_BASE, LAPIC_DFR, 0xffffffff);
+  localapic_write(APIC_LOCAL_BASE, LAPIC_LDR, 0x01000000);
+  localapic_write(APIC_LOCAL_BASE, LAPIC_SVR, 0x100|0xff);
+}
+
+void MADTapic_parse()
 {
   printf("\nInitializing IO APIC!!!");
   uint_fast32_t *ptr = (uint_fast32_t*)acpiGetRSDPtr();
@@ -56,9 +82,12 @@ void ioapic_init()
           switch(madt_entry->type)
           {
             case 0 :
+              ++total_CPU_Cores;
               printf("\n\tLocal APIC Found");
               LAPIC_entry = (lapic_entry_t*)&madt_entry->rest_field;
               madt_entry = (madt_entry_t*)LAPIC_entry->rest_fields;
+              printf("\t\t\t%gLAPIC USABILITY: %x%g", 10, LAPIC_entry->flags & (1<<0),0);
+            //  ++total_CPU_Cores;
               break;
             case 1 :
               printf("\n\tIO APIC Found");
@@ -66,6 +95,7 @@ void ioapic_init()
               printf(" id: %x, address: %x, GSIB: %x",IOAPIC_entry->id, IOAPIC_entry->address, IOAPIC_entry->gsib);
               APIC_IO_BASE = IOAPIC_entry->address;
               madt_entry = (madt_entry_t*)IOAPIC_entry->rest_fields;
+            //  while(1);
               break;
             case 2 :
               printf("\n\tInterrupt Source Override Found");
@@ -100,19 +130,19 @@ inline void ioapic_write(uint32_t reg, uint32_t value) //IO Apic
    ioapic[4] = value;
 }
 
-inline uint32_t localapic_read(uint32_t reg)
+uint32_t __attribute__((optimize("O0"))) localapic_read(uint32_t base, uint32_t reg)
 {
-  uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
+  uint32_t volatile *localapic = (uint32_t volatile *)(base+reg);
   return *localapic;
 }
 
-inline void localapic_write(uint32_t reg, uint32_t value)
+void __attribute__((optimize("O0"))) localapic_write(uint32_t base, uint32_t reg, uint32_t value)
 {
-  uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
+  uint32_t volatile *localapic = (uint32_t volatile *)(base+reg);
   *localapic = value;
 }
 
-inline void localapic_write_with_mask(uint32_t reg, uint32_t mask, uint32_t value)
+inline void localapic_write_with_mask(uint32_t base, uint32_t reg, uint32_t mask, uint32_t value)
 {
   uint32_t volatile *localapic = (uint32_t volatile *)(APIC_LOCAL_BASE+reg);
   *localapic &= ~mask;

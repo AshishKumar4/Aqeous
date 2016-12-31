@@ -25,6 +25,10 @@
 #include "filesystem/ls.c"
 #include "filesystem/cd.c"
 
+#include "Scheduler/Scheduler.h"
+
+#include "stdlib.h"
+
 extern uint32_t time_slice;
 
 extern uint32_t test_pit_timer;
@@ -72,6 +76,11 @@ void Command_help()
    _printf("\n\tother commands\n");
 }
 
+void Command_aptest()
+{
+  printf("\n\t%x",*(uint32_t*)(0x00000500));
+}
+
 void Command_shutdown()
 {
       _printf("\n Turning Power off");
@@ -96,8 +105,8 @@ void Command_start_vesa()
 
    Task_sleep(Shell_Ostream_task);
    Shell_Ostream_task = create_task("Vesa_test_buf", DBuff, 1, 0x202, Shell_proc);
-   Task_wakeup(Shell_Ostream_task);
-
+   //Task_wakeup(Shell_Ostream_task);
+   Activate_task_direct(Shell_Ostream_task);
    //Switch_back_from_System();
    /*vesa_lfb();//*/
    //RectD(0,0,1024,768, 0x0092ff);
@@ -201,17 +210,20 @@ void Command_trate()
 void Command_timeslice()
 {
   asm volatile("cli");
-   _printf("%x",time_slice);
+  SchedulerKits_t* kit = Get_Scheduler();
+   _printf("%x",kit->timeslice);
 }
 
 void Command_topq()
 {
-   _printf("%x",top_queue);
+  SchedulerKits_t* kit = Get_Scheduler();
+   _printf("%x",kit->top_queue);
 }
 
 void Command_test()
 {
    asm volatile("cli");
+   Shell_sleep();
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
 }
 
@@ -234,7 +246,7 @@ void Command_testfs()
   //search_folderOGP(path);
   file_loadOGP(path);
   //file_load("test3.txt");
-  
+
   printf("\nsizeof(File_Header_t) %x, sizeof(File_t) %x\n",sizeof(File_Header_t),sizeof(File_t));
 
   char str[]="Hello!!! This is Aqeous OS Speaking And I am Testing the Filesystem. I need a really very very very big message to test the I/O operations of my file system's file handling. So please let me do what I want. This is a completely new FileSystem and thus needs a lot of testing. There are Several bugs and I am gonna fix them all!!! As I Said that I need a really very long message to test wether the file handling can actually manage reading writing operations with data bigger then the sector size, that is 512 bytes, so thats why I am writing this long test. The text should be longer then 512 bytes, That is the text should contains 512 characters. I am writing this in block alignmnet to manage space :3 This filesystem can be potentially better then FAT and so Its necessary to remove allthe bugs before releasing it. Thats obvious LOL xD .So please be patient. Thank you :)";
@@ -277,15 +289,21 @@ void Command_clrscr()
 
 void Command_baseln()
 {
-   _printf("\n%x",*bottom_queue);
+  SchedulerKits_t* kit = Get_Scheduler();
+   _printf("\n%x",*kit->bottom_queue);
 }
 
 void Command_baseshow()
 {
    asm volatile("cli");
-   _printf("\n%x",*bottom_queue);
-   uint32_t* tmp = bottom_queue + 1;
-   for(uint32_t i=0;i<*bottom_queue;i++)
+   char* core = CSI_Read(1);
+   uint32_t coreNum = 0;
+   if(core)
+    coreNum = StrToInt(core);
+   SchedulerKits_t* kit = &KitList[coreNum];
+   _printf("\n%x",*kit->bottom_queue);
+   uint32_t* tmp = kit->bottom_queue + 1;
+   for(uint32_t i=0;i<*kit->bottom_queue;i++)
    {
       _printf("\t%s", ((task_t*)(*tmp))->name);
       ++tmp;

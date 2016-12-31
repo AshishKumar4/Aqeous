@@ -66,6 +66,9 @@ build-nasm:
 	$(NASM) -f elf $(ARCH)/tasking.asm -o $(OBJ)/tasking.o
 	$(NASM) -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
 	$(NASM) -f elf $(ARCH)/asmlibrary.asm -o $(OBJ)/asmlibrary.o
+	$(NASM) -f elf $(ARCH)/a.asm -o $(OBJ)/a.o
+	$(NASM) -f elf $(ARCH)/scheduler.asm -o $(OBJ)/scheduler.o
+	$(NASM) -f elf $(ARCH)/AP_Bootup.asm -o $(OBJ)/AP_Bootup.o
 	$(AS) $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o
 
 build-kernel: $(KERNEL) linker.ld

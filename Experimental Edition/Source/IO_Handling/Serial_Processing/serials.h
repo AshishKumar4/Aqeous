@@ -25,6 +25,6 @@ typedef struct __attribute__((packed)) serials_o_struct
   struct serials_o_struct* next;
 }serials_o_struct_t;
 
-void Serial_input(char* str, uint32_t length, uint32_t INPUT_FLAG, uint32_t task, uint32_t shell_kill, serials_i_struct_t** q_start, serials_i_struct_t** q_end);
+void Serial_input(char* str, uint32_t length, uint32_t INPUT_FLAG, uint32_t task, uint32_t shell_kill, serials_i_struct_t** q_start, serials_i_struct_t** q_end, uint32_t* queue_counter);
 
 #endif

@@ -4,6 +4,11 @@
 #include <common.h>
 #include <stdint.h>
 
+extern void switcher();
+extern void switcher_manual();
+extern void lgdt(void *);
+extern void lidt(void *);
+
 typedef uint64_t gdt_entry_t;
 
 typedef uint16_t gdt_ptr_t[3];
@@ -130,5 +135,17 @@ typedef volatile struct __tss_struct
 
 } tss_struct_t;
 
+void gdt_set_gate(int num,uint32_t base,uint32_t limit,uint8_t access,uint16_t gran, uint64_t* gdt_base);
+
+static void idtSetEntry(int num, uint32_t base, uint32_t sel, uint32_t flags, uint64_t* idt_base);
+
+void AP_gdt_Setup(uint32_t* gdt, uint32_t* gdtr);
+
+void AP_idt_Setup(uint32_t* idt, uint32_t* idtr);
+
+extern void pmode_AP_code();
+extern void pmode_AP_code_end();
+extern void INTbasedPmodeTrampoline();
+void test_handler();
 
 #endif

@@ -8,6 +8,8 @@
 #include "MManager\mmanagerSys.h"
 
 #include "virt_mm\paging.h"
+#include "Scheduler\Scheduler.h"
+#include "tasking.h"
 
 /*
 	[0-4MB] = KERNEL
@@ -15,7 +17,7 @@
 	[8-12MB] = FRAME STACK FOR PHYSICAL FRAME ALLOCATION
 	[12-14MB] = MMAD Structures
 	[14-16MB] = RESERVED
-	[>3GB] = RESERVED
+	[>3GB] = RESERVED.
 */
 
 void memmap_generator()
@@ -98,12 +100,13 @@ uint32_t phy_alloc4K()
 	uint32_t addr;
 	back:
 	addr = pop_frameStack()*4096;
-	if(*(uint32_t*)(get_pageEntry(addr)) & (uint32_t)CUSTOM_PTE_AVAIL_1)
-	goto back;
+	if((*(uint32_t*)(get_pageEntry(addr))) & (uint32_t)CUSTOM_PTE_AVAIL_1)	goto back;
+	*((uint32_t*)(get_pageEntry(addr))) |= CUSTOM_PTE_AVAIL_1 | CUSTOM_PTE_AVAIL_2;
+
 	return addr;
 }
 
-void Setup_PhyMEM()     //Sets up the allocation buffers for kernel memory address space (System Directory)
+void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation buffers for kernel memory address space (System Directory)
 {
 	uint32_t new_buff = (uint32_t)system_pdirCap->csrb_f; //Allocate 4kb space.    Free blocks
 	CustomCSRB_M_header_t* nb_f = (CustomCSRB_M_header_t*)new_buff;
@@ -161,9 +164,17 @@ void* pmem(uint32_t size)
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
 	PageDirectory_t* dir = system_dir;
 
-	mmads_stack_end = ((task_t*)current_task)->process;
-	++mmads_stack_end;
-	++mmads_stack_size;
+	size = ROUNDUP(size,4);
+
+	SchedulerKits_t* kit = Get_Scheduler();
+
+	if(multitasking_ON)
+	{
+		mmads_stack_end = ((task_t*)(kit->current_task))->process;
+		++mmads_stack_end;
+		++mmads_stack_size;
+	}
+
 	//SwitchTo_SysDir();
 
 	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
@@ -199,6 +210,7 @@ void* pmem(uint32_t size)
 			++csrb_u->entries;
 			if(!(((uint32_t)(tmp) + 16)%4096))
 			{
+	//			printf("\n\n\n\t\t%gNEW CSRB MADE%g",3,9);
 				tmp->addr = (uint32_t*)phy_alloc4K();
 				CustomCSRB_M_t* tmp2 = tmp;
 				tmp = (CustomCSRB_M_t*)tmp->addr;
@@ -232,6 +244,10 @@ void* pmem(uint32_t size)
 			pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(tentry);
 			pg = &pt->page_entry[0];
 		}
+		if(*pg & CUSTOM_PTE_AVAIL_2)
+		{
+			pmem(size);
+		}
 		*pg |= 1027 | CUSTOM_PTE_AVAIL_2;
 		++pg;
 	}
@@ -261,11 +277,12 @@ void pfree(void* addr)
 	CustomCSRB_M_t* tmu = (CustomCSRB_M_t*)head_u;
 	//printf("\n%x %x",csrb_u->entries,csrb_f->entries);
 //	return;
-	for(uint32_t i = 0; i < csrb_u->entries; i++)
+	for(uint32_t i = 0; i < csrb_u->entries*2; i++)
 	{
 		tmu = (CustomCSRB_M_t*)tmu->addr;
-		//printf("\tA%x Ax%x Sx%x ",address, tmu->begin, tmu->size);
-		if(tmu->begin == address)
+		//printf("%gAx%g",10, 0);
+	//	printf("%gA%xBx%x %g ",10, i, csrb_u->entries,0);
+		if(tmu->begin <= address && tmu->size + tmu->begin > address)
 		{
 			tmf = (CustomCSRB_M_t*)csrb_f->tail;
 			tmf->addr = (uint32_t*)tmf;
@@ -276,6 +293,7 @@ void pfree(void* addr)
 			++tmf;
 			if(!(((uint32_t)(tmf) + 16)%4096))
 			{
+		//		printf("\n\n\n\t\t%gNEW CSRB SWITCHED%g",3,0);
 				tmf->addr = (uint32_t*)phy_alloc4K();
 				CustomCSRB_M_t* tmp2 =tmf;
 				tmf = (CustomCSRB_M_t*)tmf->addr;
@@ -285,7 +303,8 @@ void pfree(void* addr)
 			}
 			tmf->addr = csrb_f->head;
 			csrb_f->tail = (uint32_t*)tmf;
-			memset((void*)tmu->begin, 0, tmu->size);
+	//		memset((void*)tmu->begin, 0, tmu->size);
+	//		printf("\n\n\n\t\t%gAx tmu->begin: %x tmu->size: %x%g",10,tmu->begin, tmu->size, 0);
 			tmu->begin = 0;
 			tmu->size = 0;
 			tmu->reserved = 1;
@@ -307,8 +326,8 @@ inline uint32_t pmalloc()
    return mem;
 }
 
-const uint32_t mtalc_start = 220*1024*1024;
-const uint32_t mtalc_end = 500*1024*1024;
+const uint32_t mtalc_start = 520*1024*1024;
+const uint32_t mtalc_end = 700*1024*1024;
 
 uint32_t mtalloc(uint32_t pages)
 {
@@ -337,7 +356,8 @@ uint32_t mtalloc(uint32_t pages)
       }
       ++table_entry;
    }
-   _printf("\nCould not find memory, sorry. Try kmalloc()");
+   printf("\nCould not find memory, sorry. Try kmalloc()");
+	 while(1);
    return (uint32_t)kmalloc(pages*4096);
    //_printf("\n%x %x", PAGE_GET_PHYSICAL_ADDRESS(page), mtalc_start);
 }

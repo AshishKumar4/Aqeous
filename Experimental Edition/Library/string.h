@@ -39,7 +39,7 @@ inline int memcmp(const void *_s1, const void *_s2, size_t _n)
 	return 0;
 }
 
-inline void *memcpy(void * _dest, const void *_src, size_t _n)
+void *memcpy(void * _dest, const void *_src, size_t _n)
 {
     char *sp = (char*) _src;
     char *dp = (char*) _dest;
@@ -63,7 +63,7 @@ inline void* memmove(void* dstptr, const void* srcptr, size_t size)
 }
 
 
-inline void memset(void *_s, int _c, size_t _n)
+void memset(void *_s, int _c, size_t _n)
 {
     char *temp = (char*) _s;
     for ( ; _n != 0; _n--) {

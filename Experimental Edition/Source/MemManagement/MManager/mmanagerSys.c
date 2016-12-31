@@ -16,13 +16,13 @@ void Setup_MMADS()
 {
 	MMADS_Process = create_process("MMADS", 0, 1, kernel_proc);
 	MMADS_csrbTweakerThread = create_task("MMADS_csrbTweaker",MMADS_csrbTweaker, 0, 0x202, MMADS_Process);
+	Activate_task_direct(MMADS_csrbTweakerThread);
 	mmads_stack_start = 12*1024*1024; //12th MB
 	mmads_stack_end = mmads_stack_start;
 }
 
 void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 {
-
 	CustomCSRB_M_t* tt;
 	CustomCSRB_M_t* tl;
 	Process_t* process;
@@ -30,6 +30,7 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 	{
 		if(mmads_stack_size)
 		{
+			//printf("\nMMADS");
 			--mmads_stack_end;
 			--mmads_stack_size;
 			process = mmads_stack_end;

@@ -29,7 +29,7 @@ typedef struct __attribute__((packed)) PageDirectory
 PageDirectory_t* system_dir;
 PageDirectory_t* _cur_dir,* _prev_dir;
 
-typedef struct __attribute__((packed)) PageTable 
+typedef struct __attribute__((packed)) PageTable
 {
     page_t page_entry[PAGES_PER_TABLE];
 }PageTable_t;
@@ -80,6 +80,7 @@ enum PAGE_PDE_FLAGS
    	I86_PDE_FRAME			=	0x7FFFF000 	//1111111111111111111000000000000
 };
 
+void SystemDir_Mapper();
 
 void Setup_SystemDir();
 

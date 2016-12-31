@@ -1,8 +1,8 @@
 #ifndef MEM_H
 #define MEM_H
 
-#include "phy_mm/mem.h"
-#include "virt_mm/vmem.h"
+#include "phy_mm\mem.h"
+#include "virt_mm\vmem.h"
 #include "stdio.h"
 #include "math.h"
 #include "string.h"

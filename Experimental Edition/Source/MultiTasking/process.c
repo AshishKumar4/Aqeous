@@ -13,7 +13,7 @@ uint32_t pidcounter = 1;
 Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process_t* parent)  /// Create a New Task for a given Process
 {
   Process_t* New_Proc = (Process_t*)mtalloc(1);
-  
+
   PrTbl_entry(main_prdir, New_Proc);
 
   New_Proc->priority = priority;
@@ -29,6 +29,7 @@ Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process
   else
   {
     New_Proc->pgdir = (uint32_t)pgdir_maker();
+
     Kernel_Mapper((PageDirectory_t*)New_Proc->pgdir);
     map((uint32_t)New_Proc,4096,(PageDirectory_t*)New_Proc->pgdir);
   }

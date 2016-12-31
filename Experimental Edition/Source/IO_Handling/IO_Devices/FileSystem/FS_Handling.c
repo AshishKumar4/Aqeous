@@ -74,7 +74,8 @@ void FS_Worker(uint32_t job, char* fname)
 void FS_Load_File()
 {
   /* Locations of all important structures */
-  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)current_task)->process)->code + (4*((task_t*)current_task)->task_id));
+  SchedulerKits_t* kit = Get_Scheduler();
+  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)kit->current_task)->process)->code + (4*((task_t*)kit->current_task)->task_id));
   parallels_i_struct_t* parallels_struct_ = (parallels_i_struct_t*)((std_io_struct_t*)io_struct_)->type_io_struct;
   FS_i_handle_t* specific_struct_ = (FS_i_handle_t*)((parallels_i_struct_t*)parallels_struct_)->specific_struct;
   char* name = specific_struct_->file_name;
@@ -142,8 +143,9 @@ void FS_Load_File()
 
 void FS_Read_Proc()
 {
+  SchedulerKits_t* kit = Get_Scheduler();
   /* Locations of all important structures */
-  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)current_task)->process)->code + (4*((task_t*)current_task)->task_id));
+  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)kit->current_task)->process)->code + (4*((task_t*)kit->current_task)->task_id));
   parallels_i_struct_t* parallels_struct_ = (parallels_i_struct_t*)((std_io_struct_t*)io_struct_)->type_io_struct;
   FS_i_handle_t* specific_struct_ = (FS_i_handle_t*)((parallels_i_struct_t*)parallels_struct_)->specific_struct;
   //File_Header_t* (*File_Header_Creator_local)(File_t*, uint16_t);
@@ -259,8 +261,9 @@ void FS_Read_Proc()
 
 void FS_Write_Proc()
 {
+  SchedulerKits_t* kit = Get_Scheduler();
   /* Locations of all important structures */
-  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)current_task)->process)->code + (4*((task_t*)current_task)->task_id));
+  std_io_struct_t* io_struct_ = (std_io_struct_t*)(((Process_t*)((task_t*)kit->current_task)->process)->code + (4*((task_t*)kit->current_task)->task_id));
   parallels_o_struct_t* parallels_struct_ = (parallels_o_struct_t*)((std_io_struct_t*)io_struct_)->type_io_struct;
   FS_o_handle_t* specific_struct_ = (FS_o_handle_t*)((parallels_o_struct_t*)parallels_struct_)->specific_struct;
   File_Header_t* (*File_Header_Creator_local)(File_t*, uint16_t);

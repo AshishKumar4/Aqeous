@@ -25,9 +25,11 @@ void init_shell()
 // (uint16_t*)VGA_buffer_location;
 //  VGA_buffer_ptr = VGA_buffer;
 
+//printf("\nASD %x %x", &consolerow, &consolecolumn);
 	consolerow = 0;
 	consolecolumn = 0;
 //  console_buffer = vga_mem;
+//printf("\nASD");
 	memset_fast((void*)console_dbuffer, 0, 4194304);
 	VGA_size = VGA_WIDTH*VGA_HEIGHT/2;
 	shell_buf = (char*)kmalloc(4096);
@@ -39,6 +41,7 @@ void init_shell()
 	memset_faster((uint32_t*)CSI_mem_start, 0, 18);
 	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 	tot_entries = (uint32_t*)&Main_CSI_struct->total_entries;
+	memset(console_buffer,0,VGA_size*4);
 	console_manager_init();
 }
 
@@ -52,11 +55,7 @@ void __attribute__((optimize("O0"))) Shell_Double_buffer()
 		 //TODO: COPY THE VGA_BUFFER TO THE ACTUAL VGA BUFFER (console_buffer)
 		 _s = (uint32_t*)console_buffer;
 		 _c = (uint32_t*)console_dbuffer;
-		 /*
-		 for ( int _n = VGA_size; _n != 0; _n--)
-		 {
-			*_s++ = *_c++;
-		 }*/
+
 		 memcpy_rep(_s,_c,VGA_size);
 		 //asm volatile("cli");
 		 if(console_skip)
@@ -66,12 +65,8 @@ void __attribute__((optimize("O0"))) Shell_Double_buffer()
 			console_skip = 0;
 			if((uint32_t)console_dbuffer >= console_dbuffer_limit)   //TODO: Make the console buffer mapping in such a way so that this method isnt required.
 			{
-				 console_dbuffer = (uint16_t*)console_dbuffer_original;
-				 _s = (uint32_t*)console_dbuffer;
-				 /*for ( int _n = 4194304; _n != 0; _n--)
-				 {
-					*_s++ = 0;
-				}*/
+				console_dbuffer = (uint16_t*)console_dbuffer_original;
+				_s = (uint32_t*)console_dbuffer;
 				_c = console_dbuffer_limit-VGA_size;
 				memcpy_rep(_s, _c, VGA_size);
 				memset_sse(_s, 0, (4194304-VGA_size)/8);
@@ -151,12 +146,14 @@ void Shell()
 	{
 		if(shell_awake)
 		{
-			_printf("\n%s>",curr_dir.full_name);
+			_printf("\n%g%s%g>%g",12,curr_dir.full_name,10,11);
 			//_printf("\n>");
 			while(!shell_in)
 			{
+		//		printf("B%x--",KitList[1].reached_bottom);
 				asm volatile("int $50");
 			}
+			printf("%g",15);
 			//asm volatile("cli");
 			//console_manager((char*)shell_buf);
 			Shell_command_locator((char*)shell_buf);
@@ -175,7 +172,7 @@ void Shell_sleep()  //TODO: Make the Shell task to sleep.
 	if(!shell_sleeping)
 	{
 		uint32_t* shell_place_holder = (uint32_t*)Shell_task->active;
-		*shell_place_holder = (uint32_t)Spurious_task;
+		*shell_place_holder = (uint32_t)Get_Scheduler()->Spurious_task;
 		Shell_task->active = 0;
 		shell_awake = 0;
 	}
@@ -221,6 +218,7 @@ const char* space = " ";
 int Shell_command_locator(char *inst)
 {
 	 uint32_t tmp = 0;
+
 	 char* tmpstr = strtok(inst, " ");
 	 //uint32_t spaces = stroccr(inst, ' ');
 	 //int CSI_entries_ptr = 0;
@@ -234,7 +232,7 @@ int Shell_command_locator(char *inst)
 				 tmp += (-CSI_entries_ptr)*(i+1);
 }*/
 	 int i;
-	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )
+	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
 	 {
 			if((uint32_t)tmpstr[i] >= 97)
 				 tmp += (((uint32_t)tmpstr[i]) - 97)*(i+1);
@@ -244,7 +242,7 @@ int Shell_command_locator(char *inst)
 	 if(tmp <= 2048)
 	 {
 			uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
-			if(ptr)
+			if(!strcmp(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
 				 /*
@@ -296,7 +294,7 @@ int Shell_command_locator(char *inst)
 			}
 			else
 			{
-					_printf("\n Command Not Recognized! type help for help\n"); //TODO: Search within other possible files/executables like in the PATH string.
+					_printf("\n Command Not Recognized! type help for help %x\n", tmpstr ); //TODO: Search within other possible files/executables like in the PATH string.
 					return -1;
 			}
 	 }
@@ -373,5 +371,6 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_rfl, 60, 0, "rfl");
 	 Shell_Add_Commands(Command_editfl, 201, 0, "editfl");
 	 Shell_Add_Commands(Command_cp, 32, 0, "cp");
+	 Shell_Add_Commands(Command_aptest, 307, 0, "aptest");
 	 memset_faster((uint32_t*)CSI_mem_start, 0, 66);
 }

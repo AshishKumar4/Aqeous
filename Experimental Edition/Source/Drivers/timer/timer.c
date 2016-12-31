@@ -24,29 +24,29 @@
     //register_interrupt_handler(IRQ8,timer_task);
  }
 
-void apic_start_timer()
+void apic_start_timer(uint32_t base)
 {
     // Tell APIC timer to use divider 4
-    localapic_write(LAPIC_TDCR, 0x3);
+    localapic_write(base, LAPIC_TDCR, 0x3);
 
     // Prepare the PIT to sleep for 10ms (10000µs)
     //pit_prepare_sleep(10000);
 
     // Set APIC init counter to -1
-    localapic_write(LAPIC_TICR, 0xFFFFFFFF);
+    localapic_write(base, LAPIC_TICR, 0xFFFFFFFF);
 
     // Perform PIT-supported sleep
     //pit_perform_sleep();
     // Stop the APIC timer
-    localapic_write(LAPIC_TIMER, 0x10000);
+    localapic_write(base, LAPIC_TIMER, 0x10000);
 
     // Now we know how often the APIC timer has ticked in 10ms
   //  uint32_t ticksIn10ms = 0xFFFFFFFF - localapic_read(LAPIC_TCCR);
 
     // Start timer as periodic on IRQ 50, divider 4, with the number of ticks we counted
-    localapic_write(LAPIC_TIMER, 51 | 0x00000); //One - Shot
-    localapic_write(LAPIC_TDCR, 0x3);
-    localapic_write(LAPIC_TICR, 1);
+    localapic_write(base, LAPIC_TIMER, 51 | 0x00000); //One - Shot
+    localapic_write(base, LAPIC_TDCR, 0x3);
+    localapic_write(base, LAPIC_TICR, 1);
 }
 
  /**PIT TIMER, working**/
@@ -77,7 +77,7 @@ void delay1(uint32_t ms)
 {
     srandInit();
     float volatile k=0;
-    for(uint32_t i=0; i<ms*1024;i++)
+    for(uint32_t i=0; i<ms*512;i++)
       {
         srand(i+100);
         for(int j=0; j<500; j++)

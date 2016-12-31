@@ -8,11 +8,13 @@
 
 #include <vga.h>
 
+
 void console_init(void)
 {
 	consolerow = 0;
 	consolecolumn = 0;
-	console_color = make_color(COLOR_LIGHT_GREY, COLOR_BLACK);
+	console_color = make_color(COLOR_WHITE, COLOR_BLACK);
+	default_console_color = console_color;
 	console_buffer = VGA_MEMORY;
 	for ( size_t y = 0; y < VGA_HEIGHT; y++ )
 	{
@@ -99,7 +101,8 @@ int putchar(int ic)
 void console_write_dec(uint32_t in)
 {
     uint32_t d=1,ln=0,b=in;
-    char a[40];
+    //char a[40];
+		if(!b) ++ln;
     for(uint32_t i=0;b;i++)
     {
         b=b/10;
@@ -111,12 +114,12 @@ void console_write_dec(uint32_t in)
     uint32_t i;
     for(i=0;i<ln;i++)
     {
-        a[i]=48+b/d;
+        putchar(48+b/d);
         b=b%d;
         d=d/10;
     }
-    a[i]='\0';
-    console_writestring(a);
+    //a[i]='\0';
+    //console_writestring(a);
 }
 
 void printint(uint32_t in)
@@ -152,7 +155,7 @@ void _console_putentryat(char c, uint8_t color, size_t x, size_t y)
 	console_dbuffer[index] = make_vgaentry(c, color);
 }
 
-int __attribute__((optimize("O0"))) _putchar(char ic)
+int __attribute__((optimize("O3"))) _putchar(char ic)
 {
 	if(ic == '\n')
 	{
@@ -237,7 +240,8 @@ int _putchar_old(int ic)
 void _console_write_dec(uint32_t in)
 {
     uint32_t d=1,ln=0,b=in;
-    char a[40];
+		if(!b) ++ln;
+
     for(uint32_t i=0;b;i++)
     {
         b=b/10;
@@ -249,12 +253,12 @@ void _console_write_dec(uint32_t in)
     uint32_t i;
     for(i=0;i<ln;i++)
     {
-        a[i]=48+b/d;
+        _putchar(48+b/d);
         b=b%d;
         d=d/10;
     }
-    a[i]='\0';
-    _printf(a);
+  //  a[i]='\0';
+  //  _printf(a);
 }
 
 void backspace()
@@ -351,6 +355,15 @@ int _printf(const char* restrict format, ...)
             format++;
             uint32_t c = va_arg (parameters, uint32_t);
             _printint(c);
+        }
+        else if(*format == 'p'||*format == 'g') //color
+        {
+            format++;
+            int c = va_arg (parameters, int);
+						if(!c)
+							console_color = default_console_color;
+						else
+							console_color = c;
         }
 		else
 		{

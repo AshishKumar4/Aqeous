@@ -5,6 +5,7 @@
 #include "string.h"
 
 #include "ext2/ext2_fs.h"
+#include "apic.h"
 
 void Command_init()
 {
@@ -22,6 +23,10 @@ void Command_init()
   {
     AqFS_burn();
     Init_fs();
+  }
+  else if(!strcmp("apic", device_name))
+  {
+    MADTapic_parse();
   }
   else
   {

@@ -1,5 +1,15 @@
-#include "cpuid.h"
+#include "cpuid_c.h"
 #include "stdio.h"
+
+/*
+bool cpuHasMSR()
+{
+   uint32_t a, d; // eax, edx
+   cpuid(1, &a, &d);
+   return d & CPUID_FLAG_MSR;
+}
+*/
+
 
 /** issue a complete request, storing general registers output as a string
  */

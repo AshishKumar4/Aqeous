@@ -37,7 +37,7 @@ void Mouse_Plot();
 
 inline void write_vesa(unsigned long int in,int x,int y);
 
-//void Func_Plot(int x1, int y1, int x2, int y2, int C, int sz, intfunc2_t func);
+void Func_Plot(int x1, int y1, int x2, int y2, int C, int sz, intfunc2_t func);
 
 void line_plot(int x0, int y0, int x1, int y1, int color, int sz);
 

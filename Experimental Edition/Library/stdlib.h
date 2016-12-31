@@ -11,6 +11,8 @@ void abort(void)
 	__builtin_unreachable();
 }
 
+int ByteSequence_Replace(uint32_t magic, uint32_t nbytes, uint32_t replacement, uint32_t mbytes, uint32_t* start, uint32_t* end);
+
 uint32_t StrToInt(char *str)
 {
 		if(!str) return 0;

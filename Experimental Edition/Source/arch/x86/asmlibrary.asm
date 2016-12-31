@@ -5,6 +5,10 @@ section .text
 [EXTERN vga_mem]
 [EXTERN buff]
 [EXTERN mouse_buff]
+[GLOBAL trial_code]
+
+trial_code:
+  hlt
 
 [GLOBAL Enable_SSE]
 

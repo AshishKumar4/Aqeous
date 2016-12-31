@@ -7,6 +7,16 @@
 uint32_t APIC_LOCAL_BASE=0xfee00000;
 uint32_t APIC_IO_BASE=0xfec00000; //ONLY FOR QEMU AND BOCHS
 uint32_t counter=0;
+
+extern void APIC_Error_vector();
+extern void APIC_Error_vector_end();
+
+void AP_init_LAPIC();
+
+#define IA32_APIC_BASE_MSR 0x1B
+#define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
+#define IA32_APIC_BASE_MSR_ENABLE 0x800
+
 // ------------------------------------------------------------------------------------------------
 // Local APIC Registers
 #define LAPIC_ID                        0x0020  // Local APIC ID
@@ -108,9 +118,14 @@ ioapic_entry_t volatile *IOAPIC_entry;
 lapic_entry_t volatile *LAPIC_entry;
 isd_entry_t volatile *ISD_entry;
 
-uint32_t localapic_read(uint32_t reg);
-void localapic_write(uint32_t reg, uint32_t value);
-void localapic_write_with_mask(uint32_t reg, uint32_t mask, uint32_t value);
+
+void BSP_init_LAPIC(uint32_t base);
+
+void MADTapic_parse();
+
+uint32_t localapic_read(uint32_t base, uint32_t reg);
+void localapic_write(uint32_t base, uint32_t reg, uint32_t value);
+void localapic_write_with_mask(uint32_t base, uint32_t reg, uint32_t mask, uint32_t value);
 void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector);
 void ioapic_write(uint32_t reg, uint32_t value);
 uint32_t ioapic_read(uint32_t reg);

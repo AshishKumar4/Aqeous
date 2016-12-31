@@ -10,8 +10,10 @@
 #include "stdint.h"
 #include "fs.h"
 
+#include "Scheduler\Scheduler.h"
+
 // This structure defines a 'task' - a process.
-typedef struct _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
+typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
 {
     uint32_t esp;
     uint32_t pId;                // Process ID.
@@ -25,11 +27,12 @@ typedef struct _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make cha
     uint32_t main_pgdir;
     uint32_t mem_used;
     uint32_t task_id;
-    char* name; //Parent Process name
+    uint32_t* Scheduler;
+    char name[50]; //Parent Process name
 }task_t;
 
 task_t *Kernel_task;
-task_t *Idle_task, *Shell_task, *Spurious_task, *SAS_booster, *SAS_eraser, *Shell_Istream_task, *Shell_Ostream_task;
+task_t *Idle_task, *Shell_task, *Shell_Istream_task, *Shell_Ostream_task;
 
 typedef struct __attribute__((packed)) task_table
 {
@@ -41,6 +44,8 @@ typedef struct __attribute__((packed)) task_table
 void Activate_task(task_table_t* task_entry);
 
 void Activate_task_direct(task_t* task);
+
+void Activate_task_direct_SP(task_t* task, SchedulerKits_t* kit);
 
 void kill();
 

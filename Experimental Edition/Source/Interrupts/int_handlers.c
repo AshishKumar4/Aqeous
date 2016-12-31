@@ -1,19 +1,21 @@
 #include "descriptors.h"
 #include "stdio.h"
 #include "string.h"
-#include "APIC.h"
+#include "apic.h"
 #include "timer.h"
-#include "Keyboard/keyboard.h"
+#include "keyboard.h"
 #include "mouse.h"
 #include "stdlib.h"
-#include "MemManagement/virt_mm/vmem.h"
-#include "MemManagement/virt_mm/paging.h"
-#include "MemManagement/phy_mm/mem.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
+#include "phy_mm/mem.h"
 #include "shell.h"
 #include "tasking.h"
 #include "console.h"
 #include "sys.h"
 #include "graphics.h"
+
+#include "cpu/cpu.h"
 
 uint32_t* LAPIC_EOI_send = (uint32_t*)(0x00b0+0xfee00000);
 extern void switcher();
@@ -21,6 +23,7 @@ extern void switcher();
 void divByZero_handler()
 {
   printf("\nFault1");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -28,10 +31,14 @@ void divByZero_handler()
 
 
 void debug_handler()
-{
-  printf("\nFault2");
-  Shell_Double_buffer();
-  while(1);
+{/*
+  uint32_t i;
+  i = *(uint32_t*)(0xfee00020);
+  i = i>>24;
+  printf("\nFault2 %x", i);
+  asm volatile("hlt");
+  //Shell_Double_buffer();
+  //while(1);*/
   asm volatile("iret");
 }
 
@@ -65,7 +72,7 @@ void overflow_handler()
 
 void outOfBounds_handler()
 {
-  printf("\nFault6");
+  printf("\nFault6 %x", Get_Scheduler()->identity);
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -74,7 +81,7 @@ void outOfBounds_handler()
 
 void invalidInstr_handler()
 {
-  printf("\nFault7");
+  printf("\nFault7 %x", Get_Scheduler()->identity);
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -134,23 +141,34 @@ void stackFault_handler()
   asm volatile("iret");
 }
 
-void generalProtectionFault_handler(registers_t regs)
+int avc = 0;
+
+void __attribute__((optimize("O0"))) generalProtectionFault_handler()
 {
-  asm volatile("cli");
-  printf("\nGeneral Protection Fault! ticks: %x Ax%x Bx%x %x %x",tick,regs.err_code,regs.eip,regs.cs,regs.eflags);
+  asm volatile("cli;\
+                pop %%eax; pop %%eax; pop %%eax; pop %%eax;\
+                mov %%eax, %0;":"=r"(avc)::"memory");
+  uint32_t i;
+  i = *(uint32_t*)(0xfee00020);
+  i = i>>24;
+  printf("\nGeneral Protection Fault! %x %x",i, avc);
+  asm volatile("mov %0, %%eax;\
+                hlt"::"r"(avc):"memory");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
 }
 
-void pageFault_handler(registers_t regs)
+void pageFault_handler()
 {
     asm volatile("cli");
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
-    uint32_t faulting_address;
-    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-
+  //  uint32_t faulting_address;
+  /*  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");
+    printf("\nFault");
+    Shell_Double_buffer();
+    while(1);
     // The error code gives us details of what happened.
     int present   = !(regs.err_code & 0x1); // Page not present
     int rw = regs.err_code & 0x2;           // Write operation?
@@ -176,7 +194,8 @@ void pageFault_handler(registers_t regs)
     console_write_dec(faulting_address);
     console_writestring(" - EIP: ");
     console_write_dec(regs.eip);
-    console_writestring("\n");
+    console_writestring("\n");*/
+    printf("\nPage Fault");
     Shell_Double_buffer();
     while(1);
     asm volatile("sti");
@@ -234,7 +253,8 @@ void reserved_handler()
 void PIT_handler()
 {
   asm volatile("cli");
-  outb(0x20,0x20);
+//  printf("\na-");
+//  outb(0x20,0x20);
   asm volatile("iret");
 }
 
@@ -322,26 +342,6 @@ void keyboardInterrupt_handler()
               case KEY_UP:
                 _arrow_up = 1;
                 up_input = 1;
-                /*for(;kb_buff;kb_buff--)
-                {
-                  --Istream_ptr;
-                  *Istream_ptr = 0;
-                  backspace();
-                  printf("asd");
-                }
-                char* tmp = (char*)((uint32_t)Istream_ptr);
-                --tmp;
-                kb_buff = (uint32_t)(*tmp);
-              //  --tmp;
-                tmp-=kb_buff;
-                printf("%s %x",tmp, kb_buff);
-                Shell_Double_buffer();
-                for(int i=0; i<kb_buff; i++)
-                {
-                  *(Istream_ptr) = (*tmp);
-                  ++Istream_ptr;
-                  ++tmp;
-                }*/
                 break;
               case KEY_DOWN:
                 _arrow_down = 1;
