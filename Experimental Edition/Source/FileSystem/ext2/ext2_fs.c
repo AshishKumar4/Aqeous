@@ -1,5 +1,5 @@
 #include <common.h>
-#include <ext2\ext2_fs.h>
+#include <ext2/ext2_fs.h>
 #include "ahci.h"
 
 #define TO_uint32_t(bytes)                   ((bytes) / sizeof(uint32_t))

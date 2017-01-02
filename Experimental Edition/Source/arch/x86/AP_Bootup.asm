@@ -111,8 +111,8 @@ pmode_AP_code:
   mov dword eax, 0xfee000b0
   mov dword [eax], 0
   ; Add it to the SMP System
-  int 52
-  
+  int 50
+
   hlt
 
 AP_enable_Paging:
@@ -166,7 +166,6 @@ pmode_AP_code_end:
 APIC_Error_vector:
   add dword [0x6679], 1
   hlt
-  call [0x42843240]
   ret
 
 APIC_Error_vector_end:

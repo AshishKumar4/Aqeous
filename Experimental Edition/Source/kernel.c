@@ -41,12 +41,12 @@
 #include "fonts.c"
 #include "memfunc.c"
 #include "math.c"
-#include "Intel_MP\mp.c"
+#include "Intel_MP/mp.c"
 
-#include "LocalAPIC\lapic.c"
+#include "LocalAPIC/lapic.c"
 
 //#include "std_fs.c"
-#include "ext2\ext2_fs.c"
+#include "ext2/ext2_fs.c"
 
 uint32_t initial_esp;
 uint32_t initial_ebp;

@@ -1,15 +1,15 @@
 #ifndef MEM_H
 #define MEM_H
 
-#include "phy_mm\mem.h"
-#include "virt_mm\vmem.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
 #include "stdio.h"
 #include "math.h"
 #include "string.h"
 //#include "streams.h"
-#include "CustomCSRB\csrb_custom.h"
+#include "CustomCSRB/csrb_custom.h"
 
-#include "virt_mm\paging.h"
+#include "virt_mm/paging.h"
 
 #define FRAME_STACK_START 10240*1024 //8th M
 

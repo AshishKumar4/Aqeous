@@ -1,11 +1,11 @@
-#include "phy_mm\mem.h"
-#include "virt_mm\vmem.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
 #include "stdio.h"
 #include "math.h"
 #include "string.h"
-#include "CustomCSRB\csrb_custom.h"
+#include "CustomCSRB/csrb_custom.h"
 
-#include "virt_mm\paging.h"
+#include "virt_mm/paging.h"
 
 void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for kernel memory address space (System Directory)
 {

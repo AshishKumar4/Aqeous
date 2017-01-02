@@ -1,9 +1,9 @@
 #include <ahci.h>
 #include <string.h>
 #include <sys.h>
-#include "phy_mm\mem.h"
-#include "virt_mm\vmem.h"
-#include "virt_mm\paging.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
 #include <ata.h>
 ahci_t *test1;
 /**

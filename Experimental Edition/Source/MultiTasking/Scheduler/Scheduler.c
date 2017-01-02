@@ -131,17 +131,11 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     {
       uint32_t* idt_ptr = (uint32_t*)(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16 + 48);
       // Setup a Cleaner Better IDT for all APs
-  //    idtSetEntry(, (uint32_t), 0x08, makeFlagByte(1, KERNEL_MODE), idt_ptr);
-  //    idtSetEntry(, (uint32_t), 0x08, makeFlagByte(1, KERNEL_MODE), idt_ptr);
-      idtSetEntry(52, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+  //    idtSetEntry(52, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
       idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
       idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
       idtSetEntry(13, (uint32_t)&generalProtectionFault_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
     }
-
-    kits->current_task = create_task("System_idle_task3",tbcd1, 0, 0x202, kernel_proc);
-    //kits->old_task = create_task("System_idle_task3",tbcd1, 0, 0x202, kernel_proc);
-
     ++kits;
   }
   //while(1);

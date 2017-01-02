@@ -3,9 +3,9 @@
 #include "sys.h"
 #include "pic.h"
 #include "tasking.h"
-#include "cpu\cpu.h"
+#include "cpu/cpu.h"
 
-#include "localapic\lapic.h"
+#include "localapic/lapic.h"
 
 bool check_apic()
 {

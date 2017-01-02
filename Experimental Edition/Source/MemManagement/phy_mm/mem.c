@@ -1,14 +1,14 @@
-#include "phy_mm\mem.h"
-#include "virt_mm\vmem.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
 #include "stdio.h"
 #include "math.h"
 #include "string.h"
 //#include "streams.h"
-#include "CustomCSRB\csrb_custom.h"
-#include "MManager\mmanagerSys.h"
+#include "CustomCSRB/csrb_custom.h"
+#include "MManager/mmanagerSys.h"
 
-#include "virt_mm\paging.h"
-#include "Scheduler\Scheduler.h"
+#include "virt_mm/paging.h"
+#include "Scheduler/Scheduler.h"
 #include "tasking.h"
 
 /*

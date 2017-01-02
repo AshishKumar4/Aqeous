@@ -88,7 +88,7 @@ void __attribute__((optimize("O0"))) tbcd1()
   //  ++Get_Scheduler()->tasks;
     ++adeg;
   //  printf("A1 ");
-    asm volatile("int $52");
+    asm volatile("int $50");
   }
   asm volatile("hlt":::"memory");
   while(1);
@@ -107,7 +107,7 @@ void __attribute__((optimize("O0"))) tbcd2()
   //  ++Get_Scheduler()->tasks;
     ++adeg;
   //  printf("A2 ");
-    asm volatile("int $52");
+    asm volatile("int $50");
   }
   asm volatile("hlt":::"memory");
   while(1);
@@ -127,7 +127,7 @@ void __attribute__((optimize("O0"))) tbcd3()
     ++adeg;
   //  printf("A3 ");
     //Shell_Double_buffer();
-    asm volatile("int $52");
+    asm volatile("int $50");
   }
   asm volatile("hlt":::"memory");
   while(1);

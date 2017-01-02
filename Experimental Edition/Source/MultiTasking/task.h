@@ -4,13 +4,13 @@
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
-#include "phy_mm\mem.h"
-#include "virt_mm\vmem.h"
-#include "virt_mm\paging.h"
+#include "phy_mm/mem.h"
+#include "virt_mm/vmem.h"
+#include "virt_mm/paging.h"
 #include "stdint.h"
 #include "fs.h"
 
-#include "Scheduler\Scheduler.h"
+#include "Scheduler/Scheduler.h"
 
 // This structure defines a 'task' - a process.
 typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.

@@ -1,10 +1,10 @@
 #include "cpuid_c.h"
 #include "apic.h"
-#include "cpu\cpu.h"
-#include "LocalAPIC\lapic.h"
+#include "cpu/cpu.h"
+#include "LocalAPIC/lapic.h"
 
 #include "timer.h"
-#include "Intel_MP\mp.h"
+#include "Intel_MP/mp.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -44,12 +44,6 @@ static inline void invlpg(void* m)
 }
 
 uint32_t AP_stacks = 8192;
-//uint32_t* tampoline_code = 0x2000;
-
-void test12()
-{
-  printf("\nASDAS");
-}
 
 void BasicCPU_Init()
 {
@@ -72,7 +66,6 @@ void __attribute__((optimize("O0"))) BootAPs()
 {
   memset((void*)0x1F000, 0, 4096);
   memcpy((void*)0x1F000, APIC_Error_vector, APIC_Error_vector_end - APIC_Error_vector);
-  ByteSequence_Replace(0x42843240, 4, (uint32_t)test12, 4, (uint32_t*)APIC_Error_vector, (uint32_t*)APIC_Error_vector_end);
   ByteSequence_Replace(0x6679, 2, 0x0500, 2, (uint32_t*)APIC_Error_vector, (uint32_t*)APIC_Error_vector_end);
 
   // Boot the AP's
@@ -137,7 +130,7 @@ void __attribute__((optimize("O0"))) BootAPs()
     {
     //  localapic_write(APIC_LOCAL_BASE, LAPIC_ICRHI, (j<<24));        // INIT IPI
       printf("\nReatempting INIT SIPI");
-  //    localapic_write(APIC_LOCAL_BASE, LAPIC_ICRLO, 0x00004600 | vector);     // 2nd SIPI IP
+      localapic_write(APIC_LOCAL_BASE, LAPIC_ICRLO, 0x00004600 | vector);     // 2nd SIPI IP
     }
   //  Lapic->ICR[0][0] = 0x000C4600 + vector;
   //  func_t f = vector*4096;

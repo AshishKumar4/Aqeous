@@ -2,7 +2,7 @@
 #include <descriptors.h>
 #include <sys.h>
 #include <string.h>
-#include <cpu\cpu.h>
+#include <cpu/cpu.h>
 
 
 //TODO: More optimizations
