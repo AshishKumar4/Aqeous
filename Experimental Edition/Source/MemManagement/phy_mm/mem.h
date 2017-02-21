@@ -48,7 +48,7 @@ void memmap_generator();
 
 void setup_frameStack();
 
-inline uint32_t pop_frameStack();
+uint32_t pop_frameStack();
 
 void push_frameStack(uint32_t fr);
 

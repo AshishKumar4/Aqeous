@@ -39,7 +39,7 @@ inline int memcmp(const void *_s1, const void *_s2, size_t _n)
 	return 0;
 }
 
-void *memcpy(void * _dest, const void *_src, size_t _n)
+void *memcpy(void * _dest, void *_src, size_t _n)
 {
     char *sp = (char*) _src;
     char *dp = (char*) _dest;

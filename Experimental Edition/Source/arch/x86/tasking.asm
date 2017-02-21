@@ -102,7 +102,7 @@ switcher_ksp_t:                         ; Alternate Scheduler + context swithche
 
 cw_ksp_ss_t:
 
-    mov dword eax, [0x4284ACD3]           ; Save the old page directory.
+    mov dword eax, [0x4284ACD3]           ; Save the old task.
     mov dword [0x4284ACD4], eax               ; Save the old task i.e, current task
     mov dword [eax], esp
     mov dword esp, 0x4284CD00                ; Change to some temporary stack, I dont want to take risk
@@ -118,7 +118,7 @@ cw_ksp_ss_t:
     je cw_p2_ndc_c_t
 
 
-    mov dword eax, [0x4284ACD3]
+;    mov dword eax, [0x4284ACD3]
 
     mov dword eax, [0x4284ACD3]
     mov dword esp, [eax]

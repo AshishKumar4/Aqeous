@@ -14,10 +14,10 @@
 
 void Setup_MMADS()
 {
-	MMADS_Process = create_process("MMADS", 0, 1, kernel_proc);
-	MMADS_csrbTweakerThread = create_task("MMADS_csrbTweaker",MMADS_csrbTweaker, 0, 0x202, MMADS_Process);
-	Activate_task_direct(MMADS_csrbTweakerThread);
-	mmads_stack_start = 12*1024*1024; //12th MB
+	MMADS_Process = (uint32_t*)create_process("MMADS", 0, 1, kernel_proc);
+	MMADS_csrbTweakerThread = (uint32_t*)create_task("MMADS_csrbTweaker",MMADS_csrbTweaker, 0, 0x202, (Process_t*)MMADS_Process);
+	Activate_task_direct((task_t*)MMADS_csrbTweakerThread);
+	mmads_stack_start = (uint32_t*)(12*1024*1024); //12th MB
 	mmads_stack_end = mmads_stack_start;
 }
 
@@ -33,24 +33,24 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 			//printf("\nMMADS");
 			--mmads_stack_end;
 			--mmads_stack_size;
-			process = mmads_stack_end;
-			Pdir_Capsule_t* pdcap = process->pgdir;
-			CustomCSRB_M_header_t* csrb_u = pdcap->csrb_u;
-			CustomCSRB_M_t* tmp = csrb_u->head;
+			process = (Process_t*)mmads_stack_end;
+			Pdir_Capsule_t* pdcap = (Pdir_Capsule_t*)process->pgdir;
+			CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)pdcap->csrb_u;
+			CustomCSRB_M_t* tmp = (CustomCSRB_M_t*)csrb_u->head;
 			for(;csrb_u->changed;)
 			{
-				tmp = tmp->addr;
+				tmp = (CustomCSRB_M_t*)tmp->addr;
 				if(tmp->reserved)
 				{
 					//Pop element from tail and put it here!
-					tt = csrb_u->tail;
+					tt = (CustomCSRB_M_t*)csrb_u->tail;
 					if(!(((uint32_t)(tt))%4128))	//If tail is on new page
 					{
 						tl = tt;
 						--tt;
-						tt = tt->addr;
+						tt = (CustomCSRB_M_t*)tt->addr;
 						--tt;
-						csrb_u->tail = tt;
+						csrb_u->tail = (uint32_t*)tt;
 						tmp->begin = tt->begin;
 						tmp->size = tt->size;
 						tmp->reserved = 0;
@@ -60,7 +60,7 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 					else
 					{
 						--tt;
-						csrb_u->tail = tt;
+						csrb_u->tail = (uint32_t*)tt;
 						tmp->begin = tt->begin;
 						tmp->size = tt->size;
 						tmp->reserved = 0;
@@ -70,21 +70,21 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 				}
 				++tmp;
 			}
-			CustomCSRB_M_header_t* csrb_f = pdcap->csrb_f;
-			tmp = csrb_f->head;
+			CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)pdcap->csrb_f;
+			tmp = (CustomCSRB_M_t*)csrb_f->head;
 			for(;csrb_f->changed;)
 			{
-				tmp = tmp->addr;
+				tmp = (CustomCSRB_M_t*)tmp->addr;
 				if(tmp->reserved)
 				{
-					tt = csrb_f->tail;
+					tt = (CustomCSRB_M_t*)csrb_f->tail;
 					if(!(((uint32_t)(tt))%4168))	//If tail is on new page
 					{
 						tl = tt;
 						--tt;
-						tt = tt->addr;
+						tt = (CustomCSRB_M_t*)tt->addr;
 						--tt;
-						csrb_f->tail = tt;
+						csrb_f->tail = (uint32_t*)tt;
 						tmp->begin = tt->begin;
 						tmp->size = tt->size;
 						tmp->reserved = 0;
@@ -94,7 +94,7 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 					else
 					{
 						--tt;
-						csrb_f->tail = tt;
+						csrb_f->tail = (uint32_t*)tt;
 						tmp->begin = tt->begin;
 						tmp->size = tt->size;
 						tmp->reserved = 0;

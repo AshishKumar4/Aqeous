@@ -196,7 +196,7 @@ void pageFault_handler()
     console_write_dec(regs.eip);
     console_writestring("\n");*/
     printf("\nPage Fault");
-    Shell_Double_buffer();
+  //  Shell_Double_buffer();
     while(1);
     asm volatile("sti");
     asm volatile("iret");
@@ -340,11 +340,13 @@ void keyboardInterrupt_handler()
                 kkybrd_set_leds (_numlock, _capslock, _scrolllock);
                 break;
               case KEY_UP:
-                _arrow_up = 1;
+              //  _arrow_up = 1;
                 up_input = 1;
+              //  Shell_scrollUp();
                 break;
               case KEY_DOWN:
                 _arrow_down = 1;
+              //  Shell_scrollDown();
                 break;
 
               default:

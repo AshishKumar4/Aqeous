@@ -96,6 +96,18 @@ inline uint32_t Higher32(uint64_t val)
 	return b;
 }
 
+inline uint32_t Lower16(uint32_t val)
+{
+	uint32_t a=val&0xffff;
+	return a;
+}
+
+inline uint32_t Higher16(uint32_t val)
+{
+	uint32_t b=val>>16;
+	return b;
+}
+
 #define TRUE    1  //define a few variable
 #define ON      1
 #define FALSE   0

@@ -42,22 +42,23 @@ int PrTbl_entry_i(uint32_t* proctbl, Process_t* process)
 
 int PrTbl_entry(ProcDirectory_t* prdir, Process_t* process)
 {
+  back:
     for(int i = 0; i<1024; i++)
     {
-        if(!prdir->procTables[i])
+        if(prdir->procTables[i])
         {
-            prdir->procTables[i] = (uint32_t)kmalloc(sizeof(ProcTable_t));
             ProcTable_t* prtbl = (ProcTable_t*)prdir->procTables[i];
-            for(int i = 0; i<1024; i++)
+            for(int j = 0; j<1024; j++)
             {
-                if(!prtbl->procEntrys[i])
+                if(!prtbl->procEntrys[j])
                 {
-                    prtbl->procEntrys[i] = (uint32_t)process;
+                    prtbl->procEntrys[j] = (uint32_t)process;
                     return 1;
                 }
             }
         }
     }
-
+    PrTbl_create(prdir);
+    goto back;
     return 0;
 }

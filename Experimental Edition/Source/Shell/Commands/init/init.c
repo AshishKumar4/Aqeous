@@ -6,6 +6,7 @@
 
 #include "ext2/ext2_fs.h"
 #include "apic.h"
+#include "NeuralNetwork/Neuron/neuron.h"
 
 void Command_init()
 {
@@ -28,8 +29,12 @@ void Command_init()
   {
     MADTapic_parse();
   }
+  else if(!strcmp("nn", device_name))
+  {
+    NeuralNet_init();
+  }
   else
   {
-    printf("\nNo such Device found to be initialized");
+    printf("\nNo such Device \"%s\" found to be initialized", device_name);
   }
 }

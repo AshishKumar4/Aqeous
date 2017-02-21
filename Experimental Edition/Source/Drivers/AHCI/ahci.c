@@ -486,7 +486,7 @@ int SATA_Commander(HBA_PORT *port, WORD Command, BYTE rw, DWORD buf, DWORD prdtl
     cmdtbl->prdt_entry[i].dbau = 0;
     cmdtbl->prdt_entry[i].dbc = 8*1024;
     cmdtbl->prdt_entry[i].i = 0;   // interrupt when identify complete;
-		buf += 4*1024;	// 4K words
+		buf += 8*1024;	// 4K words
   }
 
   cmdtbl->prdt_entry[i].dba = buf;

@@ -18,7 +18,7 @@ void kb_io_init()
 void kb_getline(char* str, uint32_t length)
 {
   SchedulerKits_t* kit = Get_Scheduler();
-  Serial_input(str, length, KB_INPUT_FLAG, kit->current_task, 1, (serials_i_struct_t **)&kb_Start_q, (serials_i_struct_t **)&kb_Last_q, &kb_q_elements);
+  Serial_input(str, length, KB_INPUT_FLAG, kit->current_task, 0, (serials_i_struct_t **)&kb_Start_q, (serials_i_struct_t **)&kb_Last_q, &kb_q_elements);
   asm volatile("sti;\
   int $50;");
 }

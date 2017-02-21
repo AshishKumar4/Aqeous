@@ -18,17 +18,26 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 	faster_memset((void*)stack,0,4096);
 
 	New_task_entry->next=NULL;
-	New_task_entry->test = 2;
+//	New_task_entry->test = 2;
 	//Process_t* process = process_ptr;
 
 	map((uint32_t)New_task_entry,8192*2,(PageDirectory_t*)process->pgdir);
 
-	process->last_task_entry->next = New_task_entry;
-	process->last_task_entry = New_task_entry;
+	if(!process->first_task_entry)
+	{
+		process->first_task_entry = New_task_entry;
+		process->last_task_entry = New_task_entry;
+		New_task_entry->back = New_task_entry;
+	}
+	else
+	{
+		process->last_task_entry->next = New_task_entry;
+		New_task_entry->back = process->last_task_entry;
+		process->last_task_entry = New_task_entry;
+	}
+
 	++process->total_tasks;
 	++process->counter;
-
-
 
 	strcpy(New_task->name, name);
 //	New_task->name = name;
@@ -71,7 +80,7 @@ void Activate_task(task_table_t* task_entry) /// Put a given Task_entry into an 
 	task_t* task = &task_entry->task;
 	//TODO: Complete the algorithm to put a task into appropriate queue based on its priority, to the END of the QUEUE
 	SchedulerKits_t* kit = FindLightestScheduler();
-	task->Scheduler = kit;
+	task->Scheduler = (uint32_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -98,7 +107,7 @@ void Activate_task_direct(task_t* task) /// Put a given Task_entry into an appro
 	//TODO: Complete the algorithm to put a task into appropriate queue based on its priority, to the END of the QUEUE
 
 	SchedulerKits_t* kit = FindLightestScheduler();
-	task->Scheduler = kit;
+	task->Scheduler = (uint32_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -125,7 +134,7 @@ void Activate_task_direct_SP(task_t* task, SchedulerKits_t* kit) /// Put a given
 {
 	//TODO: Complete the algorithm to put a task into appropriate queue based on its priority, to the END of the QUEUE
 
-	task->Scheduler = kit;
+	task->Scheduler = (uint32_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -154,20 +163,37 @@ void kill()	// Know on which core the kill function has been called. Then get th
 	SchedulerKits_t* kit = Get_Scheduler();//Get the Scheduler of the core on which this instruction is executed.
 	uint32_t *place_holder = (uint32_t *)((task_t*)kit->current_task)->active;
 	*place_holder = (uint32_t)kit->Spurious_task;
+
+	Process_t* proc = ((task_t*)kit->current_task)->process;
+	--proc->total_tasks;
+	task_table_t* tbl = kit->current_task;
+	tbl->back->next = tbl->next;
+	tbl->next->back = tbl->back;
+
 	memset_fast((void *)kit->current_task, 0, 16);
 	mtfree(kit->current_task, 2);
 	kit->current_task = (uint32_t)Idle_task;
 	--kit->tasks;
-	kit->curr_dir = system_dir;
+	kit->curr_dir = (uint32_t*)system_dir;
 	asm volatile("int $50");
 	while(1);
 }
 
-void __attribute__((optimize("O0"))) test_ab(uint32_t s, uint32_t d)
+void _kill(task_t* task)	// Know on which core the kill function has been called. Then get the scheduler of the core and get the current_task
 {
-	uint32_t a = s;
-	uint32_t b = d;
-	printf("%d %d",a,b);
+	SchedulerKits_t* kit = Get_Scheduler();//Get the Scheduler of the core on which this instruction is executed.
+	uint32_t *place_holder = (uint32_t *)task->active;
+	*place_holder = (uint32_t)kit->Spurious_task;
+
+	Process_t* proc = task->process;
+	--proc->total_tasks;
+	task_table_t* tbl = task;
+	tbl->back->next = tbl->next;
+	tbl->next->back = tbl->back;
+
+	memset_fast((void *)task, 0, 16);
+	mtfree(task, 2);
+	--kit->tasks;
 }
 
 void kill_with_func(func_t func)
@@ -205,7 +231,7 @@ void Priority_promoter(task_t* task)
 {
 	if(task->active)
 	{
-		SchedulerKits_t* kit = task->Scheduler;
+		SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
 		uint32_t volatile *place_holder = (uint32_t*)task->active;
 		*place_holder = (uint32_t)kit->Spurious_task; //Spurious task is a task which would kill itself to remove the void.
 
@@ -241,7 +267,7 @@ void Task_sleep(task_t* task)
 
 inline void Bottom_task_remover(task_t* task)
 {
-	SchedulerKits_t* kit = task->Scheduler;
+	SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
 	uint32_t* tmp = kit->bottom_queue + (*kit->bottom_queue);
 	if(*tmp == (uint32_t)task)
 	{
@@ -254,7 +280,7 @@ void Task_wakeup(task_t* task)
 	if(!task->active)
 	{
 		//TODO: Complete the algorithm to put a task into appropriate queue based on its priority, to the END of the QUEUE
-		SchedulerKits_t* kit = task->Scheduler;
+		SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
 		uint32_t* _q=kit->queue_start;
 		//printf("\nAx%x ",_q);
 		_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -283,7 +309,7 @@ void Priority_changer(task_t* task, uint32_t new_priority)
 {
 	if(task->active)
 	{
-		SchedulerKits_t* kit = task->Scheduler;
+		SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
 
 		uint32_t volatile *place_holder = (uint32_t*)task->active;
 		*place_holder = (uint32_t)kit->Spurious_task; //Spurious task is a task which would kill itself to remove the void.

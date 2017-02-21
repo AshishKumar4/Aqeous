@@ -17,7 +17,7 @@ static inline void hpet_writel(unsigned int d, unsigned int a)
 
 void init_hpet()
 {
-  printf("\nInitializing HPET (High Precision Event Timer)!!!");
+  printf("\n %gInitializing HPET (High Precision Event Timer)!!!",5);
   uint_fast32_t *ptr = (uint_fast32_t*)acpiGetRSDPtr();
   // check if address is correct  ( if acpi is available on this pc )
   if (ptr != NULL && acpiCheckHeader((uint32_t*)ptr, "RSDT") == 0)
@@ -34,7 +34,7 @@ void init_hpet()
       {
         //TODO: INITIALIZE HPET
         hpet_sdt = (HPET_descriptor_table_t*)*ptr;
-        printf("\nHPET TABLE FOUND :D CONGRATULATIONS :D %s ", hpet_sdt->signature);
+        printf("\nHPET Initialized%g\n", 15);
         hpet_base = (uint32_t*)hpet_sdt->Base_address[1];
         hpet_virt_address = (uint32_t)hpet_base;
         hpet = (HPET_Table_t*)hpet_base;

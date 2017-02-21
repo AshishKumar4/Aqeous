@@ -42,11 +42,17 @@
 #include "memfunc.c"
 #include "math.c"
 #include "Intel_MP/mp.c"
+#include "NeuralNetwork/Neuron/Neuron.c"
 
 #include "LocalAPIC/lapic.c"
 
 //#include "std_fs.c"
 #include "ext2/ext2_fs.c"
+
+#include "RandomLib/Random.c"
+
+#include "NeuralNetwork/Neuron/NeuralProcessing.c"
+//#include "mathex.c"
 
 uint32_t initial_esp;
 uint32_t initial_ebp;
@@ -56,6 +62,7 @@ void dbug()
 {
 	uint32_t *temp1=(uint32_t*)kmalloc(810),*temp2=temp1;
 	*temp1=4284;
+
 	//kmalloc(4096);
 	uint32_t *test1=(uint32_t*)kmalloc(1024),*test2=test1;
 	uint32_t *test3=(uint32_t*)kmalloc(1024*1024);
@@ -81,7 +88,7 @@ void dbug()
 	test1=test2;
 	for(int i=0;i<8;i++)
 	{
-		printf(" %x ",*temp1);
+		printf(" %d ",*temp1);
 		++temp1;
 	}
 	for(int i=0;i<8;i++)
@@ -97,8 +104,8 @@ void dbug()
 	printf("If you just saw few 4284's and 100's and nothing else, no extra space; everything worked fine!\n");
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
-//	kfree(test1);
-	kfree(temp2);
+	kfree(test1);
+//	kfree(temp2);
 	//free(test3);
 ///*
 	for(int i=0;i<8;i++)
@@ -131,7 +138,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	console_init();
 	//setVesa(0x117);
 	init_descriptor_tables();	// Setup Descriptor tables for BSP
-	
+
 	detect_cpu();
 
 	BasicCPU_Init();		// Initialize all the processing units in the System
@@ -156,6 +163,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	uint32_t *mmap=(uint32_t*)mboot_ptr->mmap_addr;
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	maxmem=memAvailable;
+
 	for(int i=0;i<20;i++)
 	{
 		if(mmap_info->startLo==0) break;
@@ -172,7 +180,14 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	Setup_Paging();
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-
+/*
+	Pdir_Capsule_t* dir = pgdir_maker();
+	memset(&dir->pdir, 0, 4096);
+	Kernel_Mapper(&dir->pdir);
+	//memcpy(&dir->pdir, system_dir, 4*1024*1024);
+	//printf("\n%d", pgdir);
+	switch_pCap(dir);
+	while(1);*/
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
 	printf("\nEnabling Hard Disk\n");
@@ -184,10 +199,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 
 	printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 
-	printf("\n\tType mdbug to test the Memory Manager");
-//while(1);
 	Init_fs();
-	//while(1);
 	printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
 	if(cpuHasMSR()) printf("\nCPU has MSR");
 	//switch_pdirectory(main_dir);

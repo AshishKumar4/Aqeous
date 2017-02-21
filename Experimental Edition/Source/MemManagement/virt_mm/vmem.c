@@ -25,7 +25,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 	CustomCSRB_M_t* tmp_u = (CustomCSRB_M_t*)nb_u->head;
 	for(int i = 0; mmap_info; i++)
 	{
-		if(!(mmap_info->type-1))
+		if(mmap_info->type < 7)
 		{
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mmap_info->sizeHi;
@@ -47,7 +47,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
 
 	nb_u->tail = (uint32_t*)tmp_u;
-	tmp_u->addr = nb_u->head;   //Make last one to point to first one.
+	tmp_u->addr = nb_u->head;   //Make last one to point to first one.*/
 }
 
 uint32_t vmem(uint32_t size)

@@ -8,6 +8,11 @@
 #include <string.h>
 #include <console.h>
 
+void* (*kmalloc)(uint32_t);
+extern void kb_getline(char* str, uint32_t length);
+
+uint32_t StrToInt(char *str);
+
 extern volatile int multitasking_ON;
 int putchar(int ic);
 void printint(uint32_t in);
@@ -16,6 +21,8 @@ void _printint(uint32_t in);
 int _putchar(char ic);
 
 int _printf(const char* restrict format, ...);
+
+int scanf(const char* restrict format, ...);
 
 static void print(const char* data, size_t data_length)
 {
@@ -30,6 +37,67 @@ static void _print(const char* data, size_t data_length)
 }
 
 int plock = 0;
+
+int scanf(const char* restrict format, ...)
+{
+	while(plock);
+	plock = 1;
+	va_list parameters;
+	va_start(parameters, format);
+
+	int written = 0;
+	size_t amount;
+	bool rejected_bad_specifier = false;
+
+	while(*format != '\0')
+	{
+		if ( *format != '%' )
+		{
+		_print_c:
+			amount = 1;
+			while ( format[amount] && format[amount] != '%' )
+				amount++;
+			_print(format, amount);
+			format += amount;
+			written += amount;
+			continue;
+		}
+
+		const char* format_begun_at = format;
+
+		if ( *(++format) == '%' )
+			goto _print_c;
+
+		if ( rejected_bad_specifier )
+		{
+		_incomprehensible_conversion:
+			rejected_bad_specifier = true;
+			format = format_begun_at;
+			goto _print_c;
+		}
+		if( *format == 'd')
+		{
+			format++;
+			uint32_t* c = va_arg(parameters, uint32_t);
+			char* st = kmalloc(15);
+			kb_getline(st, 10);
+			*c = StrToInt(st);
+		}
+		else if( *format == 's')
+		{
+			format++;
+			uint32_t* c = va_arg (parameters, int);
+			char st[10];
+			kb_getline(st, 10);
+			*c = st;
+		}
+		else
+		{
+			goto _incomprehensible_conversion;
+		}
+	}
+	_printf("u");
+}
 
 int printf(const char* restrict format, ...)
 {
@@ -205,7 +273,8 @@ int printf(const char* restrict format, ...)
 char tbuf[32];
 char bchars[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
-void itoa(unsigned i,unsigned base,char* buf) {
+void itoa(unsigned i,char* buf, unsigned base)
+{
    int pos = 0;
    int opos = 0;
    int top = 0;

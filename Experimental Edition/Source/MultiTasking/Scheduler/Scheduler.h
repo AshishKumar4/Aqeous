@@ -45,6 +45,7 @@ typedef struct __attribute__((packed)) SchedulerKits
   uint32_t* curr_dir;
 
   uint32_t* Spurious_task;
+  uint32_t* stack;
 }SchedulerKits_t;
 
 SchedulerKits_t* KitList;

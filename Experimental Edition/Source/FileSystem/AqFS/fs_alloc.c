@@ -24,6 +24,7 @@ void fs_alloc_init()
 
 uint64_t fs_alloc(uint32_t blocks)
 {
+    //printf("Aa%d\n",blocks);
     uint32_t buf=fsalloc(512);
     uint8_t* ptr=(uint8_t*)buf;
     uint64_t block=0;
@@ -55,7 +56,7 @@ uint64_t fs_alloc(uint32_t blocks)
         ++ptr;
       }
     }
-    printf("\nNo Memory left!");
+    printf("\nNo Memory left in the Hard Disk!");
     while(1);
     return 0;
     out:
@@ -65,6 +66,7 @@ uint64_t fs_alloc(uint32_t blocks)
 
 uint64_t sec_alloc(uint32_t sectors)
 {
+  printf("Aa%d\n",sectors);
   uint32_t buf=fsalloc(512);
   uint8_t* ptr=(uint16_t*)buf;
   uint8_t* tmp;
@@ -79,29 +81,45 @@ uint64_t sec_alloc(uint32_t sectors)
     {
       if(!*ptr) //is 512 aligned
       {
-        stmp++;
+        stmp += 1;
         if(stmp==1)
           tmp=ptr;
       }
       else stmp=0;
       if(stmp==sectors)
       {
-        block=j+(512*(i-start_off))+4;
+        block=j+(512*(i-start_off));
+        //printf("BB%d\n", block);
         block-=sectors;
         ptr=tmp;
-        for(uint32_t m=0;m<sectors;m++,ptr++)
-          *ptr=0xff;
+
+        memset((void*)buf,0,512);
+        uint64_t* pp = start_off + (block/512);
+        read(curr_port,pp,1,(DWORD)buf);
+        for(int k = 0; k < sectors; k++)
+        {
+          if((ptr - (uint8_t*)buf) == 512)
+          {
+            write(curr_port,pp,1,(DWORD)buf);
+            memset((void*)buf,0,512);
+            ++pp;
+            read(curr_port,pp,1,(DWORD)buf);
+            ptr=(uint8_t*)buf;
+          } //TODO: RECHECK EVERYTHING
+          *ptr = 0xff;
+          ++ptr;
+        }
         write(curr_port,i,1,(DWORD)buf);
         goto out;
       }
       ++ptr;
     }
   }
-  printf("\nNo Memory left!");
+  printf("\nNo Memory left in the Hard Disk!");
   while(1);
   return 0;
   out:
-//  printf("\n block %x ",block*1024);
+  //printf("\n block %x ",block*512);
   return block*512;
 }
 

@@ -11,6 +11,8 @@
 #include "ahci.h"
 #include "stdio.h"
 
+#include "NeuralNetwork/Neuron/neuron.h"
+
 extern volatile int multitasking_ON;
 
 uint64_t root_location;
@@ -276,7 +278,7 @@ Directory_t* search_folderOGP(char* path) //Search Folder ON GIVEN PATH
 		Directory_t* temp = (Directory_t*)tbuf;
 
 		Directory_t* pdir;
-		if(path[0] != "/")  pdir = get_special_dirs(CURR_DIR);
+		if(path[0] != '/')  pdir = get_special_dirs(CURR_DIR);
 		else pdir = get_special_dirs(ROOT);
 
 		read(curr_port,pdir->location/512,1,(DWORD)buf);
@@ -313,7 +315,7 @@ Directory_t* search_folderOGP_T(char* path) //Search Folder ON GIVEN PATH; temp
 		Directory_t* temp = (Directory_t*)tbuf;
 
 		Directory_t* pdir;
-		if(path[0] != "/")  pdir = get_special_dirs(CURR_DIR);
+		if(path[0] != '/')  pdir = get_special_dirs(CURR_DIR);
 		else pdir = get_special_dirs(ROOT);
 
 		read(curr_port,pdir->location/512,1,(DWORD)buf);
@@ -378,8 +380,9 @@ File_handle_t* file_loaderOGP(char* path)
 			tmpath[i] = '\0';
 		else tmpath = 0;
 
-		char* full_path = kmalloc(strlen(path));
+		char* full_path = kmalloc(strlen(path) + 1);
 		strcpy(full_path, path);
+		full_path[strlen(path)] = '\0';
 
 		Directory_t* dir=(Directory_t*)search_folderOGP_T(tmpath);
 		if(!dir) return 0;
@@ -410,6 +413,7 @@ File_handle_t* file_loaderOGP(char* path)
 		handle->file=(uint32_t)temp;
 		handle->name=temp->name;
 		handle->full_path=full_path;
+
 		////kfree((uint32_t*)(uint32_t*)buf);
 		return handle;
 }
@@ -467,6 +471,7 @@ int file_loadOGP(char *path)
 			current->next=handle;
 		current=handle;
 		current->next=0;
+
 		return 1;
 		//printf("\nFile %s Loaded \n",name);
 }
@@ -487,6 +492,7 @@ int file_load(char *name)
 			current->next=handle;
 		current=handle;
 		current->next=0;
+
 		return 1;
 		//printf("\nFile %s Loaded \n",name);
 }
@@ -497,17 +503,17 @@ void file_closeOGP(char *path)
 		strcpy(tmpath, path);
 
 		char* tmpstr = tmpath;
-		char* fname;
+//		char* fname;
 		int i = 0;
 		for(i = strlen(tmpath) - 1; tmpstr[i]!='/' && i>=0; i--);
 
-		fname = &tmpstr[i+1];
+//		fname = &tmpstr[i+1];
 		if(i>0)
 			tmpath[i] = '\0';
 		else tmpath = 0;
 
-		File_handle_t* temp=start_handle,*temp2=temp;
-		for(int i=0;start_handle;i++)
+		File_handle_t* temp=start_handle,*temp2=0;
+		for(int i=0;temp;i++)
 		{
 			if(!strcmp(temp->full_path,path))
 			{
@@ -522,16 +528,21 @@ void file_closeOGP(char *path)
 
 				if(!i)
 						start_handle=temp->next;
-				else temp2->next=temp->next;
+				else if(temp2) temp2->next=temp->next;
+				if(temp == current)
+				{
+					current = temp2;
+				}
 				////kfree((uint32_t*)(uint32_t*)temp);
-				goto out;
+				//goto out;
+				return;
 			}
-			if(!temp->next) break;
+			//if(!temp->next) break;
 			temp2=temp;
 			temp=temp->next;
 		}
-		return;
-		out:
+		//return;
+		//out:
 
 		return;
 }
@@ -539,23 +550,28 @@ void file_closeOGP(char *path)
 void file_close(char *name)
 {
 		file_flush(name);
-		File_handle_t* temp=start_handle,*temp2=temp;
-		for(int i=0;start_handle;i++)
+		File_handle_t* temp=start_handle,*temp2=0;
+		for(int i=0;temp;i++)
 		{
 			if(!strcmp(temp->name,name))
 			{
 				if(!i)
 						start_handle=temp->next;
-				else temp2->next=temp->next;
+				else if(temp2) temp2->next=temp->next;
+				if(temp == current)
+				{
+					current = temp2;
+				}
 				////kfree((uint32_t*)(uint32_t*)temp);
-				goto out;
+				//goto out;
+				return;
 			}
-			if(!temp->next) break;
+			//if(!temp->next) break;
 			temp2=temp;
 			temp=temp->next;
 		}
-		return;
-		out:
+		//return;
+		//out:
 
 		return;
 }
@@ -563,36 +579,40 @@ void file_close(char *name)
 File_handle_t* file_searchOGP(char* path)
 {
 		File_handle_t* temp=start_handle;
-		for(int i=0;start_handle;i++)
+		for(int i=0;temp;i++)
 		{
+      //printf("\nname: \n%s\n%s\n", temp->full_path, path);
 			if(!strcmp(temp->full_path,path))
 			{
-				goto out;
+				return temp;
+				//goto out;
 			}
-			if(!temp->next) break;
+
+			//if(!temp->next) break;
 			temp=temp->next;
 		}
 		//printf("\nFile %s not loaded yet!\n",name);
 		return 0;
-		out:
+		//out:
 		return temp;
 }
 
 File_handle_t* file_search(char* name)
 {
 		File_handle_t* temp=start_handle;
-		for(int i=0;start_handle;i++)
+		for(int i=0;temp;i++)
 		{
 			if(!strcmp(temp->name,name))
 			{
-				goto out;
+				return temp;
+				//goto out;
 			}
-			if(!temp->next) break;
+			//if(!temp->next) break;
 			temp=temp->next;
 		}
 		//printf("\nFile %s not loaded yet!\n",name);
 		return 0;
-		out:
+		//out:
 		return temp;
 }
 
@@ -634,18 +654,18 @@ void set_curr_dir(uint64_t location)
 Directory_t* get_special_dirs(uint32_t type)
 {
 	Directory_t* tmp;
-	uint32_t buf;
+//	uint32_t buf;
 	if(type == CURR_DIR)
 	{
 		tmp = curr_dir.dir;
-		read(curr_port, tmp->location/512, 1, tmp);
+		read(curr_port, tmp->location/512, 1, (uint32_t)tmp);
 		return tmp;
 
 	}
 	else if(type == ROOT)
 	{
 		tmp = root_dir.dir;
-		read(curr_port, tmp->location/512, 1, tmp);
+		read(curr_port, tmp->location/512, 1, (uint32_t)tmp);
 		return tmp;
 	}
 	return curr_dir.dir;
@@ -653,7 +673,7 @@ Directory_t* get_special_dirs(uint32_t type)
 
 Directory_t* get_dir(uint64_t location)
 {
-	uint32_t buf = kmalloc(512);
+	uint32_t buf = (uint32_t)kmalloc(512);
 	if(!location) return 0;
 	read(curr_port, location/512, 1, buf);
 	if(((Directory_t*)buf)->magic == DIR_MAGIC)
@@ -663,7 +683,7 @@ Directory_t* get_dir(uint64_t location)
 
 File_t* get_file(uint64_t location)
 {
-	uint32_t buf = kmalloc(512);
+	uint32_t buf = (uint32_t)kmalloc(512);
 	if(!location) return 0;
 	read(curr_port, location/512, 1, buf);
 	if(((File_t*)buf)->magic == FIL_MAGIC)
@@ -674,7 +694,7 @@ File_t* get_file(uint64_t location)
 int flush_dir(Directory_t* dir)
 {
 	if(dir && dir->magic == DIR_MAGIC)
-		write(curr_port, dir->location/512, 1, dir);
+		write(curr_port, dir->location/512, 1, (uint32_t)dir);
 	else return 0;
 	return 1;
 }
@@ -682,7 +702,7 @@ int flush_dir(Directory_t* dir)
 int flush_file(File_t* file)
 {
 	if(file && file->magic == FIL_MAGIC)
-		write(curr_port, file->location/512, 1, file);
+		write(curr_port, file->location/512, 1, (uint32_t)file);
 	else return 0;
 	return 1;
 }
@@ -740,7 +760,7 @@ File_Header_t* nx_header(File_Header_t* prev_header)
 {
 	if(!prev_header || !prev_header->Next_Header) return 0;
 	File_Header_t* tmp = kmalloc(512);
-	read(curr_port, (prev_header->Next_Header/512), 1, tmp);
+	read(curr_port, (prev_header->Next_Header/512), 1, (uint32_t)tmp);
 	if(tmp->magic == FHR_MAGIC)
 		return tmp;
 	//kfree((uint32_t*)tmp);
@@ -751,7 +771,7 @@ File_Header_t* get_header(uint64_t location)
 {
 	if(!location) return 0;
 	File_Header_t* tmp = kmalloc(512);
-	read(curr_port, location/512, 1, tmp);
+	read(curr_port, location/512, 1, (uint32_t)tmp);
 	if(tmp->magic == FHR_MAGIC)
 		return tmp;
 	//kfree((uint32_t*)tmp);
@@ -913,21 +933,20 @@ inline void flush_header(File_Header_t* header)
 int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //Read file content and write to memory.
 {
 	File_handle_t* handle=file_searchOGP(path);
-	if(!handle) return 0; //File not loaded yet.
+	if(!handle) return 1; //File not loaded yet.
 	char* name = handle->name;
 
 	File_t* file_st = handle->file;
-	printf("\nHeaders: %x", file_st->headers);
 	File_Header_t* header = file_header_search(offset, file_st); //find which header has the offset memory.
 
 	if(!size) size = file_st->sz - (512*file_st->headers);
 
-	if(!header) return 0; //Some error!!!!
+	if(!header) return 2; //Some error!!!!
 
 	if(header->magic != FHR_MAGIC)
 	{
 		//kfree((uint32_t*)header);
-		return 0; //Not a valid Header.
+		return 3; //Not a valid Header.
 	}
 	//printf("\nheader->size: %x header->previous %x header->Next %x", header->used, header->Previous_Header, header->Next_Header);
 //  return 1;
@@ -937,7 +956,9 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 
 	uint32_t tbuff = kmalloc(ROUNDUP(a1,1024));
 
-	read(curr_port, (1 + ((header->location+b1)/512)), ROUNDUP(a1,1024)/1024, tbuff); //Read the first part of buffer.
+	read(curr_port, (1 + ((header->location+b1)/512)), ROUNDUP(a1,1024)/512, tbuff); //Read the first part of buffer.
+
+	//printf("%d %d %d %d\n", a1, ROUNDUP(a1,1024)/512, ROUNDUP(a1,1024), size);
 
 	uint32_t cpdone = 0;
 
@@ -952,9 +973,9 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 
 	while(left)   //Keep extracting data from file until we extract all the required data successfully.
 	{
-		if(!header->Next_Header) return 0; //The Size requested from offset is more then the size of the file/Invalid header.
+		if(!header->Next_Header) return 4; //The Size requested from offset is more then the size of the file/Invalid header.
 		read(curr_port, header->Next_Header/512, 1, (uint32_t)header);
-		if(header->magic != FHR_MAGIC) return 0;
+		if(header->magic != FHR_MAGIC) return 5;
 
 		if(left < header->used) //Only 1 header left to be read.
 		{
@@ -965,7 +986,7 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 
 			//kfree((uint32_t*)tbuff);
 			//kfree((uint32_t*)header);
-			return 1; //Everything went fine.
+			return 0; //Everything went fine.
 		}
 		tbuff = kmalloc(ROUNDUP(header->used,512));
 		read(curr_port, 1 + (header->location/512), 1 + (header->used/512), tbuff);
@@ -979,7 +1000,7 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 	}
 
 	//kfree((uint32_t*)header);
-	return 1; //Everything went fine.
+	return 0; //Everything went fine.
 }
 
 uint32_t file_size(char* path)
@@ -998,14 +1019,14 @@ uint32_t file_size(char* path)
 int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a file from memory.
 {
 	File_handle_t* handle=file_searchOGP(path);
-	if(!handle) return 0; //File not loaded yet.
+	if(!handle) return 4; //File not loaded yet.
 	char* name = handle->name;
 
 	uint32_t bb = buffer;
 	File_t* file_st = handle->file;
 	File_Header_t* header;
 	file_st->sz += size;
-//  printf("\nfile size = %x headers = %x\nfile_st->magic %x %x\nfile parent: %x",file_st->sz - (512*file_st->headers),file_st->headers,file_st->magic, FIL_MAGIC, file_st->parent);
+  //printf("\nfile size = %x headers = %x\nfile_st->magic %x %x\nfile parent: %x",file_st->sz - (512*file_st->headers),file_st->headers,file_st->magic, FIL_MAGIC, file_st->parent);
 
 
 	uint32_t tbuff;
@@ -1017,7 +1038,7 @@ int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a f
 		header = (File_Header_t*)(buf);
 		//printf("\nheader->spread: %x %x %x\n", header->spread, header->used, file_st->headers);
 
-		if(header->magic != FHR_MAGIC) return -3;
+		if(header->magic != FHR_MAGIC) return 3;
 		int t = header->spread - header->used;
 		if(t>0) //If there is some space in the last header, fill it.
 		{
@@ -1034,24 +1055,37 @@ int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a f
 			flush_header(header);
 			//kfree((uint32_t*)tbuff);
 			//kfree((uint32_t*)header);
-			if(!size) return 1;
+			if(!size) return 0;
 		}
 	}
-	uint32_t blks = ROUNDUP(size,512)/512;
+	if(size)
+	{
+		uint32_t blks = ROUNDUP(size,512)/512;
 
-	header = File_Header_Creator(file_st, blks);
-	if(!header) return -1;
+		header = File_Header_Creator(file_st, blks);
+		if(!header) return 1;
+/*
+		tbuff = kmalloc(blks*512);
+		memcpy(tbuff, bb, size);
+*/
 
-	tbuff = kmalloc(blks*512);
-	memcpy(tbuff, bb, size);
-
-	write(curr_port, 1 + (header->location/512), blks, tbuff);
+		write(curr_port, 1 + (header->location/512), blks, bb);
+		if(size%512)
+		{
+			tbuff = kmalloc(512);
+			memset(tbuff, 0, 512);
+			memcpy(tbuff, bb + (size - (size%512)), size%512);
+			//printf("\n\t\tABCD\n");
+			write(curr_port, 1 + (header->location/512) + blks, 1, tbuff);
+		}
+		header->used = size;
+		flush_header(header);
+		//printf("%d\n", blks);
+	}
 	//kfree((uint32_t*)tbuff);
-	header->used = size;
-	flush_header(header);
 	//kfree((uint32_t*)header);
 
-	return 1;
+	return 0;
 }
 
 int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsize, char* path)
@@ -1216,7 +1250,7 @@ void make_boot_sector()
 		memset(buf,0,1024);
 		uint32_t* tmp = buf;
 		*tmp = root_location;
-		write(curr_port,start_off,2,(DWORD)buf);
+		write(curr_port,start_off - 2,2,(DWORD)buf);
 }
 
 void Init_fs()
@@ -1264,10 +1298,10 @@ void Init_fs()
 	Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
 	if(strncmp(identity->name, "AqFS472",7))
 	{
-		printf("Filesystem Not supported/Disk not partitioned\n");
+		printf("Filesystem Not supported/Disk not partitioned Correctly\n");
 		return;
 	}
-	read(curr_port,start_off,2,(DWORD)buf);
+	read(curr_port,start_off - 2,2,(DWORD)buf);
 
 	uint32_t* tmp = (uint32_t*)buf;
 

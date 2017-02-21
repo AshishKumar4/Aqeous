@@ -96,6 +96,9 @@ int keyboard_scancodes(int key)
 					case KEY_BACKSLASH:
 						key = KEY_BAR;
 						break;
+          case KEY_RETURN:
+            key = '\n';
+            break;
 				}
 			}
 		}

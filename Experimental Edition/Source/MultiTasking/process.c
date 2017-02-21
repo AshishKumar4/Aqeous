@@ -20,19 +20,19 @@ Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process
 
   New_Proc->code = code;
 
-  New_Proc->parent = parent;
-
-  if(parent)
+  if(parent > 1)
   {
+    New_Proc->parent = parent;
     New_Proc->pgdir = parent->pgdir;
   }
-  else
+  else if(!parent)
   {
     New_Proc->pgdir = (uint32_t)pgdir_maker();
 
     Kernel_Mapper((PageDirectory_t*)New_Proc->pgdir);
     map((uint32_t)New_Proc,4096,(PageDirectory_t*)New_Proc->pgdir);
   }
+  else New_Proc->parent = 0;
 
   strcpy(New_Proc->name,name);
 

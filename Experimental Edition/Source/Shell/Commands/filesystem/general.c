@@ -70,7 +70,7 @@ void Command_del()
       printf("\nThe Folder is corrupt.\n");
       return;
     }
-    printf(dir->name);
+    //printf(dir->name);
     //Delete the directory!
     if(delete_dir(dir))
       printf("\n Folder Successfully deleted!\n");
@@ -94,7 +94,7 @@ void Command_del()
       printf("\nThe File is corrupt.\n");
       return;
     }
-    printf(file->name);
+    //printf(file->name);
     //Delete the file!
     if(delete_file(file))
       printf("\n File Successfully deleted!\n");
@@ -152,78 +152,70 @@ void Command_editfl()
   asm volatile("cli");
   char* path = (char*)CSI_ReadAPS("-f");
 
-  if(path)
-  {
-    if(!file_loadOGP(path))
-    {
-      printf("\n%s file dosent exist!\n",path);
-      return;
-    }
-
-    uint32_t* data = CSI_ReadAPS("-d");
-    
-
-    uint32_t* type = CSI_ReadAPS("-a");
-
-    // 1-> append
-    // 2-> edit in between
-    if(data)
-    {
-      if(!type || !strcmp("app",type))
-      {
-        file_writeAppend(data, strlen((char*)data), path);
-        //file_flushOGP(path);
-        printf("\n Data written!\n");
-      }
-      else if(!strcmp("edit",type))
-      {
-        uint32_t off = StrToInt(CSI_ReadAPS("-x"));
-        uint32_t osz = StrToInt(CSI_ReadAPS("-z"));
-        if(!osz) osz = strlen(data);
-        file_editFM(off, osz, data, strlen((char*)data), path);
-        //file_flushOGP(path);
-        printf("\n File edited Successfully!\n");
-      }
-      else printf("\n Edit Type not recognized! %x\n", type);
-    }
-    else printf("\n Data not provided!\n");
-  }
-  else 
+  if(!path)
   {
     path = CSI_Read(1);
-    if(!file_loadOGP(path))
+    if(!path)
     {
-      printf("\n%s file dosent exist!\n",path);
+      printf("\nPlease Specify a File Name.");
       return;
     }
+  }
+  File_handle_t* fh = file_loadOGP(path);
+  if(!fh)
+  {
+    printf("\n%s file dosent exist!\n",path);
+    return;
+  }
 
-    uint32_t* data = CSI_Read(2);
-    
+  uint32_t* data = CSI_ReadAPS("-d");
 
-    uint32_t* type = CSI_Read(3);
 
-    // 1-> append
-    // 2-> edit in between
-    if(data)
+  uint32_t* type = CSI_ReadAPS("-a");
+
+  // 1-> append
+  // 2-> edit in between
+  if(data)
+  {
+    if(!type || !strcmp("app",type))
     {
-      if(!type || !strcmp("app",type))
-      {
-        file_writeAppend(data, strlen((char*)data), path);
-        //file_flushOGP(path);
-        printf("\n Data written!\n");
-      }
-      else if(!strcmp("edit",type))
-      {
-        uint32_t off = StrToInt(CSI_Read(4));
-        uint32_t osz = StrToInt(CSI_Read(5));
-        if(!osz) osz = strlen(data);
-        file_editFM(off, osz, data, strlen((char*)data), path);
-        //file_flushOGP(path);
-        printf("\n File edited Successfully!\n");
-      }
-      else printf("\n Edit Type not recognized! %x\n", type);
+      printf("\n Data written!");
+      printf(" %x\n", file_writeAppend(data, strlen((char*)data), path));
     }
-    else printf("\n Data not provided!\n");
+    else if(!strcmp("edit",type))
+    {
+      uint32_t off = StrToInt(CSI_ReadAPS("-x"));
+      uint32_t osz = StrToInt(CSI_ReadAPS("-z"));
+      if(!osz) osz = strlen(data);
+      file_editFM(off, osz, data, strlen((char*)data), path);
+      //file_flushOGP(path);
+      printf("\n File edited Successfully!\n");
+    }
+    else printf("\n Edit Type not recognized! %x\n", type);
+  }
+  else
+  {
+    printf("\nEnter the data (max size: 4096 bytes)->\n");
+    uint32_t* buffer = kmalloc(4096);
+    kb_getline(buffer, 4096);
+    data = buffer;
+    printf("\nWritting the Data");
+    if(!type || !strcmp("app",type))
+    {
+      printf("\n Data written!");
+      printf(" %x\n", file_writeAppend(data, strlen((char*)data), path));
+    }
+    else if(!strcmp("edit",type))
+    {
+      uint32_t off = StrToInt(CSI_ReadAPS("-x"));
+      uint32_t osz = StrToInt(CSI_ReadAPS("-z"));
+      if(!osz) osz = strlen(data);
+      file_editFM(off, osz, data, strlen((char*)data), path);
+      //file_flushOGP(path);
+      printf("\n File edited Successfully!\n");
+    }
+    else printf("\n Edit Type not recognized! %s\n", type);
+    kfree(buffer);
   }
   file_closeOGP(path);
 }
@@ -247,11 +239,12 @@ void Command_rfl()
 
   uint32_t* buffer = kmalloc(8192);
 
-  file_readTM(buffer,0,sz,path);
+  printf("\t\tError: %x\n", file_readTM(buffer,0,sz,path));
 
   //file_close("test2.txt");
   file_closeOGP(path);
 
-  printf("\n%s\n", buffer);
+  printf("%s\n", buffer);
+  kfree(buffer);
 
 }

@@ -19,6 +19,12 @@
 #include "cpu/cpu.h"
 #include "Scheduler/Scheduler.h"
 
+#include "RandomLib/random.h"
+#include "math.h"
+
+#include "NeuralNetwork/Neuron/NeuralProcessing.h"
+#include "ProcManager/ProcManager.h"
+
 void idle()
 {
   //scheduler();
@@ -33,105 +39,86 @@ inline int tf(uint32_t a, uint32_t b)
   return MAX(a,b)%MIN(a,b);
 }
 
-uint32_t x=1,y=2;
-
-void __attribute__((optimize("O0"))) bxd()
-{
-  //printf("IT WORKS");
-  x=4284;
-  y=1;
-  //return;
-}
-
-
-void a()
-{
-  *(uint32_t*)(0x42849999) = 4284;
-  uint32_t bcd = aad;
-  func_t pf = 0x99997777;
-  pf("%x",bcd);
-  return;
-}
-
-void bxend()
-{
-  return;
-}
-
 uint32_t tyt = 0;
 
-void test_process()
-{
-//  Switch_to_system_dir();
+Process_t* test_proc;
+task_t* test_task;
+int tttt = 0;
+int bbb = 0;
 
-  printf("\n%x\n%x", Get_Scheduler()->identity, adeg);
+void test_thread()
+{
+  while(1)
+  {
+    if(bbb)
+    {
+      asm volatile("cli");
+      printf("\nThis works!");
+      bbb = 0;
+      uint32_t* tty = malloc(4096);
+      for(int i = 0; i < 10; i++)
+      {
+        tty[i] = i*2;
+      }
+    //  Randomizer();
+      for(int i = 0; i < 10; i++)
+      {
+        printf(" A%d", tty[i]);
+      }//*/
+    }
+    asm volatile("int $50");
+  }
+}
+
+void test_process()
+{/*
+  Randomizer();
+  printf("Seed1: %x Seed2: %x Seed3: %x\n", seed1, seed2, seed3);
+
+  int j;
+  for(int i = 1; i < 1000; i++)
+  {
+    for(j = 0; random()%1000 != i; j++);
+    printf("%d--", j);
+  }*/
+  int value = StrToInt(CSI_Read(1));
+  int threshold = StrToInt(CSI_Read(2));
+
+  printf("%d %d", (int)CheckNeuralSCE(value, threshold), (int)powf(CONST_E, value - threshold));
+
+  if(!tttt)
+  {
+//    asm volatile("cli");
+/*
+    uint32_t* tm;
+    for(int i = 0; i < 10; i++)
+    {
+      tm = pgdir_maker();
+      Kernel_Mapper((PageDirectory_t*)tm);
+    }*/
+    test_proc = create_process("test_process", 0, 1, 0);
+  //  memcpy(test_proc->pgdir, system_dir, 4096);
+  //  pgdir_maker();
+  /*
+    test_proc->pgdir = tm;
+    Kernel_Mapper((PageDirectory_t*)tm);
+    map((uint32_t)test_proc,4096,(PageDirectory_t*)tm);*/
+
+    test_task = create_task("test_task", test_thread, 10, 0x202, test_proc);
+    Activate_task_direct(test_task);
+
+    tttt = 1;
+  }
+  else
+    bbb = 1;
+
   Shell_wakeup();
-  asm volatile("cli");
-//  kfree(test_str);
   kill();
+  asm volatile("int $50");
   while(1);
 }
 
 extern void kernel_main();
-
-void __attribute__((optimize("O0"))) tbcd1()
-{
-  //AP_init_LAPIC();
-  //printf("\nasd");
-  //printf("%x", Get_Scheduler()->identity);
-  //asm volatile("hlt");
-  while(1)
-  {
-  //  delay(1);
-  //  if(adeg > 600) break;
-  //  printf("A%x %x-",Get_Scheduler()->identity);
-  //  ++Get_Scheduler()->tasks;
-    ++adeg;
-  //  printf("A1 ");
-    asm volatile("int $50");
-  }
-  asm volatile("hlt":::"memory");
-  while(1);
-}
-void __attribute__((optimize("O0"))) tbcd2()
-{
-  //AP_init_LAPIC();
-  //printf("\nasd");
-  //printf("%x", Get_Scheduler()->identity);
-  //asm volatile("hlt");
-  while(1)
-  {
-  //  delay(1);
-  //  if(adeg > 600) break;
-  //  printf("A%x %x-",Get_Scheduler()->identity);
-  //  ++Get_Scheduler()->tasks;
-    ++adeg;
-  //  printf("A2 ");
-    asm volatile("int $50");
-  }
-  asm volatile("hlt":::"memory");
-  while(1);
-}
-void __attribute__((optimize("O0"))) tbcd3()
-{
-  //AP_init_LAPIC();
-  //printf("\nasd");
-  //printf("%x", Get_Scheduler()->identity);
-  //asm volatile("hlt");
-  while(1)
-  {
-  //  delay(1);
-  //  if(adeg > 600) break;
-  //  printf("A%x %x-",Get_Scheduler()->identity);
-  //  ++Get_Scheduler()->tasks;
-    ++adeg;
-  //  printf("A3 ");
-    //Shell_Double_buffer();
-    asm volatile("int $50");
-  }
-  asm volatile("hlt":::"memory");
-  while(1);
-}
 
 void tvkc1()
 {
@@ -159,11 +146,10 @@ void tasking_initiator()
   apic_start_timer(APIC_LOCAL_BASE);       //The respective Timer initialization function of the timer of choice
   //Here it goes, The entry to the multitasking world.
 
-  for(int i = 0; i < total_CPU_Cores - 1; i++)
+  for(uint32_t i = 0; i < total_CPU_Cores - 1; i++)
   {
-    *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x3240;
+    *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x3240; //Notifies the cores that its time to start scheduling...
   }
-
   asm volatile("sti;");
   kill();
   while(1);
@@ -177,7 +163,7 @@ void init_multitasking()
 
   init_Processing();
 
-  kernel_proc = create_process("microkernel", 0, 1, 0);
+  kernel_proc = create_process("microkernel", 0, 1, 1);
   kernel_proc->pgdir = (uint32_t)system_dir;
 
   Init_Scheduler();
@@ -185,34 +171,18 @@ void init_multitasking()
   printf("\nSchedulers Created Successfully");
 
   Setup_MMADS();
-  SchedulerKits_t* kit = Get_Scheduler();
 
   Shell_proc = create_process("Shell", 0, 1, kernel_proc);
   Shell_Ostream_task = create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc);
   Activate_task_direct(Shell_Ostream_task);//, &KitList[0]); //This is the task which would make printing to console possible!
-  Shell_Istream_task = create_task("Shell_Istream", Shell_Input, 1, 0x202, Shell_proc);
-  Activate_task_direct(Shell_Istream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
-  //Shell_Istream_task->special = 1;
+
   Shell_task = create_task("Shell_task", Shell, 5, 0x202, Shell_proc);  //Main shell task.
   //Shell_task->special = 1;
   Activate_task_direct(Shell_task);//, &KitList[0]);
 
-  for(int i = 1; i < total_CPU_Cores - 1; i++ )
-  {
-    Activate_task_direct(create_task("Idle", tvkc1, 20, 0x202, kernel_proc));//, &KitList[i]);
-    Idle_task = create_task("System_idle_task1",tbcd1, 20, 0x202, kernel_proc);  //default task, this dosent run
-  //  Idle_task->special = 1;
-    Activate_task_direct(Idle_task);//, &KitList[i]);
-    Idle_task = create_task("System_idle_task2",tbcd2, 20, 0x202, kernel_proc);  //default task, this dosent run
-    Idle_task->special = 1;
-    Activate_task_direct(Idle_task);//, &KitList[i]);
-    Idle_task = create_task("System_idle_task3",tbcd3, 0, 0x202, kernel_proc);  //default task, this dosent run
-    Idle_task->special = 1;
-    Activate_task_direct(Idle_task);//, &KitList[i]);
-
-  //  Activate_task_direct_SP(create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc), &KitList[i]); //This is the task which would make printing to console possible!
-  //  Activate_task_direct_SP(Idle_task, &KitList[i]);
-  }
+  Shell_Istream_task = create_task("Shell_Istream", Shell_Input, 1, 0x202, Shell_proc);
+  Activate_task_direct(Shell_Istream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
+  //Shell_Istream_task->special = 1;
 
   Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
   Idle_task->special = 1;

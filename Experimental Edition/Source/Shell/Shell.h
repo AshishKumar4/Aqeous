@@ -52,15 +52,23 @@ volatile uint32_t* Shell_Istream;
 volatile uint32_t Input_stream;
 volatile uint32_t Istream_end;
 
+volatile uint32_t* tmpIstream;
+
 void init_shell();
 
 void Shell_Double_buffer();
 
 void Shell_Input();
 
+void Shell_CFexecute(uint32_t* buffer, uint32_t sz);
+
 void Shell_sleep();
 
 void Shell();
+
+void Shell_scrollUp();
+
+void Shell_scrollDown();
 
 void Shell_wakeup();
 

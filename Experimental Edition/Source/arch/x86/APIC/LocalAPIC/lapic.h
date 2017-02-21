@@ -46,4 +46,9 @@ typedef struct LAPIC_RegisterMAP
 
 LAPIC_RegisterMAP_t* Lapic;
 
+
+uint32_t localapic_read(uint32_t base, uint32_t reg);
+void localapic_write(uint32_t base, uint32_t reg, uint32_t value);
+void localapic_write_with_mask(uint32_t base, uint32_t reg, uint32_t mask, uint32_t value);
+
 #endif

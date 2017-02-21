@@ -40,4 +40,9 @@ typedef struct __attribute__((packed)) IOAPIC_regs
           10-3Fh IOREDTBL[0:23] Redirection Table (Entries 0-23) (64 bits each) R/W
 */
 
+
+void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector);
+void ioapic_write(uint32_t reg, uint32_t value);
+uint32_t ioapic_read(uint32_t reg);
+
 #endif

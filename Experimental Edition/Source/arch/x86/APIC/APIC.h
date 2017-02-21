@@ -123,12 +123,6 @@ void BSP_init_LAPIC(uint32_t base);
 
 void MADTapic_parse();
 
-uint32_t localapic_read(uint32_t base, uint32_t reg);
-void localapic_write(uint32_t base, uint32_t reg, uint32_t value);
-void localapic_write_with_mask(uint32_t base, uint32_t reg, uint32_t mask, uint32_t value);
-void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector);
-void ioapic_write(uint32_t reg, uint32_t value);
-uint32_t ioapic_read(uint32_t reg);
 
 MADT_t* madt;
 

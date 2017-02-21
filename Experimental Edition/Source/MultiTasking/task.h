@@ -37,8 +37,9 @@ task_t *Idle_task, *Shell_task, *Shell_Istream_task, *Shell_Ostream_task;
 typedef struct __attribute__((packed)) task_table
 {
     task_t task;
-    uint32_t test;
+//    uint32_t test;
     struct task_table* next;
+    struct task_table* back;
 }task_table_t;
 
 void Activate_task(task_table_t* task_entry);
@@ -48,6 +49,8 @@ void Activate_task_direct(task_t* task);
 void Activate_task_direct_SP(task_t* task, SchedulerKits_t* kit);
 
 void kill();
+
+void _kill(task_t* task);
 
 void Task_sleep(task_t* task);
 

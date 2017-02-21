@@ -44,7 +44,7 @@ void __attribute__((optimize("O0"))) test_exit()
 {
   asm volatile("sti");
   while(1);
-    asm volatile("iret");
+  asm volatile("iret");
 }
 
 void __attribute__((optimize("O0"))) Init_Scheduler()
@@ -58,9 +58,9 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
   uint32_t* nspace,*nptr32,*schdulr;
   uint8_t *nptr1, *nptr2;
 
-  MotherSpace = phy_alloc4K();
+  MotherSpace = (uint32_t*)phy_alloc4K();
   memset(MotherSpace, 0, 4096);
-  SchedulerKits_t* kits = MotherSpace;
+  SchedulerKits_t* kits = (SchedulerKits_t*)MotherSpace;
 
 
   for(int i = 0; i < total_CPU_Cores - 1; i++)
@@ -87,6 +87,8 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
 //    nptr1 = ROUNDUP(nptr1,4) + 32;
 //    nptr32 = nptr1;
     uint32_t* temporary_stack = kmalloc(4096*4);
+
+    kits->stack = temporary_stack;
 
     ByteSequence_Replace(0x4284ACD1, 4, (uint32_t)&kits->curr_dir, 4, kits->switcher, kits->switcher + sz_switcher); //_cur_dir
     kits->curr_dir = system_dir;
@@ -146,6 +148,7 @@ SchedulerKits_t* __attribute__((optimize("O0"))) FindLightestScheduler()
 {
   SchedulerKits_t* tmp = MotherSpace;
   SchedulerKits_t* tmp2 = tmp;
+//  ++tmp;
   for(int i = 0; i < total_CPU_Cores - 1 ; i++)
   {
     if(tmp2->tasks > tmp->tasks) tmp2 = tmp;
@@ -204,11 +207,11 @@ void __attribute__((optimize("O0"))) SAS_init()
     memcpy(SAS_booster_func, SAS_task_booster_t, SAS_booster_sz);
     memcpy(SAS_eraser_func, SAS_void_eraser_t, SAS_eraser_sz);
 
-    ByteSequence_Replace(0x4284CDA1, 4, sas_cleaning_complete, 4, SAS_booster_func, SAS_booster_func + SAS_size);
-    ByteSequence_Replace(0x4284CDA2, 4, highest_task_entry, 4, SAS_booster_func, SAS_booster_func + SAS_size);
-    ByteSequence_Replace(0x4284CDA3, 4, kit_ptr, 4, SAS_booster_func, SAS_booster_func + SAS_size);
-    ByteSequence_Replace(0x4284CDA4, 4, last_highest_priority, 4, SAS_booster_func, SAS_booster_func + SAS_size);
-    ByteSequence_Replace(0x4284AFF1, 4, &printf, 4, SAS_booster_func, SAS_booster_func + SAS_size);
+    ByteSequence_Replace(0x4284CDA1, 4, (uint32_t)sas_cleaning_complete, 4, SAS_booster_func, SAS_booster_func + SAS_size);
+    ByteSequence_Replace(0x4284CDA2, 4, (uint32_t)highest_task_entry, 4, SAS_booster_func, SAS_booster_func + SAS_size);
+    ByteSequence_Replace(0x4284CDA3, 4, (uint32_t)kit_ptr, 4, SAS_booster_func, SAS_booster_func + SAS_size);
+    ByteSequence_Replace(0x4284CDA4, 4, (uint32_t)last_highest_priority, 4, SAS_booster_func, SAS_booster_func + SAS_size);
+    ByteSequence_Replace(0x4284AFF1, 4, (uint32_t)&printf, 4, SAS_booster_func, SAS_booster_func + SAS_size);
 //    ByteSequence_Replace(0x4284CDA5, 4, KitList[i].Spurious_task, 4, SAS_booster_func, SAS_booster_func + SAS_size);
 
     *sas_cleaning_complete = 1;
@@ -241,8 +244,8 @@ void __attribute__((optimize("O0"))) SAS_init()
 
 void __attribute__((optimize("O2"))) SAS_task_booster_t()
 {
-  SchedulerKits_t* kit = (*(uint32_t*)(0x4284CDA3));
-  func_t pf = 0x4284AFF1;
+  SchedulerKits_t* kit = (SchedulerKits_t*)(*(uint32_t*)(0x4284CDA3));
+  func_t pf = (func_t)0x4284AFF1;
   while(1)
   {
     if(*(uint32_t*)(0x4284CDA1))
@@ -292,8 +295,8 @@ void __attribute__((optimize("O2"))) SAS_task_booster_end()
 void __attribute__((optimize("O2"))) SAS_void_eraser_t()
 {
   uint32_t tasks_searched = 1;
-  SchedulerKits_t* kit = (*(uint32_t*)(0x4284CDA3));
-  func_t pf = 0x4284AFF1;
+  SchedulerKits_t* kit = (SchedulerKits_t*)(*(uint32_t*)(0x4284CDA3));
+//  func_t pf = (func_t)0x4284AFF1;
   while(1)
   {
     if(!(*(uint32_t*)(0x4284CDA1)))
@@ -319,7 +322,7 @@ void __attribute__((optimize("O2"))) SAS_void_eraser_t()
         {
           if(((task_t*)*tmp)->tokens > (*(uint32_t*)(0x4284CDA4)))
           {
-            (*(uint32_t*)(0x4284CDA2)) = (uint32_t*)*tmp;
+            (*(uint32_t*)(0x4284CDA2)) = (uint32_t)*tmp;
             (*(uint32_t*)(0x4284CDA4)) = ((task_t*)*tmp)->tokens;
           }
           ((task_t*)*tmp)->tokens += 1;

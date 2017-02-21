@@ -26,8 +26,12 @@
 #include "filesystem/cd.c"
 
 #include "Scheduler/Scheduler.h"
-
+#include "ProcManagement/ProcManagement.h"
 #include "stdlib.h"
+
+#include "rn/rn.c"
+
+#include "ANN/ann.c"
 
 extern uint32_t time_slice;
 
@@ -132,6 +136,7 @@ void Command_start_vesa()
    Pixel_VESA_BUFF( 500, 500, 0xff00ff);
    line_fast(100,400,100,500,0xffff, 1);
    line_fast(130,400,130,500,0xffff, 10);
+   random_plotter();
   // prime_diff_graph();
    //RectD(510, 510, 500,500,0xff00ff);
    //RectD(100,300,50,10,7,7,7);
@@ -223,8 +228,10 @@ void Command_topq()
 void Command_test()
 {
    asm volatile("cli");
+//   test_process();
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Shell_sleep();
-   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
+   asm volatile("int $50");
 }
 
 void Command_test_multi()
@@ -234,6 +241,8 @@ void Command_test_multi()
    {
       Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
    }
+   Shell_sleep();
+   asm volatile("int $50");
 }
 
 void Command_testfs()
@@ -245,13 +254,14 @@ void Command_testfs()
 //  path_finder(path);
   //search_folderOGP(path);
   file_loadOGP(path);
+  printf("\n%s\n",path);
   //file_load("test3.txt");
 
   printf("\nsizeof(File_Header_t) %x, sizeof(File_t) %x\n",sizeof(File_Header_t),sizeof(File_t));
 
   char str[]="Hello!!! This is Aqeous OS Speaking And I am Testing the Filesystem. I need a really very very very big message to test the I/O operations of my file system's file handling. So please let me do what I want. This is a completely new FileSystem and thus needs a lot of testing. There are Several bugs and I am gonna fix them all!!! As I Said that I need a really very long message to test wether the file handling can actually manage reading writing operations with data bigger then the sector size, that is 512 bytes, so thats why I am writing this long test. The text should be longer then 512 bytes, That is the text should contains 512 characters. I am writing this in block alignmnet to manage space :3 This filesystem can be potentially better then FAT and so Its necessary to remove allthe bugs before releasing it. Thats obvious LOL xD .So please be patient. Thank you :)";
   printf("%x", strlen(str));
-  if(file_writeAppend((uint32_t)str,strlen(str),path)>0)
+  if(!file_writeAppend((uint32_t)str,strlen(str),path))
   {
     printf("\nWritten Successfully");
   }
@@ -259,9 +269,10 @@ void Command_testfs()
 
   uint32_t buffer=fsalloc(8192);
   file_readTM(buffer,0,2048,path);
+  file_closeOGP(path);
 
 
-  printf("\nThe file reads as: %s", buffer);/*/
+  printf("\nThe file reads as: %s\n", buffer);/*/
   file_size("test2.txt");
 
   //file_close("test.txt");

@@ -3,6 +3,8 @@
 
 /* functions */
 
+int math_pow(int base, int exponent);
+
 double Summation(const double *a, size_t n);
 double SumOfSquares(const double *a, size_t n);
 double SumOfProduct(const double *a1, const double *a2, size_t n);

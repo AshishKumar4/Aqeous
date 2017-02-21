@@ -6,6 +6,7 @@
 #include <math.h>
 #include <string.h>
 #include <mouse.h>
+#include "RandomLib/Random.h"
 
 void Init()
 {
@@ -104,13 +105,12 @@ void memcpy_rep2(uint32_t s, uint32_t d, uint32_t sz)
 
 void __attribute__((optimize("O0"))) DBuff()
 {
-  const uint32_t szn = (1024*768);
+//  const uint32_t szn = (1024*768);
   uint_fast32_t *sp = (uint_fast32_t*) buff;
   uint_fast32_t *dp = (uint_fast32_t*) vga_mem;
-  uint_fast32_t *mp = (uint_fast32_t*) mouse_buff;
+//  uint_fast32_t *mp = (uint_fast32_t*) mouse_buff;
   uint32_t offset = 0;
   uint32_t dv = depthVESA/8;
-  int32_t a = 0;
   Enable_SSE();
   while(1)
   {
@@ -148,14 +148,8 @@ void __attribute__((optimize("O0"))) DBuff()
 
     for(uint32_t _i = (cy1 - cy0); _i != 0; _i--)
     {
-/*
-      for(uint32_t _j = cx0; _j < cx1; _j++)
-      {
-        *dp++ = *sp++;//*!*mp + *mp++;
-      //  *mp++ = 0;
-      } //*/
       //memcpy_rep(dp,sp,(cx1-cx0));
-    //  memcpy_sse(dp,sp,(cx1-cx0)/8);
+      //memcpy_sse(dp,sp,(cx1-cx0)/8);
       asm volatile("mov %%eax, %%edi;\
                     mov %%ebx, %%esi;\
                     rep movsd;"::"a"(dp), "b"(sp), "c"(cx1-cx0));//*/
@@ -186,8 +180,10 @@ void Creater(int i,int j)
 
 void Func_Plot(int x1, int y1, int x2, int y2, int C, int sz, intfunc2_t func)
 {
-    uint32_t slope = 1;
+  //  uint32_t slope = 1;
   //  slope = ((MAX(x1,x2) - MIN(x1,x2))/(MAX(y1,y2)-MIN(y1,y2)));
+    sz = 10;
+    func = 0;
     for(int x_t = MIN(x1, x2); x_t <= MAX(x1, x2); x_t++)
     {
       for(int y_t = MIN(y1, y2); y_t <= MAX(y1, y2); y_t++)
@@ -354,9 +350,9 @@ void Mouse_Plot()
 {
   int offset = 0;
   int dv = depthVESA/8;
-  uint16_t* tmp = mouse_buff;
+  uint16_t* tmp = (uint16_t*)mouse_buff;
   //uint32_t* tmp32 = mouse_buff;
-  uint16_t* mbf = buff;
+  uint16_t* mbf = (uint16_t*)buff;
   //uint32_t* mbf32 = buff;
   while(1)
   {
@@ -465,6 +461,8 @@ int is_prime(uint32_t t)
   return 1;
 }
 
+void graph_plot(uint32_t x, uint32_t y);
+
 void prime_diff_graph()
 {
   prime_list = kmalloc(8192);
@@ -481,8 +479,20 @@ void prime_diff_graph()
   }
 }
 
-void graph_plot(x,y)
+void graph_plot(uint32_t x, uint32_t y)
 {
   //0,768 = 0,0
   Pixel_VESA_BUFF(x,760-y,0xfff0);
+}
+
+void random_plotter()
+{
+  Randomizer();
+  uint32_t* test = kmalloc(4096), tmp = 0;
+  for(int i = 0; i < 100000; i++)
+  {
+    tmp = random()%1000;
+    graph_plot(tmp, 100 + test[tmp]);
+    ++test[tmp];
+  }
 }

@@ -97,7 +97,7 @@ inline page_t* MapPage (void* phys, void* virt, PageDirectory_t* dir);
 
 void map(uint32_t phy,size_t size, PageDirectory_t* dir);
 
-inline page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir);
+page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir);
 /****/
 
 void SwitchTo_SysDir();

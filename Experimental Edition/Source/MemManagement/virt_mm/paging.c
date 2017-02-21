@@ -2,6 +2,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "phy_mm/mem.h"
+#include "ProcManager/ProcManager.h"
 
 void SystemDir_Mapper() ///will use it to manage OS directly
 {
@@ -42,23 +44,33 @@ void Setup_SystemDir()
 
 Pdir_Capsule_t* pgdir_maker()
 {
-	Pdir_Capsule_t* npd_Cap = kmalloc(sizeof(Pdir_Capsule_t));
+	Pdir_Capsule_t* npd_Cap = mtalloc(4);//kmalloc(sizeof(Pdir_Capsule_t));
+  //printf(" %d", sizeof(Pdir_Capsule_t));
 	Setup_VMEM(npd_Cap);
+  return npd_Cap;
 }
 
 /****/
 inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given PageDirectory_t
 {
-    map(0, 8*1024*1024, dir);
-  //  map(50331648, 12*1024*1024, dir);
-    //map(32*1024*1024, 60*1024*1024, dir);
-  //  map(220*1024*1024, 300*1024*1024, dir);
-  //  map(209715200, 10*1024*1024, dir);
-    /**Originally kernel resides from 100th mb physical. Here we just map it to 3GB of the page dir**/
-//    Map_non_identity((uint32_t)console_dbuffer_original, 0xCF000000, 8*1024*1024, dir);
+    map(0, 25*1024*1024, dir);
+
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
-  //  map((uint32_t)VGA_buffer, 8192*1024, dir);
-    //while(1);
+
+    map((uint32_t)dir,4096*4,(PageDirectory_t*)dir);
+
+    SchedulerKits_t* st = MotherSpace;
+    map((uint32_t)MotherSpace,4096,(PageDirectory_t*)dir);
+
+    //map((uint32_t)512*1024*1024,200*1024*1024,(PageDirectory_t*)New_Proc->pgdir);
+
+    for(int i = 0; i < total_CPU_Cores - 1; i++)
+    {
+      map((uint32_t)st[i].stack,4096,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].queue_start,4096*40,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].Spurious_task,4096,(PageDirectory_t*)dir);
+    }
+    map(2*1024*1024*1024, 1*1024*1024*1024, dir);
 }
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDirectory_t* dir)
@@ -127,15 +139,23 @@ inline page_t* MapPage (void* phys, void* virt, PageDirectory_t* dir)
 
 void map(uint32_t phy,size_t size, PageDirectory_t* dir)
 {
-    if(_cur_dir == system_dir) return;
+    //if(_cur_dir == system_dir) return;
     uint32_t j=phy;
     for (; j < phy+size;j+=0x1000)
     {
-      MapPage((void*)j,(void*)j,dir);
+      //MapPage((void*)j,(void*)j,dir);
+      page_t* page;
+      page=get_page(j,1,dir);
+      pt_entry_set_frame ( page, j);
+      pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+      pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+      pt_entry_add_attrib ( page, I86_PTE_USER);
+      pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
+      pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
     }
 }
 
-inline page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
+page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
 {
 
       // Turn the address into an index.
@@ -153,6 +173,9 @@ inline page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
       else if(make)
       {
           dir->table_entry[table_idx] = (table_t)phy_alloc4K();
+
+          map(dir->table_entry[table_idx], 4096, dir);
+
           memset_fast((void*)dir->table_entry[table_idx], 0, 0x1000);
           table_t* entry = &dir->table_entry [table_idx];
           PageTable_t* table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
@@ -224,7 +247,7 @@ void Setup_Paging()
   _cur_pdirCap = system_pdirCap;
   _prev_dir = system_dir;
 
-  for(int i = 0; i < total_CPU_Cores - 1; i++)
+  for(uint32_t i = 0; i < total_CPU_Cores - 1; i++)
   {
     *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x4284;
   }

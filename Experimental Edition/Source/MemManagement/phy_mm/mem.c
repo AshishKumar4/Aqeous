@@ -17,7 +17,8 @@
 	[8-12MB] = FRAME STACK FOR PHYSICAL FRAME ALLOCATION
 	[12-14MB] = MMAD Structures
 	[14-16MB] = RESERVED
-	[>3GB] = RESERVED.
+	[>3GB] = USED FOR KERNEL.
+	REST FREE
 */
 
 void memmap_generator()
@@ -26,27 +27,27 @@ void memmap_generator()
 	Fmemmap = OS_MMap;
 	OS_MMap->startHi = 0;
 	OS_MMap->sizeHi = 4*1024*1024;
-	OS_MMap->type = 5;
+	OS_MMap->type = 7;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 4*1024*1024;
 	OS_MMap->sizeHi = 4*1024*1024;
-	OS_MMap->type = 6;
+	OS_MMap->type = 8;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 8*1024*1024;
 	OS_MMap->sizeHi = 6*1024*1024;
-	OS_MMap->type = 5;
+	OS_MMap->type = 6;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 14*1024*1024;
 	OS_MMap->sizeHi = 2*1024*1024;
-	OS_MMap->type = 2;
+	OS_MMap->type = 3;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 16*1024*1024;
 	OS_MMap->sizeHi = 8*1024*1024;
-	OS_MMap->type = 5;
+	OS_MMap->type = 6;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 24*1024*1024;
@@ -56,36 +57,77 @@ void memmap_generator()
 	++OS_MMap;
 	OS_MMap->startHi = 190*1024*1024;
 	OS_MMap->sizeHi = 410*1024*1024;
-	OS_MMap->type = 5;
-	OS_MMap->reservedt = 0xFFE42;
-	++OS_MMap;
-	OS_MMap->startHi = 600*1024*1024;
-	OS_MMap->sizeHi = 0x9A800000;
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
+	++OS_MMap;
+	OS_MMap->startHi = (600*1024*1024);
+	OS_MMap->sizeHi = (2*1024*1024*1024) - (600*1024*1024);
+	OS_MMap->type = 1;
+	OS_MMap->reservedt = 0xFFE42;
+
+	++OS_MMap;
+	OS_MMap->startHi = (2*1024*1024*1024);
+	OS_MMap->sizeHi = (2*1024*1024*1024);
+	OS_MMap->type = 2;
+	OS_MMap->reservedt = 0xFFE42;
+	/*
+	++OS_MMap;
+	OS_MMap->startHi = (3*1024*1024*1024) + (256*1024*1024);
+	OS_MMap->sizeHi = 256*1024*1024;
+	OS_MMap->type = 2;
+	OS_MMap->reservedt = 0xFFE42;
+	++OS_MMap;
+	OS_MMap->startHi = (3*1024*1024*1024) + (512*1024*1024);
+	OS_MMap->sizeHi =(256*1024*1024);
+	OS_MMap->type = 2;
+	OS_MMap->reservedt = 0xFFE42;*/
 	printf("\nOS Specific Memory Regions Preallocated!");
 }
 
-void setup_frameStack()
+void __attribute__((optimize("O0"))) setup_frameStack()
 {
 	printf("\nSetting up Frame Stack!");
-
-	//Setup the Stack frame at 10th MB!
-	uint32_t* frame_stack_ptr = (uint32_t*)0xA00000;
-	uint32_t i = 786432; //3rd GB
-	for(; i > 4096; --i) //more then 50th MB
+	uint32_t* frame_stack_ptr = 0xA00000, *frame_stack_start = 0xA00000;
+	MemRegion_t* mm = Fmemmap;
+	++mm;
+	while(1)
 	{
-		*frame_stack_ptr++ = i;
+		if(mm->type == 1)
+		{
+			for(uint32_t i = mm->startHi; i < mm->startHi + mm->sizeHi; i+=4096)
+			{
+				*frame_stack_ptr = i/4096;
+				++frame_stack_ptr;
+			}
+		}
+		++mm;
+		if(mm->reservedt != 0xFFE42) break;
 	}
 	frame_stack_end = frame_stack_ptr;
 	--frame_stack_end;
+	uint32_t size = frame_stack_end - frame_stack_start;
+	printf("\nSize of Frame Stack = %d", size);
+	for(uint32_t i = 0; i < size/2; i++)
+	{
+		uint32_t c = frame_stack_start[i];
+		frame_stack_start[i] = frame_stack_start[size-i-1];
+		frame_stack_start[size-i-1] = c;
+	}
+	//for(int i = 0; i < 500; i++)
+	//	printf("%x \t", phy_alloc4K());
 }
 
-inline uint32_t pop_frameStack()
+uint32_t pop_frameStack()
 {
-	uint32_t fr = *frame_stack_end;
+	uint32_t fr;
+	back:
+	fr = *frame_stack_end;
 	--frame_stack_end;
-	if(!fr) printf("\nNo memory left! %x",fr);
+	if(!fr)
+	{
+		printf("\nNo memory left! %x",fr);
+		goto back;
+	}
 	return fr;
 }
 
@@ -98,11 +140,10 @@ void push_frameStack(uint32_t fr)
 uint32_t phy_alloc4K()
 {
 	uint32_t addr;
-	back:
 	addr = pop_frameStack()*4096;
+	/*
 	if((*(uint32_t*)(get_pageEntry(addr))) & (uint32_t)CUSTOM_PTE_AVAIL_1)	goto back;
-	*((uint32_t*)(get_pageEntry(addr))) |= CUSTOM_PTE_AVAIL_1 | CUSTOM_PTE_AVAIL_2;
-
+	*((uint32_t*)(get_pageEntry(addr))) |= CUSTOM_PTE_AVAIL_1 | CUSTOM_PTE_AVAIL_2;*/
 	return addr;
 }
 
@@ -123,17 +164,19 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 	nb_u->entries = 0;
 
 	MemRegion_t* mm = Fmemmap;
+	mmap_info = mm;
 	CustomCSRB_M_t* tmp_f = (CustomCSRB_M_t*)nb_f->head;
 	CustomCSRB_M_t* tmp_u = (CustomCSRB_M_t*)nb_u->head;
 	++mm;
+
 	while(1)
 	{
-		if(!(mm->type-1))
+		if(mm->type == 2)
 		{
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mm->sizeHi;
 			tmp_f->begin = mm->startHi;
-			//printf("\n%x %x %x",tmp_f->addr,tmp_f->size,tmp_f->begin);
+			printf("\n%x %x %x",tmp_f->addr,tmp_f->size,tmp_f->begin);
 			++tmp_f;
 			++nb_f->entries;
 		}
@@ -149,9 +192,10 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 		++mm;
 		if(mm->reservedt != 0xFFE42) break;
 	}
+
 	nb_f->tail = (uint32_t*)tmp_f;
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
-	printf("\nB%x", tmp_f->size);
+	//printf("\nB%x", tmp_f->size);
 
 	nb_u->tail = (uint32_t*)tmp_u;
 	tmp_u->addr = nb_u->head;   //Make last one to point to first one.
@@ -227,30 +271,6 @@ void* pmem(uint32_t size)
 		}
 		tm++;
 	}
-	//printf("\n\n");
-	//Create necessary page tables and pages for the allocated memory.
-	uint32_t pg_frame = baddr/4096;
-	uint32_t pd_off = pg_frame/1024;
-	uint32_t pt_off = pg_frame%1024;
-	table_t* tentry = &dir->table_entry[pd_off];
-	PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(tentry);
-	//Create the page.
-	page_t* pg = &pt->page_entry[pt_off];
-	for(uint32_t i =  pg_frame; i<(size/4096) + pg_frame; i++)
-	{
-		if(!(i%1024))   //Whenever crossing page table boundries, just switch to next page tables.
-		{
-			tentry = &dir->table_entry[i/1024];
-			pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(tentry);
-			pg = &pt->page_entry[0];
-		}
-		if(*pg & CUSTOM_PTE_AVAIL_2)
-		{
-			pmem(size);
-		}
-		*pg |= 1027 | CUSTOM_PTE_AVAIL_2;
-		++pg;
-	}
 	//SwitchFrom_SysDir();
 	return (void*)baddr;
 
@@ -303,7 +323,7 @@ void pfree(void* addr)
 			}
 			tmf->addr = csrb_f->head;
 			csrb_f->tail = (uint32_t*)tmf;
-	//		memset((void*)tmu->begin, 0, tmu->size);
+			memset((void*)tmu->begin, 0, tmu->size);
 	//		printf("\n\n\n\t\t%gAx tmu->begin: %x tmu->size: %x%g",10,tmu->begin, tmu->size, 0);
 			tmu->begin = 0;
 			tmu->size = 0;

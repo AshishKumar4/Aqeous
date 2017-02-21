@@ -16,6 +16,8 @@
 #include "Commands/Default_Commands.c"
 #include "Commands/numerise/numerise.c"
 
+#include "Commands/ProcManagement/ProcManagement.c"
+
 uint32_t VGA_size;
 
 void init_shell()
@@ -38,10 +40,12 @@ void init_shell()
 	Input_stream = (uint32_t)Shell_Istream;
 	Istream_end = ((uint32_t)Shell_Istream) + (4096*1024);
 	Istream_ptr = (volatile char*)Input_stream;
+	Shell_Istream = (volatile uint32_t*)kmalloc(4096);
 	memset_faster((uint32_t*)CSI_mem_start, 0, 18);
 	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 	tot_entries = (uint32_t*)&Main_CSI_struct->total_entries;
 	memset(console_buffer,0,VGA_size*4);
+	Enable_SSE();
 	console_manager_init();
 }
 
@@ -116,11 +120,38 @@ void Shell_Input()
 				else
 				{
 					_printf("ALERT");
+					Shell_wakeup();
 				}
+				++Istream_ptr;
+				*(Istream_ptr) = '\0';
+				++Istream_ptr;
 			}
 			enter_pressed = 0;
 		}
 		asm volatile("int $50");
+	}
+}
+
+void Shell_CFexecute(uint32_t* buffer, uint32_t sz)
+{
+	char* pt = buffer;
+	uint32_t c = 0;
+	pt[sz] = '\0';
+	memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
+	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
+	while(c < sz)
+	{
+		char* pp = pt;
+		for(; *pp != '\n' && *pp != '\0'; pp++);
+		*pp = '\0';
+		printf("\n->\"%s\"",pt);
+		Shell_command_locator(pt);
+		*Shell_Istream = (uint32_t)pt;
+		++Shell_Istream;
+		//shell_in = 0;
+		//shell_buf = 0;
+		c += pp - pt + 1;
+		pt = pp + 1;
 	}
 }
 /*
@@ -147,7 +178,6 @@ void Shell()
 		if(shell_awake)
 		{
 			_printf("\n%g%s%g>%g",12,curr_dir.full_name,10,11);
-			//_printf("\n>");
 			while(!shell_in)
 			{
 		//		printf("B%x--",KitList[1].reached_bottom);
@@ -159,11 +189,34 @@ void Shell()
 			Shell_command_locator((char*)shell_buf);
 			*Shell_Istream = (uint32_t)shell_buf;
 			++Shell_Istream;
+			//printf("%s",shell_buf);
 			shell_in = 0;
 			shell_buf = 0;
+			tmpIstream = 0;
 		}
 		asm volatile("int $50");
 	}
+}
+
+void Shell_scrollUp()
+{
+	if(!tmpIstream)
+		tmpIstream = Shell_Istream;
+	//for(int i = 0; i < strlen(shell_buf); i++) backspace();
+
+	--tmpIstream;
+	shell_buf	= (char*)tmpIstream;
+	printf("->%s", shell_buf);
+}
+
+void Shell_scrollDown()
+{
+	if(tmpIstream == Shell_Istream) return;
+	for(int i = 0; i < strlen(shell_buf); i++) backspace();
+
+	++tmpIstream;
+	shell_buf	= (char*)tmpIstream;
+	printf("%s", shell_buf);
 }
 
 void Shell_sleep()  //TODO: Make the Shell task to sleep.
@@ -186,6 +239,7 @@ void Shell_wakeup()
 	--shell_sleeping;
 	if(!shell_sleeping)
 	{
+		//Shell_task->Scheduler = FindLightestScheduler();
 		Task_wakeup(Shell_task);
 		shell_awake = 1;
 	}
@@ -372,5 +426,8 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_editfl, 201, 0, "editfl");
 	 Shell_Add_Commands(Command_cp, 32, 0, "cp");
 	 Shell_Add_Commands(Command_aptest, 307, 0, "aptest");
+	 Shell_Add_Commands(Command_proc, 99, 0, "proc");
+	 Shell_Add_Commands(Command_rn, 43, 0, "rn");
+	 Shell_Add_Commands(Command_ann, 65, 0, "ann");
 	 memset_faster((uint32_t*)CSI_mem_start, 0, 66);
 }
