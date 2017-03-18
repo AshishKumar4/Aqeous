@@ -24,14 +24,14 @@ typedef struct __attribute__((packed)) HPET_Table
 {
     uint32_t GCIDReg[2];                        //General Capabilities and ID Register READ ONLY
     uint32_t reserved1[2];
-    uint64_t GCReg;                          //General Configuration Register READ WRITE
+    uint32_t GCReg[2];                          //General Configuration Register READ WRITE
     uint32_t reserved2[2];
     uint32_t GISReg[2];                         //General Interrupt Status Register READ/WRITE CLEAR. byte 40th.
     uint32_t reserved3[50];
     uint64_t Main_Counter_Reg;               //Main Counter Value Register, READ/WRITE byte 240
     uint32_t reserved4[2];
     uint32_t Timer0CCReg[2];
-    uint64_t Timer0CVReg;
+    uint32_t Timer0CVReg[0];
     uint32_t Timer0FSB_IntRReg[2];
     uint32_t reserved5[2];
     uint32_t Timer1CCReg[2];

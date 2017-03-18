@@ -13,4 +13,6 @@ void Randomizer();
 
 uint32_t random();
 
+float RandomnessCalculator(int (*random_func)(), func_t random_init, uint32_t precision1, uint32_t precision2);
+
 #endif

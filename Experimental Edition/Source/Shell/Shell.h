@@ -47,12 +47,19 @@ volatile int kb_buff = 0;
 volatile char* shell_buf;
 volatile uint32_t shell_in = 0, Current_strlen = 0;
 volatile uint32_t shell_awake = 1;
-volatile uint32_t shell_sleeping = 0;
+volatile int shell_sleeping = 0;
 volatile uint32_t* Shell_Istream;
 volatile uint32_t Input_stream;
 volatile uint32_t Istream_end;
 
+volatile task_t* shell_cmdTask;
+
 volatile uint32_t* tmpIstream;
+volatile func_t shell_cmdFunc;
+
+volatile  int shlock = 0;
+
+DECLARE_LOCK(SHELL_CMDTASK);
 
 void init_shell();
 
@@ -74,7 +81,11 @@ void Shell_wakeup();
 
 void vesa_test_dbuf();
 
+void Shell_cmdWrapper();
+
 int Shell_command_locator(char *inst);
+
+int Shell_command_locator_CC(char *inst);
 
 void console_manager_init();
 

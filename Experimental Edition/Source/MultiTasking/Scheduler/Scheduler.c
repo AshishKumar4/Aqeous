@@ -21,6 +21,7 @@ Symbol Map for Switcher->
     old_task        ->        0x4284ACD4
     Scheduler       ->        0x4284ACD5
     time_slice      ->        0x4284ACD6
+    Core_Main_Lock  ->        0x4284BCD1
 
 Symbol Table for Scheduler->
       top_queue           ->        0x4284ABD1
@@ -29,6 +30,7 @@ Symbol Table for Scheduler->
       current_task        ->        0x4284ABD4
       LAST_QUEUE          ->        0x4284ABD5
       time_slice          ->        0x4284ABD6
+      Core_Main_Lock      ->        0x4284BCD1
 
 COMMON Symbols->
       current_task
@@ -47,10 +49,12 @@ void __attribute__((optimize("O0"))) test_exit()
   asm volatile("iret");
 }
 
+DECLARE_LOCK(CORE_INFO);
+
 void __attribute__((optimize("O0"))) Init_Scheduler()
 {
   //Create copies of Scheduler function and switcher functions based on number of CPU cores.
-
+  UNLOCK(CORE_INFO);
   uint32_t sz_Scheduler = Scheduler_end_t - Scheduler_t;
   uint32_t sz_switcher = switcher_end_t - switcher_ksp_t;
   uint32_t sz_Scheduler_init = Scheduler_init_end_t - Scheduler_init_t;
@@ -105,8 +109,13 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     ByteSequence_Replace(0x4284ABD3, 4, (uint32_t)&kits->bottom_task, 4, kits->scheduler, kits->scheduler + sz_Scheduler); //bottom_task
     ByteSequence_Replace(0x4284ABD5, 4, (uint32_t)&kits->queue_last, 4, kits->scheduler, kits->scheduler + sz_Scheduler); //LAST_QUEUE
 
+    ByteSequence_Replace(0x4284BCD1, 4, (uint32_t)&kits->Core_Main_Lock, 4, kits->switcher, kits->switcher + sz_switcher); //CORE_MAIN_LOCK
+    ByteSequence_Replace(0x4284BCD1, 4, (uint32_t)&kits->Core_Main_Lock, 4, kits->scheduler, kits->scheduler + sz_Scheduler); //CORE_MAIN_LOCK
+
   //  ByteSequence_Replace(0x4284ACD3, 4, (uint32_t)&kits->current_task, 4, kits->Scheduler_init, kits->Scheduler_init + sz_Scheduler_init); //current_task
   //  ByteSequence_Replace(0x4284ACD2, 4, (uint32_t)&system_dir, 4, kits->Scheduler_init, kits->Scheduler_init + sz_Scheduler_init); //system_dir
+
+    kits->Core_Main_Lock = 0;
 
     kits->queue_start = (uint32_t*)kmalloc(4096*40);//mtalloc(20);//33554432;
     memset(kits->queue_start, 0, 4096*40);
@@ -159,9 +168,11 @@ SchedulerKits_t* __attribute__((optimize("O0"))) FindLightestScheduler()
 
 SchedulerKits_t* __attribute__((optimize("O0"))) Get_Scheduler()
 {
+  LOCK(CORE_INFO);
   uint32_t i;
   i = *(uint32_t*)(0xfee00020);
   i = i>>24;
+  UNLOCK(CORE_INFO);
   return &KitList[i];
 }
 
@@ -224,8 +235,8 @@ void __attribute__((optimize("O0"))) SAS_init()
 
     //if(i==1)  continue;
 
-    Activate_task_direct_SP(*SAS_booster, (uint32_t)&KitList[i]);
-    Activate_task_direct_SP(*SAS_eraser, (uint32_t)&KitList[i]);
+    Activate_task_direct_SP((task_t*)*SAS_booster, (SchedulerKits_t*)&KitList[i]);
+    Activate_task_direct_SP((task_t*)*SAS_eraser, (SchedulerKits_t*)&KitList[i]);
 
     ((task_t*)*SAS_booster)->special = 1;
     ((task_t*)*SAS_eraser)->special = 1;
@@ -242,7 +253,7 @@ void __attribute__((optimize("O0"))) SAS_init()
     0x4284CDA5    Spurious_task
 */
 
-void __attribute__((optimize("O2"))) SAS_task_booster_t()
+void __attribute__((optimize("O0"))) SAS_task_booster_t()
 {
   SchedulerKits_t* kit = (SchedulerKits_t*)(*(uint32_t*)(0x4284CDA3));
   func_t pf = (func_t)0x4284AFF1;
@@ -251,6 +262,7 @@ void __attribute__((optimize("O2"))) SAS_task_booster_t()
     if(*(uint32_t*)(0x4284CDA1))
     {
       asm volatile("cli");
+      kit->Core_Main_Lock = 1;
       if((*(uint32_t*)(0x4284CDA2)) && ((task_t*)(*(uint32_t*)(0x4284CDA2)))->active)
       {
         //if(kit->identity != 0) goto out;//
@@ -282,17 +294,18 @@ void __attribute__((optimize("O2"))) SAS_task_booster_t()
       }
       out:
       (*(uint32_t*)(0x4284CDA1)) = 0;
+      kit->Core_Main_Lock = 0;
     }
     asm volatile("int $50");
   }
 }
 
-void __attribute__((optimize("O2"))) SAS_task_booster_end()
+void __attribute__((optimize("O0"))) SAS_task_booster_end()
 {
   return;
 }
 
-void __attribute__((optimize("O2"))) SAS_void_eraser_t()
+void __attribute__((optimize("O0"))) SAS_void_eraser_t()
 {
   uint32_t tasks_searched = 1;
   SchedulerKits_t* kit = (SchedulerKits_t*)(*(uint32_t*)(0x4284CDA3));
@@ -302,6 +315,7 @@ void __attribute__((optimize("O2"))) SAS_void_eraser_t()
     if(!(*(uint32_t*)(0x4284CDA1)))
     {
       asm volatile("cli");
+      kit->Core_Main_Lock = 1;
       if(*(kit->bottom_queue) >= tasks_searched)
       {
         uint32_t *tmp = kit->bottom_queue + tasks_searched;
@@ -335,12 +349,13 @@ void __attribute__((optimize("O2"))) SAS_void_eraser_t()
         tasks_searched = 1;
         (*(uint32_t*)(0x4284CDA4)) = 0;
       }
+      kit->Core_Main_Lock = 0;
     }
     asm volatile("int $50");
   }
 }
 
-void __attribute__((optimize("O2"))) SAS_end_t()
+void __attribute__((optimize("O0"))) SAS_end_t()
 {
   return;
 }

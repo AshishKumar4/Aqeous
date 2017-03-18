@@ -31,7 +31,7 @@ void divByZero_handler()
 
 
 void debug_handler()
-{/*
+{
   uint32_t i;
   i = *(uint32_t*)(0xfee00020);
   i = i>>24;
@@ -46,6 +46,7 @@ void debug_handler()
 void NMI_handler()
 {
   printf("\nFault3");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -55,6 +56,7 @@ void NMI_handler()
 void breakpoint_handler()
 {
   printf("\nFault4");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -64,6 +66,7 @@ void breakpoint_handler()
 void overflow_handler()
 {
   printf("\nFault5");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -73,6 +76,7 @@ void overflow_handler()
 void outOfBounds_handler()
 {
   printf("\nFault6 %x", Get_Scheduler()->identity);
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -82,7 +86,8 @@ void outOfBounds_handler()
 void invalidInstr_handler()
 {
   printf("\nFault7 %x", Get_Scheduler()->identity);
-  Shell_Double_buffer();
+  asm volatile("hlt");
+  //Shell_Double_buffer();
   while(1);
   asm volatile("iret");
 }
@@ -91,6 +96,7 @@ void invalidInstr_handler()
 void noCoprocessor_handler()
 {
   printf("\nFault8");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -100,6 +106,7 @@ void noCoprocessor_handler()
 void doubleFault_handler()
 {
   printf("\nFault9");
+  //asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -109,6 +116,7 @@ void doubleFault_handler()
 void coprocessor_handler()
 {
   printf("\nFault10");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -118,6 +126,7 @@ void coprocessor_handler()
 void badTSS_handler()
 {
   printf("\nFault11");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -127,6 +136,7 @@ void badTSS_handler()
 void segmentNotPresent_handler()
 {
   printf("\nFault12");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -136,6 +146,7 @@ void segmentNotPresent_handler()
 void stackFault_handler()
 {
   printf("\nFault13");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -144,7 +155,7 @@ void stackFault_handler()
 int avc = 0;
 
 void __attribute__((optimize("O0"))) generalProtectionFault_handler()
-{
+{/*
   asm volatile("cli;\
                 pop %%eax; pop %%eax; pop %%eax; pop %%eax;\
                 mov %%eax, %0;":"=r"(avc)::"memory");
@@ -153,20 +164,36 @@ void __attribute__((optimize("O0"))) generalProtectionFault_handler()
   i = i>>24;
   printf("\nGeneral Protection Fault! %x %x",i, avc);
   asm volatile("mov %0, %%eax;\
-                hlt"::"r"(avc):"memory");
+                hlt"::"r"(avc):"memory");*/
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
 }
 
-void pageFault_handler()
+extern uint32_t faulting_address;
+
+void pageFault_caller()
 {
-    asm volatile("cli");
+  //  asm volatile("cli");
+    //asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");
+/*
+    uint32_t frame = phy_alloc4K();
+    page_t* page = get_page(faulting_address, 1, Get_Scheduler()->curr_dir);
+
+    pt_entry_set_frame ( page, frame);
+    pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+    pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+    pt_entry_add_attrib ( page, I86_PTE_USER);
+    pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
+    pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
+
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
   //  uint32_t faulting_address;
-  /*  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");
-    printf("\nFault");
+  /*  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");*/
+    printf("\nPage Fault");
+    asm volatile("hlt");/*
     Shell_Double_buffer();
     while(1);
     // The error code gives us details of what happened.
@@ -194,18 +221,19 @@ void pageFault_handler()
     console_write_dec(faulting_address);
     console_writestring(" - EIP: ");
     console_write_dec(regs.eip);
-    console_writestring("\n");*/
+    console_writestring("\n");
     printf("\nPage Fault");
   //  Shell_Double_buffer();
     while(1);
     asm volatile("sti");
-    asm volatile("iret");
+    asm volatile("iret");*/
    // PANIC("Page fault");
 }
 
 void unknownInterrupt_handler()
 {
   printf("\nFaul15t");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -215,6 +243,7 @@ void unknownInterrupt_handler()
 void coprocessorFault_handler()
 {
   printf("\nFault16");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -224,6 +253,7 @@ void coprocessorFault_handler()
 void alignmentCheck_handler()
 {
   printf("\nFault17");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -233,6 +263,7 @@ void alignmentCheck_handler()
 void machineCheck_handler()
 {
   printf("\nFault18");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -242,6 +273,7 @@ void machineCheck_handler()
 void reserved_handler()
 {
   printf("\nFault19");
+  asm volatile("hlt");
   Shell_Double_buffer();
   while(1);
   asm volatile("iret");
@@ -254,6 +286,8 @@ void PIT_handler()
 {
   asm volatile("cli");
 //  printf("\na-");
+//  Shell_Double_buffer();
+//  while(1);
 //  outb(0x20,0x20);
   asm volatile("iret");
 }
@@ -360,7 +394,7 @@ void keyboardInterrupt_handler()
           if(call == '\r')
           {
             enter_pressed = 1;
-            Priority_promoter(Shell_Istream_task);
+            //Priority_promoter(Shell_Istream_task);
           }
           else if(call == '\b') //TODO: Backspace is hit!
           {

@@ -42,6 +42,11 @@ switcher_ksp_t:                         ; Alternate Scheduler + context swithche
     cli
     pusha                             ; PUSH ALL REGISTERS ON THE STACK
 
+;;;    xor dword eax, eax
+
+;;;    mov dword eax, 0x1
+;;;    mov dword [0x4284BCD1], eax           ; Core Locking Mechanism
+
     mov dword eax, 0xFEE00380               ; Reset LVT Timer counter
     mov dword [eax], 0
 
@@ -86,6 +91,9 @@ switcher_ksp_t:                         ; Alternate Scheduler + context swithche
     push eax
     mov dword eax, 0xFEE000B0               ; APIC End Of Interrupt
     mov dword [eax], 0
+
+;;;    xor dword eax, eax
+;;;    mov dword [0x4284BCD1], eax           ; Core Locking Mechanism
 
     push edx
     mov dx, 0x20                      ; PIC Timer End Of Interrupt
@@ -134,6 +142,9 @@ cw_ksp_ss_t:
     mov dword eax, 0xFEE000B0               ; APIC End Of Interrupt
     mov dword [eax], 0
 
+;;;    xor dword eax, eax
+;;;    mov dword [0x4284BCD1], eax           ; Core Locking Mechanism
+
     push edx
     mov dx, 0x20                      ; PIC Timer End Of Interrupt
     mov ax, 0x20
@@ -156,6 +167,9 @@ cw_p2_ndc_c_t:  ;Context switch part 2, no page directory change
     push eax
     mov dword eax, 0xFEE000B0               ; APIC Timer End Of Interrupt
     mov dword [eax], 0
+
+;;;    xor dword eax, eax
+;;;    mov dword [0x4284BCD1], eax           ; Core Locking Mechanism
 
     push edx
     mov dx, 0x20                      ; PIC Timer End Of Interrupt

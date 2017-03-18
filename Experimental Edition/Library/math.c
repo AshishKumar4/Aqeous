@@ -1,6 +1,7 @@
 #include "math.h"
 #include <stdint.h>
 #include <float.h>
+#include <common.h>
 
 uint32_t pow(uint32_t base, uint32_t power)
 {
@@ -12,6 +13,15 @@ uint32_t pow(uint32_t base, uint32_t power)
   return tmp;
 }
 
+int coprimes(int a, int b)
+{
+  int n = 0;
+  for(int i = 2; i < MIN(a,b); i++)
+  {
+    if(a%i == 0 && b%i == 0) return 1;//++n;
+  }
+  return n;
+}
 
 // used for testing if a float is an integer or not
 static const uint8_t  gMaskShift[256] = {	0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    //16

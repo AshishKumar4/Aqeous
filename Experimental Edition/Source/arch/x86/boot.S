@@ -17,13 +17,13 @@
 stack_bottom:
 .skip 65536 # 16 KiB
 stack_top:
-
+.align 32
 # The kernel entry point.
 .section .text
 .global _start
 .type _start, @function
 _start:
-	#movl $0xC800000, %esp //The Kernel stack shall be from 200th mb to 250th mb
+	#movl $52428800, %esp //The Kernel stack shall be from 50th
 	;push %esp
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early

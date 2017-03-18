@@ -28,6 +28,7 @@ enum cmos_reg
  Initialise the driver for CMOS access.
  */
 void init_cmos();
+inline unsigned int ReadFromCMOS();
 
 /**
  Checks to see if CMOS is in the process of being updated. It is important

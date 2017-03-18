@@ -84,6 +84,7 @@ build-iso:
 build-installer:
 	cd installer
 	make
+	cd ..
 
 build-assembly:
 	$(CC) -T linker.ld $(FLAGS) -S -m32 $(SOURCE)/kernel.c

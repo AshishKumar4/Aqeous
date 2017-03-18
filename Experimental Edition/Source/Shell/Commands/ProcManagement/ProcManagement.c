@@ -56,7 +56,7 @@ void Command_proc()
                       for(int j = 0; j < entry->total_tasks; j++ )
                       {
                         t = &tt->task;
-                        printf("\n\t%s\t%d\tpriority: %d\tcore: %d", t->name, t->task_id, t->priority, (t->Scheduler - MotherSpace)/16);
+                        printf("\n\t%s\t%d\tpriority: %d\tcore: %d", t->name, t->task_id, t->priority, ((uint32_t*)t->Scheduler - MotherSpace)/16);
                         tt = tt->next;
                       }
                       goto out;

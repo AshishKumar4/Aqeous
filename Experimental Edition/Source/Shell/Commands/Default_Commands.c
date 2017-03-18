@@ -133,6 +133,7 @@ void Command_start_vesa()
    font_renderer(char_2, 380, 100, 0x0f0f, 10, 3);
    font_renderer(char_3, 460, 100, 0xfff0, 10, 3);
    font_renderer(char_4, 520, 100, 0xfa0f, 10, 3);
+   font_renderer(char_5, 580, 100, 0xfa0f, 10, 3);
    Pixel_VESA_BUFF( 500, 500, 0xff00ff);
    line_fast(100,400,100,500,0xffff, 1);
    line_fast(130,400,130,500,0xffff, 10);
@@ -145,7 +146,9 @@ void Command_start_vesa()
      //Mouse_Plot(mousex,mousey);
      DBuff();
    }//*/
+   mouseinit();
    Activate_task_direct(create_task("Mouse_Pointer", Mouse_Plot, 2, 0x202, Shell_proc));
+
    //Activate_task_direct(create_task("Mouse_Updater", mouse_updater, 10, 0x202, Shell_proc));
 }
 
@@ -228,10 +231,20 @@ void Command_topq()
 void Command_test()
 {
    asm volatile("cli");
-//   test_process();
+   Activate_task_direct_SP(create_task("Test_process", test_process, 10, 0x202, kernel_proc), Get_Scheduler());
+/*
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
-   Shell_sleep();
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());/*/
    asm volatile("int $50");
+   return;
 }
 
 void Command_test_multi()

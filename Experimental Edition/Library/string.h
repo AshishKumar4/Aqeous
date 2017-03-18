@@ -5,7 +5,7 @@
 
 #include <stddef.h>
 
-inline void *faster_memcpy(void * _dest, const void *_src, uint32_t _n)
+void *faster_memcpy(void * _dest, const void *_src, uint32_t _n)
 {
     uint_fast32_t *sp = (uint_fast32_t*) _src;
     uint_fast32_t *dp = (uint_fast32_t*) _dest;
@@ -16,7 +16,7 @@ inline void *faster_memcpy(void * _dest, const void *_src, uint32_t _n)
 	return _dest;
 }
 
-inline void faster_memset(void *_s, uint32_t _c, size_t _n)
+void faster_memset(void *_s, uint32_t _c, size_t _n)
 {
     uint_fast32_t *temp = (uint_fast32_t*) _s;
     for ( ; _n != 0; _n--)
@@ -25,7 +25,7 @@ inline void faster_memset(void *_s, uint32_t _c, size_t _n)
 	  }
 }
 
-inline int memcmp(const void *_s1, const void *_s2, size_t _n)
+int memcmp(const void *_s1, const void *_s2, size_t _n)
 {
 	const unsigned char *us1 = (const unsigned char *)_s1;
 	const unsigned char *us2 = (const unsigned char *)_s2;
@@ -49,7 +49,7 @@ void *memcpy(void * _dest, void *_src, size_t _n)
 	return _dest;
 }
 
-inline void* memmove(void* dstptr, const void* srcptr, size_t size)
+void* memmove(void* dstptr, const void* srcptr, size_t size)
 {
 	unsigned char* dst = (unsigned char*) dstptr;
 	const unsigned char* src = (const unsigned char*) srcptr;
@@ -86,7 +86,7 @@ int memcmp_fast(const void *_s1, const void *_s2, size_t _n)
 	return 0;
 }
 
-inline void *memcpy_fast(void * _dest, const void *_src, size_t _n)
+void *memcpy_fast(void * _dest, const void *_src, size_t _n)
 {
     uint_fast32_t *sp = (uint_fast32_t*) _src;
     uint_fast32_t *dp = (uint_fast32_t*) _dest;
@@ -97,7 +97,7 @@ inline void *memcpy_fast(void * _dest, const void *_src, size_t _n)
 	return _dest;
 }
 
-inline void* memmove_fast(void* dstptr, const void* srcptr, size_t size)
+void* memmove_fast(void* dstptr, const void* srcptr, size_t size)
 {
 	uint_fast32_t* dst = (uint_fast32_t*) dstptr;
 	const uint_fast32_t* src = (const uint_fast32_t*) srcptr;
@@ -112,7 +112,7 @@ inline void* memmove_fast(void* dstptr, const void* srcptr, size_t size)
 }
 
 
-inline void memset_fast(void *_s, int _c, size_t _n)
+void memset_fast(void *_s, int _c, size_t _n)
 {
     uint_fast32_t *temp = (uint_fast32_t*) _s;
 		_n /= sizeof(uint_fast32_t);
@@ -121,7 +121,7 @@ inline void memset_fast(void *_s, int _c, size_t _n)
 	}
 }
 
-inline size_t strlen(const char *_s)
+size_t strlen(const char *_s)
 {
    size_t n;
    for(n=0; _s[n] != '\0'; n++) {
@@ -130,7 +130,7 @@ inline size_t strlen(const char *_s)
    return n;
 }
 
-inline int strcmp(const char *_s1, const char *_s2)
+int strcmp(const char *_s1, const char *_s2)
 {
     for(; *_s1 == *_s2; ++_s1, ++_s2) {
         if(*_s1 == 0) {
@@ -140,7 +140,17 @@ inline int strcmp(const char *_s1, const char *_s2)
     return *(unsigned char *)_s1 < *(unsigned char *)_s2 ? -1 : 1;
 }
 
-inline int strncmp(const char *_s1, const char *_s2, size_t _n)
+int strcmpx(const char *_s1, const char *_s2)
+{
+    for(; *_s1 == *_s2 || *_s1 - 32 == *_s2 || *_s1 == *_s2 - 32; ++_s1, ++_s2) {
+        if(*_s1 == 0) {
+            return 0;
+		}
+	}
+    return *(unsigned char *)_s1 < *(unsigned char *)_s2 ? -1 : 1;
+}
+
+int strncmp(const char *_s1, const char *_s2, size_t _n)
 {
 	unsigned char uc1, uc2;
 	if (_n==0)
@@ -157,7 +167,7 @@ inline int strncmp(const char *_s1, const char *_s2, size_t _n)
 	return ((uc1 < uc2) ? -1 : (uc1 > uc2));
 }
 
-inline char *strcpy(char *_dest, const char *_src)
+char *strcpy(char *_dest, const char *_src)
 {
     do {
       *_dest++ = *_src++;
@@ -166,7 +176,7 @@ inline char *strcpy(char *_dest, const char *_src)
 	return _dest;
 }
 
-inline char *strcat(char *_dest, const char *_src)
+char *strcat(char *_dest, const char *_src)
 {
    size_t n;
 
@@ -176,7 +186,7 @@ inline char *strcat(char *_dest, const char *_src)
    return _dest;
 }
 
-inline int strcmpy(const char *c1, const char *c2)
+int strcmpy(const char *c1, const char *c2)
 {
     uint32_t buff=0;
     for(uint32_t i=0;i<=strlen(c1);i++)
@@ -195,7 +205,7 @@ inline int strcmpy(const char *c1, const char *c2)
     return 1;
 }
 
-inline char *strchr(const char *_s, int _c)
+char *strchr(const char *_s, int _c)
 {
 	while (*_s != (char)_c) {
 		if (!*_s++) {
@@ -205,7 +215,7 @@ inline char *strchr(const char *_s, int _c)
 	return (char *)_s;
 }
 
-inline size_t strspn(const char *_s, const char *_accept)
+size_t strspn(const char *_s, const char *_accept)
 {
 	size_t ret=0;
 	while(*_s && strchr(_accept,*_s++)) {
@@ -214,7 +224,7 @@ inline size_t strspn(const char *_s, const char *_accept)
 	return ret;
 }
 
-inline size_t strcspn(const char *_s, const char *_reject)
+size_t strcspn(const char *_s, const char *_reject)
 {
 	size_t ret=0;
 	while(*_s) {
@@ -244,7 +254,7 @@ char *strtok(char *_s, const char *_delim)
 	return _s;
 }
 
-inline char *strstr(const char *_haystack, const char *_needle)
+char *strstr(const char *_haystack, const char *_needle)
 {
 	size_t needleLen;
 	if(*_needle == '\0') {

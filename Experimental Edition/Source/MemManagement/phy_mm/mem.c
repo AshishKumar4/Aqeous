@@ -37,38 +37,43 @@ void memmap_generator()
 	++OS_MMap;
 	OS_MMap->startHi = 8*1024*1024;
 	OS_MMap->sizeHi = 6*1024*1024;
-	OS_MMap->type = 6;
+	OS_MMap->type = 9;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 14*1024*1024;
 	OS_MMap->sizeHi = 2*1024*1024;
-	OS_MMap->type = 3;
+	OS_MMap->type = 10;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 16*1024*1024;
 	OS_MMap->sizeHi = 8*1024*1024;
-	OS_MMap->type = 6;
+	OS_MMap->type = 9;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
 	OS_MMap->startHi = 24*1024*1024;
-	OS_MMap->sizeHi = 166*1024*1024;
-	OS_MMap->type = 1;
+	OS_MMap->sizeHi = 6*1024*1024;
+	OS_MMap->type = 11;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
+	OS_MMap->startHi = 30*1024*1024;
+	OS_MMap->sizeHi = 570*1024*1024;
+	OS_MMap->type = 11;
+	OS_MMap->reservedt = 0xFFE42;
+	++OS_MMap;/*
 	OS_MMap->startHi = 190*1024*1024;
 	OS_MMap->sizeHi = 410*1024*1024;
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
-	++OS_MMap;
-	OS_MMap->startHi = (600*1024*1024);
-	OS_MMap->sizeHi = (2*1024*1024*1024) - (600*1024*1024);
+	++OS_MMap;*/
+	OS_MMap->startHi = (700*1024*1024);
+	OS_MMap->sizeHi = (100*1024*1024);//(2*1024*1024*1024) - (600*1024*1024);
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 
 	++OS_MMap;
-	OS_MMap->startHi = (2*1024*1024*1024);
-	OS_MMap->sizeHi = (2*1024*1024*1024);
-	OS_MMap->type = 2;
+	OS_MMap->startHi = (800*1024*1024);
+	OS_MMap->sizeHi = (2*1024*1024*1024) - (800*1024*1024);
+	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 	/*
 	++OS_MMap;
@@ -92,7 +97,7 @@ void __attribute__((optimize("O0"))) setup_frameStack()
 	++mm;
 	while(1)
 	{
-		if(mm->type == 1)
+		if(mm->type == 1 || mm->type == 12)
 		{
 			for(uint32_t i = mm->startHi; i < mm->startHi + mm->sizeHi; i+=4096)
 			{
@@ -171,7 +176,7 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 
 	while(1)
 	{
-		if(mm->type == 2)
+		if(mm->type == 11)
 		{
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mm->sizeHi;

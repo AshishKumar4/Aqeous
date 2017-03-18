@@ -52,6 +52,8 @@
 #include "RandomLib/Random.c"
 
 #include "NeuralNetwork/Neuron/NeuralProcessing.c"
+
+#include "IPCInterface/IPCInterface.c"
 //#include "mathex.c"
 
 uint32_t initial_esp;
@@ -136,6 +138,8 @@ tss_struct_t *TSS;
 void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 {
 	console_init();
+
+	UNLOCK(printlock);
 	//setVesa(0x117);
 	init_descriptor_tables();	// Setup Descriptor tables for BSP
 
@@ -208,6 +212,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	console_dbuffer = (uint16_t*)console_dbuffer_original;
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
 	printf("\n\nInitializing MultiThreading System");
+	init_timer(1000);
 	asm volatile("sti");
 	init_multitasking();//*/
 	while(1);

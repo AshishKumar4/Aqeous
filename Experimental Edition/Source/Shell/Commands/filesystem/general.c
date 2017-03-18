@@ -9,6 +9,7 @@
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
 #include "tasking.h"
+#include "kb_handle.h"
 
 void Command_cp()
 {

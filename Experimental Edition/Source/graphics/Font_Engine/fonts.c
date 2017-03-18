@@ -15,6 +15,7 @@ void font_maker()
   make_2_Font();
   make_3_Font();
   make_4_Font();
+  make_5_Font();
 }
 
 void font_renderer(Character_t* ch, uint32_t x, uint32_t y, uint32_t colour, uint32_t sz, uint32_t thickness)

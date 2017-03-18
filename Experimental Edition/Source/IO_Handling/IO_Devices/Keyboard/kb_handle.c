@@ -18,7 +18,9 @@ void kb_io_init()
 void kb_getline(char* str, uint32_t length)
 {
   SchedulerKits_t* kit = Get_Scheduler();
+  PageDirectory_t* curr_dir = kit->curr_dir;
+  switch_directory(system_dir);
   Serial_input(str, length, KB_INPUT_FLAG, kit->current_task, 0, (serials_i_struct_t **)&kb_Start_q, (serials_i_struct_t **)&kb_Last_q, &kb_q_elements);
-  asm volatile("sti;\
-  int $50;");
+  asm volatile("int $50;");
+  switch_directory(curr_dir);
 }

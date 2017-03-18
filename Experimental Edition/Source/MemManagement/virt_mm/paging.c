@@ -53,7 +53,7 @@ Pdir_Capsule_t* pgdir_maker()
 /****/
 inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given PageDirectory_t
 {
-    map(0, 25*1024*1024, dir);
+    map(0, 8*1024*1024, dir);
 
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
 
@@ -66,9 +66,10 @@ inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given 
 
     for(int i = 0; i < total_CPU_Cores - 1; i++)
     {
-      map((uint32_t)st[i].stack,4096,(PageDirectory_t*)dir);
-      map((uint32_t)st[i].queue_start,4096*40,(PageDirectory_t*)dir);
-      map((uint32_t)st[i].Spurious_task,4096,(PageDirectory_t*)dir);
+      map(st[i].switcher,4096,(PageDirectory_t*)dir);
+      map(st[i].stack,4096*4,(PageDirectory_t*)dir);
+      map(st[i].queue_start,4096*40,(PageDirectory_t*)dir);
+      map(st[i].Spurious_task,4096,(PageDirectory_t*)dir);
     }
     map(2*1024*1024*1024, 1*1024*1024*1024, dir);
 }
@@ -174,7 +175,7 @@ page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
       {
           dir->table_entry[table_idx] = (table_t)phy_alloc4K();
 
-          map(dir->table_entry[table_idx], 4096, dir);
+    //      map(dir->table_entry[table_idx], 4096, dir);
 
           memset_fast((void*)dir->table_entry[table_idx], 0, 0x1000);
           table_t* entry = &dir->table_entry [table_idx];
@@ -203,7 +204,7 @@ void SwitchFrom_SysDir()
 
 }
 
-inline void switch_directory(PageDirectory_t *dir)
+void switch_directory(PageDirectory_t *dir)
 {
 	asm volatile("mov %0, %%cr3":: "r"((uint32_t)dir):"memory");
 }

@@ -30,6 +30,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mmap_info->sizeHi;
 			tmp_f->begin = mmap_info->startHi;
+			printf("\nAddr: %x Size: %x", tmp_f->begin, tmp_f->size);
 			++tmp_f;
 			++nb_f->entries;
 		}
@@ -42,6 +43,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 			++nb_u->entries;
 		}
 		++mmap_info;
+		if(mmap_info->reservedt != 0xFFE42) break;
 	}
 	nb_f->tail = (uint32_t*)tmp_f;
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
@@ -52,9 +54,10 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 
 uint32_t vmem(uint32_t size)
 {
-	Pdir_Capsule_t* curr_cap = _cur_pdirCap;
+	Pdir_Capsule_t* curr_cap = Get_Scheduler()->curr_dir;
 	PageDirectory_t* dir = &curr_cap->pdir;
 	//SwitchTo_SysDir();
+	switch_directory(system_dir);
 
 	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
 
@@ -94,12 +97,14 @@ uint32_t vmem(uint32_t size)
 		}
 		tm++;
 	}
+
 	//Create necessary page tables and pages for the allocated memory.
 	uint32_t pg_frame = baddr/4096;
 	uint32_t pd_off = pg_frame/1024;
 	uint32_t pt_off = pg_frame%1024;
 	if(!dir->table_entry[pd_off])
 	{
+		//printf("A");
 		//Create the table, and then the page.
 		table_t* entry = &dir->table_entry[pd_off];
 		*entry = phy_alloc4K();
@@ -110,6 +115,7 @@ uint32_t vmem(uint32_t size)
 	}
 	else
 	{
+		//printf("B");
 		PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
 		//Create the page.
 		page_t* pg = &pt->page_entry[pt_off];
@@ -121,6 +127,7 @@ uint32_t vmem(uint32_t size)
 				table_t* entry = &dir->table_entry[i/1024];
 				if(!entry)
 				{
+					//printf(" b2");
 					*entry = phy_alloc4K();
 					pd_entry_add_attrib (entry, I86_PDE_PRESENT);
 					pd_entry_add_attrib (entry, I86_PDE_WRITABLE);
@@ -130,23 +137,35 @@ uint32_t vmem(uint32_t size)
 				pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
 				pg = &pt->page_entry[0];
 			}
+			//printf(" b1");
 			*pg = 1027 | CUSTOM_PTE_AVAIL_2 | phy_alloc4K();
 			++pg;
 		}
 	}
 	if(size%4096)
 	{
+		//printf("C");
 		PageTable_t* pt = (PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(&dir->table_entry[pd_off]);
 		//Create the page.
 		page_t* pg = &pt->page_entry[pt_off];
-		if(!pg)
+		if(!*pg)
 		{
+			//printf(" c1");
 			uint32_t phy_mem = phy_alloc4K();
 			*pg = 1027 | CUSTOM_PTE_AVAIL_1 | phy_mem;
 		}
+	//	printf(" pp%d %d", pg, *pg);
 
 		//Make appropriate memory strips.
 	}
+/*
+	if(!(baddr%4096))
+	{
+		uint32_t* pgs =
+		for(int i = 0; i < )
+	}
+*/
+	switch_directory(dir);
 	//SwitchFrom_SysDir();
 	return baddr;
 }

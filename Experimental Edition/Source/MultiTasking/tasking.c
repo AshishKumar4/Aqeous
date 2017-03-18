@@ -14,6 +14,7 @@
 #include "FS_Handling.h"
 #include "apic.h"
 #include "pic.h"
+#include "hpet.h"
 #include "MManager/mmanagerSys.h"
 
 #include "cpu/cpu.h"
@@ -24,6 +25,9 @@
 
 #include "NeuralNetwork/Neuron/NeuralProcessing.h"
 #include "ProcManager/ProcManager.h"
+
+#include "IPCInterface/IPCInterface.h"
+#include "math.h"
 
 void idle()
 {
@@ -45,74 +49,136 @@ Process_t* test_proc;
 task_t* test_task;
 int tttt = 0;
 int bbb = 0;
+int *bby = &bbb;
 
 void test_thread()
 {
+  uint32_t cd = Get_Scheduler()->curr_dir;
+  /*
   while(1)
   {
+  //  printf("\nAa");
     if(bbb)
     {
-      asm volatile("cli");
-      printf("\nThis works!");
       bbb = 0;
-      uint32_t* tty = malloc(4096);
-      for(int i = 0; i < 10; i++)
-      {
-        tty[i] = i*2;
-      }
-    //  Randomizer();
-      for(int i = 0; i < 10; i++)
-      {
-        printf(" A%d", tty[i]);
-      }//*/
     }
     asm volatile("int $50");
+  }*/
+  asm volatile("cli");
+  bbb = 0;
+  char c[10];
+  c[0] = 'n';
+  printf("\nProgram to convert a Number to the ratio of 2 Natural Numbers-->\n");
+  while (c[0] != 'y')
+  {
+    int a = 1, b = 1;
+    long double d, e = 2;
+    char tmp[20];
+    printf("\nEnter the Number: ");
+    kb_getline(tmp, 20);
+    d = StrToInt(tmp);
+//    scanf("%d", (uint32_t)&d);
+    printf("as%d", d);
+    while (b != e)
+    {
+      a++;
+      b = a*d;
+      e = a*d;
+    }
+    printf("The value of Numerator: %x %s %x", b, "\nThe Value of Denominator: ", a);
+    printf("\n\nDo you Want to quit now? (y/n) ");
+
+    kb_getline(c, 10);
   }
+  tttt = 0;
+  kill();
+  asm volatile("int $50");
+  while(1);//*/
+  /*
+  int a = 0, b = 0, c = 0;
+  uint64_t d = 0;
+  while(1)
+  {
+    a = ReadFromCMOS();
+    if(a != b)
+    {
+      b = a;
+      ++c;
+      if((*HPET_main_counter%16666666) < 1000000)
+      {
+        printf("\n%d %d", c, *HPET_main_counter - d);
+        d = *HPET_main_counter;
+      }
+    }
+    asm volatile("int $50");
+  }*/
 }
 
+DECLARE_LOCK(test);
+#include "rand.h"
 void test_process()
-{/*
+{
+  //LOCK(test);
+/*
   Randomizer();
   printf("Seed1: %x Seed2: %x Seed3: %x\n", seed1, seed2, seed3);
 
   int j;
-  for(int i = 1; i < 1000; i++)
+  int cofactor = 0, coprime = 0;
+  int a = 0, b = 0;
+  for(int i = 0; i < 1000000; i++)
   {
-    for(j = 0; random()%1000 != i; j++);
-    printf("%d--", j);
-  }*/
+    a = random()%10000;
+    b = random()%10000;
+    if(!coprimes(a,b)) ++coprime;
+    else ++cofactor;
+  }
+  printf("\nCoPrimes: %d, CoFactors: %d", coprime, cofactor);
+  //*/
+  RandomnessCalculator(random, Randomizer, 10000, 100000);
+  printf("\n%d %d %d", coprimes(60,10), coprimes(27,128), coprimes(256, 255));
+//  Shell_sleep();
+/*//
   int value = StrToInt(CSI_Read(1));
   int threshold = StrToInt(CSI_Read(2));
 
   printf("%d %d", (int)CheckNeuralSCE(value, threshold), (int)powf(CONST_E, value - threshold));
+//*/
+  SchedulerKits_t* ttmp = MotherSpace;
+
+  for(int i = 0; i < total_CPU_Cores-1; i++)
+  {
+    printf("[%d]\t", ttmp->Core_Main_Lock);
+    ++ttmp;
+  }
+/*
+  asm volatile("cli");
 
   if(!tttt)
   {
-//    asm volatile("cli");
-/*
-    uint32_t* tm;
-    for(int i = 0; i < 10; i++)
-    {
-      tm = pgdir_maker();
-      Kernel_Mapper((PageDirectory_t*)tm);
-    }*/
-    test_proc = create_process("test_process", 0, 1, 0);
-  //  memcpy(test_proc->pgdir, system_dir, 4096);
-  //  pgdir_maker();
-  /*
-    test_proc->pgdir = tm;
-    Kernel_Mapper((PageDirectory_t*)tm);
-    map((uint32_t)test_proc,4096,(PageDirectory_t*)tm);*/
+    test_proc = create_process("test_process", 0, 1, kernel_proc);
 
     test_task = create_task("test_task", test_thread, 10, 0x202, test_proc);
-    Activate_task_direct(test_task);
+    Activate_task_direct(test_task);//, Get_Scheduler());
+  //  _kill(test_task);
 
     tttt = 1;
   }
   else
+  {
+    printf("Starting...");
     bbb = 1;
-
-  Shell_wakeup();
+  }
+/*
+  int a = StrToInt(CSI_Read(1)), b = StrToInt(CSI_Read(2)), c = StrToInt(CSI_Read(3)), d = StrToInt(CSI_Read(4));
+  int ff = (a<<0) | (b<<1) | (c<<2) | (d<<3);
+  printf("\n%d %d %d %d %d",ff, a, b, c, d);
+  value = ff;
+  printf("\n%d %d %d %d", (value & (1<<0))>>0, (value & (1<<1))>>1, (value & (1<<2))>>2, (value & (1<<3))>>3);
+/**/
+//  Shell_wakeup();
+  //delay1(1);
+//  UNLOCK(test);
   kill();
   asm volatile("int $50");
   while(1);
@@ -129,6 +195,7 @@ void tvkc1()
 
 void tasking_initiator()
 {
+  UNLOCK(test);
   SchedulerKits_t* kit = Get_Scheduler();
   Kernel_task = create_task("Main_Kernel",kernel_main, 0, 0x202, kernel_proc);
   Kernel_task->special = 2;
@@ -150,6 +217,10 @@ void tasking_initiator()
   {
     *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x3240; //Notifies the cores that its time to start scheduling...
   }
+
+  UNLOCK(TASK_LOCK_KILL);
+
+  UNLOCK(TASK_LOCK_ATD);
   asm volatile("sti;");
   kill();
   while(1);
@@ -176,7 +247,7 @@ void init_multitasking()
   Shell_Ostream_task = create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc);
   Activate_task_direct(Shell_Ostream_task);//, &KitList[0]); //This is the task which would make printing to console possible!
 
-  Shell_task = create_task("Shell_task", Shell, 5, 0x202, Shell_proc);  //Main shell task.
+  Shell_task = create_task("Shell_task", Shell, 15, 0x202, Shell_proc);  //Main shell task.
   //Shell_task->special = 1;
   Activate_task_direct(Shell_task);//, &KitList[0]);
 
@@ -189,6 +260,8 @@ void init_multitasking()
 
   SAS_proc = create_process("SAS", 0, 1, kernel_proc); //Scheduler Assistance System process.
   SAS_init();
+
+  IPC_init();
 
   //kit->reached_bottom = 0;
   tasking_initiator();

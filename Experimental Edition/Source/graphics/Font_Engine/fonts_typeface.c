@@ -243,7 +243,7 @@ void make_4_Font()
   Character_t* _4 = (Character_t*)kmalloc((sizeof(Bridge_t)*3) + 12);
   char_4 = _4;
   _4->length = 3;
-  _4->font_multiplier = 1;
+  _4->font_multiplier = 1.04;
 
   _4->bridges[0].x1 = 4;
   _4->bridges[0].x2 = 4;
@@ -264,28 +264,75 @@ void make_4_Font()
 
 void make_5_Font()
 {
-  Character_t* _5 = (Character_t*)kmalloc((sizeof(Bridge_t)*3) + 12);
+  Character_t* _5 = (Character_t*)kmalloc((sizeof(Bridge_t)*7) + 12);
   char_5 = _5;
-  _5->length = 3;
-  _5->font_multiplier = 1;
+  _5->length = 7;
+  _5->font_multiplier = 0.9;
 
   _5->bridges[0].x1 = 0;
-  _5->bridges[0].x2 = 1;
-  _5->bridges[0].y1 = 1;
+  _5->bridges[0].x2 = 4;
+  _5->bridges[0].y1 = 0;
   _5->bridges[0].y2 = 0;
 
-  _5->bridges[1].x1 = 1;
-  _5->bridges[1].x2 = 1;
+  _5->bridges[1].x1 = 0;
+  _5->bridges[1].x2 = 0;
   _5->bridges[1].y1 = 0;
-  _5->bridges[1].y2 = 8;
+  _5->bridges[1].y2 = 4;
 
   _5->bridges[2].x1 = 0;
   _5->bridges[2].x2 = 2;
-  _5->bridges[2].y1 = 8;
-  _5->bridges[2].y2 = 8;
+  _5->bridges[2].y1 = 4;
+  _5->bridges[2].y2 = 4;
 
+  _5->bridges[3].x1 = 2;
+  _5->bridges[3].x2 = 4;
+  _5->bridges[3].y1 = 4;
+  _5->bridges[3].y2 = 5;
+
+  _5->bridges[4].x1 = 4;
+  _5->bridges[4].x2 = 4;
+  _5->bridges[4].y1 = 5;
+  _5->bridges[4].y2 = 8;
+
+  _5->bridges[5].x1 = 4;
+  _5->bridges[5].x2 = 3;
+  _5->bridges[5].y1 = 8;
+  _5->bridges[5].y2 = 9;
+
+  _5->bridges[6].x1 = 3;
+  _5->bridges[6].x2 = 0;
+  _5->bridges[6].y1 = 9;
+  _5->bridges[6].y2 = 9;
+/*
+  _5->bridges[2].x1 = 0;
+  _5->bridges[2].x2 = 2;
+  _5->bridges[2].y1 = 8;
+  _5->bridges[2].y2 = 8;*/
 }
 
+void make_6_Font()
+{
+  Character_t* _6 = (Character_t*)kmalloc((sizeof(Bridge_t)*3) + 12);
+//  char_6 = _6;
+  _6->length = 3;
+  _6->font_multiplier = 1;
+/*
+  _4->bridges[0].x1 = 0;
+  _4->bridges[0].x2 = 1;
+  _4->bridges[0].y1 = 1;
+  _4->bridges[0].y2 = 0;
+
+  _4->bridges[1].x1 = 1;
+  _4->bridges[1].x2 = 1;
+  _4->bridges[1].y1 = 0;
+  _4->bridges[1].y2 = 8;
+
+  _4->bridges[2].x1 = 0;
+  _4->bridges[2].x2 = 2;
+  _4->bridges[2].y1 = 8;
+  _4->bridges[2].y2 = 8;
+*/
+}
 /*
 void make_ _Font()
 {

@@ -3,6 +3,8 @@
 #include <sys.h>
 #include <string.h>
 #include <cpu/cpu.h>
+#include "hpet.h"
+#include "cmos.h"
 
 
 //TODO: More optimizations
@@ -73,6 +75,24 @@ void test_handler()
   while(1);
 }
 
+extern void test_ttt();
+extern uint32_t t_c;
+
+uint32_t ddd = 0;
+extern uint32_t dbuff_run;
+
+void ttt_t()
+{
+  ++t_c;
+  if(t_c == 6)
+  {
+  //  printf(" A%d %d", (uint32_t)*HPET_main_counter - ddd, ReadFromCMOS());
+  //  ddd = (uint32_t)*HPET_main_counter;
+    dbuff_run = 1;
+    t_c = 0;
+  }
+}
+
 void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
 {
   //The limit is 1 less than our table size because this is the end address
@@ -121,7 +141,7 @@ void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
-  idtSetEntry(num++, (uint32_t)&test_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
+  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
@@ -188,7 +208,7 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
+  idtSetEntry(num++, (uint32_t)&test_ttt, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);

@@ -47,6 +47,17 @@ typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 
 #define abs(x) ((x<0)?-x:x) /* macro to return the absolute magnitude of a
 																				number */
 
+
+#define DECLARE_LOCK(name) volatile int name ## Locked
+#define LOCK(name) \
+	while (!__sync_bool_compare_and_swap(& name ## Locked, 0, 1)); \
+	__sync_synchronize();
+#define UNLOCK(name) \
+	__sync_synchronize(); \
+	name ## Locked = 0;
+
+DECLARE_LOCK(printlock);
+
 typedef struct
 {
     int inode_num;//This field will be index in the tarfs table

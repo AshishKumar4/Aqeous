@@ -27,7 +27,8 @@ typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU
     uint32_t main_pgdir;
     uint32_t mem_used;
     uint32_t task_id;
-    uint32_t* Scheduler;
+    SchedulerKits_t* Scheduler;
+    uint32_t delivery_flag; //For checking if any applied function on the task is executed or not
     char name[50]; //Parent Process name
 }task_t;
 
@@ -41,6 +42,9 @@ typedef struct __attribute__((packed)) task_table
     struct task_table* next;
     struct task_table* back;
 }task_table_t;
+
+DECLARE_LOCK(TASK_LOCK_KILL);
+DECLARE_LOCK(TASK_LOCK_ATD);
 
 void Activate_task(task_table_t* task_entry);
 
@@ -56,9 +60,15 @@ void Task_sleep(task_t* task);
 
 void Task_wakeup(task_t* task);
 
+void Task_wakeup_direct(task_t* task);
+
+void Task_Swap(task_t* new, task_t* original);
+
 #include "process.h"
 
 task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flags, Process_t* process);
+
+void Task_Refresh(task_t* task, func_t func);
 
 void Priority_changer(task_t* task, uint32_t new_priority);
 

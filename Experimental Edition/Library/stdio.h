@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <console.h>
+#include <common.h>
 
 void* (*kmalloc)(uint32_t);
 extern void kb_getline(char* str, uint32_t length);
@@ -78,31 +79,36 @@ int scanf(const char* restrict format, ...)
 		if( *format == 'd')
 		{
 			format++;
-			uint32_t* c = va_arg(parameters, uint32_t);
-			char* st = kmalloc(15);
-			kb_getline(st, 10);
+			uint32_t* c = (uint32_t*)va_arg(parameters, uint32_t);
+			char st[15];
+			kb_getline(st, 15);
 			*c = StrToInt(st);
 		}
 		else if( *format == 's')
 		{
 			format++;
-			uint32_t* c = va_arg (parameters, int);
-			char st[10];
-			kb_getline(st, 10);
-			*c = st;
+			uint32_t* c = (uint32_t*)va_arg (parameters, uint32_t);
+			char st[50];
+			kb_getline(st, 50);
+			strcpy((char*)c, st);
 		}
 		else
 		{
 			goto _incomprehensible_conversion;
 		}
 	}
-	_printf("u");
+	va_end(parameters);
+
+	plock = 0;
+	return written;
 }
+
 
 int printf(const char* restrict format, ...)
 {
-	while(plock);
-	plock = 1;
+	/*while(plock);
+	plock = 1;*/
+	LOCK(printlock);
 	if(multitasking_ON)
 	{
 		va_list parameters;
@@ -155,6 +161,11 @@ int printf(const char* restrict format, ...)
 	        {
 	            format++;
 	            int c = va_arg (parameters, int);
+							if(c < 0)
+							{
+								_print("-", 1);
+								c = -c;
+							}
 	            _printint(c);
 	        }
 	        else if(*format == 'l'||*format == 'x') //uint32_t
@@ -172,6 +183,25 @@ int printf(const char* restrict format, ...)
 							else
 								console_color = c;
 	        }
+
+	        else if(*format == 'f') //float
+	        {
+	            format++;
+	            double c = va_arg (parameters, double);
+							if(c < 0)
+							{
+								_print("-", 1);
+								c = -c;
+							}
+							uint32_t in = (uint32_t)(int)c;
+							double d = (double)c;
+							d -= in;
+							d *= 10000000;
+							_printint(in);
+							_print(".", 1);
+							in = (int)d;
+							_printint(in);
+	        }
 			else
 			{
 				goto _incomprehensible_conversion;
@@ -180,6 +210,8 @@ int printf(const char* restrict format, ...)
 
 		va_end(parameters);
 		plock = 0;
+
+		UNLOCK(printlock);
 		return written;
 	}
 	else
@@ -266,6 +298,7 @@ int printf(const char* restrict format, ...)
 		va_end(parameters);
 
 		plock = 0;
+		UNLOCK(printlock);
 		return written;
 	}
 }

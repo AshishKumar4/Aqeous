@@ -104,7 +104,7 @@ void SwitchTo_SysDir();
 
 void SwitchFrom_SysDir();
 
-inline void switch_directory(PageDirectory_t *dir);
+void switch_directory(PageDirectory_t *dir);
 
 inline void switch_pCap(Pdir_Capsule_t* pcap);
 

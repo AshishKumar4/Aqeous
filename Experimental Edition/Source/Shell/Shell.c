@@ -20,18 +20,13 @@
 
 uint32_t VGA_size;
 
+DECLARE_LOCK(a);
+
 void init_shell()
 {
-//  VGA_buffer_location = 3745513472;
-// VGA_buffer = 0xCF000000;
-// (uint16_t*)VGA_buffer_location;
-//  VGA_buffer_ptr = VGA_buffer;
-
-//printf("\nASD %x %x", &consolerow, &consolecolumn);
 	consolerow = 0;
 	consolecolumn = 0;
-//  console_buffer = vga_mem;
-//printf("\nASD");
+
 	memset_fast((void*)console_dbuffer, 0, 4194304);
 	VGA_size = VGA_WIDTH*VGA_HEIGHT/2;
 	shell_buf = (char*)kmalloc(4096);
@@ -47,6 +42,10 @@ void init_shell()
 	memset(console_buffer,0,VGA_size*4);
 	Enable_SSE();
 	console_manager_init();
+	shell_cmdTask = create_task("shell_cmdTask", Shell_cmdWrapper, 16, 0x202, Shell_proc);
+
+	UNLOCK(a);
+	UNLOCK(SHELL_CMDTASK);
 }
 
 void __attribute__((optimize("O0"))) Shell_Double_buffer()
@@ -81,7 +80,7 @@ void __attribute__((optimize("O0"))) Shell_Double_buffer()
 	 }
 }
 
-void Shell_Input()
+void __attribute__((optimize("O2"))) Shell_Input()
 {
 	while(1)
 	{
@@ -102,16 +101,19 @@ void Shell_Input()
 					kb_buff = 0;
 
 					Task_wakeup(kb_Start_q->task);
-					Shell_wakeup();
+				//	printf("%s",tmp);
+					//Shell_wakeup();
 					memset_faster((uint32_t*)kb_Start_q, 0, 4);
 					kb_Start_q = kb_Start_q->next;
 					--kb_q_elements;
 					//TODO: Load the next element
 					Current_buf = (uint8_t*)kb_Start_q->buffer;
 					Current_strlen = 0;
+
 				}
 				else if(shell_awake)  //TODO: Give all input to the Shell Directly!
 				{
+					//_printf("AOO %d %d %d", kb_q_elements, shell_sleeping, shlock);
 					Priority_promoter(Shell_task);
 					shell_in = 1;
 					shell_buf = Istream_ptr - kb_buff;
@@ -119,9 +121,10 @@ void Shell_Input()
 				}
 				else
 				{
-					_printf("ALERT");
-					Shell_wakeup();
+					_printf("ALERT %d %d %d", kb_q_elements, shell_sleeping, shlock);
+					//Shell_wakeup();
 				}
+
 				++Istream_ptr;
 				*(Istream_ptr) = '\0';
 				++Istream_ptr;
@@ -132,8 +135,9 @@ void Shell_Input()
 	}
 }
 
-void Shell_CFexecute(uint32_t* buffer, uint32_t sz)
+void __attribute__((optimize("O2"))) Shell_CFexecute(uint32_t* buffer, uint32_t sz)
 {
+	Shell_sleep();
 	char* pt = buffer;
 	uint32_t c = 0;
 	pt[sz] = '\0';
@@ -145,7 +149,7 @@ void Shell_CFexecute(uint32_t* buffer, uint32_t sz)
 		for(; *pp != '\n' && *pp != '\0'; pp++);
 		*pp = '\0';
 		printf("\n->\"%s\"",pt);
-		Shell_command_locator(pt);
+		Shell_command_locator_CC(pt);
 		*Shell_Istream = (uint32_t)pt;
 		++Shell_Istream;
 		//shell_in = 0;
@@ -153,6 +157,7 @@ void Shell_CFexecute(uint32_t* buffer, uint32_t sz)
 		c += pp - pt + 1;
 		pt = pp + 1;
 	}
+	Shell_wakeup();
 }
 /*
 void Shell_Finput()
@@ -171,18 +176,19 @@ void Shell_Foutput()
 	}
 }
 */
-void Shell()
+void __attribute__((optimize("O0"))) Shell()
 {
 	while(1)
 	{
 		if(shell_awake)
 		{
-			_printf("\n%g%s%g>%g",12,curr_dir.full_name,10,11);
+			printf("\n%g%s%g>%g",12,curr_dir.full_name,10,11);
 			while(!shell_in)
 			{
 		//		printf("B%x--",KitList[1].reached_bottom);
 				asm volatile("int $50");
 			}
+			asm volatile("cli");
 			printf("%g",15);
 			//asm volatile("cli");
 			//console_manager((char*)shell_buf);
@@ -221,29 +227,47 @@ void Shell_scrollDown()
 
 void Shell_sleep()  //TODO: Make the Shell task to sleep.
 {
-	asm volatile("cli");
-	if(!shell_sleeping)
+
+	LOCK(a);
+	printf("\nAppxx");
+	if(shell_sleeping == 0)
 	{
-		uint32_t* shell_place_holder = (uint32_t*)Shell_task->active;
-		*shell_place_holder = (uint32_t)Get_Scheduler()->Spurious_task;
-		Shell_task->active = 0;
+		Task_sleep(Shell_task);
 		shell_awake = 0;
+		shell_sleeping = 0;
+	}
+	else if (shell_sleeping < 0)
+	{
+		printf("\nError_537");
+		asm volatile("hlt");
 	}
 	++shell_sleeping;
-	asm volatile("sti");
+	//shlock = 0;
+	UNLOCK(a);
+	//asm volatile("sti");
 }
 
 void Shell_wakeup()
 {
-	asm volatile("cli");
+
+	LOCK(a);
 	--shell_sleeping;
-	if(!shell_sleeping)
+	printf("---IOPPOIOPI--");
+	if(shell_sleeping == 0)
 	{
 		//Shell_task->Scheduler = FindLightestScheduler();
 		Task_wakeup(Shell_task);
 		shell_awake = 1;
+		shell_sleeping = 0;
 	}
-	asm volatile("sti");
+	else if (shell_sleeping < 0)
+	{
+		printf("\nError_537");
+		asm volatile("hlt");
+	}
+	//shlock = 0;
+	UNLOCK(a);
+	//asm volatile("sti");
 }
 
 void del_eos(char str[], char ch)
@@ -265,6 +289,29 @@ void del_eos(char str[], char ch)
 			}
 	 }
 	 str1[j] = '\0';
+}
+
+volatile int shcml = 0;
+
+void shcmlRemove()
+{
+	shcml = 0;
+}
+
+void Shell_cmdWrapper()
+{
+	//LOCK(SHELL_CMDTASK);
+	asm volatile("cli");
+	//Shell_sleep();
+	shell_awake = 0;
+	shell_cmdFunc();
+
+	Task_Swap(Shell_task, shell_cmdTask);
+	Task_sleep(shell_cmdTask);
+	shell_awake = 1;
+	asm volatile("int $50");
+	while(1)
+		asm volatile("int $50");
 }
 
 const char* space = " ";
@@ -296,7 +343,7 @@ int Shell_command_locator(char *inst)
 	 if(tmp <= 2048)
 	 {
 			uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
-			if(!strcmp(((Shell_Commands_t*)ptr)->command, tmpstr))
+			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
 				 /*
@@ -317,6 +364,78 @@ int Shell_command_locator(char *inst)
 						++CSI_entries_ptr;
 						++*tot_entries;*/
 						//_printf(" %s", tmpstr);
+						tmpstr = strtok(NULL, " ");
+
+						if(tmpstr== NULL) break;
+						*CSI_entries_ptr = (uint32_t)tmpstr;
+
+						if(tmpstr[0] == '\"')
+						{
+							++tmpstr;
+
+							*CSI_entries_ptr = (uint32_t)tmpstr;
+
+							for(;tmpstr[strlen(tmpstr)-1] != '\"';)
+							{
+								tmpstr[strlen(tmpstr)] = ' ';
+								tmpstr = strtok(NULL, " ");
+							}
+							tmpstr[strlen(tmpstr)-1] = '\0';
+						}
+
+						++CSI_entries_ptr;
+						++*tot_entries;
+
+				 }
+				 shell_cmdFunc = func;
+			//	 _printf("23");
+				 Task_Refresh(shell_cmdTask, Shell_cmdWrapper);
+				 Task_Swap(shell_cmdTask, Shell_task);
+
+				 	asm volatile("int $50");
+				 //Task_sleep(shell_cmdFunc);
+//*/
+				 //func();
+				 memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
+				 CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
+				 return ((Shell_Commands_t*)ptr)->reserved;
+			}
+			else
+			{
+					_printf("\n Command Not Recognized! type help for help %x\n", tmpstr ); //TODO: Search within other possible files/executables like in the PATH string.
+					return -1;
+			}
+	 }
+	 else
+	 {
+			_printf("\n Command Not Recognized! type help for help\n");
+			return -1;
+	 }
+}
+
+int Shell_command_locator_CC(char *inst)
+{
+	 uint32_t tmp = 0;
+
+	 char* tmpstr = strtok(inst, " ");
+	 int i;
+	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
+	 {
+			if((uint32_t)tmpstr[i] >= 97)
+				 tmp += (((uint32_t)tmpstr[i]) - 97)*(i+1);
+			else
+				 tmp += (((uint32_t)tmpstr[i]) - 65)*(i+1);
+	 }
+	 if(tmp <= 2048)
+	 {
+			uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
+			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
+			{
+				 func_t func = ((Shell_Commands_t*)ptr)->func;
+				 *tot_entries = 0;
+				// char* tmp2str = tmpstr;
+				 for(; ;) //Provide them the options and values provided by the user.
+				 {
 						tmpstr = strtok(NULL, " ");
 
 						if(tmpstr== NULL) break;

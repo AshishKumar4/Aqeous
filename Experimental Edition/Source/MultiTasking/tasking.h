@@ -56,4 +56,9 @@ extern void Scheduler_init_end_t();
 extern void Scheduler_init();
 void MP_init_Sequence();
 
+
+void test_process();
+void tasking_initiator();
+void init_multitasking();
+
 #endif

@@ -88,6 +88,7 @@ void RectD(int x, int y, int width, int height, int C)
 }
 
 extern void mouse_handler();
+uint32_t dbuff_run;
 
 uint32_t xa = 0,xb=0;
 unsigned char buffer = 90;
@@ -112,9 +113,18 @@ void __attribute__((optimize("O0"))) DBuff()
   uint32_t offset = 0;
   uint32_t dv = depthVESA/8;
   Enable_SSE();
+
+  int a = 0;
+  int ttl = 0;
+
   while(1)
   {
+    while(!dbuff_run)
+    {
+      asm volatile("int $50");
+    }
     asm volatile("cli");
+    dbuff_run = 0;//*/
     /*
     for(uint32_t _n = szn; _n != 0; _n--)
     {
@@ -143,8 +153,8 @@ void __attribute__((optimize("O0"))) DBuff()
       sp += 512 - (cx1-cx0);
       mp += 512 - (cx1-cx0);
     }*/
-    //a++;
-    //Pixel_VESA(a,768-a,20);
+
+
 
     for(uint32_t _i = (cy1 - cy0); _i != 0; _i--)
     {
@@ -152,16 +162,17 @@ void __attribute__((optimize("O0"))) DBuff()
       //memcpy_sse(dp,sp,(cx1-cx0)/8);
       asm volatile("mov %%eax, %%edi;\
                     mov %%ebx, %%esi;\
-                    rep movsd;"::"a"(dp), "b"(sp), "c"(cx1-cx0));//*/
+                    rep movsd;"::"a"(dp), "b"(sp), "c"(cx1-cx0));
       dp += 512;
       sp += 512;
     //  mp += 512;
-    }
+    }//*/
     cx0 = 512;
     cx1 = 512;
     cy0 = 384;
     cy1 = 384;
-    //memcpy_rep(dp,sp,1024*768);
+  //  memcpy_sse(dp,sp,(1024*768)/64);
+  //  memcpy_rep(dp,sp,(1024*768));
     asm volatile("int $50");
   }
 }
@@ -373,24 +384,25 @@ void Mouse_Plot()
            //offset += dv;
         }
     }//*/
+
     for(int i=20;i > 0 ;i--)
     {
         offset = mousex * dv + (mousey+i) * widthVESA * dv;
         tmp = (uint16_t*)(mouse_buff + offset);
         mbf = (uint16_t*)(buff + offset);
         if(i < 13)
-            for (int j=0;j <  i ;j++)
+            for (int j = i; j > 0; j--)
             {
                *mbf++ = *tmp++;
             }
         else
-            for(int j=0;j<18 - i;j++)
+            for(int j=18-i;j>0;j--)
             {
               *mbf++ = *tmp++;
             }
     }
 
-    refresh_area(mousex-5,mousey-5,25+mousex,25+mousey);
+    refresh_area(mousex-5,mousey-5,25+mousex,25+mousey);//*/
   //  if(mousex < -mousedeltax)  mousex = 0;
   //  else mousex += mousedeltax;
   //  if(mousey < mousedeltay) mousey = 0;
@@ -407,13 +419,13 @@ void Mouse_Plot()
         tmp = (uint16_t*)(mouse_buff + offset);
         mbf = (uint16_t*)(buff + offset);
         if(i < 13)
-            for (int j=0;j <  i ;j++)
+            for (int j = i; j > 0; j--)
             {
               *tmp++ = *mbf;
               *mbf++ = 0xffff;
             }
         else
-            for(int j=0;j<18 - i;j++)
+            for(int j=18-i;j>0;j--)
             {
               *tmp++ = *mbf;
               *mbf++ = 0xffff;
