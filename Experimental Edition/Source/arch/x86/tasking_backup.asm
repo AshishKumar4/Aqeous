@@ -1,4 +1,4 @@
-
+; contains code for reference, easy understanding of concepts
 [GLOBAL switcher_ksp]
 
 switcher_ksp:                         ; Alternate Scheduler + context swithcher, for kerenl space Scheduling.

@@ -112,10 +112,7 @@ void __attribute__((optimize("O0"))) DBuff()
 //  uint_fast32_t *mp = (uint_fast32_t*) mouse_buff;
   uint32_t offset = 0;
   uint32_t dv = depthVESA/8;
-  Enable_SSE();
-
-  int a = 0;
-  int ttl = 0;
+//  Enable_SSE();
 
   while(1)
   {

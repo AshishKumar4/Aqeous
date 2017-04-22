@@ -191,7 +191,7 @@ void pageFault_caller()
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
   //  uint32_t faulting_address;
-  /*  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");*/
+  //  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");
     printf("\nPage Fault");
     asm volatile("hlt");/*
     Shell_Double_buffer();

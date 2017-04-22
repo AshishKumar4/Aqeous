@@ -28,6 +28,7 @@
 
 #include "IPCInterface/IPCInterface.h"
 #include "math.h"
+#include "common.h"
 
 void idle()
 {
@@ -54,104 +55,35 @@ int *bby = &bbb;
 void test_thread()
 {
   uint32_t cd = Get_Scheduler()->curr_dir;
-  /*
-  while(1)
-  {
-  //  printf("\nAa");
-    if(bbb)
-    {
-      bbb = 0;
-    }
-    asm volatile("int $50");
-  }*/
   asm volatile("cli");
-  bbb = 0;
-  char c[10];
-  c[0] = 'n';
-  printf("\nProgram to convert a Number to the ratio of 2 Natural Numbers-->\n");
-  while (c[0] != 'y')
-  {
-    int a = 1, b = 1;
-    long double d, e = 2;
-    char tmp[20];
-    printf("\nEnter the Number: ");
-    kb_getline(tmp, 20);
-    d = StrToInt(tmp);
-//    scanf("%d", (uint32_t)&d);
-    printf("as%d", d);
-    while (b != e)
-    {
-      a++;
-      b = a*d;
-      e = a*d;
-    }
-    printf("The value of Numerator: %x %s %x", b, "\nThe Value of Denominator: ", a);
-    printf("\n\nDo you Want to quit now? (y/n) ");
 
-    kb_getline(c, 10);
-  }
+  printf("Test Thread worked perfectly!!!");
+
   tttt = 0;
   kill();
   asm volatile("int $50");
-  while(1);//*/
-  /*
-  int a = 0, b = 0, c = 0;
-  uint64_t d = 0;
-  while(1)
+  while(1);
+}
+
+void AP_c_Booter()
+{
+  asm volatile("cli");
+
+  for(int i = CORES_BOOT_SINGLE_SQ; i < (total_CPU_Cores - 1); i++)
   {
-    a = ReadFromCMOS();
-    if(a != b)
-    {
-      b = a;
-      ++c;
-      if((*HPET_main_counter%16666666) < 1000000)
-      {
-        printf("\n%d %d", c, *HPET_main_counter - d);
-        d = *HPET_main_counter;
-      }
-    }
-    asm volatile("int $50");
-  }*/
+    
+  }
+  kill();
+  while(1);
 }
 
 DECLARE_LOCK(test);
 #include "rand.h"
 void test_process()
 {
-  //LOCK(test);
-/*
-  Randomizer();
-  printf("Seed1: %x Seed2: %x Seed3: %x\n", seed1, seed2, seed3);
+  LOCK(test);
 
-  int j;
-  int cofactor = 0, coprime = 0;
-  int a = 0, b = 0;
-  for(int i = 0; i < 1000000; i++)
-  {
-    a = random()%10000;
-    b = random()%10000;
-    if(!coprimes(a,b)) ++coprime;
-    else ++cofactor;
-  }
-  printf("\nCoPrimes: %d, CoFactors: %d", coprime, cofactor);
-  //*/
-  RandomnessCalculator(random, Randomizer, 10000, 100000);
-  printf("\n%d %d %d", coprimes(60,10), coprimes(27,128), coprimes(256, 255));
-//  Shell_sleep();
-/*//
-  int value = StrToInt(CSI_Read(1));
-  int threshold = StrToInt(CSI_Read(2));
 
-  printf("%d %d", (int)CheckNeuralSCE(value, threshold), (int)powf(CONST_E, value - threshold));
-//*/
-  SchedulerKits_t* ttmp = MotherSpace;
-
-  for(int i = 0; i < total_CPU_Cores-1; i++)
-  {
-    printf("[%d]\t", ttmp->Core_Main_Lock);
-    ++ttmp;
-  }
-/*
   asm volatile("cli");
 
   if(!tttt)
@@ -169,16 +101,6 @@ void test_process()
     printf("Starting...");
     bbb = 1;
   }
-/*
-  int a = StrToInt(CSI_Read(1)), b = StrToInt(CSI_Read(2)), c = StrToInt(CSI_Read(3)), d = StrToInt(CSI_Read(4));
-  int ff = (a<<0) | (b<<1) | (c<<2) | (d<<3);
-  printf("\n%d %d %d %d %d",ff, a, b, c, d);
-  value = ff;
-  printf("\n%d %d %d %d", (value & (1<<0))>>0, (value & (1<<1))>>1, (value & (1<<2))>>2, (value & (1<<3))>>3);
-/**/
-//  Shell_wakeup();
-  //delay1(1);
-//  UNLOCK(test);
   kill();
   asm volatile("int $50");
   while(1);
@@ -255,8 +177,8 @@ void init_multitasking()
   Activate_task_direct(Shell_Istream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
   //Shell_Istream_task->special = 1;
 
-  Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
-  Idle_task->special = 1;
+//  Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
+//  Idle_task->special = 1;
 
   SAS_proc = create_process("SAS", 0, 1, kernel_proc); //Scheduler Assistance System process.
   SAS_init();
