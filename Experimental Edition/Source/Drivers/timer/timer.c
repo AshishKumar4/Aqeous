@@ -75,9 +75,9 @@ float volatile delay_dump=0;
 
 void delay1(uint32_t ms)
 {
-    Randomizer();
+    srandInit();
     float volatile k=0;
-    for(uint32_t i=0; i<ms*128;i++)
+    for(uint32_t i=0; i<ms*512;i++)
       {
         srand(i+100);
         for(int j=0; j<500; j++)

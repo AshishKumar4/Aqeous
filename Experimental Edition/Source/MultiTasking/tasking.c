@@ -28,7 +28,6 @@
 
 #include "IPCInterface/IPCInterface.h"
 #include "math.h"
-#include "common.h"
 
 void idle()
 {
@@ -55,52 +54,76 @@ int *bby = &bbb;
 void test_thread()
 {
   uint32_t cd = Get_Scheduler()->curr_dir;
+  /*
+  while(1)
+  {
+  //  printf("\nAa");
+    if(bbb)
+    {
+      bbb = 0;
+    }
+    asm volatile("int $50");
+  }*/
   asm volatile("cli");
+  bbb = 0;
+  char c[10];
+  c[0] = 'n';
+  printf("\nProgram to convert a Number to the ratio of 2 Natural Numbers-->\n");
+  while (c[0] != 'y')
+  {
+    int a = 1, b = 1;
+    long double d, e = 2;
+    char tmp[20];
+    printf("\nEnter the Number: ");
+    kb_getline(tmp, 20);
+    d = StrToInt(tmp);
+//    scanf("%d", (uint32_t)&d);
+    printf("as%d", d);
+    while (b != e)
+    {
+      a++;
+      b = a*d;
+      e = a*d;
+    }
+    printf("The value of Numerator: %x %s %x", b, "\nThe Value of Denominator: ", a);
+    printf("\n\nDo you Want to quit now? (y/n) ");
 
-  printf("Test Thread worked perfectly!!!");
-
+    kb_getline(c, 10);
+  }
   tttt = 0;
   kill();
   asm volatile("int $50");
-  while(1);
-}
-
-void AP_c_Booter()
-{
-  asm volatile("cli");
-
-  for(int i = CORES_BOOT_SINGLE_SQ; i < (total_CPU_Cores - 1); i++)
+  while(1);//*/
+  /*
+  int a = 0, b = 0, c = 0;
+  uint64_t d = 0;
+  while(1)
   {
-    
-  }
-  kill();
-  while(1);
+    a = ReadFromCMOS();
+    if(a != b)
+    {
+      b = a;
+      ++c;
+      if((*HPET_main_counter%16666666) < 1000000)
+      {
+        printf("\n%d %d", c, *HPET_main_counter - d);
+        d = *HPET_main_counter;
+      }
+    }
+    asm volatile("int $50");
+  }*/
 }
 
 DECLARE_LOCK(test);
 #include "rand.h"
 void test_process()
 {
-  LOCK(test);
-
-
-  asm volatile("cli");
-
-  if(!tttt)
-  {
-    test_proc = create_process("test_process", 0, 1, kernel_proc);
-
-    test_task = create_task("test_task", test_thread, 10, 0x202, test_proc);
-    Activate_task_direct(test_task);//, Get_Scheduler());
-  //  _kill(test_task);
-
-    tttt = 1;
-  }
-  else
-  {
-    printf("Starting...");
-    bbb = 1;
-  }
+  printf("=>%d\t", pmem_4k(8192));
+  printf("=>%d\t", pmem_4k(8192));
+  printf("=>%d\t", pmem_4k(8192));
+  printf("=>%d\t", pmem_4k(8192));
+  printf("=>%d\t", pmem_4k(8192));
+  mdbug();
   kill();
   asm volatile("int $50");
   while(1);
@@ -177,8 +200,8 @@ void init_multitasking()
   Activate_task_direct(Shell_Istream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
   //Shell_Istream_task->special = 1;
 
-//  Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
-//  Idle_task->special = 1;
+  Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run
+  Idle_task->special = 1;
 
   SAS_proc = create_process("SAS", 0, 1, kernel_proc); //Scheduler Assistance System process.
   SAS_init();

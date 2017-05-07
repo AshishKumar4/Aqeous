@@ -67,7 +67,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
   SchedulerKits_t* kits = (SchedulerKits_t*)MotherSpace;
 
 
-  for(int i = 0; i < (total_CPU_Cores - 1)%CORES_BOOT_SINGLE_SQ; i++)
+  for(int i = 0; i < total_CPU_Cores - 1; i++)
   {
     printf("\nCore #%x Initialized",i+1);
     nspace = phy_alloc4K();

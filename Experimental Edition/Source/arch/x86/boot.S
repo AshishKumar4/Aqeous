@@ -24,7 +24,7 @@ stack_top:
 .type _start, @function
 _start:
 	#movl $52428800, %esp //The Kernel stack shall be from 50th
-	;push %esp
+	push %ebx
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early
 

@@ -58,6 +58,8 @@ void Setup_PhyMEM();
 
 void* pmem(uint32_t size);
 
+void* pmem_4k(uint32_t pages);
+
 void pfree(void* addr);
 
 inline uint32_t pmalloc();

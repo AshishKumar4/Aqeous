@@ -16,7 +16,18 @@ void Randomizer()
 }
 
 uint32_t random()
-{
+{/*
+  uint32_t  random = (seed2/seed3)*97 + 1023*seed2;
+  random *= (seed1*seed1*524287);
+  random /= 1023;
+  random += ((seed2*(random%3))*(seed1*(random%2)))*(random%5);
+  seed1 = (seed1 + seed2*seed3 + 1)%127 + (seed2%100) + 1;
+  seed2 = (uint32_t)(seed2 + random*178481)/3;
+  seed3 = ((seed3 + seed2*seed1)/((seed1/57)+3))%8191 + seed1;  /*
+  seed1 = (seed2 % 100) + 1;
+  seed2 = (uint32_t)(seed2*178481);
+  seed3 = ((seed3 + random/seed1)%524287) + 1; //*/
+  //printf("S1: %x S2: %x S3: %x\n", seed1, seed2, seed3);
   double r = seed1*1023*97 + seed3*255*19 + seed2;
   r /= (seed3+3)*3;
   uint32_t random = (uint32_t)(r);

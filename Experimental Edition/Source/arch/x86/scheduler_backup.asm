@@ -1,4 +1,3 @@
-; contains code for reference, easy understanding of concepts
 section .bss
 
 section .text

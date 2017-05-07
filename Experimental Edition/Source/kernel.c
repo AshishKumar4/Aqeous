@@ -107,7 +107,9 @@ void dbug()
 	printf("Now Freeing the memory!\n");
 	//free(temp2);
 	kfree(test1);
-
+//	kfree(temp2);
+	//free(test3);
+///*
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*temp1);
@@ -147,7 +149,13 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 //	while(1);
 	printf("\nDESCRIPTOR TABLES INITIALIZED \n");
 	printf("\nEnabling ACPI!\n");
-	
+/*	initAcpi();
+	if(!acpiEnable())
+		printf("\nACPI Initialized\n");
+	else printf("\nACPI CANT BE INITIALIZED\n");
+		//ioapic_init();
+*/
+//	mouseinit();
 	printf("\nMouse Drivers initialized\n");
 	keyboard_init();
 	printf("\nKeyboard Drivers Initialized\n");
@@ -174,8 +182,10 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 
 
 	Setup_Paging();
+
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
+	
 /*
 	Pdir_Capsule_t* dir = pgdir_maker();
 	memset(&dir->pdir, 0, 4096);
@@ -219,6 +229,5 @@ void kernel_start()
 
 void kernel_main()
 {
-	while(1)
-		asm volatile("hlt");
+	while(1);
 }

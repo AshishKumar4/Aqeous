@@ -20,16 +20,18 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 	nb_u->changed = 0;
 	nb_f->changed = 0;
 
+	MemRegion_t* mm = Fmemmap;
+
 	//MemRegion_t* mm = mmap_info;
 	CustomCSRB_M_t* tmp_f = (CustomCSRB_M_t*)nb_f->head;
 	CustomCSRB_M_t* tmp_u = (CustomCSRB_M_t*)nb_u->head;
-	for(int i = 0; mmap_info; i++)
+	for(int i = 0; mm; i++)
 	{
-		if(mmap_info->type < 7)
+		if(mm->type < 7)
 		{
 			tmp_f->addr = (uint32_t*)tmp_f;
-			tmp_f->size = mmap_info->sizeHi;
-			tmp_f->begin = mmap_info->startHi;
+			tmp_f->size = mm->sizeHi;
+			tmp_f->begin = mm->startHi;
 			printf("\nAddr: %x Size: %x", tmp_f->begin, tmp_f->size);
 			++tmp_f;
 			++nb_f->entries;
@@ -37,13 +39,13 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 		else
 		{
 			tmp_u->addr = (uint32_t*)tmp_u;
-			tmp_u->size = mmap_info->sizeHi;
-			tmp_u->begin = mmap_info->startHi;
+			tmp_u->size = mm->sizeHi;
+			tmp_u->begin = mm->startHi;
 			++tmp_u;
 			++nb_u->entries;
 		}
-		++mmap_info;
-		if(mmap_info->reservedt != 0xFFE42) break;
+		++mm;
+		if(mm->reservedt != 0xFFE42) break;
 	}
 	nb_f->tail = (uint32_t*)tmp_f;
 	tmp_f->addr = nb_f->head;   //Make last one to point to first one.
