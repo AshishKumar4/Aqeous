@@ -29,6 +29,8 @@
 #include "IPCInterface/IPCInterface.h"
 #include "math.h"
 
+#include "CancerTherapy/CancerCure.c"
+
 void idle()
 {
   //scheduler();
@@ -118,12 +120,16 @@ DECLARE_LOCK(test);
 #include "rand.h"
 void test_process()
 {
+/*  printf("=>%d\t", pmem_4k(8192));
   printf("=>%d\t", pmem_4k(8192));
   printf("=>%d\t", pmem_4k(8192));
   printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));
-  mdbug();
+  printf("=>%d\t", pmem_4k(8192));//*/
+  uint32_t w = 0xffafafaf;
+  uint32_t alpha = 0xa0000000;
+  alpha |= (alpha>>8) | (alpha>>16) | (alpha>>24);
+  printf("\nw=%x, w>>24=%x, (w*(w>>24))/0xff=%x, alpha=%x, w&alpha=%x w^alpha", w, (w>>24), (w*(w>>24))/0xff, alpha, w&alpha, w^alpha);
+  //mdbug();
   kill();
   asm volatile("int $50");
   while(1);
@@ -141,6 +147,8 @@ void tvkc1()
 void tasking_initiator()
 {
   UNLOCK(test);
+  CancerCure_init();
+
   SchedulerKits_t* kit = Get_Scheduler();
   Kernel_task = create_task("Main_Kernel",kernel_main, 0, 0x202, kernel_proc);
   Kernel_task->special = 2;
@@ -167,7 +175,7 @@ void tasking_initiator()
 
   UNLOCK(TASK_LOCK_ATD);
   asm volatile("sti;");
-  kill();
+  kill();//*/
   while(1);
 }
 
@@ -189,10 +197,11 @@ void init_multitasking()
   Setup_MMADS();
 
   Shell_proc = create_process("Shell", 0, 1, kernel_proc);
-  Shell_Ostream_task = create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc);
-  Activate_task_direct(Shell_Ostream_task);//, &KitList[0]); //This is the task which would make printing to console possible!
+  Screen_BuffSync = Shell_Dbuff_sync;
+//  Shell_Ostream_task = create_task("Shell_Ostream", Shell_Double_buffer, 10, 0x202, Shell_proc);
+//  Activate_task_direct(Shell_Ostream_task);//, &KitList[0]); //This is the task which would make printing to console possible!
 
-  Shell_task = create_task("Shell_task", Shell, 15, 0x202, Shell_proc);  //Main shell task.
+  Shell_task = create_task("Shell_task", Shell, 20, 0x202, Shell_proc);  //Main shell task.
   //Shell_task->special = 1;
   Activate_task_direct(Shell_task);//, &KitList[0]);
 
@@ -213,12 +222,16 @@ void init_multitasking()
   while(1); //Never comeback :D
 }
 
-void Spurious_task_func()
+void Spurious_task_func_t()
 {
   while(1) //Dont worry; It would eventually sink to the bottom queue where it would be removed by some other task.
   {
-
     //if(Get_Scheduler()->identity != 0) printf(" C ");
-    asm volatile("int $50");
+    asm volatile("int $51");
   }
+}
+
+void Spurious_task_func_end_t()
+{
+  return;
 }

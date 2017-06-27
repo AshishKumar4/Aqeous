@@ -17,6 +17,7 @@
 #include "Commands/numerise/numerise.c"
 
 #include "Commands/ProcManagement/ProcManagement.c"
+#include "Commands/Echo/echo.c"
 
 uint32_t VGA_size;
 
@@ -42,8 +43,7 @@ void init_shell()
 	memset(console_buffer,0,VGA_size*4);
 	Enable_SSE();
 	console_manager_init();
-	shell_cmdTask = create_task("shell_cmdTask", Shell_cmdWrapper, 16, 0x202, Shell_proc);
-
+	shell_cmdTask = create_task("shell_cmdTask", Shell_cmdWrapper, 20, 0x202, Shell_proc);
 	UNLOCK(a);
 	UNLOCK(SHELL_CMDTASK);
 }
@@ -80,6 +80,32 @@ void __attribute__((optimize("O0"))) Shell_Double_buffer()
 	 }
 }
 
+void __attribute__((optimize("O2"))) Shell_Dbuff_sync()
+{
+	 uint32_t* _s, *_c;
+	 _s = (uint32_t*)console_buffer;
+	 _c = (uint32_t*)console_dbuffer;
+
+	 memcpy_rep(_s,_c,VGA_size);
+	 //asm volatile("cli");
+	 if(console_skip)
+	 {
+		console_dbuffer += (VGA_WIDTH*console_skip);
+		consolerow -= console_skip;
+		console_skip = 0;
+		if((uint32_t)console_dbuffer >= console_dbuffer_limit)   //TODO: Make the console buffer mapping in such a way so that this method isnt required.
+		{
+			console_dbuffer = (uint16_t*)console_dbuffer_original;
+			_s = (uint32_t*)console_dbuffer;
+			_c = console_dbuffer_limit-VGA_size;
+			memcpy_rep(_s, _c, VGA_size);
+			memset_sse(_s, 0, (4194304-VGA_size)/8);
+
+		}
+	 }
+}
+
+
 void __attribute__((optimize("O2"))) Shell_Input()
 {
 	while(1)
@@ -114,7 +140,8 @@ void __attribute__((optimize("O2"))) Shell_Input()
 				else if(shell_awake)  //TODO: Give all input to the Shell Directly!
 				{
 					//_printf("AOO %d %d %d", kb_q_elements, shell_sleeping, shlock);
-					Priority_promoter(Shell_task);
+					//Priority_promoter(Shell_task);
+					Task_wakeup(Shell_task);
 					shell_in = 1;
 					shell_buf = Istream_ptr - kb_buff;
 					kb_buff = 0;
@@ -135,13 +162,14 @@ void __attribute__((optimize("O2"))) Shell_Input()
 	}
 }
 
-void __attribute__((optimize("O2"))) Shell_CFexecute(uint32_t* buffer, uint32_t sz)
+void __attribute__((optimize("O0"))) Shell_CFexecute(uint32_t* buffer, uint32_t sz)
 {
-	Shell_sleep();
+	//while(shell_in) asm volatile("int $50");
+	//Shell_sleep();
 	char* pt = buffer;
 	uint32_t c = 0;
 	pt[sz] = '\0';
-	memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
+	memset_faster((uint32_t*)CSI_mem_start, 0, 4);
 	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 	while(c < sz)
 	{
@@ -157,25 +185,22 @@ void __attribute__((optimize("O2"))) Shell_CFexecute(uint32_t* buffer, uint32_t 
 		c += pp - pt + 1;
 		pt = pp + 1;
 	}
-	Shell_wakeup();
+	//Shell_wakeup();
 }
-/*
-void Shell_Finput()
+
+void Shell_SFexecute(char* command)
 {
-	while(1)
-	{
-
-	}
+	//Shell_sleep();
+	char* pt = command;
+	memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
+	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
+	//printf("\n->\"%s\"",pt);
+	Shell_command_locator_CC(pt);
+	*Shell_Istream = (uint32_t)pt;
+	++Shell_Istream;
+	//Shell_wakeup();
 }
 
-void Shell_Foutput()
-{
-	while(1)
-	{
-
-	}
-}
-*/
 void __attribute__((optimize("O0"))) Shell()
 {
 	while(1)
@@ -183,6 +208,8 @@ void __attribute__((optimize("O0"))) Shell()
 		if(shell_awake)
 		{
 			printf("\n%g%s%g>%g",12,curr_dir.full_name,10,11);
+			//Shell_sleep();
+			Task_sleep(Shell_task);
 			while(!shell_in)
 			{
 		//		printf("B%x--",KitList[1].reached_bottom);
@@ -229,7 +256,7 @@ void Shell_sleep()  //TODO: Make the Shell task to sleep.
 {
 
 	LOCK(a);
-	printf("\nAppxx");
+	//printf("\nAppxx");
 	if(shell_sleeping == 0)
 	{
 		Task_sleep(Shell_task);
@@ -252,7 +279,7 @@ void Shell_wakeup()
 
 	LOCK(a);
 	--shell_sleeping;
-	printf("---IOPPOIOPI--");
+	//printf("---IOPPOIOPI--");
 	if(shell_sleeping == 0)
 	{
 		//Shell_task->Scheduler = FindLightestScheduler();
@@ -321,17 +348,6 @@ int Shell_command_locator(char *inst)
 	 uint32_t tmp = 0;
 
 	 char* tmpstr = strtok(inst, " ");
-	 //uint32_t spaces = stroccr(inst, ' ');
-	 //int CSI_entries_ptr = 0;
-	 /*
-	 for( int i = 0 ; inst[i]!='\0' ; i++ )    //Alternate Algorithm
-	 {
-			CSI_entries_ptr = (((int)inst[i])-((int)inst[i+1]));
-			if(CSI_entries_ptr >= 0)
-				 tmp += CSI_entries_ptr*(i+1);
-			else
-				 tmp += (-CSI_entries_ptr)*(i+1);
-}*/
 	 int i;
 	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
 	 {
@@ -346,24 +362,10 @@ int Shell_command_locator(char *inst)
 			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
-				 /*
-				 if(!strncmp(inst, ((Shell_Commands_t*)ptr)->command, i))
-						func();
-				 else
-				 {
-							_printf("\n Command Not Recognized! type help for help\n");
-						 return -1;
-				 }*/
 				 *tot_entries = 0;
 				// char* tmp2str = tmpstr;
-				 for(; ;) //Provide them the options and values provided by the user.
+				 while(1) //Provide them the options and values provided by the user.
 				 {
-						/*tmpstr = strtok(NULL, "-");
-						if(tmpstr== NULL) break;
-						*CSI_entries_ptr = (uint32_t)tmpstr;
-						++CSI_entries_ptr;
-						++*tot_entries;*/
-						//_printf(" %s", tmpstr);
 						tmpstr = strtok(NULL, " ");
 
 						if(tmpstr== NULL) break;
@@ -395,7 +397,7 @@ int Shell_command_locator(char *inst)
 				 	asm volatile("int $50");
 				 //Task_sleep(shell_cmdFunc);
 //*/
-				 //func();
+				// func();
 				 memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
 				 CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 				 return ((Shell_Commands_t*)ptr)->reserved;
@@ -431,6 +433,8 @@ int Shell_command_locator_CC(char *inst)
 			uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
 			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
+			//	_printf("\n Command %x tried: %s, key = %d, value at key: %s", tmpstr, tmpstr, tmp, ((Shell_Commands_t*)ptr)->command); //TODO: Search within other possible files/executables like in the PATH string.
+
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
 				 *tot_entries = 0;
 				// char* tmp2str = tmpstr;
@@ -467,7 +471,7 @@ int Shell_command_locator_CC(char *inst)
 			}
 			else
 			{
-					_printf("\n Command Not Recognized! type help for help %x\n", tmpstr ); //TODO: Search within other possible files/executables like in the PATH string.
+					_printf("\n Command Not Recognized! type help for help %x\nCommand tried: %s, key = %d, value at key: %s", tmpstr, tmpstr, tmp, ((Shell_Commands_t*)ptr)->command); //TODO: Search within other possible files/executables like in the PATH string.
 					return -1;
 			}
 	 }
@@ -516,7 +520,7 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_help, 108, 0, "help");
 	 Shell_Add_Commands(Command_shutdown, 525, 0, "shutdown");
 	 Shell_Add_Commands(Command_mdbug, 131, 0, "mdbug");
-	 Shell_Add_Commands(Command_start_vesa, 83, 0, "vesa");
+	 Shell_Add_Commands(Command_vesa, 83, 0, "vesa");
 	 Shell_Add_Commands(Command_memmap, 194, 0, "memmap");
 	 Shell_Add_Commands(Command_start_counter, 1423, 0, "counter_start");
 	 Shell_Add_Commands(Command_counter, 380, 0, "counter");
@@ -540,13 +544,16 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_secalloc, 267, 0, "secalloc");
 	 Shell_Add_Commands(Command_mkdir, 158, 0, "mkdir");
 	 Shell_Add_Commands(Command_mkfl, 91, 0, "mkfl");
-	 Shell_Add_Commands(Command_del, 44, 0, "del");
-	 Shell_Add_Commands(Command_rfl, 60, 0, "rfl");
+//	 Shell_Add_Commands(Command_del, 44, 0, "del");
+//	 Shell_Add_Commands(Command_rfl, 60, 0, "rfl");
 	 Shell_Add_Commands(Command_editfl, 201, 0, "editfl");
 	 Shell_Add_Commands(Command_cp, 32, 0, "cp");
 	 Shell_Add_Commands(Command_aptest, 307, 0, "aptest");
 	 Shell_Add_Commands(Command_proc, 99, 0, "proc");
 	 Shell_Add_Commands(Command_rn, 43, 0, "rn");
 	 Shell_Add_Commands(Command_ann, 65, 0, "ann");
+	 Shell_Add_Commands(Command_echo, 85, 0, "echo");
+	 Shell_Add_Commands(Command_cat, 59, 0, "cat");
+	 Shell_Add_Commands(Command_rm, 41, 0, "rm");
 	 memset_faster((uint32_t*)CSI_mem_start, 0, 66);
 }

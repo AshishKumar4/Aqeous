@@ -32,6 +32,11 @@ void divByZero_handler()
 
 void debug_handler()
 {
+  asm volatile("pop %eax; \
+                pop %ebx; \
+                pop %ecx; \
+                pop %edx; \
+                hlt;");
   uint32_t i;
   i = *(uint32_t*)(0xfee00020);
   i = i>>24;
@@ -45,6 +50,11 @@ void debug_handler()
 
 void NMI_handler()
 {
+  asm volatile("pop %eax; \
+              pop %ebx; \
+              pop %ecx; \
+              pop %edx; \
+              hlt;");
   printf("\nFault3");
   asm volatile("hlt");
   Shell_Double_buffer();
@@ -52,9 +62,17 @@ void NMI_handler()
   asm volatile("iret");
 }
 
+extern void breakpoint_handler();
 
-void breakpoint_handler()
+void breakpoint_handler2()
 {
+  asm volatile("pop %eax;\
+                iret");
+  asm volatile("pop %eax; \
+                pop %ebx; \
+                pop %ecx; \
+                pop %edx; \
+                hlt;");
   printf("\nFault4");
   asm volatile("hlt");
   Shell_Double_buffer();
@@ -75,6 +93,11 @@ void overflow_handler()
 
 void outOfBounds_handler()
 {
+  asm volatile("pop %eax; \
+              pop %ebx; \
+              pop %ecx; \
+              pop %edx; \
+              hlt;");
   printf("\nFault6 %x", Get_Scheduler()->identity);
   asm volatile("hlt");
   Shell_Double_buffer();
@@ -82,13 +105,19 @@ void outOfBounds_handler()
   asm volatile("iret");
 }
 
+extern void invalidInstr_handler();
 
-void invalidInstr_handler()
+void invalidInstr_handler2()
 {
-  printf("\nFault7 %x", Get_Scheduler()->identity);
+  asm volatile("pop %eax; \
+              pop %ebx; \
+              pop %ecx; \
+              pop %edx; \
+              hlt;");
+  /*printf("\nFault7 %x", Get_Scheduler()->identity);
   asm volatile("hlt");
   //Shell_Double_buffer();
-  while(1);
+  while(1);*/
   asm volatile("iret");
 }
 
@@ -102,18 +131,27 @@ void noCoprocessor_handler()
   asm volatile("iret");
 }
 
+extern void doubleFault_handler();
 
-void doubleFault_handler()
+void doubleFault_handler2()
 {
-  printf("\nFault9");
-  //asm volatile("hlt");
+  asm volatile("iret");
+  asm volatile("pop %eax; \
+                pop %ebx; \
+                pop %ecx; \
+                pop %edx; \
+                hlt;");
+  /*printf("\nFault9");
+  asm volatile("hlt");
+  asm volatile("hlt");
   Shell_Double_buffer();
-  while(1);
+  while(1);*/
   asm volatile("iret");
 }
 
+extern void coprocessor_handler();
 
-void coprocessor_handler()
+void coprocessor_handler2()
 {
   printf("\nFault10");
   asm volatile("hlt");
@@ -154,8 +192,15 @@ void stackFault_handler()
 
 int avc = 0;
 
-void __attribute__((optimize("O0"))) generalProtectionFault_handler()
-{/*
+extern void generalProtectionFault_handler();
+
+void __attribute__((optimize("O0"))) generalProtectionFault_handler2()
+{
+  asm volatile("pop %eax; \
+                pop %ebx; \
+                pop %ecx; \
+                pop %edx; \
+                hlt;");/*
   asm volatile("cli;\
                 pop %%eax; pop %%eax; pop %%eax; pop %%eax;\
                 mov %%eax, %0;":"=r"(avc)::"memory");
@@ -172,62 +217,44 @@ void __attribute__((optimize("O0"))) generalProtectionFault_handler()
 }
 
 extern uint32_t faulting_address;
+extern uint32_t current_pdir;
 
-void pageFault_caller()
+void __attribute__((optimize("O0"))) pageFault_caller()
 {
-  //  asm volatile("cli");
-    //asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");
-/*
-    uint32_t frame = phy_alloc4K();
-    page_t* page = get_page(faulting_address, 1, Get_Scheduler()->curr_dir);
+  uint32_t addr = faulting_address;
+  addr /= 0x1000;
+  // Find the page table containing this address.
+  uint32_t table_idx = addr / 1024;
 
-    pt_entry_set_frame ( page, frame);
-    pt_entry_add_attrib ( page, I86_PTE_PRESENT);
-    pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
-    pt_entry_add_attrib ( page, I86_PTE_USER);
-    pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
-    pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
+  PageDirectory_t* dir = current_pdir;
 
-    // A page fault has occurred.
-    // The faulting address is stored in the CR2 register.
-  //  uint32_t faulting_address;
-  /*  asm volatile("mov %%cr2, %0" : "=r" (faulting_address)::"memory");*/
-    printf("\nPage Fault");
-    asm volatile("hlt");/*
-    Shell_Double_buffer();
-    while(1);
-    // The error code gives us details of what happened.
-    int present   = !(regs.err_code & 0x1); // Page not present
-    int rw = regs.err_code & 0x2;           // Write operation?
-    int us = regs.err_code & 0x4;           // Processor was in user-mode?
-    int reserved = regs.err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
-    int id = regs.err_code & 0x10;          // Caused by an instruction fetch?
+  page_t* page;
 
-    // Output an error message.
-    console_writestring("\nPage fault! ( ");
-    if (present)
-    {
-      console_writestring("present, Allocating page for it ");
-      //MapPage((void*)faulting_address,(void*)faulting_address);
-    }
-    if (rw)
-    {
-        console_writestring("read-only ");
-    }
-    if (us) {console_writestring("user-mode ");}
-    if (reserved) {console_writestring("reserved ");}
-    if (id) {console_writestring("id "); console_write_dec(id);}
-    console_writestring(") at 0x");
-    console_write_dec(faulting_address);
-    console_writestring(" - EIP: ");
-    console_write_dec(regs.eip);
-    console_writestring("\n");
-    printf("\nPage Fault");
-  //  Shell_Double_buffer();
-    while(1);
-    asm volatile("sti");
-    asm volatile("iret");*/
-   // PANIC("Page fault");
+  if (dir->table_entry[table_idx]) // If this table is already assigned
+  {
+      //printf("1 ");
+      table_t* entry = &dir->table_entry[table_idx];
+      PageTable_t* table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
+      page = &table->page_entry[addr%1024];
+  }
+  else
+  {
+      dir->table_entry[table_idx] = (table_t)phy_alloc4K();
+
+      memset_fast((void*)dir->table_entry[table_idx], 0, 0x1000);
+      table_t* entry = &dir->table_entry [table_idx];
+      PageTable_t* table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);
+      *entry |= I86_PDE_PRESENT;
+      *entry |= I86_PDE_WRITABLE;
+      //pd_entry_set_frame (entry, (uint32_t)dir->m_entries[table_idx]);
+    //  dir->tables[table_idx] = tmp | 0x7; // PRESENT, RW, US.
+      page = &table->page_entry[addr%1024];
+  }
+  uint32_t phy_frame = pop_frameStack();
+  *page = (*page & ~I86_PTE_FRAME) | phy_frame;
+  *page |= I86_PTE_PRESENT;
+  *page |= I86_PTE_WRITABLE;
+  *page |= I86_PTE_USER;
 }
 
 void unknownInterrupt_handler()
@@ -282,14 +309,15 @@ void reserved_handler()
 
 
 //#ifdef PIC
-void PIT_handler()
+void PIT_Handle()
 {
-  asm volatile("cli");
-//  printf("\na-");
-//  Shell_Double_buffer();
+  //asm volatile("cli");
+  //printf("a-");
+  Screen_BuffSync();
 //  while(1);
 //  outb(0x20,0x20);
-  asm volatile("iret");
+  ++(*(uint32_t*)(40*1024*1024));
+  //asm volatile("iret");
 }
 
 uint32_t ag = 1,ab = 0;
@@ -532,18 +560,21 @@ void mouse_handler()
     // do what you wish with the bytes, this is just a sample
     if ((mouse_bytes[0] & 0x80) || (mouse_bytes[0] & 0x40))
       return; // the mouse only sends information about overflowing, do not care about it and return
-    if (!(mouse_bytes[0] & 0x20))
+    /*if (!(mouse_bytes[0] & 0x20))
       mousedeltay |= 0xFFFFFF00; //delta-y is a negative value
     if (!(mouse_bytes[0] & 0x10))
       mousedeltax |= 0xFFFFFF00; //delta-x is a negative value
-   // if (mouse_bytes[0] & 0x4)
-      //RectD(100,100,50,50,000,100,1000); //A Mouse button click
-    //if (mouse_bytes[0] & 0x2)
-      //RectD(100,100,100,50,1000,1000,1000); //Another Mouse Button Click
-   // if (mouse_bytes[0] & 0x1)
-      //RectD(100,100,50,100,1000,90,2000);  //Another Mouse Button Clicked
-    /*if(mouse_bytes[1]>=1||mouse_bytes>=1)
-        RectD(10,10,50,50,1000,1000,90);*/
+//*/
+    /*if(mouse_bytes[0] & 0x1)    // Left Click
+    {
+      mouse_left_click = 1;
+    }
+    if(mouse_bytes[0] & 0x2)    // Right Click
+    {
+      mouse_right_click = 1;
+    }//*/
+    mouse_left_click = mouse_bytes[0] & 0x1;
+
     mousedeltax=mouse_bytes[1];
     mousedeltay=mouse_bytes[2];
   //  mousex+=(deltax);

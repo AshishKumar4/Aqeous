@@ -91,6 +91,8 @@ inline void Kernel_Mapper(PageDirectory_t* dir);
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDirectory_t* dir);
 
+inline void Create_PTable(uint32_t phy, PageTable_t* tbl);
+
 void flush_tlb_entry (uint32_t addr);
 
 inline page_t* MapPage (void* phys, void* virt, PageDirectory_t* dir);

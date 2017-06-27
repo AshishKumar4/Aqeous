@@ -65,9 +65,13 @@ void init_shell();
 
 void Shell_Double_buffer();
 
+void Shell_Dbuff_sync();
+
 void Shell_Input();
 
 void Shell_CFexecute(uint32_t* buffer, uint32_t sz);
+
+void Shell_SFexecute(char* command);
 
 void Shell_sleep();
 

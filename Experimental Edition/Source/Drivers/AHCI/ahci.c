@@ -403,12 +403,12 @@ inline int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 
 
 /*** FOR EXT2 DRIVERS***/
-inline int disk_read(HBA_PORT *port, QWORD start, DWORD count, uint32_t* buf)
+int disk_read(HBA_PORT *port, DWORD start, DWORD count, uint32_t* buf)
 {
   count /= SECTOR_SIZE;
   ++count;
 
-  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+  SATA_Commander(port,ATA_CMD_READ_SECTORS,0,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff, 0,count);
 	if (port->is & HBA_PxIS_TFES)
 	{
 		printf("Read disk error\n");
@@ -418,12 +418,12 @@ inline int disk_read(HBA_PORT *port, QWORD start, DWORD count, uint32_t* buf)
 
 }
 
-inline int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, QWORD start)
+int disk_write_sector(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start)
 {
   count /= SECTOR_SIZE;
   ++count;
 
-  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
+  SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff, 0,count);
   // Check again
   if (port->is & HBA_PxIS_TFES)
   {
@@ -431,6 +431,36 @@ inline int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, QWORD start)
       return 0;
   }
   return 1;
+}
+
+int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start)
+{
+  uint32_t sz = count;
+  count /= SECTOR_SIZE;
+
+  if(count)
+  {
+    SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,(DWORD)buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff, 0,count);
+  	if (port->is & HBA_PxIS_TFES)
+  	{
+  		printf("Write disk error\n");
+  		return 0;
+  	}
+    start += count;
+    buf = (uint32_t*)((uint32_t)buf + (count*SECTOR_SIZE));
+    sz %= SECTOR_SIZE;
+  }
+
+  if(sz)
+  {
+    uint32_t tmb = (uint32_t)kmalloc(SECTOR_SIZE);
+    disk_read(port, start, 1, (uint32_t*)tmb);
+    memcpy((void*)tmb, (void*)buf, sz);
+    disk_write_sector(port, (uint32_t*)tmb, 1, start);
+  }
+
+	return 1;
+
 }
 
 

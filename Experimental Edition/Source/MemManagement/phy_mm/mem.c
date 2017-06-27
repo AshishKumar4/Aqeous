@@ -26,40 +26,40 @@
 
 void memmap_generator()
 {
-	MemRegion_t* OS_MMap = (MemRegion_t*)phy_alloc4K();
+	MemRegion_t* OS_MMap = (MemRegion_t*)(16*1024*1024);
 	Fmemmap = OS_MMap;
-	OS_MMap->startHi = 0;
-	OS_MMap->sizeHi = 4*1024*1024;
+	OS_MMap->startHi = 0x0;
+	OS_MMap->sizeHi = 0x400000;//4*1024*1024;
 	OS_MMap->type = 7;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 4*1024*1024;
-	OS_MMap->sizeHi = 4*1024*1024;
+	OS_MMap->startHi = 0x400000;// 4*1024*1024;
+	OS_MMap->sizeHi = 0x400000;//4*1024*1024;
 	OS_MMap->type = 8;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 8*1024*1024;
-	OS_MMap->sizeHi = 6*1024*1024;
+	OS_MMap->startHi = 0x800000;//8*1024*1024;
+	OS_MMap->sizeHi = 0x600000;//6*1024*1024;
 	OS_MMap->type = 9;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 14*1024*1024;
-	OS_MMap->sizeHi = 2*1024*1024;
+	OS_MMap->startHi = 0xE00000;//14*1024*1024;
+	OS_MMap->sizeHi = 0x200000;//2*1024*1024;
 	OS_MMap->type = 10;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 16*1024*1024;
-	OS_MMap->sizeHi = 8*1024*1024;
+	OS_MMap->startHi = 0x1000000;//16*1024*1024;
+	OS_MMap->sizeHi = 0x800000;//8*1024*1024;
 	OS_MMap->type = 9;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 24*1024*1024;
-	OS_MMap->sizeHi = 6*1024*1024;
+	OS_MMap->startHi = 0x1800000;//24*1024*1024;
+	OS_MMap->sizeHi = 0x600000;//6*1024*1024;
 	OS_MMap->type = 11;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;
-	OS_MMap->startHi = 30*1024*1024;
-	OS_MMap->sizeHi = 570*1024*1024;
+	OS_MMap->startHi = 0x1E00000;//30*1024*1024;
+	OS_MMap->sizeHi = 0x23A00000;//570*1024*1024;
 	OS_MMap->type = 11;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;/*
@@ -68,14 +68,15 @@ void memmap_generator()
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 	++OS_MMap;*/
-	OS_MMap->startHi = (700*1024*1024);
-	OS_MMap->sizeHi = (100*1024*1024);//(2*1024*1024*1024) - (600*1024*1024);
+	OS_MMap->startHi = 0x2BC00000;//(700*1024*1024);
+	OS_MMap->sizeHi = 0x6400000;//(100*1024*1024);//(2*1024*1024*1024) - (600*1024*1024);
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 
 	++OS_MMap;
-	OS_MMap->startHi = (800*1024*1024);
-	OS_MMap->sizeHi = (3*1024*1024*1024) - (800*1024*1024);
+	OS_MMap->startHi = 0x32000000;//(800*1024*1024);
+	OS_MMap->sizeHi = 0x8E000000;//(2272*1024);//(3*1024*1024*1024) - (800*1024*1024);
+	//OS_MMap->sizeHi *= 1024;
 	OS_MMap->type = 1;
 	OS_MMap->reservedt = 0xFFE42;
 	/*
@@ -95,7 +96,7 @@ void memmap_generator()
 void __attribute__((optimize("O0"))) setup_frameStack()
 {
 	printf("\nSetting up Frame Stack!");
-	uint32_t* frame_stack_ptr = 0xA00000, *frame_stack_start = 0xA00000;
+	uint32_t* frame_stack_ptr = (uint32_t*)0xA00000, *frame_stack_start = (uint32_t*)0xA00000;
 	MemRegion_t* mm = Fmemmap;
 	++mm;
 	while(1)
@@ -109,7 +110,7 @@ void __attribute__((optimize("O0"))) setup_frameStack()
 			}
 		}
 		++mm;
-		if(mm->reservedt != 0xFFE42) break;
+		if(mm && mm->reservedt != 0xFFE42) break;
 	}
 	frame_stack_end = frame_stack_ptr;
 	--frame_stack_end;
@@ -184,6 +185,7 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mm->sizeHi;
 			tmp_f->begin = mm->startHi;
+			tmp_f->reserved = 0;
 			printf("\n%x %x %x",tmp_f->addr,tmp_f->size,tmp_f->begin);
 			++tmp_f;
 			++nb_f->entries;
@@ -193,6 +195,7 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 			tmp_u->addr = (uint32_t*)tmp_u;
 			tmp_u->size = mm->sizeHi;
 			tmp_u->begin = mm->startHi;
+			tmp_f->reserved = 0;
 			//printf("\n%x %x %x %x",tmp_u->addr,tmp_u->size,tmp_u->begin, mmap_info->sizeHi);
 			++tmp_u;
 			++nb_u->entries;
@@ -214,7 +217,7 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 void* pmem(uint32_t size)
 {
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
-	PageDirectory_t* dir = system_dir;
+	//PageDirectory_t* dir = system_dir;
 
 	size = ROUNDUP(size,4);
 
@@ -280,6 +283,7 @@ void* pmem(uint32_t size)
 		tm++;
 	}
 	//SwitchFrom_SysDir();
+//	printf("=>{%d}", baddr);
 	return (void*)baddr;
 
 }
@@ -287,7 +291,7 @@ void* pmem(uint32_t size)
 void* pmem_4k(uint32_t pages)
 {
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
-	PageDirectory_t* dir = system_dir;
+	//PageDirectory_t* dir = system_dir;
 
 	uint32_t size = pages*4096;
 
@@ -320,7 +324,7 @@ void* pmem_4k(uint32_t pages)
 
 		if(baddr + size <= tm->begin + tm->size + 4096)	// If the allocation can happen in the block
 		{
-			uint32_t tts = tm->size;
+			//uint32_t tts = tm->size;
 			uint32_t tba = tm->begin;
 		//	printf("\n=>tts %d, tba %d", tts, tba);
 			tm->begin = baddr + size;
@@ -482,7 +486,7 @@ uint32_t mtalloc(uint32_t pages)
    }
    printf("\nCould not find memory, sorry. Try kmalloc()");
 	 while(1);*/
-   return pmem_4k(pages);//(uint32_t)kmalloc(pages*4096);
+   return (uint32_t)pmem_4k(pages);//(uint32_t)kmalloc(pages*4096);
    //_printf("\n%x %x", PAGE_GET_PHYSICAL_ADDRESS(page), mtalc_start);
 }
 
@@ -504,7 +508,8 @@ void mtfree(uint32_t addr, uint32_t size)
       ++page_sys;
       ++page;
    }*/
-	 pfree(addr);
+	 size = 0;
+	 pfree((void*)addr);
 }
 
 uint32_t fsalloc(uint32_t sz)

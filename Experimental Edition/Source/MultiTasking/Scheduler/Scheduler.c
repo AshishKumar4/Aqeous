@@ -12,6 +12,7 @@
 #include "Scheduler/Scheduler.h"
 #include "descriptors.h"
 #include "cpu/cpu.h"
+#include "CancerTherapy/CancerCure.h"
 
 /*
 Symbol Map for Switcher->
@@ -82,13 +83,17 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     kits->switcher = nptr1;
 
     nptr1 += sz_switcher;
+    nptr1 = ROUNDUP(nptr1,4) + 32;
     memcpy(nptr1, Scheduler_t, sz_Scheduler);
     schdulr = nptr1;
     kits->scheduler = nptr1;
 
 
-//    nptr1 += sz_Scheduler_init;
-//    nptr1 = ROUNDUP(nptr1,4) + 32;
+    nptr1 += sz_Scheduler;
+    nptr1 = ROUNDUP(nptr1,4) + 32;
+
+    uint32_t* spurious_func = (uint32_t*)nptr1;
+    memcpy(spurious_func, Spurious_task_func_t, Spurious_task_func_end_t - Spurious_task_func_t);
 //    nptr32 = nptr1;
     uint32_t* temporary_stack = kmalloc(4096*4);
 
@@ -128,14 +133,14 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
 
     kits->bottom_task = 1;
 
-    kits->Spurious_task = create_task("Spurious_task", Spurious_task_func, 0, 0x202, kernel_proc);
+    kits->Spurious_task = create_task("Spurious_task", spurious_func, 0, 0x202, kernel_proc);
     ((task_t*)kits->Spurious_task)->special = 1;
   //
     if(BSP_id == i)
     {
       idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
       idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-      idtSetEntry(52, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
+      idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
     //  lidt((void *)&idt_ptr);
     }
     else
@@ -145,6 +150,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
   //    idtSetEntry(52, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
       idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
       idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+      idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_ptr);
       idtSetEntry(13, (uint32_t)&generalProtectionFault_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
     }
     ++kits;
@@ -359,4 +365,11 @@ void __attribute__((optimize("O0"))) SAS_end_t()
 {
   return;
 }
+
+
 //TODO: CREATE AN ADVANCED INTEGRATED SYSTEM WHICH WOULD CONTROL THE WHOLE MULTITASKING SYSTEM AND THE SCHEDULER, The Timer, the Interrupts etc Literally!. It should act as the BOSS of the Scheduler!!!
+
+
+/*
+    //TODO: Create a System which can transfer threads from one processor to other if processor loads are uneven.
+*/

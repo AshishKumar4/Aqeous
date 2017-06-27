@@ -101,7 +101,7 @@ switcher_ksp_t:                         ; Alternate Scheduler + context swithche
     out dx, ax
     mov dword eax, 0xFEE00380               ; Reset LVT Timer counter
     mov dword edx, [0x4284ACD6]
-    mov dword [eax], edx
+    mov dword [eax], 0xf0000000
     pop edx
     pop eax
 
@@ -151,7 +151,7 @@ cw_ksp_ss_t:
     out dx, ax
     mov dword eax, 0xFEE00380               ; Reset LVT Timer counter
     mov dword edx, [0x4284ACD6]
-    mov dword [eax], edx
+    mov dword [eax], 0xf0000000
     pop edx
     pop eax
 
@@ -177,7 +177,7 @@ cw_p2_ndc_c_t:  ;Context switch part 2, no page directory change
     out dx, ax
     mov dword eax, 0xFEE00380               ; Reset LVT Timer counter
     mov dword edx, [0x4284ACD6]
-    mov dword [eax], edx
+    mov dword [eax], 0xf0000000
     pop edx
     pop eax
 

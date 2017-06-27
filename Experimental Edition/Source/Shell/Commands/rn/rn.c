@@ -10,18 +10,33 @@
 #include "virt_mm/paging.h"
 #include "tasking.h"
 
+#include "rn.h"
+
+char fs_path[256];
+
 void Command_rn()
 {
-  char* path = CSI_Read(1);
+  char* path = (char*)CSI_Read(1);
+  strcpy(fs_path, path);
+
+  //Activate_task_direct_SP(create_task("rn_Main", rn_Main, 18, 0x202, Shell_proc), Get_Scheduler());/*/
+  rn_Main();//*/
+}
+
+void rn_Main()
+{
+  asm volatile("cli");
+  char* path = fs_path;// = (char*)CSI_Read(1);
 
   if(!file_loadOGP(path))
   {
     printf("\n%s file dosent exist!\n",path);
+  //  kill();
     return;
   }
 
-  uint32_t off = StrToInt(CSI_ReadAPS("-x"));
-  uint32_t sz = StrToInt(CSI_ReadAPS("-z"));
+  uint32_t off = StrToInt((char*)CSI_ReadAPS("-x"));
+  uint32_t sz = StrToInt((char*)CSI_ReadAPS("-z"));
 
   if(!sz) sz = file_size(path);
   printf("\nSize of the file: %x \n", sz);
@@ -37,4 +52,5 @@ void Command_rn()
 
   kfree(buffer);
 
+//  kill();
 }

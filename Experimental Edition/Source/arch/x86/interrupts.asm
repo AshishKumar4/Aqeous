@@ -1,13 +1,8 @@
 section .bss
 
-global esp_backup
 esp_backup: RESD 1
 
-global esp_backup2
 esp_backup2: RESD 1
-
-global faulting_address
-faulting_address: RESD 1
 
 curr_dir: RESD 1
 eax_backup: RESD 1
@@ -17,46 +12,39 @@ t_c: RESD 1
 
 section .text
 
-[GLOBAL pageFault_handler]
-[EXTERN pageFault_caller]
 [EXTERN system_dir]
 
-pageFault_handler:
-    cli
+[EXTERN PIT_Handle]
+[GLOBAL PIT_handler]
 
-    pusha
+PIT_handler:
+  cli
+  pusha
 
-    mov eax, cr3
-    mov [curr_dir], eax
+  mov eax, esp
+  mov [esp_backup], eax
 
-    mov eax, [system_dir]
-    mov cr3, eax
+  call PIT_Handle
 
-    mov eax, esp
-    mov [esp_backup], eax
+  mov eax, [esp_backup]
+  mov esp, eax
+  popa
 
-    mov eax, cr2
-    mov [faulting_address], eax
+  push eax
+  mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
+  mov dword [eax], 0
+;    pop eax
 
-    call pageFault_caller
+;    push eax
+  push edx
+  mov dx, 0x20                      ; PIT Timer End Of Interrupt
+  mov ax, 0x20
+  out dx, ax
+  pop edx
+  pop eax
 
-    mov eax, [esp_backup]
-    mov esp, eax
+  iret
 
-    popa
-
-    push eax
-    mov eax, 0xFEE000B0
-    mov dword [eax], 0
-
-    pop eax
-
-    mov [eax_backup], eax
-    mov eax, [curr_dir]
-    mov cr3, eax
-    mov eax, [eax_backup]
-
-    iretd
 
 
 [GLOBAL kb_handle]
@@ -96,18 +84,19 @@ kb_handle:
 [EXTERN mouse_handler]
 
 mouse_handle:
-;    cli
-;    pusha
+iretd;
+    cli
+    pusha
 
-;    mov eax, esp
-;    mov [esp_backup2], eax
+    mov eax, esp
+    mov [esp_backup2], eax
 
-;    call mouse_handler
+    call mouse_handler
 
-;    mov eax, [esp_backup2]
-;    mov esp, eax
+    mov eax, [esp_backup2]
+    mov esp, eax
 
-;    popa
+    popa
 
     push eax
     mov eax, 0xFEE000B0                ; APIC Timer End Of Interrupt
@@ -117,6 +106,9 @@ mouse_handle:
     ;    push eax
     push edx
     mov dx, 0x20                      ; PIT Timer End Of Interrupt
+    mov ax, 0x20
+    out dx, ax
+    mov dx, 0xA0
     mov ax, 0x20
     out dx, ax
     pop edx
@@ -155,3 +147,4 @@ test_ttt:
     pop eax
 
     iretd
+;0010a14f\

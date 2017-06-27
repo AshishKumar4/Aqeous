@@ -95,7 +95,7 @@ void MADTapic_parse()
               printf(" id: %x, address: %x, GSIB: %x",IOAPIC_entry->id, IOAPIC_entry->address, IOAPIC_entry->gsib);
               APIC_IO_BASE = IOAPIC_entry->address;
               madt_entry = (madt_entry_t*)IOAPIC_entry->rest_fields;
-            //  while(1);
+              //while(1);
               break;
             case 2 :
               printf("\n\tInterrupt Source Override Found");

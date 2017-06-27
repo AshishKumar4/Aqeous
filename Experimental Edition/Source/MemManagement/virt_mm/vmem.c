@@ -56,7 +56,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 
 uint32_t vmem(uint32_t size)
 {
-	Pdir_Capsule_t* curr_cap = Get_Scheduler()->curr_dir;
+	Pdir_Capsule_t* curr_cap = (Pdir_Capsule_t*)Get_Scheduler()->curr_dir;
 	PageDirectory_t* dir = &curr_cap->pdir;
 	//SwitchTo_SysDir();
 	switch_directory(system_dir);

@@ -27,6 +27,7 @@ typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU
     uint32_t main_pgdir;
     uint32_t mem_used;
     uint32_t task_id;
+    uint32_t func;
     SchedulerKits_t* Scheduler;
     uint32_t delivery_flag; //For checking if any applied function on the task is executed or not
     char name[50]; //Parent Process name
@@ -71,8 +72,6 @@ task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flag
 void Task_Refresh(task_t* task, func_t func);
 
 void Priority_changer(task_t* task, uint32_t new_priority);
-
-void Spurious_task_func();
 
 void Priority_promoter(task_t* task);
 

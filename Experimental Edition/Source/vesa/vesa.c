@@ -28,48 +28,58 @@ void setBank(int bankNo)
 
 }
 
-uint32_t vesa_alloc_base = 0x1000;
+uint32_t vesa_alloc_base = 0x20000;
 
-inline uint32_t vesa_malloc()
+uint32_t vesa_malloc(int sz)
 {
   uint32_t ab = vesa_alloc_base;
-  vesa_alloc_base += 0x2000;
+  vesa_alloc_base += sz;
   return ab;
 }
 
-//sets up VESA for mode
-void setVesa(uint32_t mode)
+void __attribute__((optimize("O2"))) Init_Vesa()
 {
-
-  VESA_INFO info; //VESA information
-  MODE_INFO vbeModeInfo; //VESA mode information
-
   regs16_t regs;
 
   /**Gets VESA information**/
 
-  uint32_t buffer = (uint32_t)vesa_malloc();//kmalloc(sizeof(VESA_INFO)) & 0xFFFFF; //sets the address for the buffer
+  uint32_t vesa_struct_buff = (uint32_t)0x71000;//vesa_malloc();//kmalloc(sizeof(VESA_INFO)) & 0xFFFFF; //sets the address for the buffer
 
-  memcpy(buffer, "VBE2", 4);
-  memset(&regs, 0, sizeof(regs)); //clears the registers typedef struct
+  memset((void*)vesa_struct_buff, 0, 1024);
+  memcpy((void*)vesa_struct_buff, (void*)"VBE2", 4);
+  memset((void*)&regs, 0, sizeof(regs)); //clears the registers typedef struct
 
   regs.ax = 0x4f00; //mode that gets VESA information
-  regs.di = buffer & 0xF;
-  regs.es = (buffer>>4) & 0xFFFF;
+  regs.di = vesa_struct_buff & 0xF;
+  regs.es = (vesa_struct_buff>>4) & 0xFFFF;
   int32(0x10, &regs); //calls v86 interupt
-  memcpy(&info, buffer, sizeof(VESA_INFO)); //copies info from the buffer to the info typedef struct
+  memcpy((void*)&info, (void*)vesa_struct_buff, sizeof(VESA_INFO)); //copies info from the buffer to the info typedef struct
 
   //print VESA information
-  //~ k_printf("\n\nVesa Signature: %s\n", info.VESASignature);
-  //~ k_printf("\n\nVesa Version: %h\n", info.VESAVersion);
-  //~ k_printf("\n\nVesa Video Modes: %h\n", info.VideoModePtr);
+  printf("\nStatus: %x\nVesa Signature: %s\n", regs.ax, info.VESASignature);
+  printf("\n\nVesa Version: %d.%d\n", (uint32_t)info.VESAVersion[1], (uint32_t)info.VESAVersion[0]);
+  printf("\n\nVesa Video Modes: %x\n", (uint32_t)info.VideoModePtr[1]*16 + info.VideoModePtr[0]);
+  printf("\nVesa Video Total Memory: %d\n", info.TotalMemory);
+  /**Gets VESA mode information**/
 
-  /**Gests VESA mode information**/
+  VESAmodes = (info.VideoModePtr[1]*16 + info.VideoModePtr[0]);
+
+  /*for(int i = 0; VESAmodes[i] != 0xffff; i++)
+  {
+    printf("[%x]", VESAmodes[i]);
+  }*/
+}
+
+MODE_INFO* __attribute__((optimize("O2"))) vesa_GetMode(int mode)
+{
+  /**Gets VESA mode information**/
+  regs16_t regs;
 
   //allocates memory for the buffer that stores the MODE_INFO for the VESA mode
-  uint32_t modeBuffer = (uint32_t)vesa_malloc();//kmalloc(sizeof(MODE_INFO)) & 0xFFFFF;
+  uint32_t modeBuffer = (uint32_t)0x70000;//vesa_malloc();//kmalloc(sizeof(VESA_INFO)) & 0xFFFFF; //sets the address for the buffer
 
-  memset(&regs, 0, sizeof(regs)); //clears the registers typedef struct
+  memset((void*)modeBuffer, 0, 1024);
+  memset((void*)&regs, 0, sizeof(regs)); //clears the registers typedef struct
 
   regs.ax = 0x4f01; //mode the gets the VESA mode information
   regs.di = modeBuffer & 0xF;
@@ -78,31 +88,41 @@ void setVesa(uint32_t mode)
   int32(0x10, &regs);
   memcpy(&vbeModeInfo, modeBuffer, sizeof(MODE_INFO));
 
-  widthVESA = vbeModeInfo.XResolution;
-  heightVESA = vbeModeInfo.YResolution;
-  depthVESA = vbeModeInfo.BitsPerPixel;
-  if(depthVESA == 24) depthVESA = 32;
+  return &vbeModeInfo;
+}
 
-  //print VESA mode information
-//  printf("\nBase Pointer: %x\n", (uint32_t)vbeModeInfo.PhysBasePtr);
-//  printf("\nXRes: %x\n", (uint32_t)vbeModeInfo.XResolution);
-//  printf("\nYRes: %x\n", (uint32_t)vbeModeInfo.YResolution);
-//  printf("\nBits per pixel: %x\n", (uint32_t)vbeModeInfo.BitsPerPixel);
-//  printf("\nExits status: %x\n", (uint32_t)regs.ax);
+void vesa_ShowMode(MODE_INFO* inf)
+{
+    //print VESA mode information
+    printf("\nBase Pointer: %d\n", (uint32_t)inf->PhysBasePtr);
+    printf("\nXRes: %d\n", (uint32_t)inf->XResolution);
+    printf("\nYRes: %d\n", (uint32_t)inf->YResolution);
+    printf("\nBits per pixel: %d\n", (uint32_t)inf->BitsPerPixel);
+}
 
+int __attribute__((optimize("O2"))) vesa_FindMode(int width, int height, int depth)
+{
+  uint16_t* modes = VESAmodes;
+  MODE_INFO* inf;
+  for(int i = 0; modes[i] != 0xffff; i++)
+  {
+    inf = vesa_GetMode(modes[i]);
+    if((uint32_t)inf->XResolution == width && (uint32_t)inf->YResolution == height && (uint32_t)inf->BitsPerPixel == depth)
+    {
+      vesa_ShowMode(inf);
+
+      return modes[i];
+    }
+  }
+  return 0;
+}
+
+//sets up VESA for mode
+void __attribute__((optimize("O2"))) setVesa(uint32_t mode)
+{
+  regs16_t regs;
+  memset((void*)&regs,(void*) 0, sizeof(regs)); //clears the registers typedef struct
   /*Sets the Linear Frame Buffer address tp vga_mem and lfb variables*/
-  vga_mem = (uint8_t*)vbeModeInfo.PhysBasePtr;
-  general_buff = kmalloc(4*1024*768);
-  buff=(uint8_t*)kmalloc(1024*768*4);
-  vesa_buff = vga_mem;
-//  general_buff = kmalloc(2*1024*768);
-  mouse_buff = kmalloc(4*1024*768);
-  faster_memset(mouse_buff, 0, 1024*768);
-//  memset(general_buff, 0, 2*1024*768);
-//  faster_memset(vga_mem, 0xffffffff, 1024*768);
-  memset(buff, 90, 2*1024*768);
-  refresh_area(0,0,1024,768);
-  uint32_t lfb = (uint32_t)vbeModeInfo.PhysBasePtr;
 
   /**Sets up the VESA mode**/
   regs.ax = 0x4f02; //mode the sets up VESA graphics
@@ -112,7 +132,44 @@ void setVesa(uint32_t mode)
   regs.bx = (mode | 0x4000);
   int32(0x10, &regs);
 
-  //reenable the interupts and the tasks to run
-  //asm volatile("sti");
+  widthVESA = vbeModeInfo.XResolution;
+  heightVESA = vbeModeInfo.YResolution;
+  depthVESA = vbeModeInfo.BitsPerPixel/4;
+}
 
+uint32_t vesa_alloc_base2 = 0x1000;
+
+inline uint32_t vesa_malloc2()
+{
+  uint32_t ab = vesa_alloc_base2;
+  vesa_alloc_base2 += 0x2000;
+  return ab;
+}
+
+void vesa_getPM_info()
+{
+  regs16_t regs;
+  memset((void*)&regs, 0, sizeof(regs)); //clears the registers typedef struct
+
+  regs.ax = 0x4f0a; // VBE 2.0 Protected Mode Interface
+
+  int32(0x10, &regs);
+
+  printf("\nGeting Protected Mode VBE2.0 Interface...\n\tStatus : %x\tES: %d DI: %d\n\tNumber of Bytes: %d", regs.ax, regs.es, regs.di, regs.cx);
+
+  vbePM_Interface = regs.es*0x10 + regs.di;
+}
+
+void __attribute__((optimize("O0"))) vesa_SetBuffStart(int x, int y)
+{
+  regs16_t regs;
+  memset((void*)&regs, 0, sizeof(regs)); //clears the registers typedef struct
+
+  regs.ax = 0x4f07; // VBE Set/Get Display Start control
+  //regs.bl = 0x2;    // Schedule Display Start Alternate
+  regs.bx = 0x80;
+  regs.cx = x;
+  regs.dx = y;
+
+  int32(0x10, &regs);
 }

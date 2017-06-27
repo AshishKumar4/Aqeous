@@ -22,8 +22,8 @@
 #include "init/init.c"
 
 #include "filesystem/general.c"
-#include "filesystem/ls.c"
-#include "filesystem/cd.c"
+#include "filesystem/FSspecific/aqfs.c"
+#include "filesystem/FSspecific/ext2.c"
 
 #include "Scheduler/Scheduler.h"
 #include "ProcManagement/ProcManagement.h"
@@ -32,6 +32,7 @@
 #include "rn/rn.c"
 
 #include "ANN/ann.c"
+#include "vesa/vesa_commands.c"
 
 extern uint32_t time_slice;
 
@@ -99,58 +100,6 @@ void Command_mdbug()
       dbug();
 }
 
-void Command_start_vesa()
-{
-   _printf("\n Entering VESA SVGA mode 1024*768");
-
-   printf("\n Entering VESA SVGA mode 1024*768");
-   //Switch_to_system_dir();
-   setVesa(0x117);
-
-   Task_sleep(Shell_Ostream_task);
-   Shell_Ostream_task = create_task("Vesa_test_buf", DBuff, 1, 0x202, Shell_proc);
-   //Task_wakeup(Shell_Ostream_task);
-   Activate_task_direct(Shell_Ostream_task);
-   //Switch_back_from_System();
-   /*vesa_lfb();//*/
-   //RectD(0,0,1024,768, 0x0092ff);
-
-   RectD(400,300,50,10,0x00ff00);
-   RectD(500,300,50,10,0xff0000);
-   RectD(600,300,50,10,0x0000ff);
-
-   RectD(400,400,50,10,0x0f00);
-   RectD(500,400,50,10,0xf000);
-   RectD(600,400,50,10,0x00f0);
-   RectD(700,400,50,10,0x000f);
-   //RectD(100,300,50,10,7,7,900);
-
-   font_maker();
-   font_renderer(char_B, 100, 100, 0xf000, 10, 3);
-   font_renderer(char_C, 160, 100, 0xf0ff, 10, 3);
-   font_renderer(char_E, 240, 100, 0x0f00, 10, 3);
-   font_renderer(char_1, 320, 100, 0xff0f, 10, 3);
-   font_renderer(char_2, 380, 100, 0x0f0f, 10, 3);
-   font_renderer(char_3, 460, 100, 0xfff0, 10, 3);
-   font_renderer(char_4, 520, 100, 0xfa0f, 10, 3);
-   font_renderer(char_5, 580, 100, 0xfa0f, 10, 3);
-   Pixel_VESA_BUFF( 500, 500, 0xff00ff);
-   line_fast(100,400,100,500,0xffff, 1);
-   line_fast(130,400,130,500,0xffff, 10);
-   random_plotter();
-  // prime_diff_graph();
-   //RectD(510, 510, 500,500,0xff00ff);
-   //RectD(100,300,50,10,7,7,7);
-   /*while(1)
-   {
-     //Mouse_Plot(mousex,mousey);
-     DBuff();
-   }//*/
-   mouseinit();
-   Activate_task_direct(create_task("Mouse_Pointer", Mouse_Plot, 2, 0x202, Shell_proc));
-
-   //Activate_task_direct(create_task("Mouse_Updater", mouse_updater, 10, 0x202, Shell_proc));
-}
 
 void Command_memmap()
 {
@@ -200,7 +149,17 @@ void Command_start_counter()
 
 void Command_counter()
 {
-   _printf("%x %x",test_counter, test_pit_timer);
+  uint32_t rtc = ReadFromCMOS();
+  uint32_t* rt = (40*1024*1024);
+  for(int i = rtc; i < rtc + 5;)
+  {
+    if(ReadFromCMOS() != rtc)
+    {
+      printf("\n=>%d", *rt);
+      *rt = 0;
+      ++i;
+    }
+  }
 }
 
 void Command_trate()
@@ -213,6 +172,11 @@ void Command_trate()
   //test_pit_timer = 0;
   *HPET_main_counter = 0;
   hpet->Main_Counter_Reg = 0;
+
+  int pit_val = (*(uint32_t*)(40*1024*1024));
+  (*(uint32_t*)(40*1024*1024)) = 0;
+  int rtc_val = ReadFromCMOS();
+  _printf("\tPIT: %d RTC: %d",pit_val, rtc_val);
 }
 
 void Command_timeslice()
@@ -232,8 +196,8 @@ void Command_test()
 {
    asm volatile("cli");
    Activate_task_direct_SP(create_task("Test_process", test_process, 10, 0x202, kernel_proc), Get_Scheduler());
-/*
-   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
+
+/*   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
@@ -254,7 +218,6 @@ void Command_test_multi()
    {
       Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
    }
-   Shell_sleep();
    asm volatile("int $50");
 }
 

@@ -25,6 +25,8 @@ int _printf(const char* restrict format, ...);
 
 int scanf(const char* restrict format, ...);
 
+void itoa(unsigned i,char* buf, unsigned base);
+
 static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
@@ -108,7 +110,7 @@ int printf(const char* restrict format, ...)
 {
 	/*while(plock);
 	plock = 1;*/
-	LOCK(printlock);
+	;//LOCK(printlock);
 	if(multitasking_ON)
 	{
 		va_list parameters;
@@ -157,7 +159,7 @@ int printf(const char* restrict format, ...)
 				const char* s = va_arg(parameters, const char*);
 				_print(s, strlen(s));
 			}
-	        else if(*format == 'i' ||*format == 'd')
+	        else if(*format == 'i' ||*format == 'd' || *format == 'x')
 	        {
 	            format++;
 	            int c = va_arg (parameters, int);
@@ -168,7 +170,7 @@ int printf(const char* restrict format, ...)
 							}
 	            _printint(c);
 	        }
-	        else if(*format == 'l'||*format == 'x') //uint32_t
+	        else if(*format == 'l') //uint32_t
 	        {
 	            format++;
 	            uint32_t c = va_arg (parameters, uint32_t);
@@ -202,6 +204,16 @@ int printf(const char* restrict format, ...)
 							in = (int)d;
 							_printint(in);
 	        }
+
+					else if(*format == 'x') //uint32_t
+	        {
+	            format++;
+							_print("0x", 2);
+	            uint32_t c = va_arg (parameters, uint32_t);
+							char tmp[10];
+							itoa(c, tmp, 16);
+	            _print(tmp, strlen(tmp));
+	        }
 			else
 			{
 				goto _incomprehensible_conversion;
@@ -211,7 +223,7 @@ int printf(const char* restrict format, ...)
 		va_end(parameters);
 		plock = 0;
 
-		UNLOCK(printlock);
+		;//UNLOCK(printlock);
 		return written;
 	}
 	else
@@ -268,7 +280,7 @@ int printf(const char* restrict format, ...)
 	            int c = va_arg (parameters, int);
 	            printint(c);
 	        }
-	        else if(*format == 'l'||*format == 'x') //uint32_t
+	        else if(*format == 'l') //uint32_t
 	        {
 	            format++;
 	            uint32_t c = va_arg (parameters, uint32_t);
@@ -288,6 +300,15 @@ int printf(const char* restrict format, ...)
 								console_color = default_console_color;
 							else
 								console_color = c;
+	        }
+					else if(*format == 'x') //uint32_t
+	        {
+	            format++;
+	            uint32_t c = va_arg (parameters, uint32_t);
+							char tmp[10];
+							itoa(c, tmp, 16);
+							print("0x", 2);
+	            print(tmp, strlen(tmp));
 	        }
 			else
 			{

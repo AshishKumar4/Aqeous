@@ -660,8 +660,9 @@ extern HBA_MEM *abar;
 int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
 int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
 
-inline int disk_read(HBA_PORT *port, QWORD start, DWORD count, uint32_t* buf);
-inline int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, QWORD start);
+int disk_read(HBA_PORT *port, DWORD start, DWORD count, uint32_t* buf);
+int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start);
+int disk_write_sector(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start);
 
 int sec_read_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);
 int sec_write_static(HBA_PORT *port, QWORD start, DWORD count, DWORD buf);

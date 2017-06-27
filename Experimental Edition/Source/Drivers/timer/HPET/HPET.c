@@ -40,16 +40,16 @@ void init_hpet()
         hpet = (HPET_Table_t*)hpet_base;
         hpet->Main_Counter_Reg = 0;
 
-			//	ioapic_set_irq(2, IOAPIC_entry->id, )
+			//	ioapic_set_irq(2, IOAPIC_entry->id, )	 48 = 110000
 
         hpet->GCReg[0] = 1;
-			//	hpet->Timer0CVReg[0] = 10000;
-      //  hpet->Timer0CCReg[0] |= 0b0000110100000100;
+				//hpet->Timer0CCReg[0] = (2 << 9) | (1 << 2) | (1 << 3) | (1 << 6);//10000;
+      //  hpet->Timer0CCReg[0] |= 0b00001101001110; //0b000011101001100
+			//	hpet->Timer0CVReg[0] = 0x10000;
 				//hpet->Timer0CCReg[0] |=
-				printf("\nGeneral Capabilities reg: %d GISReg: %d\nTimer0 Capabilities: %d %d\n", hpet->GCIDReg[0], hpet->GISReg[0], hpet->Timer0CCReg[1], hpet->Timer0CCReg[0]);
+				printf("\nGeneral Capabilities reg: %d GISReg: %d GCReg: %d \nTimer0 Capabilities: %d %d\n", hpet->GCIDReg[0], hpet->GISReg[0], hpet->GCReg[0], hpet->Timer0CCReg[1], hpet->Timer0CCReg[0]);
 			//	printf("-%x \nMinimum Tick period: %x ",hpet->Main_Counter_Reg,hpet->GCIDReg[1]);
         //hpet->GCIDReg[1] = 10000;
-				//while(1);
 
 				/*for(int i = 0; i < 10000; i++)
 				{

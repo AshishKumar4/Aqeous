@@ -8,7 +8,7 @@
 void SystemDir_Mapper() ///will use it to manage OS directly
 {
     //Map_non_identity(0,0,4095*1024*1024,system_dir);
-    for(uint32_t i=0,j=0;i<0xFFFFF000;i+=4096,j+=4096) //Make the pages and page tables for the whole kernel memory (higher Half)
+    for(uint32_t i=0,j=0;i<0xFFFFF000;i+=0x1000,j+=0x1000) //Make the pages and page tables for the whole kernel memory (higher Half)
     {
         //printf(" %x",i);
         page_t* page;
@@ -44,7 +44,7 @@ void Setup_SystemDir()
 
 Pdir_Capsule_t* pgdir_maker()
 {
-	Pdir_Capsule_t* npd_Cap = mtalloc(4);//kmalloc(sizeof(Pdir_Capsule_t));
+	Pdir_Capsule_t* npd_Cap = (Pdir_Capsule_t*)mtalloc(3); // Might be 4 as well
   //printf(" %d", sizeof(Pdir_Capsule_t));
 	Setup_VMEM(npd_Cap);
   return npd_Cap;
@@ -59,19 +59,19 @@ inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given 
 
     map((uint32_t)dir,4096*4,(PageDirectory_t*)dir);
 
-    SchedulerKits_t* st = MotherSpace;
+    SchedulerKits_t* st = (SchedulerKits_t*)MotherSpace;
     map((uint32_t)MotherSpace,4096,(PageDirectory_t*)dir);
 
     //map((uint32_t)512*1024*1024,200*1024*1024,(PageDirectory_t*)New_Proc->pgdir);
 
-    for(int i = 0; i < total_CPU_Cores - 1; i++)
+    for(uint32_t i = 0; i < total_CPU_Cores - 1; i++)
     {
-      map(st[i].switcher,4096,(PageDirectory_t*)dir);
-      map(st[i].stack,4096*4,(PageDirectory_t*)dir);
-      map(st[i].queue_start,4096*40,(PageDirectory_t*)dir);
-      map(st[i].Spurious_task,4096,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].switcher,4096,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].stack,4096*4,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].queue_start,4096*40,(PageDirectory_t*)dir);
+      map((uint32_t)st[i].Spurious_task,4096,(PageDirectory_t*)dir);
     }
-    map(2*1024*1024*1024, 1*1024*1024*1024, dir);
+    map(0x80000000, 0x40000000, dir);
 }
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDirectory_t* dir)
@@ -81,6 +81,22 @@ inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDi
         //printf(" %x",i);
         page_t* page;
         page=get_page(j,1,dir); //kernel Pages;
+        pt_entry_set_frame ( page, i);
+        pt_entry_add_attrib ( page, I86_PTE_PRESENT);
+        pt_entry_add_attrib ( page, I86_PTE_WRITABLE);
+        pt_entry_add_attrib ( page, I86_PTE_USER);
+        pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_1);
+        pt_entry_add_attrib ( page, CUSTOM_PTE_AVAIL_2);
+        //page++;
+    }
+}
+
+inline void Create_PTable(uint32_t phy, PageTable_t* tbl)
+{
+    for(uint32_t i=phy, k = 0;k < 1024;i+=4096, k++) //Make the pages and page tables for the whole kernel memory (higher Half)
+    {
+        //printf(" %x",i);
+        page_t* page = &tbl->page_entry[k];
         pt_entry_set_frame ( page, i);
         pt_entry_add_attrib ( page, I86_PTE_PRESENT);
         pt_entry_add_attrib ( page, I86_PTE_WRITABLE);

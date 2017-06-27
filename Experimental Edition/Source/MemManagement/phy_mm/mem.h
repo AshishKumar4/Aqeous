@@ -37,8 +37,8 @@ char* strMemoryTypes[] = {
 	"Available",				//memory_region.type==0
 	"Reserved",					//memory_region.type==1
 	"ACPI Reclaim",				//memory_region.type==2
-	"ACPI NVS Memory"			//memory_region.type==3
-	"Kernel Reserved"			//memory_region.type==4
+	"ACPI NVS Memory",			//memory_region.type==3
+	"Kernel Reserved",			//memory_region.type==4
 	"Kernel Page Directory"		//memory_region.type==4
 };
 

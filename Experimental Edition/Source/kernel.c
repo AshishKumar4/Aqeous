@@ -54,6 +54,8 @@
 #include "NeuralNetwork/Neuron/NeuralProcessing.c"
 
 #include "IPCInterface/IPCInterface.c"
+#include "vfs.c"
+#include "WindowSystem/window.c"
 //#include "mathex.c"
 
 uint32_t initial_esp;
@@ -114,19 +116,19 @@ void dbug()
 	{
 		printf(" %x ",*temp1);
 		++temp1;
-	}///*/
+	}
 	for(int i=0;i<8;i++)
 	{
 		printf(" %x ",*test1);
 		++test1;
-	}//*/
+	}
 //	printf(" %x %x ",*test3,*test4);
 	printf(" If you didnt saw any numbers above, It worked!!!\n");
 	uint32_t *tmp1=(uint32_t*)kmalloc(32),*tmp2=tmp1;
 	//kmalloc(4096);
-	uint32_t *tst1=(uint32_t*)kmalloc(123),*tst2=tst1;
+	uint32_t *oooooopp=(uint32_t*)kmalloc(64),*tst2=oooooopp;
 
-	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,tst1,kmalloc(12));
+	printf("\tLocation of var 1: %x, var 2: %x %x\n",tmp1,oooooopp,kmalloc(12));//*/
 }
 
 uint32_t initial_eip;
@@ -144,17 +146,18 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	init_descriptor_tables();	// Setup Descriptor tables for BSP
 
 	detect_cpu();
-
 	BasicCPU_Init();		// Initialize all the processing units in the System
+
 //	while(1);
 	printf("\nDESCRIPTOR TABLES INITIALIZED \n");
 	printf("\nEnabling ACPI!\n");
-/*	initAcpi();
+	initAcpi();
 	if(!acpiEnable())
 		printf("\nACPI Initialized\n");
 	else printf("\nACPI CANT BE INITIALIZED\n");
-		//ioapic_init();
-*/
+	//*/
+	//ioapic_init();
+//*/
 //	mouseinit();
 	printf("\nMouse Drivers initialized\n");
 	keyboard_init();
@@ -180,12 +183,11 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	max_mem=maxmem*1024;
 
-
 	Setup_Paging();
 
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-	
+
 /*
 	Pdir_Capsule_t* dir = pgdir_maker();
 	memset(&dir->pdir, 0, 4096);
@@ -194,6 +196,8 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	//printf("\n%d", pgdir);
 	switch_pCap(dir);
 	while(1);*/
+
+	//	while(1);
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
 	printf("\nEnabling Hard Disk\n");
@@ -205,17 +209,16 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 
 	printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 
-	Init_fs();
+	vfs_init();
 	printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
-	if(cpuHasMSR()) printf("\nCPU has MSR");
+//	if(cpuHasMSR()) printf("\nCPU has MSR");
 	//switch_pdirectory(main_dir);
 
 	console_dbuffer_original = kmalloc(4096*1024);
 	console_dbuffer = (uint16_t*)console_dbuffer_original;
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
 	printf("\n\nInitializing MultiThreading System");
-	init_timer(1000);
-	asm volatile("sti");
+	init_timer(60);
 	init_multitasking();//*/
 	while(1);
 

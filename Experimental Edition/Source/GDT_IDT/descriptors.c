@@ -93,6 +93,15 @@ void ttt_t()
   }
 }
 
+void PIT_ab()
+{
+  asm volatile("iret");
+}
+void PIT_ab2()
+{
+  asm volatile("iret");
+}
+
 void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
 {
   //The limit is 1 less than our table size because this is the end address
@@ -141,7 +150,7 @@ void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
-  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
+  idtSetEntry(num++, (uint32_t)&PIT_ab, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
@@ -208,7 +217,7 @@ static void init_idt()
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-  idtSetEntry(num++, (uint32_t)&test_ttt, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
+  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);

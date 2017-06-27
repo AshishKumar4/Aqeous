@@ -9,7 +9,6 @@
 #include "virt_mm/paging.h"
 #include "stdint.h"
 #include "fs.h"
-
 #include "task.h"
 
 //uint32_t QUEUE_START=33554432;//209715200
@@ -60,5 +59,8 @@ void MP_init_Sequence();
 void test_process();
 void tasking_initiator();
 void init_multitasking();
+
+void Spurious_task_func_t();
+void Spurious_task_func_end_t();
 
 #endif

@@ -2,45 +2,6 @@
 #include <ext2/ext2_fs.h>
 #include "ahci.h"
 
-#define TO_uint32_t(bytes)                   ((bytes) / sizeof(uint32_t))
-
-#define BLOCKS_TO_SECTORS(blocks)          (((blocks) * EXT2_BLOCK_SZ) / SECTOR_SIZE)
-#define SECTORS_TO_BLOCKS(sectors)         (((sectors) * SECTOR_SIZE) / EXT2_BLOCK_SZ)
-
-#define IS_CONS_BLOCKS(first, second)      ((((second) - (first)) / (EXT2_BLOCK_SZ / SECTOR_SIZE)) == 1 ? TRUE : FALSE)
-
-//the global path for the current directory
-char *ext2_path;
-uint32_t ext2_current_dir_inode = 0;
-ext2_inode_t *ext2_root;
-char *ext2_root_name;
-
-//caches
-ext2_superblock_t *ext2_g_sblock = 0;
-ext2_group_descriptor_t *ext2_g_gdesc = 0;
-ext2_inode_t *ext2_g_inode_table = 0;
-uint8_t *ext2_g_bb = 0;                                   //the block bitmap
-uint8_t *ext2_g_ib = 0;                                    //the inode bitmap
-//caches
-
-//defaults (logged as user) for permisions files need to have in order to be accesed
-uint32_t _Rlogged = EXT2_I_RUSR, _Wlogged = EXT2_I_WUSR, _Xlogged = EXT2_I_XUSR;
-
-static ext2_inode_t *__create_root__(void);
-static ext2_inode_t *__create_file__(uint32_t size);
-static ext2_inode_t *__create_dir__(ext2_superblock_t *sblock, ext2_group_descriptor_t *gdesc);
-static char *__get_name_of_file__(ext2_inode_t *directory, ext2_inode_t *file);
-
-static struct ext2_dirent dirent;
-
-enum __block_types__
-{
-	EXT2_DIRECT,
-	EXT2_SINGLY,
-	EXT2_DOUBLY,
-	EXT2_TRIPLY
-};
-
 int shiftData(void *position, int shiftAmount, uint32_t lengthOfDataToShift)
 {
 	//TODO add right shift functionalbility
@@ -98,7 +59,7 @@ uint32_t ext2_read_meta_data(ext2_superblock_t **sblock, ext2_group_descriptor_t
 	disk_read(curr_port, (uint32_t)((EXT2_SBLOCK_OFF) / SECTOR_SIZE), sizeof(ext2_superblock_t), (uint32_t*)sdata);
 
 	uint32_t* test = (uint32_t*)sdata;
-	printf("Sizeof ext2_superblock_t = %x\n", sizeof(ext2_superblock_t));
+	//printf("Sizeof ext2_superblock_t = %x\n", sizeof(ext2_superblock_t));
 	//check here if the superblock exists
 	if(sdata->magic != EXT2_MAGIC)
 		return 1; //fail!
@@ -1415,11 +1376,12 @@ ext2_inode_t *ext2_create_dir(ext2_inode_t *parent_dir, char *name)
 	 * links */
 	if(parent_dir->inode != sblock->first_inode)
 	{
+		printf("\noopp%d", parent_dir->inode, sblock->first_inode);
 		ext2_add_file_to_dir(parent_dir, dir, dir->type, name);
 
 		ext2_add_hardlink_to_dir(dir, dir, "."); //adds hardlink for the current directory
 		ext2_add_hardlink_to_dir(dir, parent_dir, ".."); //adds hardlink for the parent directory
-
+//*/
 	}
 
 	//purposly not freeing since buffer, either way with update, is the global variable which should not be cleared
@@ -2502,7 +2464,10 @@ static ext2_inode_t *__create_root__()
 	if(!ext2_g_sblock || !ext2_g_gdesc)
 	{
 		if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
+		{
+			printf("\nUnknown Error #111");
 			return 0; //error
+		}
 	}else{
 		sblock = ext2_g_sblock;
 		gdesc = ext2_g_gdesc;
@@ -2553,25 +2518,25 @@ static ext2_inode_t *__create_root__()
 	return data;
 }
 
-uint32_t ext2_initialize(uint32_t size, const char *device)
+void make_boot_sector_ext2()
 {
-	//the size cannot be greater than the floppy disk
-	if(size > DISK_SIZE)
-		return 1;
+		uint32_t buf=(uint32_t)fsalloc(1024);
+		memset(buf,0,1024);
+		read(curr_port,0,2,(DWORD)buf);
+		Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
+		strcpy(identity->name,"EXT2");
+		identity->active_partition = 446; //Partition 1
 
-	//if there is no persistent storage available
-	if(_DiskStorage == FALSE)
-		return 2;
-/*
-	//change to the block device
-	vfs_blkdev_t *data;
-	data = switch_to_blkdev(device);
-	data->fs_type = M_EXT2;
+		uint8_t* boot_ptr = buf;
+		boot_ptr += 510;
+		*boot_ptr = 0x55;
+		++boot_ptr;
+		*boot_ptr = 0xAA;
+		write(curr_port,0,2,(DWORD)buf); //2nd sector.
+}
 
-	//update the block device with the above change
-	vfs_change_blkdev(data);
-	//kfree((uint32_t*)data);
-*/
+uint32_t ext2_burn(uint32_t size, const char* device)
+{
 	ext2_superblock_t *sblock;
 	ext2_group_descriptor_t *gdesc;
 
@@ -2579,25 +2544,28 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 	 * then there is either an error in the sblock, or one does not exist*/
 	if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
 	{
-		printf("The disk does not have preexisting data on it\n");
-
+		make_boot_sector_ext2();
 		printf("\n\tFormating required ext2 structures, this may take some time\n");
 
 		printf("\tCreating the superblock and group descriptor table...");
 		ext2_set_block_group(size);
-		printf("%cgdone%cw\n");
+		printf("%ggdone%gw\n",10,15);
 
 		ext2_inode_t *root; //, *file, *dir;
 
 		printf("\tCreating the root directory...");
 		//create the root directory
 		root = ext2_create_dir(__create_root__(), "/");
-		printf("%cgdone%cw\n");
+		printf("%ggdone%gw\n", 10, 15);
 
 		ext2_root = root;
+		ptr_currentDir = ext2_root;
 
 		if(!ext2_root)
+		{
+			printf("\nUnknown Error #1\n");
 			return 1; //error
+		}
 
 		ext2_path = (char*)kmalloc(2);
 		*(ext2_path) = '/';
@@ -2605,13 +2573,19 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 
 		printf("\tCreating root \".\" hardlink...");
 		if(ext2_add_hardlink_to_dir(root, root, ".")) //adds hardlink to root
+		{
+			printf("\nUnknown Error #1\n");
 			return 1; //error
-		printf("%cgdone%cw\n");
+		}
+		printf("%ggdone%gw\n", 10, 15);
 
 		printf("\tCreating root \"..\" hardlink...");
 		if(ext2_add_hardlink_to_dir(root, root, "..")) //adds hardlink to root
+		{
+			printf("\nUnknown Error #1\n");
 			return 1; //error
-		printf("%cgdone%cw\n");
+		}
+		printf("%ggdone%gw\n", 10, 15);
 
 		//set the name of the root to '/'
 		ext2_root_name = (char*)kmalloc(2);
@@ -2621,6 +2595,21 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 		//~ ext2_set_current_dir(root);
 
 		//sucess!
+		printf("\nExt2 Formatted sucessfully\n");
+		return 0;
+	}
+}
+
+uint32_t ext2_initialize(uint32_t size, const char *device)
+{
+	ext2_superblock_t *sblock;
+	ext2_group_descriptor_t *gdesc;
+
+	/*if ext2_read_meta_data returns with anything but a 0,
+	 * then there is either an error in the sblock, or one does not exist*/
+	if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
+	{
+		printf("The disk does not have preexisting data on it\n");
 		return 0;
 	}
 	else
@@ -2640,9 +2629,25 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 
 		printf("\tAcquiring preexisting root directory...");
 		//get the root, it is always second after the 'mother root'
-		ext2_root = ext2_inode_from_offset(1);
-		printf("%cgdone%cw\n");
 
+
+		ext2_root = ext2_inode_from_offset(1);
+		ptr_currentDir = ext2_root;
+	/*	ext2_dirent_t* ext2_root_dirent = ext2_dirent_from_dir(ext2_root, 2);
+
+
+		printf("%ggdone%gw\n%s>", 10, 15, ext2_root_dirent->name);
+		//printf("%ggdone%gw\n", 10, 15);
+/*
+		ext2_inode_t* fnode = ext2_root;
+	  ext2_dirent_t* entry = 0;
+
+	  for(int i = 0; i < 2; i++)
+	  {
+	    entry = ext2_dirent_from_dir(fnode, i);
+	    printf("\n%s", entry->name);
+	  }
+*/
 		if(!ext2_root)
 			return 1; //error
 
@@ -2650,7 +2655,7 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 		ext2_root_name = (char*)kmalloc(2);
 		*(ext2_root_name) = '/';
 		*(ext2_root_name + 1) = 0;
-		//~ ext2_set_current_dir(ext2_root);
+	 	//~ ext2_set_current_dir(ext2_root);
 
 		//sucess!
 		return 0;

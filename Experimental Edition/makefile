@@ -65,6 +65,7 @@ build-nasm:
 	$(NASM) -f elf $(ARCH)/descriptors.asm -o $(OBJ)/descriptors.o
 	$(NASM) -f elf $(ARCH)/tasking.asm -o $(OBJ)/tasking.o
 	$(NASM) -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
+	$(NASM) -f elf $(ARCH)/FaultHandlers.asm -o $(OBJ)/FaultHandlers.o
 	$(NASM) -f elf $(ARCH)/asmlibrary.asm -o $(OBJ)/asmlibrary.o
 	$(NASM) -f elf $(ARCH)/a.asm -o $(OBJ)/a.o
 	$(NASM) -f elf $(ARCH)/scheduler.asm -o $(OBJ)/scheduler.o
@@ -88,6 +89,9 @@ build-installer:
 
 build-assembly:
 	$(CC) -T linker.ld $(FLAGS) -S -m32 $(SOURCE)/kernel.c
+
+build-objdump:
+	objdump -D -M intel aqeous.bin > aqeous.txt
 
 %.o: %.c
 	$(CC) -c $< -o $@ $(FLAGS)

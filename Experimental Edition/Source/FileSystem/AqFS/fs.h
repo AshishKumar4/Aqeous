@@ -42,6 +42,8 @@ typedef struct __attribute__ ((packed)) directory
 	char name[64];
 }Directory_t;
 
+Directory_t* aqfs_root;
+
 typedef struct __attribute__ ((packed)) file
 {
 	uint16_t perm;
@@ -178,7 +180,7 @@ int flush_dir(Directory_t* dir);
 
 int flush_file(File_t* file);
 
-void set_curr_dir(uint64_t location);
+void set_curr_dir(uint64_t location, char* path);
 
 Directory_t* get_special_dirs(uint32_t type);
 
@@ -216,7 +218,7 @@ int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsiz
 
 void make_boot_sector();
 
-void Init_fs();
+int AqFS_init();
 
 void AqFS_burn();
 

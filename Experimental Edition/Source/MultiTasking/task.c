@@ -71,6 +71,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 
 	New_task->esp = (uint32_t)stack;
 	New_task->tokens = priority;
+	New_task->func = (uint32_t)func;
 
 	//TODO: Complete this function, check everything thrice
 
@@ -151,7 +152,7 @@ void __attribute__((optimize("O0"))) Activate_task(task_table_t* task_entry) ///
 
 	if(kit != Get_Scheduler())
 	{
-		IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_ACTIVATE;
 		pp->no_opt = 0;
 		pp->source = Get_Scheduler();
@@ -165,7 +166,7 @@ void __attribute__((optimize("O0"))) Activate_task(task_table_t* task_entry) ///
 		return;
 	}
 
-	task->Scheduler = (uint32_t*)kit;
+	task->Scheduler = (SchedulerKits_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -196,7 +197,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct(task_t* task) /// Put 
 
 	if(kit != Get_Scheduler() && multitasking_ON)
 	{
-		IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_ACTIVATE;
 		pp->no_opt = 0;
 		pp->source = Get_Scheduler();
@@ -211,7 +212,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct(task_t* task) /// Put 
 		return;
 	}
 
-	task->Scheduler = (uint32_t*)kit;
+	task->Scheduler = (SchedulerKits_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -243,7 +244,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct_SP(task_t* task, Sched
 
 	if(kit != Get_Scheduler() && multitasking_ON)
 	{
-		IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_ACTIVATE;
 		pp->no_opt = 0;
 		pp->source = Get_Scheduler();
@@ -257,7 +258,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct_SP(task_t* task, Sched
 		return;
 	}
 
-	task->Scheduler = (uint32_t*)kit;
+	task->Scheduler = (SchedulerKits_t*)kit;
 	uint32_t* _q=kit->queue_start;
 	//printf("\nAx%x ",_q);
 	_q+=(1024*(TOTAL_QUEUES - task->priority)); ///Get into the queue required
@@ -287,7 +288,7 @@ void __attribute__((optimize("O0"))) Task_Swap(task_t* new, task_t* original)
 	SchedulerKits_t* kit = original->Scheduler;
 	if(kit != Get_Scheduler() && multitasking_ON)
 	{
-		IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_SWAP;
 		pp->no_opt = 1;
 		pp->source = Get_Scheduler();
@@ -344,7 +345,7 @@ void __attribute__((optimize("O0"))) _kill(task_t* task)	// Know on which core t
 
 	if(kit != Get_Scheduler())
 	{
-		IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_KILL;
 		pp->no_opt = 0;
 		pp->source = Get_Scheduler();
@@ -405,7 +406,7 @@ void __attribute__((optimize("O0"))) Priority_promoter(task_t* task)
 		SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
 		if(kit != Get_Scheduler())
 		{
-			IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+			IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 			pp->type = TASK_PRIORITY_REFRESH;
 			pp->no_opt = 0;
 			pp->source = Get_Scheduler();
@@ -449,7 +450,7 @@ void __attribute__((optimize("O0"))) Task_sleep(task_t* task)
 		SchedulerKits_t* kit = task->Scheduler;
 		if(kit != Get_Scheduler())
 		{
-			IPCPacket_t p, *pp = &p; //kmalloc(sizeof(IPCPacket_t));
+			IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 			pp->type = TASK_SLEEP;
 			pp->no_opt = 0;
 			pp->source = Get_Scheduler();
@@ -486,7 +487,7 @@ void __attribute__((optimize("O0"))) Task_wakeup(task_t* task)
 
 		if(kit != Get_Scheduler())
 		{
-			IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+			IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 			pp->type = TASK_WAKEUP;
 			pp->no_opt = 0;
 			pp->source = Get_Scheduler();
@@ -563,7 +564,7 @@ void __attribute__((optimize("O0"))) Priority_changer(task_t* task, uint32_t new
 
 		if(kit != Get_Scheduler())
 		{
-			IPCPacket_t p, *pp = kmalloc(sizeof(IPCPacket_t));
+			IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 			pp->type = TASK_PRIORITY_CHANGE;
 			pp->no_opt = 1;
 			pp->source = Get_Scheduler();

@@ -14,6 +14,8 @@ typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 
 
 #define KERNEL_BASE 0xC0000000
 
+func_t Screen_BuffSync;
+
 // Efficient min and max operations
 #define MIN(_a, _b)						\
 ({								\
@@ -32,14 +34,14 @@ typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 
 // Round down to the nearest multiple of n
 #define ROUNDDOWN(a, n)						\
 ({								\
-	uint64_t __a = (uint64_t) (a);				\
+	uint32_t __a = (uint32_t) (a);				\
 	(typeof(a)) (__a - __a % (n));				\
 })
 // Round up to the nearest multiple of n
 #define ROUNDUP(a, n)						\
 ({								\
-	uint64_t __n = (uint64_t) (n);				\
-	(typeof(a)) (ROUNDDOWN((uint64_t) (a) + __n - 1, __n));	\
+	uint32_t __n = (uint32_t) (n);				\
+	(typeof(a)) (ROUNDDOWN((uint32_t) (a) + __n - 1, __n));	\
 })
 
 #define sgn(x) ((x<0)?-1:((x>0)?1:0)) /* macro to return the sign of a

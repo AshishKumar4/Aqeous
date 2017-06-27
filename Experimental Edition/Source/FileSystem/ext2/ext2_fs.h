@@ -273,6 +273,49 @@ struct ext2_dirent
   char *name;           //filename, remember to kmalloc this to give it an address, or else it will page fault
 };
 
+typedef struct ext2_dirent ext2_dirent_t;
+
+#define TO_uint32_t(bytes)                   ((bytes) / sizeof(uint32_t))
+
+#define BLOCKS_TO_SECTORS(blocks)          (((blocks) * EXT2_BLOCK_SZ) / SECTOR_SIZE)
+#define SECTORS_TO_BLOCKS(sectors)         (((sectors) * SECTOR_SIZE) / EXT2_BLOCK_SZ)
+
+#define IS_CONS_BLOCKS(first, second)      ((((second) - (first)) / (EXT2_BLOCK_SZ / SECTOR_SIZE)) == 1 ? TRUE : FALSE)
+
+//the global path for the current directory
+char *ext2_path;
+uint32_t ext2_current_dir_inode = 0;
+ext2_inode_t *ext2_root;
+char *ext2_root_name;
+
+//caches
+ext2_superblock_t *ext2_g_sblock = 0;
+ext2_group_descriptor_t *ext2_g_gdesc = 0;
+ext2_inode_t *ext2_g_inode_table = 0;
+uint8_t *ext2_g_bb = 0;                                   //the block bitmap
+uint8_t *ext2_g_ib = 0;                                    //the inode bitmap
+//caches
+
+//defaults (logged as user) for permisions files need to have in order to be accesed
+uint32_t _Rlogged = EXT2_I_RUSR, _Wlogged = EXT2_I_WUSR, _Xlogged = EXT2_I_XUSR;
+
+static ext2_inode_t *__create_root__(void);
+static ext2_inode_t *__create_file__(uint32_t size);
+static ext2_inode_t *__create_dir__(ext2_superblock_t *sblock, ext2_group_descriptor_t *gdesc);
+static char *__get_name_of_file__(ext2_inode_t *directory, ext2_inode_t *file);
+
+static struct ext2_dirent dirent;
+
+enum __block_types__
+{
+	EXT2_DIRECT,
+	EXT2_SINGLY,
+	EXT2_DOUBLY,
+	EXT2_TRIPLY
+};
+
+void* ptr_currentDir;
+
 //adding a hardlink to a directory is exactly the same as adding a file to a directory, so I just make an alias
 #define ext2_add_hardlink_to_dir(parent_dir, file, filename)    (ext2_add_file_to_dir(parent_dir, file, EXT2_HARDLINK, filename))
 
@@ -320,6 +363,7 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 uint32_t ext2_inode_from_inode_table(uint32_t inode_number, ext2_inode_t *output, ext2_group_descriptor_t *gdesc);
 
 /*initialize the ext2 filesystem*/
+uint32_t ext2_burn(uint32_t size, const char* device);
 uint32_t ext2_initialize(uint32_t size, const char *device);
 
 /*find a dirent by index from a directory*/
