@@ -89,8 +89,8 @@ int keyboard_scancodes(int key)
 						key = KEY_UNDERSCORE;
 						break;
 
-					case KEY_PLUS:
-						key = KEY_EQUAL;
+					case KEY_EQUAL:
+						key = KEY_PLUS;
 						break;
 
 					case KEY_BACKSLASH:

@@ -214,21 +214,15 @@ void __attribute__((optimize("O0"))) Setup_PhyMEM()     //Sets up the allocation
 	//while(1);
 }
 
-void* pmem(uint32_t size)
+void* __attribute__((optimize("O2"))) pmem(uint32_t size)
 {
+	LOCK(MEM_LOCK);
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
 	//PageDirectory_t* dir = system_dir;
 
 	size = ROUNDUP(size,4);
 
 	SchedulerKits_t* kit = Get_Scheduler();
-
-	if(multitasking_ON)
-	{
-		mmads_stack_end = ((task_t*)(kit->current_task))->process;
-		++mmads_stack_end;
-		++mmads_stack_size;
-	}
 
 	//SwitchTo_SysDir();
 
@@ -282,27 +276,28 @@ void* pmem(uint32_t size)
 		}
 		tm++;
 	}
-	//SwitchFrom_SysDir();
-//	printf("=>{%d}", baddr);
-	return (void*)baddr;
-
-}
-
-void* pmem_4k(uint32_t pages)
-{
-	Pdir_Capsule_t* curr_cap = system_pdirCap;
-	//PageDirectory_t* dir = system_dir;
-
-	uint32_t size = pages*4096;
-
-	SchedulerKits_t* kit = Get_Scheduler();
-
 	if(multitasking_ON)
 	{
 		mmads_stack_end = ((task_t*)(kit->current_task))->process;
 		++mmads_stack_end;
 		++mmads_stack_size;
 	}
+	UNLOCK(MEM_LOCK);
+	//SwitchFrom_SysDir();
+//	printf("=>{%d}", baddr);
+	return (void*)baddr;
+
+}
+
+void* __attribute__((optimize("O2"))) pmem_4k(uint32_t pages)
+{
+	LOCK(MEM_LOCK);
+	Pdir_Capsule_t* curr_cap = system_pdirCap;
+	//PageDirectory_t* dir = system_dir;
+
+	uint32_t size = pages*4096;
+
+	SchedulerKits_t* kit = Get_Scheduler();
 
 	//SwitchTo_SysDir();
 
@@ -381,11 +376,92 @@ void* pmem_4k(uint32_t pages)
 	}
 	//printf("\n%d-<", baddr);
 	//SwitchFrom_SysDir();
+	if(multitasking_ON)
+	{
+		mmads_stack_end = ((task_t*)(kit->current_task))->process;
+		++mmads_stack_end;
+		++mmads_stack_size;
+	}
+	UNLOCK(MEM_LOCK);
 	return (void*)baddr;
 }
 
-void pfree(void* addr)
+void* __attribute__((optimize("O2"))) pmem_realloc(void* ptr, uint32_t sz)
 {
+	void* new_ptr = NULL;
+	new_ptr = pmem(sz);
+	uint32_t tsz = sz;
+	LOCK(MEM_LOCK);
+	uint32_t address = (uint32_t)ptr;
+	Pdir_Capsule_t* curr_cap = system_pdirCap;
+	//PageDirectory_t* dir = system_dir;
+	//SwitchTo_SysDir();
+
+	CustomCSRB_M_header_t* csrb_f = (CustomCSRB_M_header_t*)curr_cap->csrb_f;   // csrb FREE structure is stored in the next page after the page directory.
+
+	//uint32_t* tail_f = csrb_f->tail;
+	uint32_t* head_f = csrb_f->head;
+
+	CustomCSRB_M_header_t* csrb_u = (CustomCSRB_M_header_t*)curr_cap->csrb_u;
+
+	//uint32_t* tail_u = csrb_u->tail;
+	uint32_t* head_u = csrb_u->head;
+
+	CustomCSRB_M_t* tmf = (CustomCSRB_M_t*)head_f;
+	CustomCSRB_M_t* tmu = (CustomCSRB_M_t*)head_u;
+	//printf("\n%x %x",csrb_u->entries,csrb_f->entries);
+	//	return;
+	//printf("\n<%d>", sz);
+	for(uint32_t i = 0; i < csrb_u->entries*2; i++)
+	{
+		tmu = (CustomCSRB_M_t*)tmu->addr;
+		//printf("%gAx%g",10, 0);
+	//	printf("%gA%xBx%x %g ",10, i, csrb_u->entries,0);
+		if(tmu->begin <= address && tmu->size + tmu->begin > address)
+		{
+			memcpy((void*)new_ptr, (void*)tmu->begin, MIN(tmu->size, tsz));
+			//printf("\n {%d, %d}", tmu->size, tsz);
+
+			tmf = (CustomCSRB_M_t*)csrb_f->tail;
+			tmf->addr = (uint32_t*)tmf;
+			tmf->size = tmu->size;
+			tmf->begin = tmu->begin;
+			tmf->reserved = 0;
+			++csrb_f->entries;
+			++tmf;
+			if((((uint32_t)(tmf) + 16)%4096) <= 8)
+			{
+		//		printf("\n\n\n\t\t%gNEW CSRB SWITCHED%g",3,0);
+				tmf->addr = (uint32_t*)phy_alloc4K();
+				CustomCSRB_M_t* tmp2 =tmf;
+				tmf = (CustomCSRB_M_t*)tmf->addr;
+				tmf->addr = (uint32_t*)tmp2;
+				++tmf;
+				++csrb_u->entries;
+			}
+			tmf->addr = csrb_f->head;
+			csrb_f->tail = (uint32_t*)tmf;
+			memset((void*)tmu->begin, 0, tmu->size);
+	//		printf("\n\n\n\t\t%gAx tmu->begin: %x tmu->size: %x%g",10,tmu->begin, tmu->size, 0);
+			tmu->begin = 0;
+			tmu->size = 0;
+			tmu->reserved = 1;
+			--csrb_u->entries;
+			UNLOCK(MEM_LOCK);
+			return (void*)new_ptr;
+		}
+		++tmu;
+	}
+
+	UNLOCK(MEM_LOCK);
+	new_ptr = pmem(sz);
+	UNLOCK(MEM_LOCK);
+	return (void*)new_ptr;
+}
+
+void __attribute__((optimize("O2"))) pfree(void* addr)
+{
+	LOCK(MEM_LOCK);
 	uint32_t address = (uint32_t)addr;
 	Pdir_Capsule_t* curr_cap = system_pdirCap;
 	//PageDirectory_t* dir = system_dir;
@@ -437,13 +513,15 @@ void pfree(void* addr)
 			tmu->size = 0;
 			tmu->reserved = 1;
 			--csrb_u->entries;
+			UNLOCK(MEM_LOCK);
 			return;
 		}
 		++tmu;
 	}
+
+	UNLOCK(MEM_LOCK);
 	return;
 }
-
 
 inline uint32_t pmalloc()
 {
@@ -453,44 +531,14 @@ inline uint32_t pmalloc()
   //    MapPage((void*)mem,(void*)mem);
    return mem;
 }
-
-const uint32_t mtalc_start = 520*1024*1024;
-const uint32_t mtalc_end = 700*1024*1024;
-
-uint32_t mtalloc(uint32_t pages)
-{/*
-   uint32_t tmp = 0;
-   PageTable_t* table;
-   page_t* page;
-   table_t* table_entry = &system_dir->table_entry[mtalc_start/(1024*4096)];
-   for(int i=0; i<71 ; i++)
-   {
-      table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(table_entry);
-      page=&table->page_entry[0];
-      for(int j=0; j<1024 ; j++)
-      {
-         if(!(*page & CUSTOM_PTE_AVAIL_1))
-         {
-            ++tmp;
-            if(pages == tmp)
-            {
-               pt_entry_add_attrib( page, CUSTOM_PTE_AVAIL_1);
-               return (PAGE_GET_PHYSICAL_ADDRESS(page));
-               //TODO: Return the address.
-            }
-         }
-         else tmp = 0;
-         ++page;
-      }
-      ++table_entry;
-   }
-   printf("\nCould not find memory, sorry. Try kmalloc()");
-	 while(1);*/
-   return (uint32_t)pmem_4k(pages);//(uint32_t)kmalloc(pages*4096);
+uint32_t __attribute__((optimize("O2"))) mtalloc(uint32_t pages)
+{
+   return (uint32_t)pmem_4k(pages);
+	 return (uint32_t)kmalloc(pages*4096);
    //_printf("\n%x %x", PAGE_GET_PHYSICAL_ADDRESS(page), mtalc_start);
 }
 
-void mtfree(uint32_t addr, uint32_t size)
+void __attribute__((optimize("O2"))) mtfree(uint32_t addr, uint32_t size)
 {/*
    PageTable_t* table_sys;
    page_t* page_sys;

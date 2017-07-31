@@ -5,6 +5,8 @@
 #include <cpu/cpu.h>
 #include "hpet.h"
 #include "cmos.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 
 //TODO: More optimizations
@@ -35,6 +37,86 @@ static void init_gdt()  // For BSP
     lgdt((void *)gdt_new);
  }
 
+ uintptr_t pmode_GDT_init(uint32_t APIC_id)
+ {
+   uintptr_t gdt_new = (uintptr_t)kmalloc(64);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   AP_gdt_Setup((uint32_t*)(gdt_new + 8), (uint32_t*)gdt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
+
+   if(APIC_id == 0)
+   {
+     lgdt((void *)gdt_new);
+   }
+   else
+   {
+     uint32_t pmode_code_addr = (0x1000 + (APIC_id*0x2000)) + AP_startup_Code_sz + 16;
+     ByteSequence_Replace(0x32409798, 4, (uint32_t)gdt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+   }
+   return gdt_new;
+ }
+
+ uintptr_t pmode_IDT_init(uint32_t APIC_id)
+ {
+   uintptr_t idt_new = (uintptr_t)kmalloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   AP_idt_Setup((uint32_t*)(idt_new + 8), (uint32_t*)idt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
+
+   if(APIC_id == 0)
+   {
+      lidt((void *)idt_new);
+   }
+   else
+   {
+     uint32_t pmode_code_addr = (0x1000 + (APIC_id*0x2000)) + AP_startup_Code_sz + 16;
+     ByteSequence_Replace(0x32409799, 4, (uint32_t)idt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+   }
+   return idt_new;
+ }
+
+ uintptr_t pmode_IDT_initP(uint32_t APIC_id)
+ {
+   uintptr_t idt_new = (uintptr_t)kmalloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   AP_idt_Setup((uint32_t*)(idt_new + 8), (uint32_t*)idt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
+
+   return idt_new;
+ }
+
+ void pmode_GDT_lgdt(uint32_t APIC_id, uintptr_t gdt_new)
+ {
+   if(APIC_id == 0)
+   {
+     lgdt((void *)gdt_new);
+   }
+   else
+   {
+     uint32_t pmode_code_addr = (0x1000 + (APIC_id*0x2000)) + AP_startup_Code_sz + 16;
+     ByteSequence_Replace(0x32409798, 4, (uint32_t)gdt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+   }
+ }
+
+ void pmode_IDT_lidt(uint32_t APIC_id, uintptr_t idt_new)
+ {
+   if(APIC_id == 0)
+   {
+      lidt((void *)idt_new);
+   }
+   else
+   {
+     uint32_t pmode_code_addr = (0x1000 + (APIC_id*0x2000)) + AP_startup_Code_sz + 16;
+     ByteSequence_Replace(0x32409799, 4, (uint32_t)idt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+   }
+ }
+
+ void pmode_GDT_lgdt_Vec(uint32_t vector_addr, uintptr_t gdt_new)
+ {
+   uint32_t pmode_code_addr = vector_addr + AP_startup_Code_sz + 16;
+   ByteSequence_Replace(0x32409798, 4, (uint32_t)gdt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+ }
+
+ void pmode_IDT_lidt_Vec(uint32_t vector_addr, uintptr_t idt_new)
+ {
+   uint32_t pmode_code_addr = vector_addr + AP_startup_Code_sz + 16;
+   ByteSequence_Replace(0x32409799, 4, (uint32_t)idt_new, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+ }
+
  void AP_gdt_Setup(uint32_t* gdt, uint32_t* gdtr)
  {
    uint32_t* gdt_new = gdtr;
@@ -58,6 +140,30 @@ static void init_gdt()  // For BSP
    tss.ss0=0x10;
    tss.esp0=initial_esp;
    tss.iomap=sizeof(tss_struct_t);
+ }
+
+ extern uint32_t gdt16_base;
+
+ void AP_rmode_GDT_setup(uint32_t* gdt, uint32_t* gdtr)
+ {
+   uint32_t* gdt_new = gdtr;
+   uint16_t* gdt_new_ptr = (uint16_t*)gdtr;
+   uint64_t* gdt_new_entries = (uint64_t*)gdt;
+   memset(gdt_new, 0, 8);
+   memset(gdt_new_entries, 0, 40);
+
+   *gdt_new_ptr = ((sizeof(gdt_entry_t) * 5) - 1);
+   ++gdt_new_ptr;
+   uint32_t* gdt_new_ptr2=(uint32_t*)gdt_new_ptr;
+   *gdt_new_ptr2 = ((uint32_t)gdt_new_entries);
+
+  memcpy(gdt_new_entries, &gdt16_base, 64);
+  /*gdt_set_gate(0, 0, 0, 0, 0, gdt_new_entries);                // Null segment
+  gdt_set_gate(1, 0, 0xFFFF0000, 0x9A, 0x0F, (uint64_t*)gdt_new_entries); // Code segment
+  gdt_set_gate(2, 0, 0xFFFF0000, 0x92, 0x0F, (uint64_t*)gdt_new_entries); // Data segment
+  gdt_set_gate(3, 0, 0xFFFF0000, 0x9A, 0x0F, (uint64_t*)gdt_new_entries); // User mode code segment
+  gdt_set_gate(4, 0, 0xFFFF0000, 0x92, 0x0F, (uint64_t*)gdt_new_entries); // User mode data segment
+*/
  }
 
 // Set the value of one GDT entry.
@@ -150,7 +256,7 @@ void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&reserved_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
-  idtSetEntry(num++, (uint32_t)&PIT_ab, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
+  idtSetEntry(num++, (uint32_t)&PIT_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&kb_handle, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&cascade_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);
   idtSetEntry(num++, (uint32_t)&COM2_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt);

@@ -24,13 +24,14 @@ typedef enum
 	app = 0x10,
 }ios;
 
-typedef struct __attribute__ ((packed)) directory
+typedef struct directory
 {
-	uint16_t perm;
+	uint32_t perm;
 	uint32_t sz;
 	uint32_t magic;
 	uint32_t files;
 	uint32_t folders;
+	uint32_t reserved1;
 	uint64_t parent;
 	uint64_t location;
 	uint64_t First_child;
@@ -39,18 +40,19 @@ typedef struct __attribute__ ((packed)) directory
 	uint64_t last_child;
 	uint64_t Next_Friend;
 	uint64_t Prev_Friend;
-	char name[64];
+	char name[80];
 }Directory_t;
 
 Directory_t* aqfs_root;
 
-typedef struct __attribute__ ((packed)) file
+typedef struct file
 {
-	uint16_t perm;
+	uint32_t perm;
 	uint32_t sz;
 	uint32_t magic;
 	uint32_t last_edited;
 	uint32_t headers;
+	uint32_t reserved1;
 	uint64_t parent;
 	uint64_t location;
 	uint64_t first_header;
@@ -60,7 +62,7 @@ typedef struct __attribute__ ((packed)) file
 	char name[96]; //long file names supported
 }File_t;
 
-typedef struct __attribute__ ((packed)) File_Header
+typedef struct File_Header
 {
 	uint32_t used;
 	uint32_t spread; // Amount of memory the header can have.
@@ -75,14 +77,14 @@ typedef struct __attribute__ ((packed)) File_Header
 typedef struct Special_dirs
 {
 	Directory_t* dir;
-	uint16_t type;
+	uint32_t type;
 	char full_name[100];
 }Special_Dirs_t;
 
-typedef struct __attribute__ ((packed)) Identity_Sectors
+typedef struct Identity_Sectors
 {
 	char name[8];  //Storage media Name
-	uint16_t active_partition;
+	uint32_t active_partition;
 	//uint8_t partitions; //partitions i.e, number of root directories.
 	//uint32_t Number_of_sectors;
 	//uint32_t bytes_per_sector;
@@ -90,7 +92,7 @@ typedef struct __attribute__ ((packed)) Identity_Sectors
 	//uint64_t reserved;
 }Identity_Sectors_t;
 
-typedef struct __attribute__((packed)) Partition_struct
+typedef struct Partition_struct
 {
   uint8_t boot_indicator;
   uint8_t starting_head; //255
@@ -104,7 +106,7 @@ typedef struct __attribute__((packed)) Partition_struct
   uint32_t total_sectors;
 }Partition_struct_t;
 
-typedef struct __attribute__ ((packed)) File_handle
+typedef struct File_handle
 {
 	char* name;
 	char* full_path;

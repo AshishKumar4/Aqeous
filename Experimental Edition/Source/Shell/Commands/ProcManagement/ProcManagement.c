@@ -6,8 +6,8 @@
 
 void Command_proc()
 {
-  char* list_option = CSI_ReadAPS("list");
-  if(!list_option) list_option = CSI_ReadAPS("-l");
+  char* list_option = (char*)CSI_ReadAPS("list");
+  if(!list_option) list_option = (char*)CSI_ReadAPS("-l");
 
   Process_t* entry;
   if(list_option)
@@ -27,10 +27,10 @@ void Command_proc()
               {
                   if(tbl->procEntrys[j])
                   {
-                    entry = tbl->procEntrys[j];
+                    entry = (Process_t*)tbl->procEntrys[j];
                     printf("\n%x\t%s\t%d\tthreads: %x\t",j,entry->name, entry->processID, entry->total_tasks);
                     ++c;
-                    if(c == processes) goto out;
+                    if(c == (int)processes) goto out;
                   }
               }
           }
@@ -73,7 +73,7 @@ void Command_proc()
     }
   }
 
-  char* o_option = CSI_ReadAPS("-o");
+  char* o_option = (char*)CSI_ReadAPS("-o");
   if(!strcmp(o_option, "start"))
   {
 
@@ -94,10 +94,10 @@ void Command_proc()
     {
       task_table_t* tt = entry->first_task_entry;
       task_t* t;
-      for(int j = 0; j < entry->total_tasks; j++ )
+      for(int j = 0; j < (int)(entry->total_tasks); j++ )
       {
         t = &tt->task;
-        if(id == t->task_id)
+        if(id == (int)(t->task_id))
         {
           int op;
           printf("\nEnter the option:\n1. KILL\n2. SLEEP\n3. WAKE UP\n:");

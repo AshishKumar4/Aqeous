@@ -29,21 +29,23 @@ float CheckNeuralSCE(uint32_t value, uint32_t threshold)
 
 void NeuralForwardUpdater() // Updates the Neural Values and Connection Weights. Core Process
 {
-  Neuron_t* base = NeuralBase, *tmp1, **tmp2;
+  Neuron_t* base = (Neuron_t*)NeuralBase, *tmp1, **tmp2;
+  printf("\n%d", (uint32_t*)base);
   int ttt = 2;
   float tt = 0;
   int *tmpw;
   while(--ttt)
   {
-    base = tmp1 = tmp2 = NeuralBase;
+    base = tmp1 = (Neuron_t*)NeuralBase;
+    tmp2 = (Neuron_t**)NeuralBase;
     //TODO:
-    for(int i = 0; i < Neurons; i++)
+    for(uint32_t i = 0; i < Neurons; i++)
     {
       //TODO: Compare the Value of Neuron to its Threshold and determine if the Excitation needs to be passed on.
       tt = CheckNeuralSCE(tmp1->Value, tmp1->threshold); // The Summation function
       if(tt > 0)
       {
-        tmp2 = tmp1->connections;
+        tmp2 = (Neuron_t**)tmp1->connections;
         tmpw = tmp1->Aweights;
         for(int j = 0; j < tmp1->totc; j++)
         {
@@ -65,12 +67,12 @@ void NeuralForwardUpdater() // Updates the Neural Values and Connection Weights.
 }
 
 void NeuralBackwardUpdater()
-{
+{/*
   Neuron_t* base = NeuralBase;
   while(1)
   {
     base = NeuralBase;
     //TODO:
-    
-  }
+
+  }*/
 }

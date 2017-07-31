@@ -36,6 +36,7 @@ void idle()
   //scheduler();
   while(1)
   {
+    kill();
     asm volatile("int $50");
   }
 }
@@ -116,20 +117,8 @@ void test_thread()
   }*/
 }
 
-DECLARE_LOCK(test);
-#include "rand.h"
 void test_process()
 {
-/*  printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));
-  printf("=>%d\t", pmem_4k(8192));//*/
-  uint32_t w = 0xffafafaf;
-  uint32_t alpha = 0xa0000000;
-  alpha |= (alpha>>8) | (alpha>>16) | (alpha>>24);
-  printf("\nw=%x, w>>24=%x, (w*(w>>24))/0xff=%x, alpha=%x, w&alpha=%x w^alpha", w, (w>>24), (w*(w>>24))/0xff, alpha, w&alpha, w^alpha);
-  //mdbug();
   kill();
   asm volatile("int $50");
   while(1);
@@ -146,7 +135,6 @@ void tvkc1()
 
 void tasking_initiator()
 {
-  UNLOCK(test);
   CancerCure_init();
 
   SchedulerKits_t* kit = Get_Scheduler();
@@ -156,12 +144,10 @@ void tasking_initiator()
 
   printf("\n\n\n\t\t--------------MISSION ACCOMPLISHED--------------\n\n\t--------------Welcome to the MultiThreading World!!!--------------\n");
   printf("\n\t-----------Launching the Shell and input/output processes-----------\n\t\t\t\tStarting in 3...2...1... GO...\n\n");
-  delay1(1);
+
   kb_io_init();
   init_shell();
   multitasking_ON = 1;
-
-  setIRQMask(0);
 
   apic_start_timer(APIC_LOCAL_BASE);       //The respective Timer initialization function of the timer of choice
   //Here it goes, The entry to the multitasking world.
@@ -174,6 +160,9 @@ void tasking_initiator()
   UNLOCK(TASK_LOCK_KILL);
 
   UNLOCK(TASK_LOCK_ATD);
+
+  clearIRQMask(0);
+  clearIRQMask(1);
   asm volatile("sti;");
   kill();//*/
   while(1);
@@ -193,8 +182,6 @@ void init_multitasking()
   Init_Scheduler();
 
   printf("\nSchedulers Created Successfully");
-
-  Setup_MMADS();
 
   Shell_proc = create_process("Shell", 0, 1, kernel_proc);
   Screen_BuffSync = Shell_Dbuff_sync;
@@ -216,7 +203,7 @@ void init_multitasking()
   SAS_init();
 
   IPC_init();
-
+  Setup_MMADS();
   //kit->reached_bottom = 0;
   tasking_initiator();
   while(1); //Never comeback :D

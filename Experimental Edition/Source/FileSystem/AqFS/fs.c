@@ -894,14 +894,23 @@ void file_truncate(File_handle_t* handle)
 File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the header of a file which contains the memory regions of the offset
 {
 	uint32_t tm = (uint32_t)kmalloc(512);
-	read(curr_port, file->first_header / 512, 1, tm);
+	memset(tm, 0, 512);
+	printf("\n-->%d", file->first_header);
+	read(curr_port, (file->first_header / 512), 1, tm);
 	File_Header_t* tmp = (File_Header_t*)(tm);
+	if(tmp->location != file->first_header)
+	{
+		printf("\nError file header location MisMatch!");
+		tmp->location = file->first_header;
+		//return 2;
+	}
 
 	uint32_t ts = 0;
 	uint64_t tmp2 = 0;
 	for (int i = file->headers; i > 0; --i)
 	{
 		ts += tmp->used;
+		//printf("\ntmp->used : %d, spread: %d, location: %d, loc: %d", tmp->used, tmp->spread, tmp->location, file->first_header);
 		if (ts > foffset)
 		{
 			tmp->reserved = ts - foffset; //Offset into header
@@ -911,6 +920,11 @@ File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the he
 		tmp2 = tmp->Next_Header;
 		read(curr_port, tmp2 / 512, 1, (uint32_t)tm);
 		tmp = (File_Header_t*)(tm + (uint32_t)(file->first_header % 512));
+		if(tmp->location != tmp2)
+		{
+			printf("\nError file header location MisMatch!");
+			return 3;
+		}
 	}
 	return 0;
 }
@@ -933,22 +947,26 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 
 	if (!header) return 2; //Some error!!!!
 
+	/*printf("\n{size: %d offset: %d}", size, offset);
+  Shell_Dbuff_sync();*/
+
 	if (header->magic != FHR_MAGIC)
 	{
 		//kfree((uint32_t*)header);
+		//printf("\nHeader Wrong!");
 		return 3; //Not a valid Header.
 	}
 	//printf("\nheader->size: %x header->previous %x header->Next %x", header->used, header->Previous_Header, header->Next_Header);
-	//  return 1;
+  //Shell_Dbuff_sync();
 
 	uint32_t a1 = MIN(header->reserved, size);
 	uint32_t b1 = header->used - header->reserved; //Local offset
-
+	printf("\na1: %d, b1: %d, header->reserved: %d", a1, b1, header->reserved);
 	uint32_t tbuff = (uint32_t)kmalloc(ROUNDUP(a1, 1024));
+	memset(tbuff, 0, ROUNDUP(a1, 1024));
+	read(curr_port, (1 + ((header->location + b1) / 512)), (ROUNDUP(a1, 1024) / 512) + 1, tbuff); //Read the first part of buffer.
 
-	read(curr_port, (1 + ((header->location + b1) / 512)), ROUNDUP(a1, 1024) / 512, tbuff); //Read the first part of buffer.
-
-																				 //printf("%d %d %d %d\n", a1, ROUNDUP(a1,1024)/512, ROUNDUP(a1,1024), size);
+	//printf("\na1: %d ROUNDUP(a1,1024)/512: %d, ROUNDUP(a1,1024): %d %d\n", a1, ROUNDUP(a1,1024)/512, ROUNDUP(a1,1024), size);
 
 	uint32_t cpdone = 0;
 
@@ -959,6 +977,9 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 	cpdone += a1;
 
 	uint32_t left = size - cpdone;
+
+	//printf("\nLeft: %d: %d; size: %d, cpdone: %d", left, buffer[(a1/4)-1], size, cpdone);
+	  return 1;
 
 
 	while (left)   //Keep extracting data from file until we extract all the required data successfully.
@@ -1015,7 +1036,7 @@ int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a f
 	File_t* file_st = (File_t*)handle->file;
 	File_Header_t* header;
 	file_st->sz += size;
-	//printf("\nfile size = %x headers = %x\nfile_st->magic %x %x\nfile parent: %x",file_st->sz - (512*file_st->headers),file_st->headers,file_st->magic, FIL_MAGIC, file_st->parent);
+	//printf("\nfile size = %d headers = %d\nfile_st->magic %d %d\nfile parent: %d",file_st->sz - (512*file_st->headers),file_st->headers,file_st->magic, FIL_MAGIC, file_st->parent);
 
 
 	uint32_t tbuff;
@@ -1064,12 +1085,12 @@ int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a f
 			tbuff = (uint32_t)kmalloc(512);
 			memset((void*)tbuff, 0, 512);
 			memcpy((void*)tbuff, (void*)(bb + (size - (size % 512))), size % 512);
-			//printf("\n\t\tABCD\n");
+		//	printf("\n\t\tABCD\n");
 			write(curr_port, 1 + (header->location / 512) + blks, 1, tbuff);
 		}
 		header->used = size;
 		flush_header(header);
-		//printf("%d\n", blks);
+		//printf("blks: %d header->location: %d \n", blks, (uint32_t)header->location);
 	}
 	//kfree((uint32_t*)tbuff);
 	//kfree((uint32_t*)header);
@@ -1298,7 +1319,6 @@ void AqFS_burn()
 	++off;
 	bytemap_off = off+start_off;
 	bytemap_end = start_off + (bytes/512);
-
 	start_handle=0;
 	printf("\nFormating and Partitioning the Disk, May take a few minutes...\n");
 	fs_alloc_init();
@@ -1311,6 +1331,7 @@ void AqFS_burn()
 	printf("\nLoaded the root directory");
 	create_directory("Aqeous",1,0);
 	create_directory("Programs",1,0);
+	//return;
 	create_directory("user",1,0);
 	create_directory("System",1,0);
 	create_directory("System",1,"Aqeous");
@@ -1319,4 +1340,5 @@ void AqFS_burn()
 
 	find_friendDirs(0);
 	find_childFiles(0);
+	printf("\nHello");
 }

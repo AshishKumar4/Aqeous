@@ -18,6 +18,8 @@
 
 volatile uint32_t* Shell_Commands_list;
 volatile uint32_t up_input = 0;
+volatile uint32_t _ctrl_C_pressed = 1;
+volatile uint32_t shell_harbor = 0;
 
 typedef struct __attribute__((packed)) Shell_Commands
 {

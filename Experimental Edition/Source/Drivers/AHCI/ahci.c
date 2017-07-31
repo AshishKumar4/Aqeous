@@ -123,7 +123,7 @@ int checkAHCI()
     {
       ++controllers;
       ahci->ahci=&AHCI_Devices[ahcis];
-      console_writestring(get_device_info(ahci->ahci->Header->VendorId,ahci->ahci->Header->DeviceId));
+      console_writestring(get_device_info(ahci->ahci->Header->VendorId, ahci->ahci->Header->DeviceId));
       console_writestring("\n\tAHCI CONTROLLER #");
       console_write_dec(controllers);
       console_writestring(" FOUND, INITIALIZING AHCI CONTROLLER and Disks");
@@ -155,23 +155,6 @@ int IDENTIFYdrive(Disk_dev_t* disk)
   //str="YEPIEEE IT WORKS :D I CAN READ AND WRITE TO THIS HARD DISK :D \0";
   return 1;
 }
-//
-// void test_sata(HBA_PORT* port)
-// {
-//     uint32_t* test=(uint32_t*)malloc(512);
-//     uint32_t* t2=(uint32_t*)malloc(512);
-//     (*t2)=4284;
-//     write(port,40,0,1,(DWORD)t2);
-//     printf("1 t2:%x at:%x",*t2,t2);
-//     read(port,40,0,1,(DWORD)test);
-//     printf("2 test:%x at:%x",*test,test);
-//     if(*test==4284)
-//     {
-//       printf("\n\t\tRead/Write test to hard disk successful\n");
-//     }
-//     //char* str;
-//     //memcpy((void*)str,(void*)test,64);
-// }
 
 void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 {
@@ -378,26 +361,51 @@ void stop_cmd(HBA_PORT *port)
 
 inline int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 {
+  /*for(int i = 0; i < count; i++)
+  {
+    SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf, 1, 512,start & 0xffffffff,start >> 32, 1);
+    buf += 512;
+    ++start;
+  }//*/
+  if(!sata) return 1;
+  for(int i = 0; i < count/64; i++)
+  {
+    SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((64-1)>>4) + 1,512*64,start & 0xffffffff,start >> 32, 64);
+    buf += 32768;
+    start += 64;
+  }
   SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
 	if (port->is & HBA_PxIS_TFES)
 	{
 		printf("Read disk error\n");
 		return 0;
-	}
+	}//*/
 	return 1;
 
 }
 
 inline int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
-{
-
+{/*
+  for(int i = 0; i < count; i++)
+  {
+    SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf, 1,512,start & 0xffffffff,start >> 32,1);
+    buf += 512;
+    ++start;
+  }*/
+  if(!sata) return 1;
+  for(int i = 0; i < count/64; i++)
+  {
+    SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((64-1)>>4) + 1,512*64,start & 0xffffffff,start >> 32, 64);
+    buf += 32768;
+    start += 64;
+  }
   SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((count-1)>>4) + 1,512*count,start & 0xffffffff,start >> 32,count);
   // Check again
   if (port->is & HBA_PxIS_TFES)
   {
       printf("Write disk error\n");
       return 0;
-  }
+  }//*/
   return 1;
 }
 
@@ -405,6 +413,7 @@ inline int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 /*** FOR EXT2 DRIVERS***/
 int disk_read(HBA_PORT *port, DWORD start, DWORD count, uint32_t* buf)
 {
+  if(!sata) return 1;
   count /= SECTOR_SIZE;
   ++count;
 
@@ -420,6 +429,7 @@ int disk_read(HBA_PORT *port, DWORD start, DWORD count, uint32_t* buf)
 
 int disk_write_sector(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start)
 {
+  if(!sata) return 1;
   count /= SECTOR_SIZE;
   ++count;
 
@@ -435,6 +445,7 @@ int disk_write_sector(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start)
 
 int disk_write(HBA_PORT *port, uint32_t* buf, DWORD count, DWORD start)
 {
+  if(!sata) return 1;
   uint32_t sz = count;
   count /= SECTOR_SIZE;
 
@@ -514,14 +525,15 @@ int SATA_Commander(HBA_PORT *port, WORD Command, BYTE rw, DWORD buf, DWORD prdtl
   {
     cmdtbl->prdt_entry[i].dba = buf;
     cmdtbl->prdt_entry[i].dbau = 0;
-    cmdtbl->prdt_entry[i].dbc = 8*1024;
+    cmdtbl->prdt_entry[i].dbc = (8*1024) - 1;
     cmdtbl->prdt_entry[i].i = 0;   // interrupt when identify complete;
-		buf += 8*1024;	// 4K words
+    buf += (8*1024);	// 4K words
+    dbc -= (8*1024);
   }
 
   cmdtbl->prdt_entry[i].dba = buf;
   cmdtbl->prdt_entry[i].dbau = 0;
-  cmdtbl->prdt_entry[i].dbc = dbc;
+  cmdtbl->prdt_entry[i].dbc = dbc - 1;
   cmdtbl->prdt_entry[i].i = 0;   // interrupt
 
   /***Make the IDENTIFY DEVICE h2d FIS***/
@@ -550,14 +562,16 @@ int SATA_Commander(HBA_PORT *port, WORD Command, BYTE rw, DWORD buf, DWORD prdtl
   port->ci=1;
 
   /***Wait for a reply***/
-  while(1)
+  while(!(port->is & HBA_PxIS_TFES))
   {
     if(port->ci == 0)
     {
-      break;
+      return 1;
     }
   }
-  return 1;
+//  printf("\nError");
+//  asm volatile("hlt");
+  return 2;
 }
 // To setup command fing a free command list slot
 int find_cmdslot(HBA_PORT *port)

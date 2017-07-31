@@ -61,16 +61,11 @@ static inline uint32_t pci_box_device(int bus, int slot, int func) {
 	return (uint32_t)((bus << 16) | (slot << 8) | func);
 }
 
-uint32_t pci_read_field(uint32_t device, int field, int size);
-void pci_write_field(uint32_t device, int field, int size, uint32_t value);
-uint16_t pci_find_type(uint32_t dev);
-const char * pci_vendor_lookup(unsigned short vendor_id);
-const char * pci_device_lookup(unsigned short vendor_id, unsigned short device_id);
-void pci_scan_hit(pci_func_t f, uint32_t dev, void * extra);
+/*void pci_scan_hit(pci_func_t f, uint32_t dev, void * extra);
 void pci_scan_func(pci_func_t f, int type, int bus, int slot, int func, void * extra);
 void pci_scan_slot(pci_func_t f, int type, int bus, int slot, void * extra);
 void pci_scan_bus(pci_func_t f, int type, int bus, void * extra);
-void pci_scan(pci_func_t f, int type, void * extra);
+void pci_scan(pci_func_t f, int type, void * extra);*/
 void checkAllBuses(void);
 
 /* Structures */
@@ -200,17 +195,50 @@ typedef struct _PciDevice
 	uint32_t Device;
 	uint32_t Function;
 
-	/* Information (Header) */
-	PciNativeHeader_t *Header;
-
 	/* Children (list.h) */
-	void *Parent;
-	void *Children;
+	struct _PciDevice* Parent;
+	struct _PciDevice* friends;
+	struct _PciDevice* Children;
+	struct _PciDevice* last_child;
+
+	/* Information (Header) */
+	PciNativeHeader_t* Header;
+	PcitoPciHeader_t* PciBridgeHeader;
+
+	uint8_t Header_mem[0x48];
 
 } PciDevice_t;
 
-static PciDevice_t devices[256][32];
+static PciDevice_t* devices[256][32];
+static PciDevice_t* PCI_deviceNet_start = NULL;
+static PciDevice_t* PCI_deviceNet_end = NULL;
+//static PciDevice_t devices
 static PciDevice_t AHCI_Devices[32];
 static uint32_t TotalAHCIDevices=0;
+
+/* PCI Interface I/O */
+uint32_t PciRead32(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register);
+uint16_t PciRead16(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register);
+uint8_t PciRead8(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register);
+/* Write functions */
+void PciWrite32(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint32_t Value);
+void PciWrite16(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint16_t Value);
+void PciWrite8(uint32_t Bus, uint32_t Device, uint32_t Function, uint32_t Register, uint8_t Value);
+/* Helpers */
+uint32_t PciDeviceRead(PciDevice_t *Device, uint32_t Register, uint32_t Length);
+void PciDeviceWrite(PciDevice_t *Device, uint32_t Register, uint32_t Value, uint32_t Length);
+
+uint32_t pci_read_field(uint32_t device, int field, int size);
+void pci_write_field(uint32_t device, int field, int size, uint32_t value);
+uint16_t pci_find_type(uint32_t dev);
+const char * pci_vendor_lookup(unsigned short vendor_id);
+const char * pci_device_lookup(unsigned short vendor_id, unsigned short device_id);
+
+
+PciDevice_t* checkDevice(PciDevice_t* Parent, uint8_t bus, uint8_t device, uint8_t function);
+int checkSecBus(PciDevice_t* dev, int bus, int device);
+void checkAllBuses(void);
+void showDevInfo(PciDevice_t* dev);
+void ShowDevices();
 
 #endif // SATA_h

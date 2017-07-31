@@ -69,7 +69,7 @@ uint64_t sec_alloc(uint32_t sectors)
   printf("Aa%d\n",sectors);
   uint32_t buf=fsalloc(512);
   uint8_t* ptr=(uint16_t*)buf;
-  uint8_t* tmp;
+  uint8_t* tmp = NULL;
   uint64_t block=0;
   uint32_t stmp=0;
   for(uint64_t i=bytemap_off;i<=(bytemap_end);i++)

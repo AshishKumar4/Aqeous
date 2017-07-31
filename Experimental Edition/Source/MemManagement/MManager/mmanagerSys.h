@@ -6,6 +6,7 @@ uint32_t* mmads_stack_end,* mmads_stack_start, mmads_stack_size = 0;
 uint32_t* MMADS_Process, *MMADS_csrbTweakerThread;
 
 void Setup_MMADS();
+void __attribute__((optimize("O0"))) MMADS_worker();
 void MMADS_csrbTweaker();
 
 #endif

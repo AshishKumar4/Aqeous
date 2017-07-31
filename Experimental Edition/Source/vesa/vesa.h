@@ -90,7 +90,7 @@ void Init_Vesa();
 
 MODE_INFO* vesa_GetMode(int mode);
 
-int vesa_FindMode(int width, int height, int depth);
+int vesa_FindMode(uint32_t width, uint32_t height, uint32_t depth);
 
 void vesa_ShowMode(MODE_INFO* inf);
 

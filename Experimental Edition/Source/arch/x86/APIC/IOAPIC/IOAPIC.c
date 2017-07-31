@@ -5,7 +5,30 @@
 
 void Init_ioapic()
 {
+  uint32_t maxintr = (ioapic_read(IOAPIC_REG_VER) >> 16) & 0xFF;
+  for(uint32_t i = 0; i <= maxintr; i++)
+  {
+    ioapic_write(IOAPIC_REG_TABLE+2*i, IOAPIC_INT_DISABLED | (0x20 + i));
+    ioapic_write(IOAPIC_REG_TABLE+2*i+1, 0);
+  }
+/*  for(int i = 0; i < maxintr; i++)
+  {
+    ioapic_set_irq(i, 0, IRQ_Base + i);
+  }
+*/
+  ioapic_set_irq(0x12, 0, 50);
+  ioapic_set_irq(0x13, 0, 51);
+  ioapic_set_irq(0x14, 0, 52);
+  asm volatile("sti");
+}
 
+void ioapic_enableIRQ(int irq, int cpunum)
+{
+  // Mark interrupt edge-triggered, active high,
+  // enabled, and routed to the given cpunum,
+  // which happens to be that cpu's APIC ID.
+  ioapic_write(IOAPIC_REG_TABLE+2*irq, 0 + irq);
+  ioapic_write(IOAPIC_REG_TABLE+2*irq+1, cpunum << 24);
 }
 
 uint32_t ioapic_read(uint32_t reg) //IO Apic

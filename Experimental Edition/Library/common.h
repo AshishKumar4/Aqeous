@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef void (*func_t)();	//void function pointer
+typedef uintptr_t (*func_ptr_t)();	//void function pointer
 typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 2 arguments
 
 #ifndef NULL
@@ -59,6 +60,7 @@ func_t Screen_BuffSync;
 	name ## Locked = 0;
 
 DECLARE_LOCK(printlock);
+DECLARE_LOCK(MEM_LOCK);
 
 typedef struct
 {

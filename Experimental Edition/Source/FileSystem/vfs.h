@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "common.h"
 #include "string.h"
+#include "AqFS/fs.h"
 
 typedef struct FSnode_Desc
 {
@@ -12,7 +13,7 @@ typedef struct FSnode_Desc
   uint32_t desc_sz;
   uint32_t desc_type;
   uint32_t sDesc[];          // Specific Descriptor Structure
-};
+}FSnode_Desc_t;
 
 typedef struct VDirectory
 {
@@ -47,6 +48,14 @@ typedef struct Partition_Desc
 }Partition_Desc_t;
 
 Partition_Desc_t* Current_Partition;
+
+typedef struct FILE_desc
+{
+  File_handle_t* handle;
+  uint32_t fstream_ptr;
+  uint32_t fsize;
+  char mode[8];
+}FILE;
 
 void vfs_init();
 void vfs_setup_aqfs();

@@ -43,9 +43,9 @@ typedef struct __attribute__((packed)) Neuron
   uint16_t totc;
   uint16_t totp;
   uint32_t id;
-  uint32_t connections[NEURONS_PER_NEURON];
+  uintptr_t connections[NEURONS_PER_NEURON];
   int Aweights[NEURONS_PER_NEURON];
-  uint32_t parents[NEURONS_PER_NEURON];
+  uintptr_t parents[NEURONS_PER_NEURON];
   int Bweights[NEURONS_PER_NEURON];
 }Neuron_t;
 

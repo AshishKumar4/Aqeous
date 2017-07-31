@@ -49,7 +49,9 @@ typedef struct __attribute__((packed)) SchedulerKits
 
   uint32_t Core_Main_Lock;
 
-  uint32_t* IPCRecord_addr;
+  uintptr_t IPCRecord_addr;
+  uintptr_t gdt;
+  uintptr_t idt;
 }SchedulerKits_t;
 
 SchedulerKits_t* KitList;

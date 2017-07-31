@@ -16,6 +16,7 @@ unsigned char *general_buff;
 
 uint32_t* main_buff;
 uint32_t* vesa_buff;
+uint32_t VGA_cp_sz;
 
 uint32_t dbuff_run;
 

@@ -26,6 +26,8 @@ typedef struct window_object
   struct window_object* next;
   struct window_object* back;
   struct window_object* childs;
+  struct window_object* friends;
+  struct window_object* last_child;
 }window_object_t;
 
 typedef struct window
@@ -69,17 +71,17 @@ int dirtyRegions = 0;
 
 window_list_t main_wlist, *wlist_end = NULL;
 
-void WindowCompiler(uint32_t* buff, window_t* window, dirtyRectangle_t* dr);
+static void WindowCompiler(uint32_t* buff, window_t* window, dirtyRectangle_t* dr);
 
-void WindowComposter(uint32_t* buff, window_list_t* list);
+static void WindowComposter(uint32_t* buff, window_list_t* list);
 
 void WindowDrag(window_t* w, int n_x, int n_y);
 
 void WindowDrag_relative(window_t* w, int d_x, int d_y);
 
-void UpdateScreen(int o_x, int o_y, int e_x, int e_y);
+inline void UpdateScreen(int o_x, int o_y, int e_x, int e_y);
 
-int pointIn_LocInfo(window_locInfo_t* info, int x, int y);
+inline int pointIn_LocInfo(window_locInfo_t* info, int x, int y);
 
 window_t* getTopWindow(int x, int y);
 
@@ -98,5 +100,6 @@ window_t* create_window_autoMap(char* window_name, Process_t* proc, window_t* pa
 void createDefaultWindowObjects(window_t* w);
 
 void WindowListAdd(window_t* w);
+void Window_DrawOverWindow(window_t* w, uintptr_t buffer, int c_x, int c_y, int _w, int _h);
 
 #endif

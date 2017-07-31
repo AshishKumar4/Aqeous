@@ -51,7 +51,7 @@ AP_startup_Code:
 
 BITS 32
   mov eax, 1
-  mov bx, 0x0500
+  mov bx, 0x1000
   add dword [ds:bx], 0x1
 
   jmp 0x08:0x00001000
@@ -108,11 +108,18 @@ pmode_AP_code:
   cmp eax, 0x3240
   jne pmode_AP_code
 
+  mov dword eax, 0x32409798
+  lgdt[eax]
+
+  mov dword eax, 0x32409799
+  lidt[eax]
+
   mov dword eax, 0xfee000b0
   mov dword [eax], 0
   ; Add it to the SMP System
+back_code:
   int 50
-
+  jmp back_code
   hlt
 
 AP_enable_Paging:

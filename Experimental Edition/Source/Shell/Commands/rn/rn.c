@@ -19,7 +19,7 @@ void Command_rn()
   char* path = (char*)CSI_Read(1);
   strcpy(fs_path, path);
 
-  //Activate_task_direct_SP(create_task("rn_Main", rn_Main, 18, 0x202, Shell_proc), Get_Scheduler());/*/
+  Activate_task_direct_SP(create_task("rn_Main", rn_Main, 18, 0x202, Shell_proc), Get_Scheduler());/*/
   rn_Main();//*/
 }
 
@@ -31,7 +31,7 @@ void rn_Main()
   if(!file_loadOGP(path))
   {
     printf("\n%s file dosent exist!\n",path);
-  //  kill();
+    kill();
     return;
   }
 
@@ -41,7 +41,7 @@ void rn_Main()
   if(!sz) sz = file_size(path);
   printf("\nSize of the file: %x \n", sz);
 
-  uint32_t* buffer = kmalloc(8192);
+  uint32_t* buffer = kmalloc(sz);
 
   file_readTM(buffer,0,sz,path);
 
@@ -51,6 +51,5 @@ void rn_Main()
   Shell_CFexecute(buffer, sz);
 
   kfree(buffer);
-
-//  kill();
+  kill();
 }

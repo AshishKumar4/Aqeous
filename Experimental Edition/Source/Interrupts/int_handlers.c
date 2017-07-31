@@ -324,6 +324,7 @@ uint32_t ag = 1,ab = 0;
 
 void keyboardInterrupt_handler()
 {
+  //printf("a-");
   //Switch_to_system_dir();
   //if(kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
   {
@@ -419,6 +420,10 @@ void keyboardInterrupt_handler()
         {
           call = keyboard_scancodes(key);
           //  call = key;
+          if(_ctrl && (call == 'c' || call == 'C'))
+          {
+            _ctrl_C_pressed = 1;
+          }
           if(call == '\r')
           {
             enter_pressed = 1;
@@ -451,6 +456,7 @@ void keyboardInterrupt_handler()
 
 void cascade_handler()
 {
+asm volatile("iret");
   asm volatile("cli");
   printf("\nInterrupt 2");
   while(1);

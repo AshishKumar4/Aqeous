@@ -1,0 +1,5 @@
+#include "libstdc/stdio.c"
+#include "libstdc/string.c"
+#include "libstdc/stdlib.c"
+#include "libstdc/sys.c"
+#include "libstdc/ctype.c"

@@ -60,6 +60,8 @@ void* pmem(uint32_t size);
 
 void* pmem_4k(uint32_t pages);
 
+void* pmem_realloc(void* ptr, uint32_t sz);
+
 void pfree(void* addr);
 
 inline uint32_t pmalloc();

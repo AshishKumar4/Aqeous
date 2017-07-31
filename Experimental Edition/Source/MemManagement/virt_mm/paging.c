@@ -259,6 +259,7 @@ void Setup_Paging()
 	kmalloc = pmem;
 	malloc = vmem;
 	free = vfree;
+  krealloc = pmem_realloc;
 	kfree = pfree;
   _cur_dir = system_dir;
   _cur_pdirCap = system_pdirCap;

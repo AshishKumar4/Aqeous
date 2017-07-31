@@ -51,7 +51,7 @@ INCLUDED:=$(INCLUDED) -I$(MULTIBOOT) -I$(MULTITASK) -I$(MEMMANAGEMENT) -I$(ATA) 
 INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESYSTEM) -I$(AQFS) -I$(HPET) -I$(BASICSHELL) -I$(IOHANDLING) -I$(KBHANDLE) -I$(FSHANDLE)
 INCLUDED:=$(INCLUDED) -I$(PIC) -I$(PARALLEL_IO) -I$(SERIAL_IO) -I$(GUI_SHELL)
 
-FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -m32 -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-nasm build-kernel
 
 clean:
@@ -70,6 +70,7 @@ build-nasm:
 	$(NASM) -f elf $(ARCH)/a.asm -o $(OBJ)/a.o
 	$(NASM) -f elf $(ARCH)/scheduler.asm -o $(OBJ)/scheduler.o
 	$(NASM) -f elf $(ARCH)/AP_Bootup.asm -o $(OBJ)/AP_Bootup.o
+	$(NASM) -f elf $(ARCH)/AP_RealMode.asm -o $(OBJ)/AP_RealMode.o
 	$(AS) $(SOURCE)/arch/x86/boot.S -o $(OBJ)/boot.o
 
 build-kernel: $(KERNEL) linker.ld
@@ -88,7 +89,7 @@ build-installer:
 	cd ..
 
 build-assembly:
-	$(CC) -T linker.ld $(FLAGS) -S -m32 $(SOURCE)/kernel.c
+	$(CC) -T linker.ld $(FLAGS) -S $(SOURCE)/kernel.c
 
 build-objdump:
 	objdump -D -M intel aqeous.bin > aqeous.txt

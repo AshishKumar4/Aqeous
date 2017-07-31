@@ -10,7 +10,7 @@ int shiftData(void *position, int shiftAmount, uint32_t lengthOfDataToShift)
 		uint32_t start = (uint32_t)position, end = (uint32_t)position + shiftAmount;
 
 		int i; //sifts the data to the left
-		for(i = 0; i < lengthOfDataToShift; i++)
+		for(i = 0; i < (int)lengthOfDataToShift; i++)
 			*(char*)(end + i) = *(char*)(start + i);
 
 		memset((uint32_t*)(end + i), 0, -1 * shiftAmount);
@@ -18,7 +18,7 @@ int shiftData(void *position, int shiftAmount, uint32_t lengthOfDataToShift)
 		//success!
 		return 0;
 	}
-
+	return 1;
 }
 
 uint32_t ext2_read(ext2_inode_t *node, uint32_t offset, uint32_t size, uint8_t *buffer)
@@ -48,6 +48,7 @@ uint32_t ext2_read(ext2_inode_t *node, uint32_t offset, uint32_t size, uint8_t *
 		//sucess!
 		return size;
 	}
+	return 0;
 }
 
 uint32_t ext2_read_meta_data(ext2_superblock_t **sblock, ext2_group_descriptor_t **gdesc)
@@ -58,7 +59,7 @@ uint32_t ext2_read_meta_data(ext2_superblock_t **sblock, ext2_group_descriptor_t
 	sdata = (ext2_superblock_t*)kmalloc(sizeof(ext2_superblock_t));
 	disk_read(curr_port, (uint32_t)((EXT2_SBLOCK_OFF) / SECTOR_SIZE), sizeof(ext2_superblock_t), (uint32_t*)sdata);
 
-	uint32_t* test = (uint32_t*)sdata;
+	//uint32_t* test = (uint32_t*)sdata;
 	//printf("Sizeof ext2_superblock_t = %x\n", sizeof(ext2_superblock_t));
 	//check here if the superblock exists
 	if(sdata->magic != EXT2_MAGIC)
@@ -127,7 +128,7 @@ uint32_t *ext2_format_block_bitmap(ext2_group_descriptor_t *gdesc, uint32_t bloc
 		{
 			//if the bit isolated by bit_mask is 0
 			if(!(*(block_bitmap + off) & bit_mask))
-				consec_free++;
+				++consec_free; // was consec_free++
 			else //if the bit isolated by bit_mask is 1
 				consec_free = 0;
 
@@ -167,7 +168,7 @@ uint32_t *ext2_format_block_bitmap(ext2_group_descriptor_t *gdesc, uint32_t bloc
 				 * global variable which should not be cleared*/
 
 				//TODO in the case of non-consecutive blocks, make this optimized and work
-				uint32_t i, *clear;
+				uint32_t *clear;
 				clear = (uint32_t*)kmalloc(EXT2_BLOCK_SZ * blocks_used);
 
 				memset(clear, 0x0, EXT2_BLOCK_SZ * blocks_used);
@@ -175,7 +176,7 @@ uint32_t *ext2_format_block_bitmap(ext2_group_descriptor_t *gdesc, uint32_t bloc
 				//if we have exited, then all of the blocks are sequential, so write as one big chunk
 				disk_write(curr_port, clear, EXT2_BLOCK_SZ * blocks_used, *output);
 
-				//kfree((uint32_t*)clear);
+				kfree((uint32_t*)clear);
 
 				return output;
 			}
@@ -186,7 +187,7 @@ uint32_t *ext2_format_block_bitmap(ext2_group_descriptor_t *gdesc, uint32_t bloc
 	/*purposly not freeing since block_bitmap, regardless of update,
 	 * is the global variable which should not be cleared*/
 
-	//kfree((uint32_t*)output);
+	kfree((uint32_t*)output);
 
 	//if we did not exit yet, there must be no space
 	return 0;
@@ -209,8 +210,8 @@ uint32_t ext2_singly_create(uint32_t *block_locations, uint32_t offset, uint32_t
 	//store the value of location in another place so we can free location and return its location
 	value = *location;
 
-	//kfree((uint32_t*)block_data);
-	//kfree((uint32_t*)location);
+	kfree((uint32_t*)block_data);
+	kfree((uint32_t*)location);
 
 	//return the location of the singly block
 	return value;
@@ -240,8 +241,8 @@ uint32_t ext2_doubly_create(uint32_t *block_locaitions, uint32_t offset, uint32_
 
 	value = *location;
 
-	//kfree((uint32_t*)block_data);
-	//kfree((uint32_t*)location);
+	kfree((uint32_t*)block_data);
+	kfree((uint32_t*)location);
 
 	//return the location of the singly block
 	return value;
@@ -341,10 +342,11 @@ uint32_t ext2_inode_entry_blocks(ext2_inode_t *node, ext2_group_descriptor_t *gd
 			}
 		}
 
-		//kfree((uint32_t*)location);
-		//kfree((uint32_t*)block_data);
+		kfree((uint32_t*)location);
+		kfree((uint32_t*)block_data);
 
 	}
+	return 1;
 }
 
 uint32_t ext2_data_to_inode_table(ext2_inode_t *data, ext2_group_descriptor_t *gdesc, ext2_superblock_t *sblock)
@@ -396,7 +398,7 @@ uint32_t ext2_inode_from_inode_table(uint32_t inode_number, ext2_inode_t *output
 	memcpy(output, (uint8_t*)buffer + sizeof(ext2_inode_t) * inode_number, sizeof(ext2_inode_t));
 
 	//purposly not freeing since buffer, either way with update, is the global variable which should not be cleared
-	//~ //kfree((uint32_t*)buffer);
+	//~ kfree((uint32_t*)buffer);
 
 	//sucess!
 	return 0;
@@ -417,8 +419,8 @@ ext2_inode_t *ext2_file_from_dir(ext2_inode_t *dir, char *name)
 	}
 
 	//get the inode table
-	ext2_inode_t *inode_table;
-	inode_table = ext2_get_inode_table(gdesc);
+	/**ext2_inode_t *inode_table;
+	inode_table = ext2_get_inode_table(gdesc);**/
 
 	ext2_inode_t *inode;
 	inode = (ext2_inode_t*)kmalloc(sizeof(ext2_inode_t));
@@ -441,21 +443,21 @@ ext2_inode_t *ext2_file_from_dir(ext2_inode_t *dir, char *name)
 
 					inode = ext2_inode_from_offset(dirent2->ino);
 
-					//kfree((uint32_t*)dirent2->name);
-					//~ //kfree((uint32_t*)inode);
-					//kfree((uint32_t*)sblock);
-					//kfree((uint32_t*)gdesc);
+					kfree((uint32_t*)dirent2->name);
+					//~ kfree((uint32_t*)inode);
+					kfree((uint32_t*)sblock);
+					kfree((uint32_t*)gdesc);
 
 					return inode;
 				}
 			}
-			//kfree((uint32_t*)dirent2->name);
+			kfree((uint32_t*)dirent2->name);
 		}
 	}
 
-	//kfree((uint32_t*)inode);
-	//kfree((uint32_t*)sblock);
-	//kfree((uint32_t*)gdesc);
+	kfree((uint32_t*)inode);
+	kfree((uint32_t*)sblock);
+	kfree((uint32_t*)gdesc);
 	//no file found, error
 	return 0;
 }
@@ -466,7 +468,7 @@ struct ext2_dirent *ext2_dirent_from_dir_data(ext2_inode_t *dir, uint32_t index,
 	{
 
 		uint32_t i = 0;
-		uint32_t loop = 0, b = 0;
+		uint32_t loop = 0;/**, b = 0;**/
 
 		//this no data has been passed
 		if(!data)
@@ -544,7 +546,7 @@ struct ext2_dirent *ext2_dirent_from_dir(ext2_inode_t *dir, uint32_t index)
 		//this dir has no blocks assigned
 		if(!block)
 		{
-			//kfree((uint32_t*)block);
+			kfree((uint32_t*)block);
 			return 0; //error
 		}
 
@@ -577,12 +579,12 @@ struct ext2_dirent *ext2_dirent_from_dir(ext2_inode_t *dir, uint32_t index)
 
 					*(dirent2.name + dirent2.name_len) = 0; //Adds terminating 0 to string
 
-					//kfree((uint32_t*)block);
+					kfree((uint32_t*)block);
 					return &dirent2;
 
 				}else{
 
-					//kfree((uint32_t*)block);
+					kfree((uint32_t*)block);
 					//error
 					return 0;
 				}
@@ -604,7 +606,7 @@ struct ext2_dirent *ext2_dirent_from_dir(ext2_inode_t *dir, uint32_t index)
 					//this dir has not blocks assigned
 					if(!block)
 					{
-						//kfree((uint32_t*)block);
+						kfree((uint32_t*)block);
 						return 0;
 					}
 				}
@@ -622,7 +624,7 @@ struct ext2_dirent *ext2_dirent_from_dir(ext2_inode_t *dir, uint32_t index)
 uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *block_output)
 {
 	//if the block is a direct block
-	if(block_number >= 0 && block_number < EXT2_NDIR_BLOCKS)
+	if((int)block_number >= 0 && block_number < EXT2_NDIR_BLOCKS)
 	{
 
 		if(!file->blocks[block_number])
@@ -646,7 +648,7 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!file->blocks[EXT2_IND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
+			kfree((uint32_t*)singly);
 			block_output = 0;
 			return 0;
 		}
@@ -657,14 +659,14 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
+			kfree((uint32_t*)singly);
 			block_output = 0;
 			return 0;
 		}
 
 		disk_read(curr_port, block, EXT2_BLOCK_SZ, block_output);
 
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)singly);
 
 		return block;
 
@@ -683,8 +685,8 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 		//error checking is always good
 		if(!file->blocks[EXT2_DIND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			block_output = 0;
 			return 0;
 		}
@@ -696,8 +698,8 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 		//error checking is always good
 		if(!singly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			block_output = 0;
 			return 0;
 		}
@@ -709,8 +711,8 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 		//error checking is always good
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			block_output = 0;
 			return 0;
 		}
@@ -718,8 +720,8 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 		disk_read(curr_port, block, EXT2_BLOCK_SZ, block_output);
 
 		//free the stuff allocated
-		//kfree((uint32_t*)doubly);
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)doubly);
+		kfree((uint32_t*)singly);
 
 		return block;
 
@@ -739,9 +741,9 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!file->blocks[EXT2_TIND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			block_output = 0;
 			return 0;
 		}
@@ -752,9 +754,9 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!doubly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			block_output = 0;
 			return 0;
 		}
@@ -765,9 +767,9 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!singly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			block_output = 0;
 			return 0;
 		}
@@ -778,18 +780,18 @@ uint32_t ext2_block_of_set(ext2_inode_t *file, uint32_t block_number, uint32_t *
 
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			block_output = 0;
 			return 0;
 		}
 
 		disk_read(curr_port, block, EXT2_BLOCK_SZ, block_output);
 
-		//kfree((uint32_t*)triply);
-		//kfree((uint32_t*)doubly);
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)triply);
+		kfree((uint32_t*)doubly);
+		kfree((uint32_t*)singly);
 
 		return block;
 	}else{
@@ -810,7 +812,7 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 		size = EXT2_BLOCK_SZ;
 
 	//if the block is a direct block
-	if(block_number >= 0 && block_number < EXT2_NDIR_BLOCKS)
+	if((int)block_number >= 0 && block_number < EXT2_NDIR_BLOCKS)
 	{
 		if(!file->blocks[block_number])
 			return 0;
@@ -830,7 +832,7 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!file->blocks[EXT2_IND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
+			kfree((uint32_t*)singly);
 			return 0;
 		}
 
@@ -840,13 +842,13 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
+			kfree((uint32_t*)singly);
 			return 0;
 		}
 
 		disk_write(curr_port, block_data, size, block);
 
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)singly);
 
 		return block;
 
@@ -864,8 +866,8 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!file->blocks[EXT2_DIND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			return 0;
 		}
 
@@ -875,8 +877,8 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!singly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			return 0;
 		}
 
@@ -886,15 +888,15 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
 			return 0;
 		}
 
 		disk_write(curr_port, block_data, size, block);
 
-		//kfree((uint32_t*)doubly);
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)doubly);
+		kfree((uint32_t*)singly);
 
 		return block;
 
@@ -914,9 +916,9 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!file->blocks[EXT2_TIND_BLOCK])
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			return 0;
 		}
 
@@ -926,9 +928,9 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!doubly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			return 0;
 		}
 
@@ -938,9 +940,9 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!singly_block_location)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			return 0;
 		}
 
@@ -950,17 +952,17 @@ uint32_t ext2_write_block_of_set(ext2_inode_t *file, uint32_t block_number, uint
 
 		if(!block)
 		{
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
 			return 0;
 		}
 
 		disk_write(curr_port, block_data, size, block);
 
-		//kfree((uint32_t*)triply);
-		//kfree((uint32_t*)doubly);
-		//kfree((uint32_t*)singly);
+		kfree((uint32_t*)triply);
+		kfree((uint32_t*)doubly);
+		kfree((uint32_t*)singly);
 
 		return block;
 	}else
@@ -1013,8 +1015,8 @@ uint32_t ext2_add_file_to_dir(ext2_inode_t *parent_dir, ext2_inode_t *file, uint
 		//this dir has not blocks assigned
 		if(!block)
 		{
-			//kfree((uint32_t*)block);
-			//kfree((uint32_t*)dirent.name);
+			kfree((uint32_t*)block);
+			kfree((uint32_t*)dirent.name);
 			return 1; //error
 		}
 
@@ -1046,13 +1048,15 @@ uint32_t ext2_add_file_to_dir(ext2_inode_t *parent_dir, ext2_inode_t *file, uint
 	//assigns the contents of the struct dirent to the directory contents location
 	memcpy((uint8_t*)block + i, &dirent, dirent.rec_len - dirent.name_len);
 
+	strcpy((char*)((uint8_t*)block + i + sizeof(dirent.ino) + sizeof(dirent.rec_len) + sizeof(dirent.name_len) + sizeof(dirent.file_type)), dirent.name);
+/**
 	strcpy((uint8_t*)block + i + sizeof(dirent.ino) + sizeof(dirent.rec_len) + sizeof(dirent.name_len) + sizeof(dirent.file_type), dirent.name);
-
+**/
 	disk_write(curr_port, block, EXT2_BLOCK_SZ, location);
 
-	//kfree((uint32_t*)block);
+	kfree((uint32_t*)block);
 
-	//kfree((uint32_t*)dirent.name);
+	kfree((uint32_t*)dirent.name);
 
 	return 0;
 }
@@ -1128,9 +1132,12 @@ uint32_t ext2_update_node_in_inode_table(ext2_inode_t *node)
 
 	uint32_t inode_table_size, i;
 	if(!ext2_g_sblock || !ext2_g_gdesc)
+	{
 		if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
 			return 0; //error
-	else{
+	}
+	else
+	{
 		sblock = ext2_g_sblock;
 		gdesc = ext2_g_gdesc;
 	}
@@ -1145,10 +1152,12 @@ uint32_t ext2_update_node_in_inode_table(ext2_inode_t *node)
 
 		disk_read(curr_port, gdesc->inode_table_id, inode_table_size, (uint32_t*)itable);
 
-	}else
+	}
+	else
 		itable = ext2_g_inode_table;
 
 	for(i = 0; i < inode_table_size; i += sizeof(ext2_inode_t))
+	{
 		//if we have found our node in the inode table
 		if(((ext2_inode_t*)itable + i)->inode == node->inode)
 		{
@@ -1160,9 +1169,9 @@ uint32_t ext2_update_node_in_inode_table(ext2_inode_t *node)
 
 			return 0; //sucess!
 		}
-
-		//if we exited the for loop, that means the inode was not found, thus cannot be updated
-		return 1; //error
+	}
+	//if we exited the for loop, that means the inode was not found, thus cannot be updated
+	return 1; //error
 }
 
 uint32_t ext2_expand(ext2_inode_t *node, uint32_t increase_bytes)
@@ -1228,10 +1237,10 @@ uint32_t ext2_expand(ext2_inode_t *node, uint32_t increase_bytes)
 	if(ext2_free_blocks(blocks_to_rm, i))
 	{
 
-		//kfree((uint32_t*)initial_locs);
-		//kfree((uint32_t*)added_locs);
-		//kfree((uint32_t*)all_locs);
-		//kfree((uint32_t*)blocks_to_rm);
+		kfree((uint32_t*)initial_locs);
+		kfree((uint32_t*)added_locs);
+		kfree((uint32_t*)all_locs);
+		kfree((uint32_t*)blocks_to_rm);
 
 		return 1; //there was some sort of error
 	}
@@ -1246,10 +1255,10 @@ uint32_t ext2_expand(ext2_inode_t *node, uint32_t increase_bytes)
 	if(ext2_update_node_in_inode_table(node))
 		return 1; //error
 
-	//kfree((uint32_t*)initial_locs);
-	//kfree((uint32_t*)added_locs);
-	//kfree((uint32_t*)all_locs);
-	//kfree((uint32_t*)blocks_to_rm);
+	kfree((uint32_t*)initial_locs);
+	kfree((uint32_t*)added_locs);
+	kfree((uint32_t*)all_locs);
+	kfree((uint32_t*)blocks_to_rm);
 
 	//sucess!
 	return 0;
@@ -1432,7 +1441,7 @@ static ext2_inode_t *__create_dir__(ext2_superblock_t *sblock, ext2_group_descri
 
 	disk_write(curr_port, (uint32_t*)gdesc, sizeof(ext2_group_descriptor_t), gdesc->gdesc_location);
 
-	//kfree((uint32_t*)block_locations);
+	kfree((uint32_t*)block_locations);
 
 	return data;
 }
@@ -1504,9 +1513,12 @@ static ext2_inode_t *__create_file__(uint32_t size)
 	uint32_t blocks_used = size ? (uint32_t)((size - 1) / EXT2_BLOCK_SZ) + 1 : 0;
 
 	if(!ext2_g_sblock || !ext2_g_gdesc)
+	{
 		if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
 			return 0; //error
-	else{
+	}
+	else
+	{
 		sblock = ext2_g_sblock;
 		gdesc = ext2_g_gdesc;
 	}
@@ -1553,7 +1565,7 @@ static ext2_inode_t *__create_file__(uint32_t size)
 	 * is the global variable which should not be cleared*/
 
 	if(block_locations)
-		//kfree((uint32_t*)block_locations);
+		kfree((uint32_t*)block_locations);
 
 	return data;
 }
@@ -1585,6 +1597,7 @@ uint32_t ext2_write(ext2_inode_t *node, uint32_t offset, uint32_t size, uint8_t 
 		//sucess!
 		return 0;
 	}
+	return 1;
 }
 
 uint32_t *ext2_get_singly(uint32_t location, uint32_t *nblocks)
@@ -1605,14 +1618,14 @@ uint32_t *ext2_get_singly(uint32_t location, uint32_t *nblocks)
 
 	*nblocks = i;
 
-	//kfree((uint32_t*)singly);
+	kfree((uint32_t*)singly);
 
 	return locs;
 }
 
 uint32_t *ext2_get_doubly(uint32_t location, uint32_t *nblocks)
 {
-	uint32_t i = 0, a = 0, *doubly, *max_locs, *locs, *tmp_nblocks, total_blocks = 0;
+	uint32_t i = 0, a = 0, *doubly, *max_locs, *locs = NULL, *tmp_nblocks, total_blocks = 0;
 
 	doubly = (uint32_t*)kmalloc(EXT2_BLOCK_SZ);
 	disk_read(curr_port, location, EXT2_BLOCK_SZ, doubly);
@@ -1632,8 +1645,6 @@ uint32_t *ext2_get_doubly(uint32_t location, uint32_t *nblocks)
 		memcpy(max_locs + a * EXT2_NIND_BLOCK, locs, *tmp_nblocks);
 		total_blocks += *tmp_nblocks;
 	}
-
-	//kfree((uint32_t*)locs);
 	//(a - 1) equals the number of full singly blocks there were, the last tmp_nblocks contains the last singly's size
 	locs = (uint32_t*)kmalloc((a - 1) * EXT2_NIND_BLOCK + *tmp_nblocks);
 
@@ -1642,16 +1653,16 @@ uint32_t *ext2_get_doubly(uint32_t location, uint32_t *nblocks)
 
 	*nblocks = total_blocks;
 
-	//kfree((uint32_t*)tmp_nblocks);
-	//kfree((uint32_t*)max_locs);
-	//kfree((uint32_t*)doubly);
+	kfree((uint32_t*)tmp_nblocks);
+	kfree((uint32_t*)max_locs);
+	kfree((uint32_t*)doubly);
 
 	return locs;
 }
 
 uint32_t *ext2_get_triply(uint32_t location, uint32_t *nblocks)
 {
-	uint32_t i = 0, a = 0, *triply, *max_locs, *locs, *tmp_nblocks, total_blocks = 0;
+	uint32_t i = 0, a = 0, *triply, *max_locs, *locs = NULL, *tmp_nblocks, total_blocks = 0;
 
 	triply = (uint32_t*)kmalloc(EXT2_BLOCK_SZ);
 	disk_read(curr_port, location, EXT2_BLOCK_SZ, triply);
@@ -1672,7 +1683,6 @@ uint32_t *ext2_get_triply(uint32_t location, uint32_t *nblocks)
 		total_blocks += *tmp_nblocks;
 	}
 
-	//kfree((uint32_t*)locs);
 	//(a - 1) equals the number of full doubly blocks there were, the last tmp_nblocks contains the last doubly's size
 	locs = (uint32_t*)kmalloc((a - 1) * EXT2_NDIND_BLOCK + *tmp_nblocks);
 
@@ -1681,9 +1691,9 @@ uint32_t *ext2_get_triply(uint32_t location, uint32_t *nblocks)
 
 	*nblocks = total_blocks;
 
-	//kfree((uint32_t*)tmp_nblocks);
-	//kfree((uint32_t*)max_locs);
-	//kfree((uint32_t*)triply);
+	kfree((uint32_t*)tmp_nblocks);
+	kfree((uint32_t*)max_locs);
+	kfree((uint32_t*)triply);
 
 	return locs;
 }
@@ -1737,8 +1747,8 @@ uint32_t *ext2_block_locs(ext2_inode_t *node)
 
 			//reset i and then copy all of the singly blocks until they end
 			memcpy(locs + EXT2_NDIR_BLOCKS, singly, *nblocks);
-			//kfree((uint32_t*)nblocks);
-			//kfree((uint32_t*)singly);
+			kfree((uint32_t*)nblocks);
+			kfree((uint32_t*)singly);
 
 			//exit
 			break;
@@ -1763,9 +1773,9 @@ uint32_t *ext2_block_locs(ext2_inode_t *node)
 			doubly = ext2_get_doubly(*(node->blocks + EXT2_DIND_BLOCK), nblocks);
 			memcpy(locs + EXT2_NDIR_BLOCKS + EXT2_NIND_BLOCK, doubly, *nblocks);
 
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)nblocks);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)nblocks);
 			//exit
 			break;
 		}
@@ -1792,10 +1802,10 @@ uint32_t *ext2_block_locs(ext2_inode_t *node)
 			triply = ext2_get_triply(*(node->blocks + EXT2_TIND_BLOCK), nblocks);
 			memcpy(locs + EXT2_NDIR_BLOCKS + EXT2_NIND_BLOCK + EXT2_NDIND_BLOCK, triply, *nblocks);
 
-			//kfree((uint32_t*)singly);
-			//kfree((uint32_t*)doubly);
-			//kfree((uint32_t*)triply);
-			//kfree((uint32_t*)nblocks);
+			kfree((uint32_t*)singly);
+			kfree((uint32_t*)doubly);
+			kfree((uint32_t*)triply);
+			kfree((uint32_t*)nblocks);
 			//exit
 			break;
 		}
@@ -2151,12 +2161,12 @@ uint32_t ext2_set_block_group(uint32_t size)
 								group_offset + (uint32_t)((EXT2_SBLOCK_OFF + EXT2_BLOCK_SZ) / SECTOR_SIZE)); //write starting from sector 2
 	}
 
-	//kfree((uint32_t*)mem);
-	//kfree((uint32_t*)i_tables);
+	kfree((uint32_t*)mem);
+	kfree((uint32_t*)i_tables);
 
-	//kfree((uint32_t*)sblock_data);
-	//kfree((uint32_t*)gdesc_table_data);
-	//kfree((uint32_t*)gdesc_buf);
+	kfree((uint32_t*)sblock_data);
+	kfree((uint32_t*)gdesc_table_data);
+	kfree((uint32_t*)gdesc_buf);
 
 	//sucess!
 	return 0;
@@ -2218,7 +2228,7 @@ static char *__get_name_of_file__(ext2_inode_t *directory, ext2_inode_t *file)
 	struct ext2_dirent *dirent;
 
 	//loop forever untill we exit by sucess of an error
-	for(i;;i++)
+	for(i;1;i++)
 	{
 		dirent = ext2_dirent_from_dir(directory, i);
 
@@ -2271,8 +2281,8 @@ char *ext2_get_name_of_dir(ext2_inode_t *directory)
 	block = (uint32_t*)kmalloc(EXT2_BLOCK_SZ);
 	if(!ext2_block_of_set(parent, b, block))
 	{
-		//kfree((uint32_t*)parent);
-		//kfree((uint32_t*)block);
+		kfree((uint32_t*)parent);
+		kfree((uint32_t*)block);
 		return 0;
 	}
 
@@ -2287,8 +2297,8 @@ char *ext2_get_name_of_dir(ext2_inode_t *directory)
 			b++;
 			if(!ext2_block_of_set(parent, b, block))
 			{
-				//kfree((uint32_t*)parent);
-				//kfree((uint32_t*)block);
+				kfree((uint32_t*)parent);
+				kfree((uint32_t*)block);
 				return 0;
 			}
 		}
@@ -2300,14 +2310,15 @@ char *ext2_get_name_of_dir(ext2_inode_t *directory)
 	//~ name = (char*)kmalloc(dirent->name_len + 1);
 	//~ *(name + dirent->name_len) = 0;
 
-	//kfree((uint32_t*)block);
-	//kfree((uint32_t*)parent);
+	kfree((uint32_t*)block);
+	kfree((uint32_t*)parent);
 
 	return name;
 }
 
 uint32_t ext2_free_data_blocks(ext2_inode_t *directory, ext2_inode_t *node)
 {
+	printf("\n%d", (uint32_t*)directory);
 	ext2_superblock_t *sblock;
 	ext2_group_descriptor_t *gdesc;
 
@@ -2339,8 +2350,8 @@ uint32_t ext2_free_data_blocks(ext2_inode_t *directory, ext2_inode_t *node)
 	//when the for loop exits, i + nblocks will equal the number of blocks that have been saved in blocks_to_rm
 	if(ext2_free_blocks(blocks_to_rm, i + nblocks))
 	{
-		//kfree((uint32_t*)block_locs);
-		//kfree((uint32_t*)blocks_to_rm);
+		kfree((uint32_t*)block_locs);
+		kfree((uint32_t*)blocks_to_rm);
 
 		return 1; //there was some sort of error
 	}
@@ -2351,8 +2362,8 @@ uint32_t ext2_free_data_blocks(ext2_inode_t *directory, ext2_inode_t *node)
 
 	disk_write(curr_port, (uint32_t*)gdesc, sizeof(ext2_group_descriptor_t), gdesc->gdesc_location);
 
-	//kfree((uint32_t*)block_locs);
-	//kfree((uint32_t*)blocks_to_rm);
+	kfree((uint32_t*)block_locs);
+	kfree((uint32_t*)blocks_to_rm);
 
 	//sucess!
 	return 0;
@@ -2366,7 +2377,8 @@ uint32_t ext2_remove_dirent(ext2_inode_t *directory, ext2_inode_t *node)
 		struct ext2_dirent *dirent2;
 		dirent2 = (struct ext2_dirent*)kmalloc(sizeof(struct ext2_dirent));
 
-		uint32_t i = 0, loop = 0, b = 0;
+		uint32_t i = 0, b = 0;
+	/**	uint32_t i = 0, loop = 0, b = 0;**/
 
 		//allocate a buffer to store a directory's data
 		uint8_t *buf, **split, *dir_block;
@@ -2383,7 +2395,7 @@ uint32_t ext2_remove_dirent(ext2_inode_t *directory, ext2_inode_t *node)
 		}
 
 		//we do not need buf anymore, free it
-		//kfree((uint32_t*)buf);
+		kfree((uint32_t*)buf);
 
 		//set dir_block to the first block of data
 		dir_block = *split;
@@ -2444,16 +2456,17 @@ uint32_t ext2_remove_dirent(ext2_inode_t *directory, ext2_inode_t *node)
 
 		//free split, it is not needed anymore
 		for(i = 0; i < directory->size / EXT2_BLOCK_SZ; i++)
-			//kfree((uint32_t*)*(split + i));
+			kfree((uint32_t*)*(split + i));
 
-		//kfree((uint32_t*)split);
+		kfree((uint32_t*)split);
 
-		//kfree((uint32_t*)dirent2);
+		kfree((uint32_t*)dirent2);
 
 		//sucess!
 		return 0;
 
 	}
+	return 1;
 }
 
 static ext2_inode_t *__create_root__()
@@ -2521,13 +2534,13 @@ static ext2_inode_t *__create_root__()
 void make_boot_sector_ext2()
 {
 		uint32_t buf=(uint32_t)fsalloc(1024);
-		memset(buf,0,1024);
+		memset((void*)buf,0,1024);
 		read(curr_port,0,2,(DWORD)buf);
 		Identity_Sectors_t* identity=(Identity_Sectors_t*)(buf + 436);
 		strcpy(identity->name,"EXT2");
 		identity->active_partition = 446; //Partition 1
 
-		uint8_t* boot_ptr = buf;
+		uint8_t* boot_ptr = (uint8_t*)buf;
 		boot_ptr += 510;
 		*boot_ptr = 0x55;
 		++boot_ptr;
@@ -2539,7 +2552,7 @@ uint32_t ext2_burn(uint32_t size, const char* device)
 {
 	ext2_superblock_t *sblock;
 	ext2_group_descriptor_t *gdesc;
-
+	printf("\n<%s>", device);
 	/*if ext2_read_meta_data returns with anything but a 0,
 	 * then there is either an error in the sblock, or one does not exist*/
 	if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
@@ -2598,6 +2611,7 @@ uint32_t ext2_burn(uint32_t size, const char* device)
 		printf("\nExt2 Formatted sucessfully\n");
 		return 0;
 	}
+	return 1;
 }
 
 uint32_t ext2_initialize(uint32_t size, const char *device)
@@ -2605,6 +2619,7 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 	ext2_superblock_t *sblock;
 	ext2_group_descriptor_t *gdesc;
 
+	printf("\n<%d, %s>", size, device);
 	/*if ext2_read_meta_data returns with anything but a 0,
 	 * then there is either an error in the sblock, or one does not exist*/
 	if(ext2_read_meta_data((ext2_superblock_t**)&sblock, (ext2_group_descriptor_t**)&gdesc))
@@ -2638,7 +2653,7 @@ uint32_t ext2_initialize(uint32_t size, const char *device)
 
 		printf("%ggdone%gw\n%s>", 10, 15, ext2_root_dirent->name);
 		//printf("%ggdone%gw\n", 10, 15);
-/*
+s
 		ext2_inode_t* fnode = ext2_root;
 	  ext2_dirent_t* entry = 0;
 

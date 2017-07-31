@@ -3,6 +3,11 @@
 #include <float.h>
 #include <common.h>
 
+// Precise method, which guarantees v = v1 when t = 1.
+float lerp(float v0, float v1, float t) {
+  return (1 - t) * v0 + t * v1;
+}
+
 uint32_t pow(uint32_t base, uint32_t power)
 {
   uint32_t tmp = base;

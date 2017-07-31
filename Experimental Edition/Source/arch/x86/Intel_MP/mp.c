@@ -30,7 +30,7 @@ void MPtables_parse()
   printf("\nParsing Multi Processing Specification table by Intel!!!\n");
   uint_fast32_t *ptr;
   int found = 0;
-  for(ptr = 0x000E0000; ptr <= 0x00100000; ptr++)
+  for(ptr = (uint_fast32_t*)0x000E0000; (uint32_t)ptr <= 0x00100000; ptr++)
   {
     if(MPCheckHeader((uint32_t*)ptr, "_MP_") == 0)
     {
@@ -45,7 +45,7 @@ void MPtables_parse()
     ebda = ebda*0x10 &0x000FFFFF;   // transform segment into linear address
 
     // search Extended BIOS Data Area for the Root System Description Pointer signature
-    for (ptr = (uint32_t *) ebda; (int) ptr<ebda+1024; ptr+= 0x10/4)
+    for (ptr = (uint_fast32_t*) ebda; (int) ptr<ebda+1024; ptr+= 0x10/4)
     {
       if(MPCheckHeader((uint32_t*)ptr, "_MP_") == 0)
       {
@@ -56,7 +56,7 @@ void MPtables_parse()
   }
   if(!found)
   {
-    for(ptr = 0xFFFFEFFF; ptr < 0xFFFFFFFF; ptr++)
+    for(ptr = (uint_fast32_t*)0xFFFFEFFF; (uint32_t)ptr < 0xFFFFFFFF; ptr++)
     {
       if(MPCheckHeader((uint32_t*)ptr, "_MP_") == 0)
       {
@@ -83,7 +83,7 @@ void MPtables_parse()
 
 //  printf("\n%x %x",sizeof(MP_ConfigTbl_Header_t), sizeof(ProcessorEntry_t));
 
-  Processor_Entries = entries;
+  Processor_Entries = (ProcessorEntry_t*)entries;
   uint32_t processors = 0;
   //uint32_t* ptr = Processor_Entries;
   for(int i=0;i<mpcth->entry_count;i++)

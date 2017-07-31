@@ -9,6 +9,7 @@
 #include "RandomLib/Random.h"
 #include "WindowSystem/window.h"
 
+#include "imagelib/imagelib.c"
 
 inline void refresh_area(int x0, int y0, int x1, int y1)
 {
@@ -71,12 +72,15 @@ void drawRect_window(window_t* w, int x, int y, int width, int height, int C)
 void __attribute__((optimize("O2"))) Gfx_DbuffSync()
 {
   Mouse_Plot();
+  uint32_t NeedToRefresh = dirtyRegions;
   WindowComposter(main_buff, &main_wlist);
-  uint_fast32_t *sp = (uint_fast32_t*) main_buff;
-  uint_fast32_t *dp = (uint_fast32_t*) vga_mem;
+  /*uint_fast32_t *sp = (uint_fast32_t*) main_buff;
+  uint_fast32_t *dp = (uint_fast32_t*) vga_mem;*/
 
 #ifdef VESA_SOFTWARE_DBUFF
-  memcpy_sse((uint32_t)dp,(uint32_t)sp,(1024*768)/32);
+  //if(NeedToRefresh)
+  memcpy_sse((uint32_t)vga_mem,(uint32_t)main_buff, (1024*768)/32);/*/
+  memcpy_rep((uint32_t)vga_mem,(uint32_t)main_buff, (1024*768));//*/
 #else
   if(main_buff == vga_mem1)
   {
@@ -158,19 +162,21 @@ void __attribute__((optimize("O2"))) Mouse_Drag_Window()
   mousey -= mousedeltay;
   if(mousedeltax || mousedeltay)
   {
-    WindowDrag(mouse_w, mousex, mousey);
+    //WindowDrag(mouse_w, mousex, mousey);
+    mouse_w->locInfo.o_x = mousex;
+    mouse_w->locInfo.o_y = mousey;
     WindowDrag_relative(Mouse_Dragged_Window, mousedeltax, -mousedeltay);//mousex, mousey);
+    mousedeltax = 0;
+    mousedeltay = 0;
   }
   if(!mouse_left_click)
   {
     Mouse_Plot = Mouse_Normal_Handler;
   }
   mousex = MIN(MAX(mousex,0), widthVESA);
-  mousey = MIN(MAX(mousey,0), heightVESA);
-  //mousex %= widthVESA;
-  //mousey %= heightVESA;
-  mousedeltax = 0;
-  mousedeltay = 0;
+  mousey = MIN(MAX(mousey,0), heightVESA);/*/
+  mousex %= widthVESA;
+  mousey %= heightVESA;//*/
 }
 
 void __attribute__((optimize("O2"))) Mouse_Normal_Handler()
@@ -181,17 +187,17 @@ void __attribute__((optimize("O2"))) Mouse_Normal_Handler()
   if(mousedeltax || mousedeltay)
   {
     WindowDrag(mouse_w, mousex, mousey);
+    mousedeltax = 0;
+    mousedeltay = 0;
   }
   if(mouse_left_click)
   {
     Mouse_LeftClick_Handler(mousex, mousey);
   }
   mousex = MIN(MAX(mousex,0), widthVESA);
-  mousey = MIN(MAX(mousey,0), heightVESA);
-  //mousex %= widthVESA;
-  //mousey %= heightVESA;
-  mousedeltax = 0;
-  mousedeltay = 0;
+  mousey = MIN(MAX(mousey,0), heightVESA);/*/
+  mousex %= widthVESA;
+  mousey %= heightVESA;//*/
 }
 
 void __attribute__((optimize("O0"))) Mouse_Normal_Handler2()

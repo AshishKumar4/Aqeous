@@ -18,6 +18,9 @@
 
 #include "Commands/ProcManagement/ProcManagement.c"
 #include "Commands/Echo/echo.c"
+#include "Commands/CPU/cpu.c"
+#include "Commands/lspci/lspci.c"
+#include "Commands/Water/Water_command.c"
 
 uint32_t VGA_size;
 
@@ -40,7 +43,7 @@ void init_shell()
 	memset_faster((uint32_t*)CSI_mem_start, 0, 18);
 	CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 	tot_entries = (uint32_t*)&Main_CSI_struct->total_entries;
-	memset(console_buffer,0,VGA_size*4);
+	memset((void*)console_buffer,0,VGA_size*4);
 	Enable_SSE();
 	console_manager_init();
 	shell_cmdTask = create_task("shell_cmdTask", Shell_cmdWrapper, 20, 0x202, Shell_proc);
@@ -50,16 +53,16 @@ void init_shell()
 
 void __attribute__((optimize("O0"))) Shell_Double_buffer()
 {
-	 uint32_t* _s, *_c;
+	 uintptr_t _s, _c;
 	 while(1)
 	 {
 		 //asm volatile("cli");
 
 		 //TODO: COPY THE VGA_BUFFER TO THE ACTUAL VGA BUFFER (console_buffer)
-		 _s = (uint32_t*)console_buffer;
-		 _c = (uint32_t*)console_dbuffer;
+		 _s = (uintptr_t)console_buffer;
+		 _c = (uintptr_t)console_dbuffer;
 
-		 memcpy_rep(_s,_c,VGA_size);
+		 memcpy_rep((uint32_t)_s, (uint32_t)_c,VGA_size);
 		 //asm volatile("cli");
 		 if(console_skip)
 		 {
@@ -69,10 +72,10 @@ void __attribute__((optimize("O0"))) Shell_Double_buffer()
 			if((uint32_t)console_dbuffer >= console_dbuffer_limit)   //TODO: Make the console buffer mapping in such a way so that this method isnt required.
 			{
 				console_dbuffer = (uint16_t*)console_dbuffer_original;
-				_s = (uint32_t*)console_dbuffer;
+				_s = (uintptr_t)console_dbuffer;
 				_c = console_dbuffer_limit-VGA_size;
-				memcpy_rep(_s, _c, VGA_size);
-				memset_sse(_s, 0, (4194304-VGA_size)/8);
+				memcpy_rep((uint32_t)_s, (uint32_t)_c,VGA_size);
+				memset_sse((uint32_t)_s, 0, (4194304-VGA_size)/8);
 
 			}
 		 }
@@ -86,7 +89,7 @@ void __attribute__((optimize("O2"))) Shell_Dbuff_sync()
 	 _s = (uint32_t*)console_buffer;
 	 _c = (uint32_t*)console_dbuffer;
 
-	 memcpy_rep(_s,_c,VGA_size);
+	 memcpy_rep((uint32_t)_s, (uint32_t)_c,VGA_size);
 	 //asm volatile("cli");
 	 if(console_skip)
 	 {
@@ -98,8 +101,8 @@ void __attribute__((optimize("O2"))) Shell_Dbuff_sync()
 			console_dbuffer = (uint16_t*)console_dbuffer_original;
 			_s = (uint32_t*)console_dbuffer;
 			_c = console_dbuffer_limit-VGA_size;
-			memcpy_rep(_s, _c, VGA_size);
-			memset_sse(_s, 0, (4194304-VGA_size)/8);
+			memcpy_rep((uint32_t)_s, (uint32_t)_c, VGA_size);
+			memset_sse((uint32_t)_s, 0, (4194304-VGA_size)/8);
 
 		}
 	 }
@@ -135,7 +138,20 @@ void __attribute__((optimize("O2"))) Shell_Input()
 					//TODO: Load the next element
 					Current_buf = (uint8_t*)kb_Start_q->buffer;
 					Current_strlen = 0;
-
+					if(_ctrl_C_pressed)
+					{
+						Task_Swap(Shell_task, (task_t*)shell_cmdTask);
+						Task_sleep((task_t*)shell_cmdTask);
+						shell_awake = 1;
+					}
+				}
+				else if(shell_harbor)
+				{
+					//_printf("ALERT %d %d %d", kb_q_elements, shell_sleeping, shlock);
+					//Shell_wakeup();
+					shell_in = 1;
+					shell_buf = Istream_ptr - kb_buff;
+					kb_buff = 0;
 				}
 				else if(shell_awake)  //TODO: Give all input to the Shell Directly!
 				{
@@ -150,6 +166,7 @@ void __attribute__((optimize("O2"))) Shell_Input()
 				{
 					_printf("ALERT %d %d %d", kb_q_elements, shell_sleeping, shlock);
 					//Shell_wakeup();
+
 				}
 
 				++Istream_ptr;
@@ -166,7 +183,7 @@ void __attribute__((optimize("O0"))) Shell_CFexecute(uint32_t* buffer, uint32_t 
 {
 	//while(shell_in) asm volatile("int $50");
 	//Shell_sleep();
-	char* pt = buffer;
+	char* pt = (char*)buffer;
 	uint32_t c = 0;
 	pt[sz] = '\0';
 	memset_faster((uint32_t*)CSI_mem_start, 0, 4);
@@ -215,7 +232,7 @@ void __attribute__((optimize("O0"))) Shell()
 		//		printf("B%x--",KitList[1].reached_bottom);
 				asm volatile("int $50");
 			}
-			asm volatile("cli");
+			//asm volatile("cli");
 			printf("%g",15);
 			//asm volatile("cli");
 			//console_manager((char*)shell_buf);
@@ -245,7 +262,7 @@ void Shell_scrollUp()
 void Shell_scrollDown()
 {
 	if(tmpIstream == Shell_Istream) return;
-	for(int i = 0; i < strlen(shell_buf); i++) backspace();
+	for(uint32_t i = 0; i < strlen((const char*)shell_buf); i++) backspace();
 
 	++tmpIstream;
 	shell_buf	= (char*)tmpIstream;
@@ -333,8 +350,8 @@ void Shell_cmdWrapper()
 	shell_awake = 0;
 	shell_cmdFunc();
 
-	Task_Swap(Shell_task, shell_cmdTask);
-	Task_sleep(shell_cmdTask);
+	Task_Swap(Shell_task, (task_t*)shell_cmdTask);
+	Task_sleep((task_t*)shell_cmdTask);
 	shell_awake = 1;
 	asm volatile("int $50");
 	while(1)
@@ -389,10 +406,11 @@ int Shell_command_locator(char *inst)
 						++*tot_entries;
 
 				 }
+				 asm volatile("cli");
 				 shell_cmdFunc = func;
 			//	 _printf("23");
-				 Task_Refresh(shell_cmdTask, Shell_cmdWrapper);
-				 Task_Swap(shell_cmdTask, Shell_task);
+				 Task_Refresh(shell_cmdTask, (task_t*)Shell_cmdWrapper);
+				 Task_Swap((task_t*)shell_cmdTask, Shell_task);
 
 				 	asm volatile("int $50");
 				 //Task_sleep(shell_cmdFunc);
@@ -504,7 +522,7 @@ uint32_t* CSI_Read(uint32_t entry)
 uint32_t* CSI_ReadAPS(char* str) //Read As the Provided String!
 {
 	uint32_t* tmp = (uint32_t*)&Main_CSI_struct->entries;
-	for(int i = 0; i<Main_CSI_struct->total_entries; i+=2)
+	for(uint32_t i = 0; i<Main_CSI_struct->total_entries; i+=2)
 	{
 	//  printf(tmp[i]);
 		//printf(tmp[i+1]);
@@ -544,8 +562,8 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_secalloc, 267, 0, "secalloc");
 	 Shell_Add_Commands(Command_mkdir, 158, 0, "mkdir");
 	 Shell_Add_Commands(Command_mkfl, 91, 0, "mkfl");
-//	 Shell_Add_Commands(Command_del, 44, 0, "del");
-//	 Shell_Add_Commands(Command_rfl, 60, 0, "rfl");
+	 Shell_Add_Commands(Command_lspci, 140, 0, "lspci");
+	 Shell_Add_Commands(Command_water, 180, 0, "water");
 	 Shell_Add_Commands(Command_editfl, 201, 0, "editfl");
 	 Shell_Add_Commands(Command_cp, 32, 0, "cp");
 	 Shell_Add_Commands(Command_aptest, 307, 0, "aptest");
@@ -555,5 +573,6 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_echo, 85, 0, "echo");
 	 Shell_Add_Commands(Command_cat, 59, 0, "cat");
 	 Shell_Add_Commands(Command_rm, 41, 0, "rm");
+	 Shell_Add_Commands(Command_cpu, 92, 0, "cpu");
 	 memset_faster((uint32_t*)CSI_mem_start, 0, 66);
 }

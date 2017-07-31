@@ -7,7 +7,7 @@ typedef struct __attribute__((packed)) IOAPIC_regs
   uint8_t reserved1[15];
   uint32_t IOwin;
   uint32_t reserved[3];
-};
+}IOAPIC_regs_t;
 /*
         Memory Mapped Registers for Accessing IOAPIC Registers
           3.1.1. IOREGSEL—I/O REGISTER SELECT REGISTER
@@ -40,6 +40,16 @@ typedef struct __attribute__((packed)) IOAPIC_regs
           10-3Fh IOREDTBL[0:23] Redirection Table (Entries 0-23) (64 bits each) R/W
 */
 
+#define IOAPIC_REG_ID     0x00  // Register index: ID
+#define IOAPIC_REG_VER    0x01  // Register index: version
+#define IOAPIC_REG_TABLE  0x10  // Redirection table base
+
+#define IOAPIC_INT_DISABLED   0x00010000  // Interrupt disabled
+#define IOAPIC_INT_LEVEL      0x00008000  // Level-triggered (vs edge-)
+#define IOAPIC_INT_ACTIVELOW  0x00002000  // Active low (vs high)
+#define IOAPIC_INT_LOGICAL    0x00000800  // Destination is CPU id (vs APIC ID)
+
+#define IRQ_Base 0x20
 
 void ioapic_set_irq(uint8_t irq, uint64_t apic_id, uint8_t vector);
 void ioapic_write(uint32_t reg, uint32_t value);

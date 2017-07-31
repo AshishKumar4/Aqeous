@@ -1,0 +1,122 @@
+#include "stdio.h"
+#include "stdlib.h"
+#include "common.h"
+#include "string.h"
+#include "Shell.h"
+#include "Water.h"
+#include "ctype.h"
+#include "math.h"
+
+Water_BasicTypeToken_t* Water_opEqual(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+
+  tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\nEqual operator called");
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_opMinus(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+  tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf(" %d", tmp->var->int_buffer[0]);
+
+  t -= (int)tmp->var->int_buffer[0];
+
+
+  tmp = Water_TempVarGen(WATER_INT);
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_opPlus(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+  tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf(" %d", tmp->var->int_buffer[0]);
+
+  t += (int)tmp->var->int_buffer[0];
+
+
+  tmp = Water_TempVarGen(WATER_INT);
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_opMul(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+  tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf(" %d", tmp->var->int_buffer[0]);
+
+  t *= (int)tmp->var->int_buffer[0];
+
+
+  tmp = Water_TempVarGen(WATER_INT);
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_opDiv(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+  tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf(" %d", tmp->var->int_buffer[0]);
+
+  t /= (int)tmp->var->int_buffer[0];
+  //printf("\n[%d]", t);
+
+  tmp = Water_TempVarGen(WATER_INT);
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_opExp(Water_OperatorToken_t* op)
+{
+  Water_BasicTypeToken_t* tmp = (Water_BasicTypeToken_t*)op->LHS;
+  printf("\n[%d] %s", tmp->var->int_buffer[0], op->op->name);
+
+  int t = (int)tmp->var->int_buffer[0];
+  tmp = (Water_BasicTypeToken_t*)op->RHS;
+  printf(" %d", tmp->var->int_buffer[0]);
+
+  t = pow(t, (int)tmp->var->int_buffer[0]);
+  //printf("\n[%d]", t);
+
+  tmp = Water_TempVarGen(WATER_INT);
+  tmp->var->int_buffer[0] = t;
+
+  return tmp;
+}
+
+Water_BasicTypeToken_t* Water_RoundBracketO(Water_OperatorToken_t* op)
+{
+  return NULL;
+}
+
+Water_BasicTypeToken_t* Water_RoundBracketC(Water_OperatorToken_t* op)
+{
+  return NULL;
+}

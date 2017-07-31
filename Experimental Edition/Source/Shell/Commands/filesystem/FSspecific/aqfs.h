@@ -15,7 +15,7 @@ void aqfs_mkfl(char *path, char* dir_name);
 
 void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint32_t osz);
 
-void aqfs_rfl(char* path, uint32_t off, uint32_t sz);
+void* aqfs_rfl(char* path, uint32_t off, uint32_t sz);
 
 void aqfs_mv(char* path, char* spath);
 

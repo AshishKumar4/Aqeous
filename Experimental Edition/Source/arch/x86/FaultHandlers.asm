@@ -28,7 +28,10 @@ generalProtectionFault_handler:
 ;  cli
 ;  pop eax
 ;  pop eax
-;  mov eax, [CancerCure_addr]
+;  mov ebx, [CancerCure_addr]
+;  push ebx
+;  push eax
+;  mov eax, 0x01
 ;  push eax
 ;  iretd
 
@@ -44,7 +47,10 @@ doubleFault_handler:
 ;  cli
 ;  pop eax
 ;  pop eax
-;  mov eax, [CancerCure_addr]
+;  mov ebx, [CancerCure_addr]
+;  push ebx
+;  push eax
+;  mov eax, 0x01
 ;  push eax
 ;  iretd
 
@@ -54,11 +60,15 @@ doubleFault_handler:
   pop ecx
   pop edx
   hlt
+  iretd
 
 coprocessor_handler:
-;  cli
+  cli
 ;  pop eax
-;  mov eax, [CancerCure_addr]
+;  mov ebx, [CancerCure_addr]
+;  push ebx
+;  push eax
+;  mov eax, 0x01
 ;  push eax
 ;  iretd
 
@@ -77,18 +87,21 @@ breakpoint_handler:
   hlt
   cli
   pop eax
-  mov eax, [CancerCure_addr]
+  mov ebx, [CancerCure_addr]
+  push ebx
+  push eax
+  mov eax, 0x01
   push eax
   iretd
 
 pageFault_handler:
   cli
 
-;  pop eax
-;  pop ebx
-;  pop ecx
-;  pop edx
-;  hlt
+  pop eax
+  pop ebx
+  pop ecx
+  pop edx
+  hlt
 
   pusha
   mov eax, [system_dir]
@@ -124,3 +137,16 @@ pageFault_handler:
   iretd
 
 invalidInstr_handler:
+  cli
+;  pop eax
+;  mov ebx, [CancerCure_addr]
+;  push ebx
+;  push eax
+;  mov eax, 0x01
+;  push eax
+;  iretd
+  pop eax
+  pop ebx
+  pop ecx
+  pop edx
+  hlt

@@ -195,7 +195,7 @@ void Command_topq()
 void Command_test()
 {
    asm volatile("cli");
-   Activate_task_direct_SP(create_task("Test_process", test_process, 10, 0x202, kernel_proc), Get_Scheduler());
+   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));
 
 /*   Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
@@ -207,7 +207,7 @@ void Command_test()
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());
    Activate_task_direct(create_task("Test_process", test_process, 10, 0x202, kernel_proc));//, Get_Scheduler());/*/
-   asm volatile("int $50");
+   //asm volatile("int $50");
    return;
 }
 

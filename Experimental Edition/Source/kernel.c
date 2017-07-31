@@ -1,9 +1,12 @@
+#include "LIBRARY.c"
+
 #include "mouse.c"
 #include "console.c"
 #include "descriptors.c"
 #include "int_handlers.c"
 #include "cpu/cpu.c"
 #include "multiboot.h"
+//#include "multiboot2.h"
 //#include "vfs.c"
 #include "cmos.c"
 #include "pci.c"
@@ -50,13 +53,16 @@
 #include "ext2/ext2_fs.c"
 
 #include "RandomLib/Random.c"
+#include "lodepng/lodepng.c"
 
 #include "NeuralNetwork/Neuron/NeuralProcessing.c"
 
 #include "IPCInterface/IPCInterface.c"
 #include "vfs.c"
 #include "WindowSystem/window.c"
-//#include "mathex.c"
+#include "Water/Water.c"
+#include "Interpolation/Interpolator.c"
+//#include "pcie.c"
 
 uint32_t initial_esp;
 uint32_t initial_ebp;
@@ -135,20 +141,29 @@ uint32_t initial_eip;
 
 void kernel_main();
 
+void idle_test()
+{
+
+}
+
 tss_struct_t *TSS;
 
-void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
+void kernel_early(struct multiboot *mboot_ptr)
 {
+	mboot_struct = mboot_ptr;
 	console_init();
+	/*printf("\n%d, num: %d, size: %d, vbe_mode: %d, vbe_mode_info: %d", mboot_struct, mboot_struct->num, mboot_struct->size, mboot_struct->vbe_mode, mboot_struct->vbe_mode_info );
+	multiboot_header_t* tmb = mboot_ptr;
+	printf("\n%d, %d",tmb->magic, mboot_struct->mem_upper);*/
 
 	UNLOCK(printlock);
-	//setVesa(0x117);
+	Screen_BuffSync= idle_test;
+
 	init_descriptor_tables();	// Setup Descriptor tables for BSP
 
 	detect_cpu();
-	BasicCPU_Init();		// Initialize all the processing units in the System
+	BasicCPU_Init();		// Initialize all the processing units in the System*/
 
-//	while(1);
 	printf("\nDESCRIPTOR TABLES INITIALIZED \n");
 	printf("\nEnabling ACPI!\n");
 	initAcpi();
@@ -159,7 +174,7 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	//ioapic_init();
 //*/
 //	mouseinit();
-	printf("\nMouse Drivers initialized\n");
+//	printf("\nMouse Drivers initialized\n");
 	keyboard_init();
 	printf("\nKeyboard Drivers Initialized\n");
 
@@ -171,14 +186,14 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	maxmem=memAvailable;
 
-	for(int i=0;i<20;i++)
+	/*for(int i=0;i<20;i++)
 	{
 		if(mmap_info->startLo==0) break;
 			printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
 			mmap_info->type,strMemoryTypes[mmap_info->type-1]);
 			mmap_info->reservedt = 0xFFE42;
 			mmap_info++;
-	}
+	}*/
 	printf("\nInitializing Memory Manager!\n");
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	max_mem=maxmem*1024;
@@ -187,7 +202,6 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-
 /*
 	Pdir_Capsule_t* dir = pgdir_maker();
 	memset(&dir->pdir, 0, 4096);
@@ -197,15 +211,16 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	switch_pCap(dir);
 	while(1);*/
 
-	//	while(1);
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
+	//while(1);
 	printf("\nEnabling Hard Disk\n");
 	checkAHCI();
 
+	find_MCFGtable();
+
 	printf("\nLOADING MAIN KERNEL...\n");
 	mdbug=dbug;
-	vesa=setVesa;
 
 	printf("\n\n\tType shutdown to do ACPI shutdown (wont work on certain systems)");
 
@@ -219,10 +234,9 @@ void kernel_early(struct multiboot *mboot_ptr,uint32_t initial_stack)
 	console_dbuffer_limit = console_dbuffer_original + 4194304;
 	printf("\n\nInitializing MultiThreading System");
 	init_timer(60);
+	//asm volatile("sti");
 	init_multitasking();//*/
 	while(1);
-
-//	RectL(0,0,1200,900,90,90,90);
 	//We shall never get back here, Not until the universe ends. ;)
 }
 

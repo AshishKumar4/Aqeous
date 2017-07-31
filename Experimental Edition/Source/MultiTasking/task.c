@@ -13,7 +13,7 @@
 
 task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, Process_t* process)  /// Create a New Task for a given Process
 {
-	task_table_t* New_task_entry = (task_table_t*)mtalloc(4);
+	task_table_t* New_task_entry = (task_table_t*)mtalloc(8);
 	task_t* New_task = &New_task_entry->task;
 	uint32_t* stack = (uint32_t*)New_task;
 
@@ -22,8 +22,8 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 	New_task_entry->next=NULL;
 //	New_task_entry->test = 2;
 	//Process_t* process = process_ptr;
-
-	map((uint32_t)New_task_entry,8192*2,(PageDirectory_t*)process->pgdir);
+	if(process->pgdir != system_dir)
+		map((uint32_t)New_task_entry,8192*2,(PageDirectory_t*)process->pgdir);
 
 	if(!process->first_task_entry)
 	{
@@ -373,7 +373,12 @@ void __attribute__((optimize("O0"))) _kill(task_t* task)	// Know on which core t
 	--kit->tasks;
 
 }
+/*
+void __attribute__((optimize("O0"))) Pause_ALL_CPUs()
+{
 
+}
+*/
 void __attribute__((optimize("O0"))) kill_with_func(func_t func)
 {
 	asm volatile("cli");

@@ -65,8 +65,8 @@ void vfs_setup_aqfs()
   ptmp->FS.mv = &aqfs_mv;
   ptmp->FS.rm = &aqfs_del;
 
-  ptmp->FS.root.dir_desc = aqfs_root;
-  current_dir.dir_desc = aqfs_root;
+  ptmp->FS.root.dir_desc = (uintptr_t)aqfs_root;
+  current_dir.dir_desc = (uintptr_t)aqfs_root;
   strcpy(current_dir.name, curr_dir.full_name);
   printf("\nAqFS Initialized\n");
 }
@@ -85,13 +85,13 @@ void vfs_setup_ext2()
   ptmp->FS.mv = ext2_mv;
   ptmp->FS.rm = ext2_del;
 
-  ptmp->FS.root.dir_desc = ext2_root;
-  current_dir.dir_desc = ext2_root;
+  ptmp->FS.root.dir_desc = (uintptr_t)ext2_root;
+  current_dir.dir_desc = (uintptr_t)ext2_root;
   strcpy(current_dir.name, ext2_root_name);
   printf("\nEXT2 Initialized\n");
 }
 
 uint32_t Detect_FS(uint32_t disk_id, uint32_t partition_id)
 {
-
+  printf("\n%d %d", disk_id, partition_id);
 }

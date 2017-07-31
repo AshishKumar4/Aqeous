@@ -140,8 +140,17 @@ void gdt_set_gate(int num,uint32_t base,uint32_t limit,uint8_t access,uint16_t g
 static void idtSetEntry(int num, uint32_t base, uint32_t sel, uint32_t flags, uint64_t* idt_base);
 
 void AP_gdt_Setup(uint32_t* gdt, uint32_t* gdtr);
+void AP_rmode_GDT_setup(uint32_t* gdt, uint32_t* gdtr);
 
 void AP_idt_Setup(uint32_t* idt, uint32_t* idtr);
+
+uintptr_t  pmode_GDT_init(uint32_t APIC_id);
+uintptr_t  pmode_IDT_init(uint32_t APIC_id);
+uintptr_t  pmode_IDT_initP(uint32_t APIC_id);
+void pmode_GDT_lgdt(uint32_t APIC_id, uintptr_t gdt_new);
+void pmode_IDT_lidt(uint32_t APIC_id, uintptr_t idt_new);
+void pmode_GDT_lgdt_Vec(uint32_t vector_addr, uintptr_t gdt_new);
+void pmode_IDT_lidt_Vec(uint32_t vector_addr, uintptr_t idt_new);
 
 extern void pmode_AP_code();
 extern void pmode_AP_code_end();

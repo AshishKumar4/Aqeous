@@ -7,10 +7,10 @@
 #include "string.h"
 #include "stdlib.h"
 
-void WindowCompiler(uint32_t* buff, window_t* window, dirtyRectangle_t* dr)
+static void WindowCompiler(uint32_t* buff, window_t* window, dirtyRectangle_t* dr)
 {
   window_locInfo_t* inf = &window->locInfo;
-  uint32_t* wbuff = window->screen_buff;
+  uint32_t* wbuff = (uint32_t*)window->screen_buff;
   uint32_t alpha = 0;
   for(int bi = MAX(inf->o_y, dr->o_y), wi = bi - inf->o_y; bi < MIN(inf->o_y + inf->y_l, dr->e_y); wi++, bi++)
   {
@@ -18,30 +18,29 @@ void WindowCompiler(uint32_t* buff, window_t* window, dirtyRectangle_t* dr)
     {
         alpha = ((wbuff[wj] & 0xff000000));
         alpha |= (alpha>>8) | (alpha>>16) | (alpha>>24);
-        buff[ba] = ((wbuff[wj]&(alpha)) | (buff[ba]&(0xffffffff - alpha)));
+        buff[ba] = ((wbuff[wj]&(alpha)) ^ (buff[ba]&(~alpha)));
     }
   }
 }
 
-void WindowComposter(uint32_t* buff, window_list_t* list)
+static void WindowComposter(uint32_t* buff, window_list_t* list)
 {
   dirtyRectangle_t* tmp = dirtyRects;
   int i = 1;
   window_list_t* tl;
-  for(; dirtyRegions; dirtyRegions--, i++)
+  for(; dirtyRegions; --dirtyRegions, i++)
   {
     tl = list;
-    while(1)
+    while(tl != wlist_end)
     {
       WindowCompiler(buff, tl->window, &tmp[i]);
-      if(tl == wlist_end)
-        break;
       tl = tl->next;
     }
+    WindowCompiler(buff, wlist_end->window, &tmp[i]);
   }
 }
 
-void UpdateScreen(int o_x, int o_y, int e_x, int e_y)
+inline void UpdateScreen(int o_x, int o_y, int e_x, int e_y)
 {
   ++dirtyRegions;
   dirtyRects[dirtyRegions].o_x = o_x;
@@ -58,7 +57,7 @@ void Window_Manager()
   }
 }
 
-int pointIn_LocInfo(window_locInfo_t* info, int x, int y)
+inline int pointIn_LocInfo(window_locInfo_t* info, int x, int y)
 {
   if(info->o_x < x && info->x_l + info->o_x > x && info->o_y < y && info->y_l + info->o_y > y )
     return 1;
@@ -121,13 +120,25 @@ void BringWindowToFront(window_t* w, window_list_t* wlist)
 
 void Mouse_LeftClick_Handler(int x, int y)
 {
-  window_t* w = getTopWindow(x,y);
+  window_t* w;
+  window_object_t* tmp;
+  /*if(Window_LastClicked)
+  {
+    w = Window_LastClicked;
+    tmp = w->curr_obj;
+  }
+  else
+  {
+    w = getTopWindow(x,y);
+    Window_LastClicked = w;
+    tmp = getWindowClickedObject(w, x, y);
+    BringWindowToFront(w, &main_wlist);
+  }*/
+  w = getTopWindow(x,y);
   if(!w) return;
-  window_object_t* tmp = getWindowClickedObject(w, x, y);
-  w->curr_obj = tmp;
-  //func_t exec = window_execs[tmp->exec_id];
-  //exec();
+  tmp = getWindowClickedObject(w, x, y);
   BringWindowToFront(w, &main_wlist);
+  w->curr_obj = tmp;
   if(tmp)
   {
     if(tmp->exec_id & WIN_DRAGABLE)
@@ -158,7 +169,7 @@ void createWindowObjectRects_relative(window_t* w, int c_x, int c_y, int l_x, in
   int hh = l_y;
   if(hh < 0) hh = w->locInfo.y_l;
   drawRect_window(w, x + c_x, y + c_y, ll, hh, color);
-  window_object_t* new_obj = kmalloc(sizeof(window_object_t));
+  window_object_t* new_obj = (window_object_t*)kmalloc(sizeof(window_object_t));
   new_obj->exec_id = exec_opt;
   new_obj->z_index = z_index;
   new_obj->bg_color = color;
@@ -179,6 +190,13 @@ void createWindowObjectRects_relative(window_t* w, int c_x, int c_y, int l_x, in
   new_obj->back = w->last_obj;
   w->last_obj = new_obj;
   new_obj->next = NULL;
+
+  if(!parent_obj->childs)
+    parent_obj->childs = new_obj;
+  else
+    parent_obj->last_child->friends = new_obj;
+
+  parent_obj->last_child = new_obj;
 }
 
 void createDefaultWindowObjects(window_t* w)
@@ -191,7 +209,7 @@ void createDefaultWindowObjects(window_t* w)
 
 window_t* create_window_basic(char* window_name, Process_t* proc, window_t* parentw, int center_x, int center_y, int length_x, int length_y, int z_index)
 {
-  window_t* w = kmalloc(sizeof(window_t));
+  window_t* w = (window_t*)kmalloc(sizeof(window_t));
   strcpy(w->name, window_name);
   w->proc = proc;
   w->z_index = z_index;
@@ -201,7 +219,7 @@ window_t* create_window_basic(char* window_name, Process_t* proc, window_t* pare
   w->locInfo.y_l = length_y;
   w->last_obj = NULL;
   w->obj_list = NULL;
-  w->screen_buff = kmalloc(depthVESA*length_x*length_y/2);
+  w->screen_buff = (uintptr_t)kmalloc(depthVESA*length_x*length_y/2);
   UpdateScreen(w->locInfo.o_x, w->locInfo.o_y, w->locInfo.o_x + w->locInfo.x_l, w->locInfo.o_y + w->locInfo.y_l);
 
   w->childs = 0;
@@ -226,7 +244,7 @@ window_t* create_window_complete(char* window_name, Process_t* proc, window_t* p
   w->locInfo.y_l = length_y;
   w->last_obj = NULL;
   w->obj_list = NULL;
-  w->screen_buff = kmalloc(depthVESA*length_x*length_y/2);
+  w->screen_buff = (uintptr_t)kmalloc(depthVESA*length_x*length_y/2);
   UpdateScreen(w->locInfo.o_x, w->locInfo.o_y, w->locInfo.o_x + w->locInfo.x_l, w->locInfo.o_y + w->locInfo.y_l);
 
   w->childs = 0;
@@ -252,7 +270,7 @@ window_t* create_window_autoMap(char* window_name, Process_t* proc, window_t* pa
   w->last_obj = NULL;
   w->obj_list = NULL;
   WindowListAdd(w);
-  w->screen_buff = kmalloc((depthVESA*length_x*length_y)/2);
+  w->screen_buff = (uintptr_t)kmalloc((depthVESA*length_x*length_y)/2);
   UpdateScreen(w->locInfo.o_x, w->locInfo.o_y, w->locInfo.o_x + w->locInfo.x_l, w->locInfo.o_y + w->locInfo.y_l);
 
   w->childs = 0;
@@ -271,7 +289,7 @@ void WindowListAdd(window_t* w)
     {
       window_list_t* tmp2 = tmp;
       tmp = tmp->back;
-      tmp->next = kmalloc(sizeof(window_list_t));
+      tmp->next = (window_list_t*)kmalloc(sizeof(window_list_t));
       tmp->next->window = w;
       tmp->next->back = tmp;
       tmp = tmp->next;
@@ -281,12 +299,26 @@ void WindowListAdd(window_t* w)
     }
     tmp = tmp->next;
   }
-  wlist_end->next = kmalloc(sizeof(window_list_t));
+  wlist_end->next = (window_list_t*)kmalloc(sizeof(window_list_t));
   wlist_end->next->window = wlist_end->window;
   wlist_end->window = w;
   wlist_end = wlist_end->next;
   wlist_end->next = NULL;
   wlist_end->back = tmp;
+}
+
+void Window_DrawOverWindow(window_t* w, uintptr_t buffer, int c_x, int c_y, int _w, int _h)
+{
+  uint32_t* tmp1 = (uint32_t*)(w->screen_buff);
+  uint32_t* tmp2 = (uint32_t*)buffer;
+  for(int i = 0; i < _h; i++)
+  {
+  //  memcpy_rep((void*)(tmp1 + c_x + (w->locInfo.x_l * (i+c_y))), (void*)(tmp2 + _w*i), _w);
+    for(int j = 0; j < _w; j++)
+    {
+      tmp1[c_x + (w->locInfo.x_l * (i+c_y)) + j] = tmp2[(_w*i) + j];
+    }
+  }
 }
 
 void WindowDrag(window_t* w, int n_x, int n_y)

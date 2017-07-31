@@ -71,22 +71,22 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
   for(int i = 0; i < total_CPU_Cores - 1; i++)
   {
     printf("\nCore #%x Initialized",i+1);
-    nspace = phy_alloc4K();
-    memset(nspace, 0, 4096);
+    nspace = (uint32_t*)phy_alloc4K();
+    memset((void*)nspace, 0, 4096);
     kits->identity = i;
     kits->tasks = 0;
 
     uint32_t vector_addr = ((0x2000*(i+1)) - 0x1000);
 
-    nptr1 = nspace;
-    memcpy(nptr1, switcher_ksp_t, sz_switcher);
-    kits->switcher = nptr1;
+    nptr1 = (uint8_t*)nspace;
+    memcpy((void*)nptr1, switcher_ksp_t, sz_switcher);
+    kits->switcher = (uint8_t*)nptr1;
 
     nptr1 += sz_switcher;
     nptr1 = ROUNDUP(nptr1,4) + 32;
-    memcpy(nptr1, Scheduler_t, sz_Scheduler);
-    schdulr = nptr1;
-    kits->scheduler = nptr1;
+    memcpy((void*)nptr1, Scheduler_t, sz_Scheduler);
+    schdulr = (uint32_t*)nptr1;
+    kits->scheduler = (uint32_t*)nptr1;
 
 
     nptr1 += sz_Scheduler;
@@ -95,7 +95,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     uint32_t* spurious_func = (uint32_t*)nptr1;
     memcpy(spurious_func, Spurious_task_func_t, Spurious_task_func_end_t - Spurious_task_func_t);
 //    nptr32 = nptr1;
-    uint32_t* temporary_stack = kmalloc(4096*4);
+    uint32_t* temporary_stack = (uint32_t*)kmalloc(4096*4);
 
     kits->stack = temporary_stack;
 
@@ -123,7 +123,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     kits->Core_Main_Lock = 0;
 
     kits->queue_start = (uint32_t*)kmalloc(4096*40);//mtalloc(20);//33554432;
-    memset(kits->queue_start, 0, 4096*40);
+    memset((void*)kits->queue_start, 0, 4096*40);
     kits->queue_last = (uint32_t*)(((uint32_t)kits->queue_start) + (4096*20));
 
     kits->top_queue = kits->queue_last;
@@ -133,26 +133,24 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
 
     kits->bottom_task = 1;
 
-    kits->Spurious_task = create_task("Spurious_task", spurious_func, 0, 0x202, kernel_proc);
+    kits->Spurious_task = (uint32_t*)create_task("Spurious_task", spurious_func, 0, 0x202, kernel_proc);
     ((task_t*)kits->Spurious_task)->special = 1;
-  //
-    if(BSP_id == i)
-    {
-      idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-      idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-      idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_entries);
-    //  lidt((void *)&idt_ptr);
-    }
-    else
-    {
-      uint32_t* idt_ptr = (uint32_t*)(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16 + 48);
-      // Setup a Cleaner Better IDT for all APs
-  //    idtSetEntry(52, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
-      idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
-      idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
-      idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_ptr);
-      idtSetEntry(13, (uint32_t)&generalProtectionFault_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
-    }
+
+
+    // Setup a Cleaner Better Descriptors for all Processors
+
+    kits->gdt = pmode_GDT_init(i);
+    kits->idt = pmode_IDT_initP(i);
+
+    uint32_t* idt_ptr = (uint32_t*)(kits->idt);
+    idt_ptr += 2;
+    idtSetEntry(50, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+    idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+    idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_ptr);
+    idtSetEntry(13, (uint32_t)&generalProtectionFault_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+
+    pmode_IDT_lidt(i, kits->idt);
+
     ++kits;
   }
   //while(1);
@@ -265,9 +263,9 @@ void __attribute__((optimize("O0"))) SAS_task_booster_t()
   func_t pf = (func_t)0x4284AFF1;
   while(1)
   {
+    asm volatile("cli");
     if(*(uint32_t*)(0x4284CDA1))
     {
-      asm volatile("cli");
       kit->Core_Main_Lock = 1;
       if((*(uint32_t*)(0x4284CDA2)) && ((task_t*)(*(uint32_t*)(0x4284CDA2)))->active)
       {
@@ -318,9 +316,9 @@ void __attribute__((optimize("O0"))) SAS_void_eraser_t()
 //  func_t pf = (func_t)0x4284AFF1;
   while(1)
   {
+    asm volatile("cli");
     if(!(*(uint32_t*)(0x4284CDA1)))
     {
-      asm volatile("cli");
       kit->Core_Main_Lock = 1;
       if(*(kit->bottom_queue) >= tasks_searched)
       {

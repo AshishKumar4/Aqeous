@@ -99,7 +99,7 @@ void aqfs_del(char* path)
       file_loadOGP(path);
       handle=file_searchOGP(path);
     }
-    File_t* file = handle->file;
+    File_t* file = (File_t*)handle->file;
     if(!file)
     {
       printf("\n%s is not a file, nor a folder!\n",path);
@@ -158,8 +158,8 @@ void aqfs_mkfl(char *path, char* dir_name)
 
 void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint32_t osz)
 {
-  File_handle_t* fh = file_loadOGP(path);
-  if(!fh)
+  //File_handle_t* fh = file_loadOGP(path);
+  if(!file_loadOGP(path))
   {
     printf("\n%s file dosent exist!\n",path);
     return;
@@ -167,14 +167,14 @@ void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint3
 
   if(data)
   {
-    if(!type || !strcmp("app",type))
+    if(!type || !strcmp("app", (char*)type))
     {
       printf("\n Data written!");
       printf(" %x\n", file_writeAppend(data, strlen((char*)data), path));
     }
-    else if(!strcmp("edit",type))
+    else if(!strcmp("edit", (char*)type))
     {
-      if(!osz) osz = strlen(data);
+      if(!osz) osz = strlen((char*)data);
       file_editFM(off, osz, data, strlen((char*)data), path);
       printf("\n File edited Successfully!\n");
     }
@@ -184,15 +184,15 @@ void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint3
   {
     printf("\nEnter the data (max size: 4096 bytes)->\n");
     uint32_t* buffer = kmalloc(4096);
-    kb_getline(buffer, 4096);
+    kb_getline((char*)buffer, 4096);
     data = buffer;
     printf("\nWritting the Data");
-    if(!type || !strcmp("app",type))
+    if(!type || !strcmp("app", (char*)type))
     {
       printf("\n Data written!");
       printf(" %x\n", file_writeAppend(data, strlen((char*)data), path));
     }
-    else if(!strcmp("edit",type))
+    else if(!strcmp("edit", (char*)type))
     {
       if(!osz) osz = strlen(data);
       file_editFM(off, osz, data, strlen((char*)data), path);
@@ -205,7 +205,7 @@ void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint3
   file_closeOGP(path);
 }
 
-void aqfs_rfl(char* path, uint32_t off, uint32_t sz)
+void* aqfs_rfl(char* path, uint32_t off, uint32_t sz)
 {
   if(!file_loadOGP(path))
   {
@@ -216,7 +216,7 @@ void aqfs_rfl(char* path, uint32_t off, uint32_t sz)
   if(!sz) sz = file_size(path);
   printf("\nSize of the file: %x \n", sz);
 
-  uint32_t* buffer = kmalloc(8192);
+  uint32_t* buffer = kmalloc(sz);
 
   printf("\t\tError: %x\n", file_readTM(buffer,0,sz,path));
 
@@ -224,10 +224,8 @@ void aqfs_rfl(char* path, uint32_t off, uint32_t sz)
   file_closeOGP(path);
 
   printf("%s\n", buffer);
-  kfree(buffer);
-
+  return (void*)buffer;
 }
-
 
 void aqfs_mv(char* path, char* spath)
 {

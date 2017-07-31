@@ -8,12 +8,12 @@
 
 void __attribute__((optimize("O0"))) IPC_init()
 {
-  SchedulerKits_t* tmp = MotherSpace;
+  SchedulerKits_t* tmp = (SchedulerKits_t*)MotherSpace;
   IPCRecord_t* tr;
-  for(int i = 0; i < total_CPU_Cores-1; i++)
+  for(int i = 0; i < (int)total_CPU_Cores-1; i++)
   {
     tr = kmalloc(sizeof(IPCRecord_t));
-    tmp->IPCRecord_addr = tr;
+    tmp->IPCRecord_addr = (uintptr_t)tr;
     tr->entries = 0;
     tr->start = tr->last = NULL;
 

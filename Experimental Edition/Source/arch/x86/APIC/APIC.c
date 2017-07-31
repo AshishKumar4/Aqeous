@@ -5,6 +5,7 @@
 #include "tasking.h"
 #include "cpu/cpu.h"
 
+#include "IOAPIC/IOAPIC.c"
 #include "localapic/lapic.h"
 
 bool check_apic()
@@ -76,40 +77,55 @@ void MADTapic_parse()
       {
         printf("\nGot the MADT Structure");
         madt = (MADT_t*)*ptr;
+        printf("\nLength: %d", madt->Length);
         madt_entry_t* madt_entry = (madt_entry_t*)&madt->rest_fields;
-        for(int i=0;!i;)
+        lapic_entry_t* tmpLapic;
+        while((uint32_t)madt_entry - (uint32_t)madt <= madt->Length)
         {
           switch(madt_entry->type)
           {
             case 0 :
-              ++total_CPU_Cores;
-              printf("\n\tLocal APIC Found");
-              LAPIC_entry = (lapic_entry_t*)&madt_entry->rest_field;
-              madt_entry = (madt_entry_t*)LAPIC_entry->rest_fields;
-              printf("\t\t\t%gLAPIC USABILITY: %x%g", 10, LAPIC_entry->flags & (1<<0),0);
-            //  ++total_CPU_Cores;
+                tmpLapic = (lapic_entry_t*)&madt_entry->rest_field;
+                madt_entry = (madt_entry_t*)tmpLapic->rest_fields;
+                if(!(tmpLapic->flags & (1<<0))) // Unusable LAPIC
+                {
+                  break;
+                }
+                ++total_CPU_Cores;
+                printf("\n\tLocal APIC Found");
+                printf("\t\t\t%gLAPIC USABILITY: %x%g", 10, tmpLapic->flags & (1<<0),0);
+                LAPIC_entry = tmpLapic;
+                //return;
               break;
             case 1 :
-              printf("\n\tIO APIC Found");
-              IOAPIC_entry = (ioapic_entry_t*)&madt_entry->rest_field;
-              printf(" id: %x, address: %x, GSIB: %x",IOAPIC_entry->id, IOAPIC_entry->address, IOAPIC_entry->gsib);
-              APIC_IO_BASE = IOAPIC_entry->address;
-              madt_entry = (madt_entry_t*)IOAPIC_entry->rest_fields;
-              //while(1);
+                printf("\n\tIO APIC Found");
+                IOAPIC_entry = (ioapic_entry_t*)&madt_entry->rest_field;
+                uint32_t maxintr = (ioapic_read(IOAPIC_REG_VER) >> 16) & 0xFF;
+                printf(" id: %x, address: %x, GSIB: %x, Max Ints: %d",IOAPIC_entry->id, IOAPIC_entry->address, IOAPIC_entry->gsib, maxintr);
+                APIC_IO_BASE = IOAPIC_entry->address;
+                madt_entry = (madt_entry_t*)IOAPIC_entry->rest_fields;
+
+                uint32_t id = ioapic_read(IOAPIC_REG_ID) >> 24;
+                if(id != IOAPIC_entry->id)
+                  printf("\nioapicinit: id isn't equal to ioapicid; not a MP-> %d %d", id, IOAPIC_entry->id);
+                //while(1);
+                if(id == 0)
+                  Init_ioapic(IOAPIC_entry);//*/
               break;
             case 2 :
-              printf("\n\tInterrupt Source Override Found");
-              ISD_entry = (isd_entry_t*)&madt_entry->rest_field;
-              madt_entry = (madt_entry_t*)ISD_entry->rest_fields;
+                printf("\n\tInterrupt Source Override Found");
+                ISD_entry = (isd_entry_t*)&madt_entry->rest_field;
+                madt_entry = (madt_entry_t*)ISD_entry->rest_fields;
               break;
             default:
-            //  while(1);
-            //  printf(" %x ", madt_entry->type);
-            //  printf("\n\tUnknown entry type");
-              i=1;
+              //  printf(" %x ", madt_entry->type);
+              //  printf("\n\tUnknown entry type");
+                i=1;
+                return;
               break;
           }
         }
+        return;
       }
       ptr++;
     }

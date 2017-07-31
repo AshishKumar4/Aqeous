@@ -62,3 +62,16 @@ void init_hpet()
     }
   }
 }
+
+void __attribute__((optimize("O0"))) delay_hpet(uint32_t ms)
+{
+	if(!hpet_base)
+	{
+		init_hpet();
+		return;
+	}
+	uint32_t tperiod = ms*100000;
+	uint32_t tcounter = tperiod;
+	tcounter += *HPET_main_counter;
+	while(tcounter >= *HPET_main_counter);
+}

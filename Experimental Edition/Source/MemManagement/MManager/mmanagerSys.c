@@ -11,26 +11,30 @@
 #include "string.h"
 
 #include "shell.h"
+#include "common.h"
 
 void Setup_MMADS()
 {
 	MMADS_Process = (uint32_t*)create_process("MMADS", 0, 1, kernel_proc);
-	MMADS_csrbTweakerThread = (uint32_t*)create_task("MMADS_csrbTweaker",MMADS_csrbTweaker, 0, 0x202, (Process_t*)MMADS_Process);
-	//Activate_task_direct((task_t*)MMADS_csrbTweakerThread);
-	mmads_stack_start = (uint32_t*)(12*1024*1024); //12th MB
+	MMADS_csrbTweakerThread = (uint32_t*)create_task("MMADS_csrbTweaker",MMADS_worker, 1, 0x202, (Process_t*)Shell_proc);
+	Activate_task_direct((task_t*)MMADS_csrbTweakerThread);
+	mmads_stack_start = (uint32_t*)pop_frameStack();//(12*1024*1024); //12th MB
 	mmads_stack_end = mmads_stack_start;
 	mmads_stack_size = 0;
 }
 
-void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
+void __attribute__((optimize("O0"))) MMADS_worker()
 {
 	CustomCSRB_M_t* tt = NULL;
 	CustomCSRB_M_t* tl = NULL;
 	Process_t* process = NULL;
 	while(1)
 	{
+		asm volatile("cli");
+		LOCK(MEM_LOCK);
 		if(mmads_stack_size)
 		{
+			//LOCK(MEM_LOCK);
 			//printf("\nMMADS");
 			--mmads_stack_end;
 			--mmads_stack_size;
@@ -65,7 +69,7 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 						tmp->begin = tt->begin;
 						tmp->size = tt->size;
 						tmp->reserved = 0;
-						tt->addr = csrb_u->head;//*/
+						tt->addr = csrb_u->head;
 					}
 					--csrb_u->changed;
 				}
@@ -104,8 +108,9 @@ void __attribute__((optimize("O0"))) MMADS_csrbTweaker()
 					--csrb_f->changed;
 				}
 				++tmp;
-			}
+			}//*/
 		}
+		UNLOCK(MEM_LOCK);
 		asm volatile("int $50");
 	}
 }
