@@ -11,14 +11,14 @@ The ZIP File contains these two files:
   Template image with only Kernel and grub built in. Use when _hdd.img_ corrupts. Copy it and rename it as '_hdd.img_'
   Extract _hdd.img_ and put in same folder in order to run the OS. 
 ### To Compile: 
-...The OS -> cd "Experimental Edition"
+..._The OS_ -> _cd "Experimental Edition"_
              make
-...The LibC -> cd LibC
-               make 
-       => This would generate a crt0 file (For now crt0, crti etc all functionality is within this, sorry laziness :p )
-       => Then Compile your test program against this library (crt0.o) and Transfer it to virtual hard disk (hdd.img) 
+..._The LibC_ -> _cd LibC_
+               _make_ 
+       _=>_ This would generate a crt0 file (For now crt0, crti etc all functionality is within this, sorry laziness :p )
+       _=>_ Then Compile your test program against this library (crt0.o) and Transfer it to virtual hard disk (hdd.img) 
           using the AqFS Editor (Check my other repository).
-       => Simply type 'elfload <file>' in the Shell.
+       _=>_ Simply type 'elfload <file>' in the Shell.
        
 ### A few extra stuff
 _Qemu_Aqeous.bat_ file is used to run to Kernel using qemu emulator.  
