@@ -17,7 +17,7 @@ typedef struct __attribute__((packed)) Process
 {
     uint32_t pgdir; // Page directory.
     //uint32_t esp;
-    uint32_t *code;
+    uintptr_t code;
     //uint32_t *stack; //user stack
     uint32_t *kernel_stack; //kernel_stack
     char name[24]; // Process name
@@ -37,7 +37,7 @@ Process_t *kernel_proc, *Shell_proc, *SAS_proc;
 
 uint32_t processes = 0;
 
-Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process_t* parent);  /// Create a New Task for a given Process
+Process_t* create_process(char* name, uintptr_t code, uint32_t priority, Process_t* parent);  /// Create a New Task for a given Process
 
 void init_Processing();
 

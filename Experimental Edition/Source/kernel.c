@@ -62,7 +62,12 @@
 #include "WindowSystem/window.c"
 #include "Water/Water.c"
 #include "Interpolation/Interpolator.c"
-//#include "pcie.c"
+#include "Processing/ELF/Elf.c"
+#include "Processing/processing.c"
+#include "IO_Handling/IO_Devices/Console/Console_handle.c"
+
+#include "Processing/LibSymTable/LibSymTable.c"
+#include "Processing/SysCalls/SysCalls.c"
 
 uint32_t initial_esp;
 uint32_t initial_ebp;
@@ -202,14 +207,19 @@ void kernel_early(struct multiboot *mboot_ptr)
 
 	printf("\n Paging Has been Enabled Successfully!");
 	printf("\n Available Memory: %x KB\n",maxmem);
-/*
-	Pdir_Capsule_t* dir = pgdir_maker();
+	//pmode_IDT_init(0);
+	//init_idt();
+
+	/*Pdir_Capsule_t* dir = pgdir_maker();
 	memset(&dir->pdir, 0, 4096);
 	Kernel_Mapper(&dir->pdir);
 	//memcpy(&dir->pdir, system_dir, 4*1024*1024);
 	//printf("\n%d", pgdir);
 	switch_pCap(dir);
-	while(1);*/
+	*((uint32_t*)(4*1024*1024)) = 80;
+	//asm volatile("sti; int $14");
+	//printf("\n%d", pgdir);
+	while(1);/*/
 
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();

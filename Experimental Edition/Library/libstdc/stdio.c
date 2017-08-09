@@ -9,6 +9,8 @@
 #include <common.h>
 #include "vfs.h"
 
+#include "IO_Handling/IO_Devices/Console/Console_handle.h"
+
 static void print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
@@ -19,6 +21,13 @@ static void _print(const char* data, size_t data_length)
 {
 	for ( size_t i = 0; i < data_length; i++ )
 		_putchar((char)((const unsigned char*) data)[i]);
+}
+
+void _stdprintint(uint32_t in)
+{
+  char tmp[16];
+	itoa(in, tmp, 10);
+	_stdprint(tmp, strlen(tmp));
 }
 
 int plock = 0;
@@ -87,6 +96,118 @@ int scanf(const char* restrict format, ...)
 	return written;
 }
 
+int _stdprintf(const char* restrict format, ...)
+{
+	va_list parameters;
+	va_start(parameters, format);
+
+	int written = 0;
+	size_t amount;
+	bool rejected_bad_specifier = false;
+
+	while ( *format != '\0' )
+	{
+		if ( *format != '%' )
+		{
+		_print_c:
+			amount = 1;
+			while ( format[amount] && format[amount] != '%' )
+				amount++;
+			_stdprint(format, amount);
+			format += amount;
+			written += amount;
+			continue;
+		}
+
+		const char* format_begun_at = format;
+
+		if ( *(++format) == '%' )
+			goto _print_c;
+
+		if ( rejected_bad_specifier )
+		{
+		_incomprehensible_conversion:
+			rejected_bad_specifier = true;
+			format = format_begun_at;
+			goto _print_c;
+		}
+
+		if ( *format == 'c' )
+		{
+			format++;
+			char c = (char) va_arg(parameters, int /* char promotes to int */);
+			_stdprint(&c, sizeof(c));
+		}
+		else if ( *format == 's' )
+		{
+			format++;
+			const char* s = va_arg(parameters, const char*);
+			_stdprint(s, strlen(s));
+		}
+		else if(*format == 'i' ||*format == 'd')
+		{
+				format++;
+				int c = va_arg (parameters, int);
+				if(c < 0)
+				{
+					_stdprint("-", 1);
+					c = -c;
+				}
+				_stdprintint(c);
+		}
+		else if(*format == 'l' || *format == 'u') //uint32_t
+		{
+				format++;
+				uint32_t c = va_arg (parameters, uint32_t);
+				_stdprintint(c);
+		}
+		else if(*format == 'p'||*format == 'g') //color
+		{
+				format++;
+				int c = va_arg (parameters, int);
+				if(!c)
+					console_color = default_console_color;
+				else
+					console_color = c;
+		}
+		else if(*format == 'f') //float
+		{
+				format++;
+				double c = va_arg (parameters, double);
+				if(c < 0)
+				{
+					_stdprint("-", 1);
+					c = -c;
+				}
+				uint32_t in = (uint32_t)(int)c;
+				double d = (double)c;
+				d -= in;
+				d *= 10000000;
+				_stdprintint(in);
+				_stdprint(".", 1);
+				in = (int)d;
+				_stdprintint(in);
+		}
+		else if(*format == 'x') //uint32_t
+		{
+				format++;
+				_stdprint("0x", 2);
+				uint32_t c = va_arg (parameters, uint32_t);
+				char tmp[10];
+				itoa(c, tmp, 16);
+				_stdprint(tmp, strlen(tmp));
+		}
+		else
+		{
+			goto _incomprehensible_conversion;
+		}
+	}
+
+	va_end(parameters);
+	plock = 0;
+	;//UNLOCK(printlock);
+	return written;
+}
 
 int printf(const char* restrict format, ...)
 {
@@ -95,6 +216,11 @@ int printf(const char* restrict format, ...)
 	;//LOCK(printlock);
 	if(multitasking_ON)
 	{
+		/*if(Get_Scheduler()->curr_dir != system_dir)
+		{
+			_stdprintf(format);
+			return;
+		}*/
 		va_list parameters;
 		va_start(parameters, format);
 
@@ -141,61 +267,60 @@ int printf(const char* restrict format, ...)
 				const char* s = va_arg(parameters, const char*);
 				_print(s, strlen(s));
 			}
-	        else if(*format == 'i' ||*format == 'd')
-	        {
-	            format++;
-	            int c = va_arg (parameters, int);
-							if(c < 0)
-							{
-								_print("-", 1);
-								c = -c;
-							}
-	            _printint(c);
-	        }
-	        else if(*format == 'l' || *format == 'u') //uint32_t
-	        {
-	            format++;
-	            uint32_t c = va_arg (parameters, uint32_t);
-	            _printint(c);
-	        }
-	        else if(*format == 'p'||*format == 'g') //color
-	        {
-	            format++;
-	            int c = va_arg (parameters, int);
-							if(!c)
-								console_color = default_console_color;
-							else
-								console_color = c;
-	        }
-
-	        else if(*format == 'f') //float
-	        {
-	            format++;
-	            double c = va_arg (parameters, double);
-							if(c < 0)
-							{
-								_print("-", 1);
-								c = -c;
-							}
-							uint32_t in = (uint32_t)(int)c;
-							double d = (double)c;
-							d -= in;
-							d *= 10000000;
-							_printint(in);
-							_print(".", 1);
-							in = (int)d;
-							_printint(in);
-	        }
-
-					else if(*format == 'x') //uint32_t
-	        {
-	            format++;
-							_print("0x", 2);
-	            uint32_t c = va_arg (parameters, uint32_t);
-							char tmp[10];
-							itoa(c, tmp, 16);
-	            _print(tmp, strlen(tmp));
-	        }
+			else if(*format == 'i' ||*format == 'd')
+			{
+					format++;
+					int c = va_arg (parameters, int);
+					if(c < 0)
+					{
+						_print("-", 1);
+						c = -c;
+					}
+					_printnum(c, 10, 1);
+			}
+			else if(*format == 'l' || *format == 'u') //uint32_t
+			{
+					format++;
+					uint32_t c = va_arg (parameters, uint32_t);
+					_printnum(c, 10, 0);
+			}
+			else if(*format == 'p'||*format == 'g') //color
+			{
+					format++;
+					int c = va_arg (parameters, int);
+					if(!c)
+						console_color = default_console_color;
+					else
+						console_color = c;
+			}
+			else if(*format == 'f') //float
+			{
+					format++;
+					double c = va_arg (parameters, double);
+					if(c < 0)
+					{
+						_print("-", 1);
+						c = -c;
+					}
+					uint32_t in = (uint32_t)(int)c;
+					double d = (double)c;
+					d -= in;
+					d *= 10000000;
+					_printnum(in, 10, 0);
+					_print(".", 1);
+					in = (int)d;
+					_printnum(in, 10, 0);
+			}
+			else if(*format == 'x') //uint32_t
+			{
+					format++;
+					_print("0x", 2);
+					uint32_t c = va_arg (parameters, uint32_t);
+					/*char tmp[10];
+					itoa(c, tmp, 16);
+					_print(tmp, strlen(tmp));*/
+					_printnum(c, 16, 0);
+			}
 			else
 			{
 				goto _incomprehensible_conversion;

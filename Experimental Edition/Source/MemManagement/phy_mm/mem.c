@@ -132,9 +132,12 @@ uint32_t pop_frameStack()
 	back:
 	fr = *frame_stack_end;
 	--frame_stack_end;
+	//printf("--A--");
 	if(!fr)
 	{
 		printf("\nNo memory left! %x",fr);
+		//while(1);
+		asm volatile("hlt");
 		goto back;
 	}
 	return fr;

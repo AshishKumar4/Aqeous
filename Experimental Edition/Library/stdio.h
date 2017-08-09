@@ -17,6 +17,8 @@ void printint(uint32_t in);
 extern void print64int(uint64_t in);
 void _printint(uint32_t in);
 int _putchar(char ic);
+
+int _stdprintf(const char* restrict format, ...);
 int _printf(const char* restrict format, ...);
 int scanf(const char* restrict format, ...);
 

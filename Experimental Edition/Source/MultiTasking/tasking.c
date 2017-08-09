@@ -119,6 +119,11 @@ void test_thread()
 
 void test_process()
 {
+  for(int i = 0; ; i++)
+  {
+    printf("-[%d]", i);
+    pop_frameStack();
+  }
   kill();
   asm volatile("int $50");
   while(1);
@@ -141,6 +146,8 @@ void tasking_initiator()
   Kernel_task = create_task("Main_Kernel",kernel_main, 0, 0x202, kernel_proc);
   Kernel_task->special = 2;
   kit->current_task = (uint32_t)Kernel_task;
+  init_libsym();
+  syscall_init();
 
   printf("\n\n\n\t\t--------------MISSION ACCOMPLISHED--------------\n\n\t--------------Welcome to the MultiThreading World!!!--------------\n");
   printf("\n\t-----------Launching the Shell and input/output processes-----------\n\t\t\t\tStarting in 3...2...1... GO...\n\n");
@@ -163,6 +170,8 @@ void tasking_initiator()
 
   clearIRQMask(0);
   clearIRQMask(1);
+  //init_idt();
+  //while(1);
   asm volatile("sti;");
   kill();//*/
   while(1);
@@ -194,6 +203,9 @@ void init_multitasking()
 
   Shell_Istream_task = create_task("Shell_Istream", Shell_Input, 1, 0x202, Shell_proc);
   Activate_task_direct(Shell_Istream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
+
+  Shell_Ostream_task = create_task("Shell_Ostream", Shell_Ostream, 1, 0x202, Shell_proc);
+  Activate_task_direct(Shell_Ostream_task);//, &KitList[0]); //This would manage keyboard input and delivery to the required process.
   //Shell_Istream_task->special = 1;
 
   Idle_task = create_task("System_idle_task",idle, 0, 0x202, kernel_proc);  //default task, this dosent run

@@ -491,20 +491,20 @@ void Create_BasicTypeClasses()
   Water_INT_TypeClass->OperatorTable = (uintptr_t)kmalloc(4096);
   uint_fast32_t* tb = (uint_fast32_t*)Water_INT_TypeClass->OperatorTable;
 
-  Water_NewOperatorObj("=", 1, 1, 0, (Water_Token_t * (*)(uintptr_t))Water_opEqual, tb);
-  Water_NewOperatorObj("-", 1, 4, 0, (Water_Token_t * (*)(uintptr_t))Water_opMinus, tb);
-  Water_NewOperatorObj("+", 1, 4, 0, (Water_Token_t * (*)(uintptr_t))Water_opPlus, tb);
-  Water_NewOperatorObj("*", 1, 8, 0, (Water_Token_t * (*)(uintptr_t))Water_opMul, tb);
-  Water_NewOperatorObj("/", 1, 8, 0, (Water_Token_t * (*)(uintptr_t))Water_opDiv, tb);
-  Water_NewOperatorObj("^", 1, 12, 1, (Water_Token_t * (*)(uintptr_t))Water_opExp, tb);
-  Water_NewOperatorObj("(", 1, 16, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketO, tb);
-  Water_NewOperatorObj(")", 1, 16, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketC, tb);
-  Water_NewOperatorObj("[", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketO, tb);
-  Water_NewOperatorObj("]", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketC, tb);
-  Water_NewOperatorObj("{", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketO, tb);
-  Water_NewOperatorObj("}", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketC, tb);
-  Water_NewOperatorObj(".", 1, 3, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketC, tb);
-  Water_NewOperatorObj("->", 2, 3, 0, (Water_Token_t * (*)(uintptr_t))Water_RoundBracketC, tb);
+  Water_NewOperatorObj("=", 1, 1, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_opEqual, tb);
+  Water_NewOperatorObj("-", 1, 4, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_opMinus, tb);
+  Water_NewOperatorObj("+", 1, 4, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_opPlus, tb);
+  Water_NewOperatorObj("*", 1, 8, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_opMul, tb);
+  Water_NewOperatorObj("/", 1, 8, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_opDiv, tb);
+  Water_NewOperatorObj("^", 1, 12, 1, (Water_Token_t * (*)(uintptr_t))Water_INT_opExp, tb);
+  Water_NewOperatorObj("(", 1, 16, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketO, tb);
+  Water_NewOperatorObj(")", 1, 16, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketC, tb);
+  Water_NewOperatorObj("[", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketO, tb);
+  Water_NewOperatorObj("]", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketC, tb);
+  Water_NewOperatorObj("{", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketO, tb);
+  Water_NewOperatorObj("}", 1, 2, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketC, tb);
+  Water_NewOperatorObj(".", 1, 3, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketC, tb);
+  Water_NewOperatorObj("->", 2, 3, 0, (Water_Token_t * (*)(uintptr_t))Water_INT_RoundBracketC, tb);
 }
 
 void Water_init()

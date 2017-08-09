@@ -4,6 +4,7 @@
 #include <system.h>
 #include <stdint-gcc.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef void (*func_t)();	//void function pointer
 typedef uintptr_t (*func_ptr_t)();	//void function pointer

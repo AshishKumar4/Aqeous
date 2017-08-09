@@ -12,4 +12,6 @@ void (*free)(void*);
 void (*kfree)(void*);
 void* (*krealloc)(void*, size_t);
 
+void hexdump_8(uintptr_t addr, uint32_t n);
+
 #endif

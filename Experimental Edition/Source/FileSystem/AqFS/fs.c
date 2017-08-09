@@ -895,7 +895,7 @@ File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the he
 {
 	uint32_t tm = (uint32_t)kmalloc(512);
 	memset(tm, 0, 512);
-	printf("\n-->%d", file->first_header);
+	//printf("\n-->%d", file->first_header);
 	read(curr_port, (file->first_header / 512), 1, tm);
 	File_Header_t* tmp = (File_Header_t*)(tm);
 	if(tmp->location != file->first_header)
@@ -961,7 +961,7 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 
 	uint32_t a1 = MIN(header->reserved, size);
 	uint32_t b1 = header->used - header->reserved; //Local offset
-	printf("\na1: %d, b1: %d, header->reserved: %d", a1, b1, header->reserved);
+	//printf("\na1: %d, b1: %d, header->reserved: %d", a1, b1, header->reserved);
 	uint32_t tbuff = (uint32_t)kmalloc(ROUNDUP(a1, 1024));
 	memset(tbuff, 0, ROUNDUP(a1, 1024));
 	read(curr_port, (1 + ((header->location + b1) / 512)), (ROUNDUP(a1, 1024) / 512) + 1, tbuff); //Read the first part of buffer.

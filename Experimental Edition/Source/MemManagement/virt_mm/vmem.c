@@ -32,7 +32,7 @@ void Setup_VMEM(Pdir_Capsule_t* dcap)     //Sets up the allocation buffers for k
 			tmp_f->addr = (uint32_t*)tmp_f;
 			tmp_f->size = mm->sizeHi;
 			tmp_f->begin = mm->startHi;
-			printf("\nAddr: %x Size: %x", tmp_f->begin, tmp_f->size);
+			//printf("\nAddr: %x Size: %x", tmp_f->begin, tmp_f->size);
 			++tmp_f;
 			++nb_f->entries;
 		}

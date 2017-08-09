@@ -10,7 +10,7 @@
 
 uint32_t pidcounter = 1;
 
-Process_t* create_process(char* name, uint32_t* code, uint32_t priority, Process_t* parent)  /// Create a New Task for a given Process
+Process_t* create_process(char* name, uintptr_t code, uint32_t priority, Process_t* parent)  /// Create a New Task for a given Process
 {
   Process_t* New_Proc = (Process_t*)kmalloc(sizeof(Process_t));//mtalloc(1);
 

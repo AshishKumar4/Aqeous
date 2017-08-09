@@ -27,3 +27,15 @@ uint32_t StrToInt(char *str)
     }
 		return in;
 }
+
+
+void hexdump_8(uintptr_t addr, uint32_t n)
+{
+	uint8_t* ptr = (uint8_t*)addr;
+	for(int i = 0; i < n; i++)
+	{
+		if(!(i % 4)) printf("\n");
+		printf("[%x] ", *ptr);
+		++ptr;
+	}
+}

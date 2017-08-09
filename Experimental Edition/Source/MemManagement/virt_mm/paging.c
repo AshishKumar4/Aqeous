@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "phy_mm/mem.h"
+#include "Processing/LibSymTable/LibSymTable.h"
 #include "ProcManager/ProcManager.h"
 
 void SystemDir_Mapper() ///will use it to manage OS directly
@@ -44,7 +45,7 @@ void Setup_SystemDir()
 
 Pdir_Capsule_t* pgdir_maker()
 {
-	Pdir_Capsule_t* npd_Cap = (Pdir_Capsule_t*)mtalloc(3); // Might be 4 as well
+	Pdir_Capsule_t* npd_Cap = (Pdir_Capsule_t*)mtalloc(4); // Might be 4 as well
   //printf(" %d", sizeof(Pdir_Capsule_t));
 	Setup_VMEM(npd_Cap);
   return npd_Cap;
@@ -53,7 +54,7 @@ Pdir_Capsule_t* pgdir_maker()
 /****/
 inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given PageDirectory_t
 {
-    map(0, 8*1024*1024, dir);
+    map(0x00007E00, 8*1024*1024, dir);
 
     map(0xF0000000, 0xFFFFF000-0xF0000000, dir);
 
@@ -62,16 +63,17 @@ inline void Kernel_Mapper(PageDirectory_t* dir) ///To Map the Kernel in a given 
     SchedulerKits_t* st = (SchedulerKits_t*)MotherSpace;
     map((uint32_t)MotherSpace,4096,(PageDirectory_t*)dir);
 
-    //map((uint32_t)512*1024*1024,200*1024*1024,(PageDirectory_t*)New_Proc->pgdir);
-
     for(uint32_t i = 0; i < total_CPU_Cores - 1; i++)
     {
+    //  printf("\nMapping...%d", i);
       map((uint32_t)st[i].switcher,4096,(PageDirectory_t*)dir);
       map((uint32_t)st[i].stack,4096*4,(PageDirectory_t*)dir);
       map((uint32_t)st[i].queue_start,4096*40,(PageDirectory_t*)dir);
       map((uint32_t)st[i].Spurious_task,4096,(PageDirectory_t*)dir);
     }
-    map(0x80000000, 0x40000000, dir);
+    syscall_MapPdir((PageDirectory_t*)dir);
+    LibSym_MapPdir((PageDirectory_t*)dir);
+  //  map(0x80000000, 0x40000000, dir);
 }
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDirectory_t* dir)
@@ -191,7 +193,7 @@ page_t* get_page(uint32_t addr,int make, PageDirectory_t* dir)
       {
           dir->table_entry[table_idx] = (table_t)phy_alloc4K();
 
-    //      map(dir->table_entry[table_idx], 4096, dir);
+          map(dir->table_entry[table_idx], 4096, dir);
 
           memset_fast((void*)dir->table_entry[table_idx], 0, 0x1000);
           table_t* entry = &dir->table_entry [table_idx];

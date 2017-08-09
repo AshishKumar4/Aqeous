@@ -1,16 +1,18 @@
-#ifndef ELF_h
-#define ELF_h
+#ifndef ELFn_h
+#define ELFn_h
 
-#include "stdgcc.h"
+#include "stdint.h"
+#include "Processing/processing.h"
 
 #define EI_NIDENT   16
 
 typedef uint16_t    Elf32_Half;
 typedef uint32_t    Elf32_Addr;
 typedef uint32_t    Elf32_Off;
-typedef int32_t    Elf32_Sword;
+typedef int32_t    	Elf32_Sword;
 typedef uint32_t    Elf32_Word;
 
+#define ELF_MAGIC 0x464C457FU  // "\x7FELF" in little endian
 
 /* e_type */
 #define ET_NONE   0       //  No file type
@@ -35,8 +37,28 @@ typedef uint32_t    Elf32_Word;
 #define EV_NONE    0       //  Invalid version
 #define EV_CURRENT 1       //  Current Version
 
+enum Elf_Ident {
+	EI_MAG0		= 0, // 0x7F
+	EI_MAG1		= 1, // 'E'
+	EI_MAG2		= 2, // 'L'
+	EI_MAG3		= 3, // 'F'
+	EI_CLASS	= 4, // Architecture (32/64)
+	EI_DATA		= 5, // Byte Order
+	EI_VERSION	= 6, // ELF Version
+	EI_OSABI	= 7, // OS Specific
+	EI_ABIVERSION	= 8, // OS Specific
+	EI_PAD		= 9  // Padding
+};
 
-typedef struct
+# define ELFMAG0	0x7F // e_ident[EI_MAG0]
+# define ELFMAG1	'E'  // e_ident[EI_MAG1]
+# define ELFMAG2	'L'  // e_ident[EI_MAG2]
+# define ELFMAG3	'F'  // e_ident[EI_MAG3]
+
+# define ELFDATA2LSB	(1)  // Little Endian
+# define ELFCLASS32	(1)  // 32-bit Architecture
+
+typedef struct Elf32_Ehdr
 {
   unsigned char e_ident[EI_NIDENT];
   Elf32_Half    e_type;
@@ -52,6 +74,56 @@ typedef struct
   Elf32_Half    e_shentsize;
   Elf32_Half    e_shnum;
   Elf32_Half    e_shstrndx;
-}Elf32_Ehdr;
+}Elf32_Ehdr_t;
+
+typedef struct Elf32_Shdr
+{
+  Elf32_Word    sh_name;
+  Elf32_Word    sh_type;
+  Elf32_Word    sh_flags;
+  Elf32_Addr    sh_addr;
+  Elf32_Off     sh_offset;
+  Elf32_Word    sh_size;
+  Elf32_Word    sh_link;
+  Elf32_Word    sh_info;
+  Elf32_Word    sh_addralign;
+  Elf32_Word    sh_entsize;
+}Elf32_Shdr_t;
+
+typedef struct Elf32_Phdr
+{
+	Elf32_Word		p_type;
+	Elf32_Off			p_offset;
+	Elf32_Addr		p_vaddr;
+	Elf32_Addr		p_paddr;
+	Elf32_Word		p_filesz;
+	Elf32_Word		p_memsz;
+	Elf32_Word		p_flags;
+	Elf32_Word		p_align;
+}Elf32_Phdr_t;
+
+typedef struct BinFile
+{
+  uint16_t type;
+  uint16_t reserved;
+  uint32_t bin_sz;
+
+	Process_t* proc;
+	task_t* mainthread;
+
+	char name[64];
+
+  uintptr_t entry_point;
+  uintptr_t sec_data;
+  uintptr_t sec_text;
+  uintptr_t sec_bss;
+
+  Elf32_Ehdr_t* elf_ehdr;
+  Elf32_Shdr_t* elf_shdr;
+  Elf32_Shdr_t** elf_phdr;
+}BinFile_t;
+
+BinFile_t* Elf_LoadFile(const char* str);
+uint32_t Elf_ProcLauncher_file(const char* str);
 
 #endif

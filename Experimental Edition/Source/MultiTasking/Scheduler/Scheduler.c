@@ -52,6 +52,8 @@ void __attribute__((optimize("O0"))) test_exit()
 
 DECLARE_LOCK(CORE_INFO);
 
+extern void syscall_vector();
+
 void __attribute__((optimize("O0"))) Init_Scheduler()
 {
   //Create copies of Scheduler function and switcher functions based on number of CPU cores.
@@ -148,6 +150,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     idtSetEntry(51, (uint32_t)kits->switcher, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
     idtSetEntry(52, (uint32_t)CancerCure, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)&idt_ptr);
     idtSetEntry(13, (uint32_t)&generalProtectionFault_handler, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
+    idtSetEntry(54, (uint32_t)&syscall_vector, 0x08, makeFlagByte(1, KERNEL_MODE), (uint64_t*)idt_ptr);
 
     pmode_IDT_lidt(i, kits->idt);
 

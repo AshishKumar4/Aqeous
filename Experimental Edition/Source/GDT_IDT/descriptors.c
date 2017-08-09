@@ -37,9 +37,21 @@ static void init_gdt()  // For BSP
     lgdt((void *)gdt_new);
  }
 
+ uint32_t low_memAlloc_ptr = 0x00007E00;
+
+ uintptr_t desc_malloc(uint32_t size)
+ {
+   uint32_t a = low_memAlloc_ptr;
+   low_memAlloc_ptr += size;
+
+   return a;
+   return (uintptr_t)kmalloc(4096);
+   return (uintptr_t)(500*1024);//kmalloc(4096);//*/
+ }
+
  uintptr_t pmode_GDT_init(uint32_t APIC_id)
  {
-   uintptr_t gdt_new = (uintptr_t)kmalloc(64);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   uintptr_t gdt_new = (uintptr_t)desc_malloc(64);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
    AP_gdt_Setup((uint32_t*)(gdt_new + 8), (uint32_t*)gdt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
 
    if(APIC_id == 0)
@@ -56,7 +68,7 @@ static void init_gdt()  // For BSP
 
  uintptr_t pmode_IDT_init(uint32_t APIC_id)
  {
-   uintptr_t idt_new = (uintptr_t)kmalloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   uintptr_t idt_new = (uintptr_t)desc_malloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
    AP_idt_Setup((uint32_t*)(idt_new + 8), (uint32_t*)idt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
 
    if(APIC_id == 0)
@@ -73,7 +85,7 @@ static void init_gdt()  // For BSP
 
  uintptr_t pmode_IDT_initP(uint32_t APIC_id)
  {
-   uintptr_t idt_new = (uintptr_t)kmalloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
+   uintptr_t idt_new = (uintptr_t)desc_malloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
    AP_idt_Setup((uint32_t*)(idt_new + 8), (uint32_t*)idt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
 
    return idt_new;

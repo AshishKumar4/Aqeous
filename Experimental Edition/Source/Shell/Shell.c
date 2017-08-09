@@ -108,6 +108,29 @@ void __attribute__((optimize("O2"))) Shell_Dbuff_sync()
 	 }
 }
 
+void __attribute__((optimize("O2"))) Shell_Ostream()
+{
+	// TODO: Constantly keep getting strings and keep printing them on console.
+	while(1)
+	{
+		asm volatile("cli");
+		if(console_q_elements)
+		{
+			char tmp[console_Start_q->size];
+			strcpy(tmp, (char*)console_Start_q->buffer);
+			_print(tmp, console_Start_q->size);
+
+			Task_wakeup(console_Start_q->task);
+		//	printf("%s",tmp);
+			//Shell_wakeup();
+			memset_faster((uint32_t*)console_Start_q, 0, 4);
+			console_Start_q = console_Start_q->next;
+			--console_q_elements;
+		}
+		asm volatile("int $50");
+	}
+}
+
 
 void __attribute__((optimize("O2"))) Shell_Input()
 {
@@ -574,5 +597,6 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_cat, 59, 0, "cat");
 	 Shell_Add_Commands(Command_rm, 41, 0, "rm");
 	 Shell_Add_Commands(Command_cpu, 92, 0, "cpu");
+	 Shell_Add_Commands(Command_elfload, 176, 0, "elfload");
 	 memset_faster((uint32_t*)CSI_mem_start, 0, 66);
 }

@@ -5,10 +5,11 @@
 #include "common.h"
 #include "tasking.h"
 #include "process.h"
+#include "ELF/Elf.h"
 
 
 void process_bin(char* path)
 {
- BinHeader_t* file = load_bin();
- 
+// BinHeader_t* file = load_bin(path);
+
 }

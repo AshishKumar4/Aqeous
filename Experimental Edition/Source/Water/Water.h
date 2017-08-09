@@ -258,13 +258,13 @@ uintptr_t Water_OpGetClass(uint32_t hash);
 char* Water_GetErrorName(int error);
 
 /********************* Operator Declarations ********************/
-Water_BasicTypeToken_t* Water_opEqual(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_opMinus(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_opPlus(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_opMul(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_opDiv(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_opExp(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_RoundBracketO(Water_OperatorToken_t* op);
-Water_BasicTypeToken_t* Water_RoundBracketC(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opEqual(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opMinus(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opPlus(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opMul(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opDiv(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_opExp(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_RoundBracketO(Water_OperatorToken_t* op);
+Water_BasicTypeToken_t* Water_INT_RoundBracketC(Water_OperatorToken_t* op);
 
 #endif

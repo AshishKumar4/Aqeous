@@ -240,7 +240,7 @@ void __attribute__((optimize("O0"))) pageFault_caller()
   else
   {
       dir->table_entry[table_idx] = (table_t)phy_alloc4K();
-
+      map(dir->table_entry[table_idx], 4096, dir);
       memset_fast((void*)dir->table_entry[table_idx], 0, 0x1000);
       table_t* entry = &dir->table_entry [table_idx];
       PageTable_t* table=(PageTable_t*)PAGE_GET_PHYSICAL_ADDRESS(entry);

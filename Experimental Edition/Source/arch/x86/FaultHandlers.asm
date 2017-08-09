@@ -12,6 +12,8 @@ CancerCure_addr: RESD 1
 esp_backup: RESD 1
 eax_backup: RESD 1
 
+tmp_esp: RESD 4096
+
 section .text
 [EXTERN system_dir]
 [EXTERN pageFault_caller]
@@ -23,6 +25,9 @@ section .text
 [GLOBAL doubleFault_handler]
 [GLOBAL generalProtectionFault_handler]
 [GLOBAL breakpoint_handler]
+
+temporary_stack:
+  dd tmp_esp
 
 generalProtectionFault_handler:
 ;  cli
@@ -80,6 +85,7 @@ coprocessor_handler:
   hlt
 
 breakpoint_handler:
+  iretd
   pop eax
   pop ebx
   pop ecx
@@ -97,24 +103,30 @@ breakpoint_handler:
 pageFault_handler:
   cli
 
-  pop eax
-  pop ebx
-  pop ecx
-  pop edx
-  hlt
+;  pop eax
+;  pop ebx
+;  pop ecx
+;  pop edx
+;  hlt
 
   pusha
+  mov ebx, cr3
+
   mov eax, [system_dir]
   mov cr3, eax
+
+  mov [current_pdir], ebx
 
   mov eax, esp
   mov [esp_backup], eax
 
+  mov eax, tmp_esp
+
+  mov esp, eax
+
+;  hlt
   mov eax, cr2
   mov [faulting_address], eax
-
-  mov eax, cr3
-  mov [current_pdir], eax
 
   call pageFault_caller
 
@@ -123,16 +135,17 @@ pageFault_handler:
 
   popa
 
+  mov [eax_backup], eax
+  pop eax
+
   push eax
+
   mov eax, 0xFEE000B0
   mov dword [eax], 0
 
-  pop eax
-
-  mov [eax_backup], eax
   mov eax, [current_pdir]
   mov cr3, eax
-  mov eax, [eax_backup]
+  pop eax
 
   iretd
 

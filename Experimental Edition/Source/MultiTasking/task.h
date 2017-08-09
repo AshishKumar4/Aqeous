@@ -47,6 +47,8 @@ typedef struct __attribute__((packed)) task_table
 DECLARE_LOCK(TASK_LOCK_KILL);
 DECLARE_LOCK(TASK_LOCK_ATD);
 
+task_t* task_GetSelf();
+
 void Activate_task(task_table_t* task_entry);
 
 void Activate_task_direct(task_t* task);

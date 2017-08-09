@@ -23,7 +23,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 //	New_task_entry->test = 2;
 	//Process_t* process = process_ptr;
 	if(process->pgdir != system_dir)
-		map((uint32_t)New_task_entry,8192*2,(PageDirectory_t*)process->pgdir);
+		map((uint32_t)New_task_entry,4096*8,(PageDirectory_t*)process->pgdir);
 
 	if(!process->first_task_entry)
 	{
@@ -52,7 +52,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 	New_task->main_pgdir = process->pgdir;
 	New_task->mem_used = 0;
 
-	stack+=4095;
+	stack += 2048;
 
 	uint32_t base=(uint32_t)stack;
 
@@ -142,6 +142,11 @@ void Task_Refresh(task_t* task, func_t func)  /// Refresh a task to give it a ne
 			printf("\nASXXXXXX");
 	}
 */
+}
+
+task_t* __attribute__((optimize("O0"))) task_GetSelf()
+{
+	return (task_t*)Get_Scheduler()->current_task;
 }
 
 void __attribute__((optimize("O0"))) Activate_task(task_table_t* task_entry) /// Put a given Task_entry into an appropriate queue for it to be executed.

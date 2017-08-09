@@ -24,6 +24,7 @@
 #include "filesystem/general.c"
 #include "filesystem/FSspecific/aqfs.c"
 #include "filesystem/FSspecific/ext2.c"
+#include "processing/elfload.c"
 
 #include "Scheduler/Scheduler.h"
 #include "ProcManagement/ProcManagement.h"
