@@ -1,6 +1,6 @@
-## Aqeous- An OS that runs efficiently
+## Aqeous- An Orphan OS
 
->__INSTALLER BUILD IS OBSOLETE NOW!!! MAIN KERNEL RECIDES IN SOURCE DIRECTORY!!!__
+>__Kernel resides in Experimental Edition dir. Custom C Library for user programs in LibC including a test program__
 
 The ZIP File contains these two files:  
 * _hdd.img_  
@@ -10,6 +10,16 @@ The ZIP File contains these two files:
 
   Template image with only Kernel and grub built in. Use when _hdd.img_ corrupts. Copy it and rename it as '_hdd.img_'
   Extract _hdd.img_ and put in same folder in order to run the OS. 
+### To Compile: 
+...The OS -> cd "Experimental Edition"
+             make
+...The LibC -> cd LibC
+               make 
+       => This would generate a crt0 file (For now crt0, crti etc all functionality is within this, sorry laziness :p )
+       => Then Compile your test program against this library (crt0.o) and Transfer it to virtual hard disk (hdd.img) 
+          using the AqFS Editor (Check my other repository).
+       => Simply type 'elfload <file>' in the Shell.
+       
 ### A few extra stuff
 _Qemu_Aqeous.bat_ file is used to run to Kernel using qemu emulator.  
 If running first time, type "_init aqfs_" in Aqeous Command Line to initialize the AQFS Filesystem.  
