@@ -1,14 +1,14 @@
 #include "stdint.h"
-#include "include/aqeouslib.h"
+#include "stdio.h"
 
 // FIRST COMPILE THE LIBRARY, THEN COMPILE THIS
-// i686-elf-gcc t.c -o t.o crt0.o -m32 -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector
+// i686-elf-gcc t.c -o t.o crt0.o -m32 -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector -Iinclude
 // TEST PROGRAM
 
 void fibonacci()
 {
   printf("\nPrinting Fibonacci Series-->");
-  int i, n = 5, t1 = 0, t2 = 1, nextTerm;
+  int i, n = 100, t1 = 0, t2 = 1, nextTerm;
 
     printf("Fibonacci Series: ");
 
@@ -21,12 +21,13 @@ void fibonacci()
     }
 }
 
-void _main()
+void main()
 {
   printf("\nHello World");
+  asm volatile("int $50");
+  asm volatile("int $50");
   fibonacci();
-
-  _syscall_push(4096);
-  _syscall_(1, 1);
-  printf("Testing... IT WORKS");
+  int i = 0;
+  scanf("%d", &i);
+  printf("\n{%d} Testing... IT WORKS!!!", i);
 }

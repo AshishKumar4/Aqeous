@@ -5,15 +5,15 @@ LD:=i686-elf-ld
 AS:=i686-elf-as
 NASM:=nasm
 
-SOURCE:=
+SOURCE:=Source
 LIBRARY:=include
 
 CRT0:=crt0.o
 
 OBJS:= *.o
-INCLUDED:=	-I$(LIBRARY)
+INCLUDED:=	-I$(LIBRARY) -I$(SOURCE)
 
-FLAGS:= -m32 -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
+FLAGS:= -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin -fno-stack-protector $(INCLUDED)
 all: clean build-crt0
 
 build-crt0:	$(CRT0)

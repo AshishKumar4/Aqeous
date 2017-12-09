@@ -1,20 +1,24 @@
 #include "library.c"
+#include "aqlib.c"
 
-extern void _main();
+extern int main(int argc, char *argv[]);
 
-void _start()
+
+void __attribute__((optimize("O0"))) _start()
 {
-  // FOR Time being, Lets just give the user program full kernel access;
-  // Would work on it later. Lets just for now allow these things just for
-  // performance reasons.
-  printf = (func_t)LIBSYMTABLE[0];
-  malloc = (func_t)LIBSYMTABLE[1];
-  free = (func_t)LIBSYMTABLE[2];
-  memset = (func_t)LIBSYMTABLE[3];
-  memcpy = (func_t)LIBSYMTABLE[4];
-  SYSCALL_SPACE = (uint32_t*)(SYSCALL_SPACE_bottom);
+  STD_OUT_ptr[0] = 0;
   SYSCALL_SPACE[0] = 0;
-  printf("\nLoading Main Program...");
-  _main();
-  _syscall_(5, 0);
+
+  STD_IN_ptr[0] = 8;
+  STD_IN_ptr[1] = 0;
+ // KernelMessageSpace[0] = 8;
+  create_fdTable();
+
+  int argc = (int)argTable[0];
+  char **argv = (char**)&argTable[1];
+ // main();
+ // printf("{%d,  %d %s, %d %s}\n", (uint32_t)argc, argv[0], argv[0], argv[1], argv[1]);
+  int exit_code = main(argc, argv);
+  exit(0);
+  while(1);
 }

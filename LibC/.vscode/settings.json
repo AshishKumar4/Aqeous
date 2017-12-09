@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "stdint.h": "c",
+        "library.h": "c",
+        "syscalls.h": "c",
+        "iostream": "c",
+        "system_error": "c",
+        "initializer_list": "c",
+        "type_traits": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "xiosbase": "c"
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "files.associations": {
+        "syscalls.h": "c",
+        "initializer_list": "c",
+        "type_traits": "c",
+        "vector": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "shell.h": "c",
+        "xlocale": "c",
+        "system_error": "c",
+        "istream": "c",
+        "ostream": "c",
+        "xiosbase": "c",
+        "xmemory0": "c",
+        "utility": "c",
+        "xstddef": "c",
+        "xtr1common": "c",
+        "keyboard.h": "c",
+        "library.h": "c",
+        "libsymtable.h": "c",
+        "ios": "cpp",
+        "aqfs.h": "c",
+        "aqfstools.h": "c",
+        "limits": "c",
+        "common.h": "c",
+        "xlocnum": "c",
+        "kb_handle.h": "c",
+        "streambuf": "c"
+    }
+}
