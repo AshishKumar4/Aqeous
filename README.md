@@ -13,16 +13,20 @@ The ZIP File contains these two files:
 ### To Compile: 
 >_The OS_ -> _make_
 
->_The LibC_ -> _cd LibC_
-               >_make_ 
-      > _=>_ This would generate a crt0 file (For now crt0, crti etc all functionality is within this, sorry laziness :p )
-      > _=>_ Then Compile your test program against this library (crt0.o) and Transfer it to virtual hard disk (hdd.img) 
+_The LibC_ -> __cd LibC__
+            >__make__ 
+               
+      >  _=>_ This would generate a crt0 file (For now crt0, crti etc all functionality is within this, sorry laziness :p )
+      
+      >  _=>_ Then Compile your test program against this library (crt0.o) and Transfer it to virtual hard disk (hdd.img) 
           using the AqFS Editor (Check my other repository).
-      > _=>_ Simply type '<filename>' in the Shell.
+          
+      >  _=>_ Simply type '<filename>' in the Shell.
        
 ### A few extra stuff
->_To Run in Qemu, use command '_make qemu_'
-> Optional: To Install/Reinstall the Aqfs2 FileSystem, type '_init aqfs2_' in console, ###hdd.img comes with preinstalled FS and files!  
+> _To Run in Qemu, use command '__make qemu__'
+
+> Optional: To Install/Reinstall the Aqfs2 FileSystem, type '__init aqfs2__' in console, ###hdd.img comes with preinstalled FS and files!  
 
 ### A final note
 I know. The whole thing is a bit convoluted. We'll fix it. Just that I (a humble contributor) am currently bust with my exams. They will end by April, after which the pace should increase
