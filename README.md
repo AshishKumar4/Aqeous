@@ -1,6 +1,6 @@
 ## Aqeous- An Orphan OS
 
->__Kernel resides in Experimental Edition dir. Custom C Library for user programs in LibC including a test program__
+>__Kernel Code resides in Source directory, FASM directory contains FASM source ported for AqeousOS, Custom C Library for user programs in LibC including a test program__
 
 The ZIP File contains these two files:  
 * _hdd.img_  
