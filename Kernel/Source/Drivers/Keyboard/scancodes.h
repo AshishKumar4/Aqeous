@@ -3,6 +3,7 @@
 
 #define SCODE_SPECIAL		0x1
 #define SCODE_ORDINARY		0x0
+#define SCODE_SHIFTON		0x2
 
 typedef struct KeyCode 
 {
@@ -216,7 +217,7 @@ static int Main_key_codes [] = {
 	KEY_LEFTBRACKET,//0x1a
 	KEY_RIGHTBRACKET,//0x1b
 	KEY_RETURN,		//0x1c
-	OTHER_key,		//0x1d
+	KEY_LCTRL,		//0x1d
 	KEY_A,			//0x1e
 	KEY_S,			//0x1f
 	KEY_D,			//0x20
@@ -229,7 +230,7 @@ static int Main_key_codes [] = {
 	KEY_SEMICOLON,	//0x27
 	KEY_QUOTE,		//0x28
 	KEY_GRAVE,		//0x29
-	OTHER_key,		//0x2a
+	KEY_LSHIFT,		//0x2a
 	KEY_BACKSLASH,	//0x2b
 	KEY_Z,			//0x2c
 	KEY_X,			//0x2d
@@ -241,11 +242,11 @@ static int Main_key_codes [] = {
 	KEY_COMMA,		//0x33
 	KEY_DOT,		//0x34
 	KEY_SLASH,		//0x35
-	OTHER_key,		//0x36
+	KEY_RSHIFT,		//0x36
 	KEY_KP_ASTERISK,//0x37
-	OTHER_key,		//0x38
+	KEY_RALT,		//0x38
 	KEY_SPACE,		//0x39
-	OTHER_key,	//0x3a
+	KEY_CAPSLOCK,	//0x3a
 	KEY_F1,			//0x3b
 	KEY_F2,			//0x3c
 	KEY_F3,			//0x3d
@@ -256,11 +257,11 @@ static int Main_key_codes [] = {
 	KEY_F8,			//0x42
 	KEY_F9,			//0x43
 	KEY_F10,		//0x44
-	OTHER_key,	//0x45
-	OTHER_key,	//0x46
-	OTHER_key,		//0x47
-	OTHER_key,		//0x48	//keypad up arrow
-	OTHER_key,		//0x49
+	KEY_KP_NUMLOCK,	//0x45
+	KEY_SCROLLLOCK,	//0x46
+	KEY_HOME,		//0x47
+	KEY_UP,		//0x48	//keypad up arrow
+	KEY_PAGEUP,		//0x49
 	KEY_KP_2,		//0x50	//keypad down arrow
 	KEY_KP_3,		//0x51	//keypad page down
 	KEY_KP_0,		//0x52	//keypad insert key
@@ -268,71 +269,71 @@ static int Main_key_codes [] = {
 	KEY_UNKNOWN,	//0x54
 	KEY_UNKNOWN,	//0x55
 	KEY_UNKNOWN,	//0x56
-	OTHER_key,		//0x57
-	OTHER_key			//0x58
+	KEY_F11,		//0x57
+	KEY_F12			//0x58
 };
 
-static int Special_key_codes [] = {
+static int Shift_key_codes [] = {
 
 	//! key			scancode
 	KEY_UNKNOWN,	//0
-	OTHER_key,		//1
-	OTHER_key,			//2
-	OTHER_key,			//3
-	OTHER_key,			//4
-	OTHER_key,			//5
-	OTHER_key,			//6
-	OTHER_key,			//7
-	OTHER_key,			//8
-	OTHER_key,			//9
-	OTHER_key,			//0xa
-	OTHER_key,			//0xb
-	OTHER_key,		//0xc
-	OTHER_key,		//0xd
-	OTHER_key,	//0xe
-	OTHER_key,		//0xf
-	OTHER_key,			//0x10
-	OTHER_key,			//0x11
-	OTHER_key,			//0x12
-	OTHER_key,			//0x13
-	OTHER_key,			//0x14
-	OTHER_key,			//0x15
-	OTHER_key,			//0x16
-	OTHER_key,			//0x17
-	OTHER_key,			//0x18
-	OTHER_key,			//0x19
-	OTHER_key,//0x1a
-	OTHER_key,//0x1b
-	OTHER_key,		//0x1c
+	KEY_ESCAPE,		//1
+	KEY_EXCLAMATION,			//2
+	KEY_AT,			//3
+	KEY_HASH,			//4
+	KEY_DOLLAR,			//5
+	KEY_PERCENT,			//6
+	KEY_CARRET,			//7
+	KEY_AMPERSAND,			//8
+	KEY_ASTERISK,			//9
+	KEY_LEFTPARENTHESIS,			//0xa
+	KEY_RIGHTPARENTHESIS,			//0xb
+	KEY_UNDERSCORE,		//0xc
+	KEY_PLUS,		//0xd
+	KEY_BACKSPACE,	//0xe
+	KEY_TAB,		//0xf
+	KEY_Q,			//0x10
+	KEY_W,			//0x11
+	KEY_E,			//0x12
+	KEY_R,			//0x13
+	KEY_T,			//0x14
+	KEY_Y,			//0x15
+	KEY_U,			//0x16
+	KEY_I,			//0x17
+	KEY_O,			//0x18
+	KEY_P,			//0x19
+	KEY_LEFTCURL,//0x1a
+	KEY_RIGHTCURL,//0x1b
+	(int)'\n',		//0x1c
 	KEY_LCTRL,		//0x1d
-	OTHER_key,			//0x1e
-	OTHER_key,			//0x1f
-	OTHER_key,			//0x20
-	OTHER_key,			//0x21
-	OTHER_key,			//0x22
-	OTHER_key,			//0x23
-	OTHER_key,			//0x24
-	OTHER_key,			//0x25
-	OTHER_key,			//0x26
-	OTHER_key,	//0x27
-	OTHER_key,		//0x28
-	OTHER_key,		//0x29
+	KEY_A,			//0x1e
+	KEY_S,			//0x1f
+	KEY_D,			//0x20
+	KEY_F,			//0x21
+	KEY_G,			//0x22
+	KEY_H,			//0x23
+	KEY_J,			//0x24
+	KEY_K,			//0x25
+	KEY_L,			//0x26
+	KEY_COLON,	//0x27
+	KEY_QUOTEDOUBLE,		//0x28
+	KEY_TILDE,		//0x29
 	KEY_LSHIFT,		//0x2a
-	OTHER_key,	//0x2b
-	OTHER_key,			//0x2c
-	OTHER_key,			//0x2d
-	OTHER_key,			//0x2e
-	OTHER_key,			//0x2f
-	OTHER_key,			//0x30
-	OTHER_key,			//0x31
-	OTHER_key,			//0x32
-	OTHER_key,		//0x33
-	OTHER_key,		//0x34
-	OTHER_key,		//0x35
+	KEY_BAR,	//0x2b
+	KEY_Z,			//0x2c
+	KEY_X,			//0x2d
+	KEY_C,			//0x2e
+	KEY_V,			//0x2f
+	KEY_B,			//0x30
+	KEY_N,			//0x31
+	KEY_M,			//0x32
+	KEY_LESS,		//0x33
+	KEY_GREATER,		//0x34
+	KEY_QUESTION,		//0x35
 	KEY_RSHIFT,		//0x36
-	OTHER_key,//0x37
+	KEY_KP_ASTERISK,//0x37
 	KEY_RALT,		//0x38
-	OTHER_key,		//0x39
+	KEY_SPACE,		//0x39
 	KEY_CAPSLOCK,	//0x3a
 	KEY_F1,			//0x3b
 	KEY_F2,			//0x3c

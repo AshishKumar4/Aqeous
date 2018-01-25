@@ -99,7 +99,7 @@ int console_putcharF(char ic)
 	return (int)ic;
 }
 
-int console_putcharK(int c)
+int console_putcharK(char c)
 {
 	char a=c;
     if(c=='\n') c=' ';

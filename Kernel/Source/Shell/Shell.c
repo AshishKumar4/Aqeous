@@ -238,7 +238,7 @@ void __attribute__((optimize("O2"))) Shell_Input()
 		}
 		UNLOCK(CONSOLE_INPUT);
 		ThreadRipper();
-		if(count > 10000)
+		/*if(count > 10000)
 		{
 			count = 0;
 			//Command_baseshow();
@@ -250,7 +250,7 @@ void __attribute__((optimize("O2"))) Shell_Input()
 			/*Shell_Dbuff_sync();
 			asm volatile("hlt");
 			while(1);*/
-		}
+		//}
 		asm volatile("int $50");
 	}
 }
@@ -524,22 +524,23 @@ const char* space = " ";
 void Shell_ArgParse(char* str)
 {
 	*tot_entries = 0;
+	char* st = strtok(str, " ");
 	while(1) //Provide the Arguments provided by the user
 	{
-		str = strtok(NULL, " ");
-		if(str== NULL) break;
-		*CSI_entries_ptr = (uint32_t)str;
+		st = strtok(NULL, " ");
+		if(st== NULL) break;
+		*CSI_entries_ptr = (uint32_t)st;
 
-		if(str[0] == '\"')
+		if(st[0] == '\"')
 		{
-			++str;
+			++st;
 
-			*CSI_entries_ptr = (uint32_t)str;
+			*CSI_entries_ptr = (uint32_t)st;
 
-			for(;str[strlen(str)-1] != '\"';)
+			for(;st[strlen(st)-1] != '\"';)
 			{
-				 str[strlen(str)] = ' ';
-				 str = strtok(NULL, " ");
+				 st[strlen(st)] = ' ';
+				 st = strtok(NULL, " ");
 			}
 			str[strlen(str)-1] = '\0';
 		}
@@ -549,11 +550,22 @@ void Shell_ArgParse(char* str)
 	}
 }
 
+
 int Shell_command_locator(char *inst)
 {
-	 uint32_t tmp = 0;
+	uint32_t tmp = 0;
+	
+	for(int i = 0; inst[i] != ' ' && inst[i] != '\0' ; i++)
+	{
+		++tmp;
+	}
 
-	 char* tmpstr = strtok(inst, " ");
+	char tmpstr[tmp+1];
+	strncpy(tmpstr, inst, tmp);
+	tmpstr[tmp] = '\0';
+
+	tmp = 0;
+
 	 int i;
 	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
 	 {
@@ -568,8 +580,7 @@ int Shell_command_locator(char *inst)
 			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
-
-				 Shell_ArgParse(tmpstr);
+				 Shell_ArgParse(inst);
 
 				 asm volatile("cli");
 				 shell_cmdFunc = func;
@@ -594,7 +605,7 @@ int Shell_command_locator(char *inst)
 					printf("\n Command Not Recognized! type help for help %x\n", tmpstr ); //TODO: Search within other possible files/executables like in the PATH string.
 					return -1;
 				}
-				Shell_ArgParse(tmpstr);
+				Shell_ArgParse(inst);
 				Elf_ProcLauncher(bfn, -1);
 			}
 	 }
@@ -607,9 +618,19 @@ int Shell_command_locator(char *inst)
 
 int Shell_command_locator_CC(char *inst)
 {
-	 uint32_t tmp = 0;
+	uint32_t tmp = 0;
+	
+	for(int i = 0; inst[i] != ' ' && inst[i] != '\0' ; i++)
+	{
+		++tmp;
+	}
 
-	 char* tmpstr = strtok(inst, " ");
+	char tmpstr[tmp+1];
+	strncpy(tmpstr, inst, tmp);
+	tmpstr[tmp] = '\0';
+
+	tmp = 0;
+
 	 int i;
 	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
 	 {
@@ -627,7 +648,7 @@ int Shell_command_locator_CC(char *inst)
 
 				 func_t func = ((Shell_Commands_t*)ptr)->func;
 
-				 Shell_ArgParse(tmpstr);
+				 Shell_ArgParse(inst);
 				 func();
 
 				 memset_faster((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
@@ -642,7 +663,7 @@ int Shell_command_locator_CC(char *inst)
 					printf("\n Command Not Recognized! type help for help %x\n", tmpstr ); //TODO: Search within other possible files/executables like in the PATH string.
 					return -1;
 				}
-				Shell_ArgParse(tmpstr);
+				Shell_ArgParse(inst);
 				Elf_ProcLauncher(bfn, -1);
 			}
 	 }

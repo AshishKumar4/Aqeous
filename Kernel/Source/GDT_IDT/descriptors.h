@@ -17,6 +17,10 @@ typedef uint16_t gdt_ptr_t[3];
 void init_descriptor_tables();
 
 typedef uint64_t idt_entry_t;
+
+uint32_t descMalloc_ptr = 0x00007E00;
+uint32_t descMalloc_cnt = 0; 
+
 /*
 struct idt_entry_struct
  {
@@ -158,7 +162,7 @@ void AP_idt_Setup(uint32_t* idt, uint32_t* idtr);
 
 uintptr_t  pmode_GDT_init(uint32_t APIC_id);
 uintptr_t  pmode_IDT_init(uint32_t APIC_id);
-uintptr_t  pmode_IDT_initP(uint32_t APIC_id);
+uintptr_t  pmode_IDT_initP();
 void pmode_GDT_lgdt(uint32_t APIC_id, uintptr_t gdt_new);
 void pmode_IDT_lidt(uint32_t APIC_id, uintptr_t idt_new);
  void pmode_TSS_ltr(uint32_t APIC_id, uintptr_t tss_off);

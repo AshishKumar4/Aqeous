@@ -60,7 +60,7 @@ int PrTbl_entry(ProcDirectory_t* prdir, Process_t* process)
             }
         }
     }
-    PrTbl_create(prdir);
+    PrTbl_create((uint32_t*)prdir);
     goto back;
     return 0;
 }

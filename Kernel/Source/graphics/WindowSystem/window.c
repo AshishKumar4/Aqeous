@@ -207,7 +207,7 @@ window_object_t* createWindowObjectRects_relative(window_t* w, int c_x, int c_y,
   return new_obj;
 }
 
-void setEventHandle(window_object_t* obj, int event, window_eventHandlers_t* handle)
+void setEventHandle(window_object_t* obj, int event, window_eventHandlers_t handle)
 {
   obj->handles[event] = handle;
 }

@@ -42,9 +42,9 @@ void __attribute__((optimize("O0"))) syscall_init()
   uint32_t syscallvec_sz = (uint32_t)syscall_vector_end_t - (uint32_t)syscall_vector_t;
   printf("\nsyscallvec_sz: %d", syscallvec_sz);
 
-  cpuGetMSR(IA32_SYSENTER_CS, 0x08, 0);
-  cpuGetMSR(IA32_SYSENTER_ESP, 0xCD00000, 0);
-  cpuGetMSR(IA32_SYSENTER_EIP, &kernel_main, 0);
+  cpuGetMSR(IA32_SYSENTER_CS, (uint32_t*)0x08, 0);
+  cpuGetMSR(IA32_SYSENTER_ESP, (uint32_t*)0xCD00000, 0);
+  cpuGetMSR(IA32_SYSENTER_EIP, (uint32_t*)&kernel_main, 0);
   for(int i = 0; i < total_CPU_Cores; i++)
   {
 

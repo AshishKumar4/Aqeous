@@ -24,7 +24,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 //	New_task_entry->test = 2;
 	//Process_t* process = process_ptr;
 	if(process->pgdir != (uint32_t)system_dir)
-		map((uint32_t)New_task_entry,4096*2,(PageDirectory_t*)process->pgdir);
+		map_kernelOnly((uint32_t)New_task_entry,4096*2,(PageDirectory_t*)process->pgdir);
 
 	if(!process->total_tasks)
 	{
@@ -91,6 +91,7 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 	New_task->esp = (uint32_t)stack;
 	New_task->tokens = priority;
 	New_task->func = (uint32_t)func;
+	New_task->magic = 0x42841999;
 
 	//TODO: Complete this function, check everything thrice
 
@@ -99,8 +100,8 @@ task_t* create_task(char* name, func_t func, uint32_t priority, uint32_t flags, 
 
 void Task_Refresh(task_t* task, func_t func)  /// Refresh a task to give it a new memory region
 {
-	SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
-	/*if(kit != Get_Scheduler())
+	/*SchedulerKits_t* kit = (SchedulerKits_t*)task->Scheduler;
+	if(kit != Get_Scheduler())
 	{
 		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
 		pp->type = TASK_REFRESH;
@@ -155,6 +156,7 @@ void Task_Refresh(task_t* task, func_t func)  /// Refresh a task to give it a ne
 	*--stack = ds;		// ds, es, fs, gs
 
 	New_task->esp = (uint32_t)stack;
+	New_task->magic = 0x42841999;
 /*
 	printf("\nASXXXXXX");
 	if(New_task->delivery_flag == 0x9999)
@@ -206,7 +208,7 @@ void __attribute__((optimize("O0"))) Activate_task(task_table_t* task_entry) ///
 
 	ThreadTableEntry_t* tht = ThreadTable_alloc();
 	tht->task = task;
-	tht->pgdir = task->pgdir;
+	tht->pgdir = (PageDirectory_t*)task->pgdir;
 	task->ThreadTable_entry = (uint32_t)tht;
 	*q_entry = (uint32_t)tht; ///Fill in the Entry with the address of the new Task!!!
 
@@ -257,7 +259,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct(task_t* task) /// Put 
 
 	ThreadTableEntry_t* tht = ThreadTable_alloc();
 	tht->task = task;
-	tht->pgdir = task->pgdir;
+	tht->pgdir = (PageDirectory_t*)task->pgdir;
 	task->ThreadTable_entry = (uint32_t)tht;
 	*q_entry = (uint32_t)tht; ///Fill in the Entry with the address of the new Task!!!
 
@@ -309,7 +311,7 @@ void __attribute__((optimize("O0"))) Activate_task_direct_SP(task_t* task, Sched
 
 	ThreadTableEntry_t* tht = ThreadTable_alloc();
 	tht->task = task;
-	tht->pgdir = task->pgdir;
+	tht->pgdir = (PageDirectory_t*)task->pgdir;
 	//printf("\n<[%x]",tht->pgdir);
 	task->ThreadTable_entry = (uint32_t)tht;
 	*q_entry = (uint32_t)tht; ///Fill in the Entry with the address of the new Task!!!
@@ -342,7 +344,7 @@ void __attribute__((optimize("O0"))) Activate_task_strict_SP(task_t* task, Sched
 
 	ThreadTableEntry_t* tht = ThreadTable_alloc();
 	tht->task = task;
-	tht->pgdir = task->pgdir;
+	tht->pgdir = (PageDirectory_t*)task->pgdir;
 	//printf("\n<[%x]",tht->pgdir);
 	task->ThreadTable_entry = (uint32_t)tht;
 	*q_entry = (uint32_t)tht; ///Fill in the Entry with the address of the new Task!!!
@@ -453,7 +455,7 @@ void __attribute__((optimize("O0"))) kill()	// Know on which core the kill funct
 		Shell_Softwakeup();
 	}
 
-	ThreadTable_free(((task_t*)kit->current_task)->ThreadTable_entry);
+	ThreadTable_free((ThreadTableEntry_t*)((task_t*)kit->current_task)->ThreadTable_entry);
 
 	memset_fast((void *)kit->current_task, 0, sizeof(task_t));
 	//mtfree(kit->current_task, 2);
@@ -468,7 +470,7 @@ void __attribute__((optimize("O0"))) kill()	// Know on which core the kill funct
 void __attribute__((optimize("O0"))) _kill(task_t* task)	// Know on which core the kill function has been called. Then get the scheduler of the core and get the current_task
 {
 	SchedulerKits_t* kit = task->Scheduler;//Get the Scheduler of the core on which this instruction is executed.
-/*
+
 	if(kit != Get_Scheduler())
 	{
 		IPCPacket_t *pp = kmalloc(sizeof(IPCPacket_t));
@@ -484,7 +486,7 @@ void __attribute__((optimize("O0"))) _kill(task_t* task)	// Know on which core t
 
 		return;
 	}
-*/
+
 	if(task->active)
 	{
 		uint32_t *place_holder = (uint32_t *)task->active;
@@ -521,7 +523,7 @@ void __attribute__((optimize("O0"))) _kill(task_t* task)	// Know on which core t
 	{
 		Shell_Softwakeup();
 	}
-	ThreadTable_free(task->ThreadTable_entry);
+	ThreadTable_free((ThreadTableEntry_t*)task->ThreadTable_entry);
 	memset_fast((void *)task, 0, 16);
 	//mtfree(task, 2);
 	--kit->tasks;
@@ -561,7 +563,7 @@ void __attribute__((optimize("O0"))) kill_with_func(func_t func)
 		Shell_Softwakeup();
 	}
 
-	ThreadTable_free(((task_t*)kit->current_task)->ThreadTable_entry);
+	ThreadTable_free((ThreadTableEntry_t*)((task_t*)kit->current_task)->ThreadTable_entry);
 
 	memset_fast((void *)kit->current_task, 0, 16);
 	mtfree(kit->current_task, 2);

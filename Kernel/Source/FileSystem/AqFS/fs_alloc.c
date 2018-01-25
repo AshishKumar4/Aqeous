@@ -68,7 +68,7 @@ uint64_t sec_alloc(uint32_t sectors)
 {
   printf("Aa%d\n",sectors);
   uint32_t buf=fsalloc(512);
-  uint8_t* ptr=(uint16_t*)buf;
+  uint8_t* ptr=(uint8_t*)buf;
   uint8_t* tmp = NULL;
   uint64_t block=0;
   uint32_t stmp=0;
@@ -95,15 +95,15 @@ uint64_t sec_alloc(uint32_t sectors)
 
         memset((void*)buf,0,512);
         uint64_t* pp = start_off + (block/512);
-        read(curr_port,pp,1,(DWORD)buf);
+        read(curr_port, (QWORD)pp,1,(DWORD)buf);
         for(int k = 0; k < sectors; k++)
         {
           if((ptr - (uint8_t*)buf) == 512)
           {
-            write(curr_port,pp,1,(DWORD)buf);
+            write(curr_port, (QWORD)pp,1,(DWORD)buf);
             memset((void*)buf,0,512);
             ++pp;
-            read(curr_port,pp,1,(DWORD)buf);
+            read(curr_port, (QWORD)pp,1,(DWORD)buf);
             ptr=(uint8_t*)buf;
           } //TODO: RECHECK EVERYTHING
           *ptr = 0xff;

@@ -53,7 +53,7 @@ Pdir_Capsule_t* pgdir_maker()
   return npd_Cap;
 }
 
-void kernelPgDir_Builder(PageDirectory_t* dir)  // Used to build kernel-pre-mapped page directory templates
+uint32_t kernelPgDir_Builder(PageDirectory_t* dir)  // Used to build kernel-pre-mapped page directory templates
 {
   kernelPgDir_MapMaker(dir);
   cumulative_Knlpgdsz = 0;
@@ -64,9 +64,8 @@ void kernelPgDir_Builder(PageDirectory_t* dir)  // Used to build kernel-pre-mapp
       ++cumulative_Knlpgdsz;
     }
   }
-  uint32_t tbl_base = pmem_4k(cumulative_Knlpgdsz), tmp_b = tbl_base;
-  TemplatePgTbl_Array = tbl_base;
-  uint32_t tmp = cumulative_Knlpgdsz;
+  uint32_t tbl_base = (uint32_t)pmem_4k(cumulative_Knlpgdsz), tmp_b = tbl_base;
+  TemplatePgTbl_Array = (PageTable_t*)tbl_base;
   for(int i = 0; i < 1024; i++)
   {
     if(dir->table_entry[i])
@@ -83,7 +82,7 @@ void kernelPgDir_Builder(PageDirectory_t* dir)  // Used to build kernel-pre-mapp
 void MapKernelPages(PageDirectory_t* dir)
 {
   PageDirectory_t* tmp = TemplatePgDir;
-  uint32_t tb = pmem_4k(cumulative_Knlpgdsz);//TemplatePgTbl_Array;
+  uint32_t tb = (uint32_t)pmem_4k(cumulative_Knlpgdsz);//TemplatePgTbl_Array;
   memcpy_fast((void*)tb, (void*)TemplatePgTbl_Array, cumulative_Knlpgdsz*4096);
   memcpy_fast((void*)dir, (void*)tmp, 4096);
   for(int i = 0; i < 1024; i++)
@@ -109,7 +108,7 @@ void kernelPgDir_MapMaker(PageDirectory_t* dir)
 
   map_readOnly(0xF0000000, 0xFFFFF000-0xF0000000, dir); 
 
-  map(ThT_phy_mm, THREADTABLE_SIZE,(PageDirectory_t*)dir);
+  map((uint32_t)ThT_phy_mm, THREADTABLE_SIZE,(PageDirectory_t*)dir);
 
   SchedulerKits_t* st = (SchedulerKits_t*)MotherSpace;
   map((uint32_t)MotherSpace,4096,(PageDirectory_t*)dir);
@@ -126,7 +125,7 @@ void kernelPgDir_MapMaker(PageDirectory_t* dir)
   }
   //syscall_MapPdir((PageDirectory_t*)dir);
   LibSym_MapPdir((PageDirectory_t*)dir);
-  Map_non_identity(ThT_phy_mm, THREADTABLE_VMEM, THREADTABLE_SIZE, dir);
+  Map_non_identity((uint32_t)ThT_phy_mm, THREADTABLE_VMEM, THREADTABLE_SIZE, dir);
 }
 
 inline void Map_non_identity(uint32_t phys, uint32_t virt, uint32_t size, PageDirectory_t* dir)
@@ -334,7 +333,7 @@ void SwitchFrom_SysDir()
 
 void switch_directory(PageDirectory_t *dir)
 {
-  Get_Scheduler()->current_pdir = dir;
+  Get_Scheduler()->current_pdir = (uint32_t*)dir;
 	asm volatile("mov %0, %%cr3":: "r"((uint32_t)dir):"memory");
 }
 

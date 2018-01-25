@@ -27,7 +27,7 @@ typedef struct CSI_struct
 volatile CSI_struct_t* Main_CSI_struct;
 
 uint32_t* CSI_entries_ptr;
-uint32_t* tot_entries;
+uint32_t tot_entries;
 
 volatile uint32_t* CSI_mem_start;
 

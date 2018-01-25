@@ -67,7 +67,7 @@ build-nasm:
 	$(NASM) -f elf $(ARCH)/interrupts.asm -o $(OBJ)/interrupts.o
 	$(NASM) -f elf $(ARCH)/FaultHandlers.asm -o $(OBJ)/FaultHandlers.o
 	$(NASM) -f elf $(ARCH)/asmlibrary.asm -o $(OBJ)/asmlibrary.o
-	$(NASM) -f elf $(ARCH)/a.asm -o $(OBJ)/a.o
+#	$(NASM) -f elf $(ARCH)/a.asm -o $(OBJ)/a.o
 	$(NASM) -f elf $(ARCH)/scheduler.asm -o $(OBJ)/scheduler.o
 	$(NASM) -f elf $(ARCH)/AP_Bootup.asm -o $(OBJ)/AP_Bootup.o
 	$(NASM) -f elf $(ARCH)/AP_RealMode.asm -o $(OBJ)/AP_RealMode.o

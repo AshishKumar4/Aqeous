@@ -377,8 +377,11 @@ inline AqFhdr_t* Aq_FileGet_Header(AqLocation_t* l)
 
 AqDirectory_t* Aq_DirGet_Parent(char* path)
 {
-    int depth = Aq_FindDepth(path);
-    if(path[0] == '/')
+    char pp[strlen(path)];
+    strcpy(pp, path);
+
+    int depth = Aq_FindDepth(pp);
+    if(pp[0] == '/')
     {
         // Starts from root Directory
         --depth;
@@ -390,7 +393,7 @@ AqDirectory_t* Aq_DirGet_Parent(char* path)
     }
   //  printf("\n<%d>", depth);
 
-    char* tmp = strtok(path, "/");
+    char* tmp = strtok(pp, "/");
     
     AqDirectory_t* td = (AqDirectory_t*)kmalloc(AQ_BLOCK_SIZE);
     if(!AqRead(&(Aq_DirGet_Entry(Aq_CurrentDir, tmp)->location), (uint32_t*)td, AQ_BLOCKS_PER_SECTOR))
@@ -413,15 +416,18 @@ AqDirectory_t* Aq_DirGet_Parent(char* path)
 
 AqDirectory_t* Aq_DirGet_Dir(char* path)
 {
-    int depth = Aq_FindDepth(path);
+    char pp[strlen(path)];
+    strcpy(pp, path);
 
-    if(path[0] == '/')
+    int depth = Aq_FindDepth(pp);
+
+    if(pp[0] == '/')
     {
         // Starts from root Directory
         --depth;
     }
 
-    char* tmp = strtok(path, "/");
+    char* tmp = strtok(pp, "/");
 
     AqDirectory_t* td = (AqDirectory_t*)kmalloc(AQ_BLOCK_SIZE);
     AqRead(&(Aq_DirGet_Entry(Aq_CurrentDir, tmp)->location), (uint32_t*)td, AQ_BLOCKS_PER_SECTOR);

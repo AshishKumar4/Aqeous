@@ -6,11 +6,11 @@
 
 #include "CancerCure.h"
 
-uint32_t extern CancerCure_addr;
+extern uint32_t CancerCure_addr;
 
 void CancerCure_init()
 {
-  CancerCure_addr = CancerCure;
+  CancerCure_addr = (uint32_t)CancerCure;
 }
 
 void CancerCure(uint32_t fault, uint32_t eip)

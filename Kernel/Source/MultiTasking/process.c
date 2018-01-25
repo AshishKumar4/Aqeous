@@ -54,7 +54,6 @@ void Delete_Process(Process_t* proc)
 
   // Free all page tables, Page Directory
   PageDirectory_t* pgdir = (PageDirectory_t*)proc->pgdir;
-  pfree((void*)(pgdir->table_entry[0] & 0xfffff000));
 
   // Free all memory requested by the process 
   // Free all threads Made by the process 
@@ -64,6 +63,7 @@ void Delete_Process(Process_t* proc)
   {
     tmp2 = tmp->next;
     task_t* tt = (task_t*)tmp;
+    tt->magic = 0x1111; // For notifying other processors that this is gonna be deleted
     printf("\n=>%s;", tt->name);
     if(tt->active == 0)
     {
@@ -74,6 +74,7 @@ void Delete_Process(Process_t* proc)
     pfree(tmp);
   }
   
+  pfree((void*)(pgdir->table_entry[0] & 0xfffff000));
   *(proc->prdir_Entry) = 0;
   // Delete the page structures
   pfree(proc);

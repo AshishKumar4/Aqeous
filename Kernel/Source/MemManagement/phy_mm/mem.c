@@ -625,8 +625,9 @@ void __attribute__((optimize("O2"))) mtfree(uint32_t addr, uint32_t size)
       ++page_sys;
       ++page;
    }/*/
-	 size = 0;
-	 pfree((void*)addr);//*/
+	size = 0;
+   	printf("[%d]", size);
+	pfree((void*)addr);//*/
 }
 
 uint32_t fsalloc(uint32_t sz)

@@ -126,10 +126,10 @@ k_schedule:
     cmp eax, ebx                        ;   Compare current cr3 and new pgdir
     je k_nw 
 
-k_switch:                               ;   Switch Page Directory
-    mov dword eax, ebx
-    mov dword cr3, eax                  ;   Switch to New Page Directory
-    mov dword [0x4284ACD1], eax         ;   Update Current Dir
+    k_switch:                               ;   Switch Page Directory
+        mov dword eax, ebx
+        mov dword cr3, eax                  ;   Switch to New Page Directory
+        mov dword [0x4284ACD1], eax         ;   Update Current Dir
 
 k_nw:
     mov dword eax, [0x4284ACD3]         ;   Get New Thread Entry Struct
@@ -137,9 +137,26 @@ k_nw:
     mov dword eax, [eax]                ;   Get New Task Struct
     mov dword [0x4284ACD3], eax         ;   Save The Task Structure in Current_Task instead of Task Structure Entry!
 
-    mov dword esp, [eax]                ;   Load New Stack
+k_check:
+    mov ebx, [eax+32]
+    cmp ebx, 0x42841999                 ;   Check if magic not set, Schedule again!
+    je kkk
 
+        mov ecx, eax
+        mov eax, [0x4284ACD2]               ;   Switch to kernel directory
+        mov cr3, eax
+
+        mov ebx, [ecx+24]
+        mov eax, [0x42843333]
+        mov edx, [eax+28]
+        mov [ebx], edx                  ;   Replace the queue entry of zombie task with that of spurious task
+
+        ;jmp k_check
+
+kkk:
+    mov dword esp, [eax]                ;   Load New Stack
     pop dword eax
+
     mov ds, ax 
     mov es, ax 
     mov fs, ax 
@@ -157,8 +174,7 @@ k_nw:
     mov dword [eax], edx
     pop dword edx
     pop dword eax
-  ;  hlt
-   ;; sti
+    
     iretd
 
 

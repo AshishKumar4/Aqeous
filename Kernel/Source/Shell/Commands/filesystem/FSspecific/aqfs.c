@@ -16,7 +16,7 @@ void aqfs_cd(char* dir)
    if(!strncmp(dir,"..",2))
    {
       set_curr_dir(curr_dir.dir->parent, "..");
-      strcpy(current_dir.name, curr_dir.full_name);
+      strcpy((char*)current_dir.name, (const char*)curr_dir.full_name);
    }
    else
    {
@@ -25,7 +25,7 @@ void aqfs_cd(char* dir)
       {
         //printf("%g%s%g", 10, dir, 15);
         set_curr_dir(new_dir->location, dir);
-        strcpy(current_dir.name, curr_dir.full_name);
+        strcpy((char*)current_dir.name, (const char*)curr_dir.full_name);
       }
     //  while(1);
       //  set_curr_dir(curr_dir.dir.location);
@@ -61,9 +61,9 @@ void aqfs_cp(char* dpath, char* spath, char* nname)
   file_closeOGP(spath);
 
   char* npath = kmalloc(strlen(dpath)+strlen(nname)+1);
-  strcpy(npath, dpath);
+  strcpy(npath, (const char*)dpath);
   npath[strlen(dpath)] = '/';
-  strcpy(npath + strlen(dpath) + 1 , nname);
+  strcpy(npath + strlen(dpath) + 1 , (const char*)nname);
 
   create_file(nname, 1, dpath);
 
@@ -119,13 +119,13 @@ void aqfs_del(char* path)
 
 void aqfs_mkdir(char* path)
 {
-  char* tmpath = kmalloc(strlen(path)+1);
+  char* tmpath = kmalloc(strlen((const char*)path)+1);
   strcpy(tmpath, path);
 
   char* tmpstr = tmpath;
   char* fname;
   int i = 0;
-  for(i = strlen(tmpath) - 1; tmpstr[i]!='/' && i>=0; i--);
+  for(i = strlen((const char*)tmpath) - 1; tmpstr[i]!='/' && i>=0; i--);
 
   fname = &tmpstr[i+1];
   if(i>0)
@@ -136,15 +136,15 @@ void aqfs_mkdir(char* path)
   printf("\n%s directory created\n",path);
 }
 
-void aqfs_mkfl(char *path, char* dir_name)
+void aqfs_mkfl(char *path)
 {
-  char* tmpath = kmalloc(strlen(path)+1);
+  char* tmpath = kmalloc(strlen((const char*)path)+1);
   strcpy(tmpath, path);
 
   char* tmpstr = tmpath;
   char* fname;
   int i = 0;
-  for(i = strlen(tmpath) - 1; tmpstr[i]!='/' && i>=0; i--);
+  for(i = strlen((const char*)tmpath) - 1; tmpstr[i]!='/' && i>=0; i--);
 
   fname = &tmpstr[i+1];
   if(i>0)
@@ -170,7 +170,7 @@ void aqfs_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint3
     if(!type || !strcmp("app", (char*)type))
     {
       printf("\n Data written!");
-      printf(" %x\n", file_writeAppend(data, strlen((char*)data), path));
+      printf(" %x\n", file_writeAppend(data, strlen((const char*)data), path));
     }
     else if(!strcmp("edit", (char*)type))
     {
@@ -210,11 +210,11 @@ void* aqfs_rfl(char* path, uint32_t off, uint32_t sz)
   if(!file_loadOGP(path))
   {
     printf("\n%s file dosent exist!\n",path);
-    return;
+    return NULL;
   }
 
   if(!sz) sz = file_size(path);
-  printf("\nSize of the file: %x \n", sz);
+  printf("\nSize of the file: %x, off: %d \n", sz, off);
 
   uint32_t* buffer = kmalloc(sz);
 
@@ -229,5 +229,5 @@ void* aqfs_rfl(char* path, uint32_t off, uint32_t sz)
 
 void aqfs_mv(char* path, char* spath)
 {
-
+  printf("%s %s", path, spath);
 }

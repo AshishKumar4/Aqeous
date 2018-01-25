@@ -237,7 +237,7 @@ void __attribute__((optimize("O2"))) pageFault_caller()
   // Find the page table containing this address.
   uint32_t table_idx = addr / 1024;
 
-  PageDirectory_t* dir = current_pdir;
+  PageDirectory_t* dir = (PageDirectory_t*)current_pdir;
   //printf("{%u}", faulting_address);
 
   page_t* page;
@@ -347,16 +347,13 @@ void PIT_Handle()
 
 uint32_t ag = 1,ab = 0;
 
-inline void KeyboardHandler()
+void keyboardInterrupt_handler()
 {
   int scancode=inb(0x60);
   if(scancode <= 0x80+0x60)
-    MainScodes->scodes[scancode].func(MainScodes->scodes[scancode].code);
-}
-
-void keyboardInterrupt_handler()
-{
-  KeyboardHandler();
+  {
+    NormalKey_Func(scancode);
+  }
   return;
 }
 

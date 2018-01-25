@@ -18,7 +18,7 @@ volatile ThreadTableEntry_t* ThT_phy_mm, *ThT_vir_mm = (ThreadTableEntry_t*)THRE
 
 #define THREADTABLE_MAX_ENTRYS          THREADTABLE_SIZE/sizeof(ThreadTableEntry_t)
 
-
+void ThreadTable_init();
 ThreadTableEntry_t* ThreadTable_alloc();
 void ThreadTable_free(ThreadTableEntry_t* entry);
 void ThreadTable_SetEntry(task_t* task);

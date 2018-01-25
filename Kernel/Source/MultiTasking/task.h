@@ -24,6 +24,7 @@ typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU
     uint32_t tokens;            //20
     uint32_t active;            //24
     uint32_t ThreadTable_entry;         //28
+    uint32_t magic;
     uint32_t special;
     uint32_t RtFlags;
     uint32_t mem_used;

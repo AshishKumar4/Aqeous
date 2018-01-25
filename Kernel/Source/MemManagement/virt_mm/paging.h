@@ -91,7 +91,7 @@ void Setup_SystemDir();
 Pdir_Capsule_t* pgdir_maker();
 
 /****/
-void kernelPgDir_Builder(PageDirectory_t* dir);
+uint32_t kernelPgDir_Builder(PageDirectory_t* dir);
 void MapKernelPages(PageDirectory_t* dir);
 void kernelPgDir_MapMaker(PageDirectory_t* dir);
 inline void Kernel_Mapper(PageDirectory_t* dir);

@@ -22,7 +22,7 @@ void console_updateCursor();
 inline void console_setcolor(uint8_t color);
 inline void console_putentryat(char c, uint8_t color, size_t x, size_t y);
 int console_putcharF(char ic);
-int console_putcharK(int c);
+int console_putcharK(char c);
 
 int (*console_putchar)(char);
 

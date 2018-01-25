@@ -406,7 +406,7 @@ FILE* fopen(const char* filename, const char* mode)
 	if(!handle)
 	{
 		printf("\n\"%s\" File dosent exist", filename);
-		if(stroccr(mode, 'w'))
+		if(stroccr((char*)mode, 'w'))
 		{
 			// Create the file!
 			Current_Partition->FS.mkfl(filename, NULL);

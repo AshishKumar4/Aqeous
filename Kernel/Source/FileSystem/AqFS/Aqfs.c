@@ -61,7 +61,7 @@ int Aq_CreateRoot()
     Aq_LocationCopy(&(mhd->rootDir), &(newD->location));
     Aq_Save_MHeader(mhd);
 
-    kfree(newD);
+    kfree((void*)newD);
     return 0;
 }
 
@@ -119,7 +119,7 @@ int Aqfs2_Partitioner(int partitionId, int start, int size)
     identity->bootBytes[1] = 0xAA;
     AqDirect_write(curr_port, 0, 0, 2, buf);     // Read first 1024 bytes.
     
-    kfree(buf);
+    kfree((void*)buf);
     return 0;
 }
 
@@ -217,7 +217,7 @@ int Aq_CreateNew_File(char* name, uint32_t perm)
     ++parent->n_files;
     Aq_DirSave_Dir(parent);
     
-    kfree(newF);    
+    kfree((void*)newF);    
     return 0;
 }
 
@@ -261,7 +261,7 @@ int Aq_CreateNew_Directory(char* name, uint32_t perm)
     ++parent->n_dir;
     Aq_DirSave_Dir(parent);
                  
-    kfree(newD);
+    kfree((void*)newD);
     return 0;
 }
 
@@ -280,12 +280,12 @@ int Aq_Delete_File(char* path)
     AqDhdr_t* hdr = Aq_GetDhdr_fromEntry(entry);
     --hdr->usedEntrys;
     Aq_DirSave_Header(hdr);
-    kfree(hdr);
+    kfree((void*)hdr);
     --parent->n_files;
     Aq_DirSave_Dir(parent);
     // TODO: Delete File structure
     AqFree(&(file->location), 1);
-    kfree(file);
+    kfree((void*)file);
     return 0;
 }
 
@@ -301,10 +301,10 @@ int Aq_Delete_Dir(char* path)
     AqDhdr_t* hdr = Aq_GetDhdr_fromEntry(entry);
     --hdr->usedEntrys;
     Aq_DirSave_Header(hdr);
-    kfree(hdr);
+    kfree((void*)hdr);
 
     AqFree(&(dir->location), 1);
-    kfree(dir);
+    kfree((void*)dir);
     return 0;
 }
 
@@ -361,15 +361,32 @@ AqHandle_t* Aq_Load(char* path)
 AqHandle_t* Aq_LoadFile(char* path)
 {
   //  printf("\n{%s}", path);
+    char* pp = (char*)kmalloc(strlen(path));
+    strcpy(pp, path);
+
     AqDirectory_t* parent = Aq_DirGet_Parent(path);
-    AqDhdrEntry_t* entry = Aq_DirGet_FileEntry(parent, Aq_GetLname(path));
+    char* lname = Aq_GetLname(path);
+    AqDhdrEntry_t* entry = Aq_DirGet_FileEntry(parent, lname);
     AqHandle_t* handle = (AqHandle_t*)kmalloc(sizeof(AqHandle_t));
     AqFile_t* desc = (AqFile_t*)kmalloc(512);
-    AqRead(&(entry->location), (uint32_t*)desc, AQ_BLOCK_SIZE/AQ_SECTOR_SIZE);
+
+    handle->path = pp;
+
+    if(entry)
+    {
+        AqRead(&(entry->location), (uint32_t*)desc, AQ_BLOCK_SIZE/AQ_SECTOR_SIZE);
+        handle->existance = AQ_EXISTANCE_REAL;
+        strcpy(handle->name, entry->name);
+        handle->type = entry->type;
+    }
+    else
+    {
+        handle->existance = AQ_EXISTANCE_VIRTUAL;
+        strcpy(handle->name, lname);
+    }
+    
   //  printf("\n{%s, %d; desc->magic %x}", entry->name, entry->location.lower32, desc->magic);
     handle->descriptor = (uintptr_t)desc;
-    strcpy(handle->name, entry->name);
-    handle->type = entry->type;
     // Put in some sort of loaded file table
     return handle;
 }
@@ -378,8 +395,8 @@ int Aq_CloseFile(AqHandle_t* handle)
 {
     Aq_Save_All();
     Aq_FileSave_File(Aq_HandleGet_File(handle));
-    kfree(handle->descriptor);
-    kfree(handle);
+    kfree((void*)handle->descriptor);
+    kfree((void*)handle);
     return 0;
 }
 
@@ -412,7 +429,7 @@ int Aq_ReadFile(uint32_t* buffer, uint32_t offset, uint32_t size, AqHandle_t* ha
     size -= t1;
   //  printf("\n[Size: %d, t2: %d, t1: %d, %d]", size, t2, t1, t1 - ie->offset);
   //  printf("\n%s\n[%d, %d; size: %d, used: %d, ie->offset: %d; loc: %d]", tbuf, t1, strlen(tbuf), size, ie->used, ie->offset, ie->location.lower32);
-    kfree(tbuf);
+    kfree((void*)tbuf);
     
     uint32_t buf = (uint32_t)buffer;
     buf += t1;
@@ -434,7 +451,7 @@ int Aq_ReadFile(uint32_t* buffer, uint32_t offset, uint32_t size, AqHandle_t* ha
 
       //  printf("\n%s\n[%d, %d; size: %d, used: %d, ie->offset: %d; loc: %d]", tbuf, t1, strlen(tbuf), size, ie->used, ie->offset, ie->location.lower32);
 
-        kfree(tbuf);
+        kfree((void*)tbuf);
 
         size -= t1;
         buf += t1;
@@ -450,6 +467,16 @@ int Aq_WriteFile_Append(uint32_t* buffer, uint32_t size, AqHandle_t* handle)
     if(!handle)
     {
         return 0;
+    }
+    
+    if(handle->existance == AQ_EXISTANCE_VIRTUAL)
+    {
+        // Create this fucking file
+        Aq_CreateNew_File(handle->path, NULL);
+        AqDirectory_t* parent = Aq_DirGet_Parent(handle->path);
+        AqDhdrEntry_t* entry = Aq_DirGet_FileEntry(parent, handle->name);
+        AqRead(&(entry->location), (uint32_t*)handle->descriptor, AQ_BLOCK_SIZE/AQ_SECTOR_SIZE);
+        handle->existance = AQ_EXISTANCE_REAL;
     }
     // First get the Last entry
     AqFile_t* file = Aq_HandleGet_File(handle);
@@ -503,7 +530,7 @@ int Aq_WriteFile_Append(uint32_t* buffer, uint32_t size, AqHandle_t* handle)
         size -= t1;
         
         file->info.data_size += ts;
-        kfree(tbuf);
+        kfree((void*)tbuf);
 
         Aq_FileSave_Entry(ie);
         if(size)

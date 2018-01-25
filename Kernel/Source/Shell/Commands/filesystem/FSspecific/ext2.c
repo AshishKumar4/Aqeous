@@ -97,30 +97,30 @@ void ext2_cd(char* arguments)
 
 void ext2_cp(char* dpath, char* spath, char* nname)
 {
-
+  printf("%s %s %s", dpath, spath, nname);
 }
 
 void ext2_del(char* path)
 {
-
+  printf("%s", path);
 }
 
-void ext2_mkfl(char *path, char* dir_name)
+void ext2_mkfl(char *path)
 {
-
+  printf("%s", path);
 }
 
 void ext2_editfl(char* path, uint32_t* data, uint32_t* type, uint32_t off, uint32_t osz)
 {
-
+  printf("%s %d %d %d %d", path, data, type, off, osz);
 }
 
 void ext2_rfl(char* path, uint32_t off, uint32_t sz)
 {
-
+  printf("%s %d %d ", path, off, sz);
 }
 
 void ext2_mv(char* path, char* spath)
 {
-  
+  printf("%s %s", path, spath);
 }

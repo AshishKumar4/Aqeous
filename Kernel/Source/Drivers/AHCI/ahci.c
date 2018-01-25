@@ -262,10 +262,10 @@ int check_type(HBA_PORT *port)
 
 	BYTE ipm = (ssts >> 8) & 0x0F;
   BYTE det = ssts & 0x0F;
-  /*
+  
   if(!sact)
     return AHCI_DEV_NULL;
-*/
+
   if(det == 1)
   {
     printf("\nDevice presence detected but Phy communication not established ");
@@ -385,14 +385,8 @@ void stop_cmd(HBA_PORT *port)
 
 int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 {
-  /*for(int i = 0; i < count; i++)
-  {
-    SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf, 1, 512,start & 0xffffffff,start >> 32, 1);
-    buf += 512;
-    ++start;
-  }//*/
   if(!sata) return 0;
-  for(int i = 0; i < count/64; i++)
+  for(DWORD i = 0; i < count/64; i++)
   {
     if(SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((64-1)>>4) + 1,512*64,start & 0xffffffff,start >> 32, 64))
     {
@@ -408,7 +402,6 @@ int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 	if (port->is & HBA_PxIS_TFES)
 	{
     printf("Read disk error\n");
-    while(1);
 		return 0;
 	}//*/
 	return 1;
@@ -416,15 +409,9 @@ int read(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 }
 
 int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
-{/*
-  for(int i = 0; i < count; i++)
-  {
-    SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf, 1,512,start & 0xffffffff,start >> 32,1);
-    buf += 512;
-    ++start;
-  }*/
+{
   if(!sata) return 0;
-  for(int i = 0; i < count/64; i++)
+  for(DWORD i = 0; i < count/64; i++)
   {
     if(SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((64-1)>>4) + 1,512*64,start & 0xffffffff,start >> 32, 64))
     {
@@ -441,7 +428,6 @@ int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
   if (port->is & HBA_PxIS_TFES)
   {
       printf("Write disk error\n");
-      while(1);
       return 0;
   }//*/
   return 1;
@@ -451,7 +437,7 @@ int write(HBA_PORT *port, QWORD start, DWORD count, DWORD buf)
 int AqDirect_read(HBA_PORT *port, DWORD lower, DWORD higher, DWORD count, DWORD buf)
 {
   if(!sata) return 0;
-  for(int i = 0; i < count/64; i++)
+  for(DWORD i = 0; i < count/64; i++)
   {
     if(SATA_Commander(port,ATA_CMD_READ_SECTORS,0,buf,(WORD)((64-1)>>4) + 1,512*64, lower & 0xffffffff, higher, 64))
     {
@@ -467,7 +453,7 @@ int AqDirect_read(HBA_PORT *port, DWORD lower, DWORD higher, DWORD count, DWORD 
 	if (port->is & HBA_PxIS_TFES)
 	{
     printf("Read disk error\n");
-    while(1);
+    //while(1);
 		return 0;
 	}//*/
 	return 1;
@@ -477,7 +463,7 @@ int AqDirect_read(HBA_PORT *port, DWORD lower, DWORD higher, DWORD count, DWORD 
 int AqDirect_write(HBA_PORT *port, DWORD lower, DWORD higher, DWORD count, DWORD buf)
 {
   if(!sata) return 0;
-  for(int i = 0; i < count/64; i++)
+  for(DWORD i = 0; i < count/64; i++)
   {
     if(SATA_Commander(port,ATA_CMD_WRITE_SECTORS,1,buf,(WORD)((64-1)>>4) + 1,512*64, lower & 0xffffffff, higher, 64))
     {
@@ -494,7 +480,7 @@ int AqDirect_write(HBA_PORT *port, DWORD lower, DWORD higher, DWORD count, DWORD
   if (port->is & HBA_PxIS_TFES)
   {
       printf("Write disk error\n");
-      while(1);
+      //while(1);
       return 0;
   }//*/
   return 1;
@@ -673,13 +659,12 @@ int __attribute__((optimize("O0"))) SATA_Commander(HBA_PORT *port, WORD Command,
 	}
 
  // printf("\n=>{%x}", port->ci);
+
   /***Send the Command***/
+
   port->ci |= (1<<free_slot);
-  /*printf("\t{%x}", port->ci);
-  printf("\nworks");
-*/
+  
   /***Wait for a reply***/
-  int iii = 0;
  // printf("{START}");
   while(1)
   {

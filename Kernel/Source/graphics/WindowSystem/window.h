@@ -102,7 +102,7 @@ void Mouse_LeftClick_Handler(int x, int y);
 
 window_object_t* createWindowObjectRects_relative(window_t* w, int c_x, int c_y, int l_x, int l_y, int z_index, int r_x, int r_y, window_object_t* parent_obj, uint32_t color, uint32_t exec_opt);
 
-void setEventHandle(window_object_t* obj, int event, window_eventHandlers_t* handle);
+void setEventHandle(window_object_t* obj, int event, window_eventHandlers_t handle);
 
 window_t* create_window_basic(char* window_name, Process_t* proc, window_t* parentw, int center_x, int center_y, int length_x, int length_y, int z_index);
 window_t* create_window_partial(char* window_name, Process_t* proc, window_t* parentw, int center_x, int center_y, int length_x, int length_y, int z_index);

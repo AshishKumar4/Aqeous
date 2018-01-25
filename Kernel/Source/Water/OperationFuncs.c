@@ -113,10 +113,12 @@ Water_BasicTypeToken_t* Water_INT_opExp(Water_OperatorToken_t* op)
 
 Water_BasicTypeToken_t* Water_INT_RoundBracketO(Water_OperatorToken_t* op)
 {
+  printf("[%d]", op);
   return NULL;
 }
 
 Water_BasicTypeToken_t* Water_INT_RoundBracketC(Water_OperatorToken_t* op)
 {
+  printf("[%d]", op);
   return NULL;
 }

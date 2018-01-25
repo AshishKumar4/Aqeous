@@ -50,6 +50,14 @@ void __attribute__((optimize("O0"))) test_exit()
   asm volatile("iret");
 }
 
+void __attribute__((optimize("O0"))) Thread_StabalizerA()
+{
+  while(1)
+  {
+
+  }
+}
+
 DECLARE_LOCK(CORE_INFO);
 
 extern void syscall_vector();
@@ -69,7 +77,8 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
   memset(MotherSpace, 0, 4096);
   SchedulerKits_t* kits = (SchedulerKits_t*)MotherSpace;
 
-//  tss_entries = kmalloc(sizeof(tss_struct_t*)*(total_CPU_Cores-1));
+  tss_entries = kmalloc(sizeof(tss_struct_t*)*(total_CPU_Cores-1));
+  //descMalloc_ptr = pmem_4k(1);//phy_alloc4K();
 
   for(uint32_t i = 0; i < total_CPU_Cores; i++)
   {
@@ -103,6 +112,12 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
     temporary_stack += 512;
 
     kits->stack = temporary_stack;
+
+    kits->Spurious_task = (uint32_t*)create_task("Spurious_task", (func_t)spurious_func, 0, 0x202, kernel_proc);
+    ((task_t*)kits->Spurious_task)->special = 1;
+    ThreadTable_SetEntry(((task_t*)kits->Spurious_task));
+
+    ByteSequence_Replace(0x42843333, 4, (uint32_t)&kits->Spurious_task, 4, kits->switcher, kits->switcher + sz_switcher); // Spurious Task Struct
 
     ByteSequence_Replace(0x4284ACD1, 4, (uint32_t)&kits->current_pdir, 4, kits->switcher, kits->switcher + sz_switcher); //_cur_dir
     kits->current_pdir = (uint32_t*)system_dir;
@@ -141,9 +156,7 @@ void __attribute__((optimize("O0"))) Init_Scheduler()
 
     kits->bottom_task = 1;
 
-    kits->Spurious_task = (uint32_t*)create_task("Spurious_task", (func_t)spurious_func, 0, 0x202, kernel_proc);
-    ((task_t*)kits->Spurious_task)->special = 1;
-    ThreadTable_SetEntry(((task_t*)kits->Spurious_task));
+    
 
 
     // Setup a Cleaner Better Descriptors for all Processors

@@ -8,6 +8,7 @@
 
 typedef void (*func_t)();	//void function pointer
 typedef uintptr_t (*func_ptr_t)();	//void function pointer
+typedef int (*intfunc1_t)(int);	//int function pointer with 2 arguments
 typedef uint32_t (*intfunc2_t)(uint32_t, uint32_t);	//int function pointer with 2 arguments
 
 uint32_t PIT_Counter = 0;

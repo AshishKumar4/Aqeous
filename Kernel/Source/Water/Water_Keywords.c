@@ -6,7 +6,7 @@
 
 uintptr_t WaterKeyword_func(Water_Token_t* TokenList)
 {
-
+  return (uintptr_t)TokenList;
 }
 
 uintptr_t WaterKeyword_int(Water_Token_t* TokenList)
@@ -24,12 +24,12 @@ uintptr_t WaterKeyword_int(Water_Token_t* TokenList)
 
 uintptr_t WaterKeyword_float(Water_Token_t* TokenList)
 {
-
+  return (uintptr_t)TokenList;
 }
 
 uintptr_t WaterKeyword_str(Water_Token_t* TokenList)
 {
-
+  return (uintptr_t)TokenList;
 }
 
 uintptr_t WaterKeyword_print(Water_Token_t* TokenList)

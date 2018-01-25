@@ -113,6 +113,7 @@ void Start_vesa()
   Mouse_Plot = Mouse_Normal_Handler;
   PIT_Task = Gfx_DbuffSync;
   
+  
   //_kill(Shell_task);
   /*_kill(Shell_Ostream_task);
   Shell_Ostream_task = create_task("Shell_GfxOstream", Gfx_Dbuff, 1, 0x202, Shell_proc);

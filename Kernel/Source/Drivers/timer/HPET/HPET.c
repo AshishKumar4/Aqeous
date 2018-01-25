@@ -55,7 +55,7 @@ void init_hpet()
 				{
 					printf("-%x",hpet->Main_Counter_Reg);
 				}*/
-				HPET_main_counter = &hpet->Main_Counter_Reg;
+				HPET_main_counter = (uint32_t*)&hpet->Main_Counter_Reg;
 				break;
       }
       ptr++;

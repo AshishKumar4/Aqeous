@@ -8,7 +8,7 @@ volatile int mouse_left_click = 0;
 volatile int mouse_right_click = 0;
 
 volatile int mousedeltax=0,mousedeltay=0;
-volatile static char mouse_bytes[3];
+volatile char mouse_bytes[3];
 static uint32_t cycle = 0;
 uint8_t* mouse_buff = 0;
 int mouse_lclick_duration = 0;

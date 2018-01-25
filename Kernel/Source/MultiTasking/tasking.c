@@ -35,6 +35,11 @@
 #include "FileSystem/AqFS/AqfsTools.h"
 #include "FileSystem/AqFS/fs_alloc.h"
 
+#include "Processing/LibSymTable/LibSymTable.h"
+#include "Processing/SysCalls/SysCalls.h"
+#include "Processing/processing.h"
+#include "ThreadTable.h"
+
 void idle()
 {
   //scheduler();
@@ -60,7 +65,7 @@ int *bby = &bbb;
 
 void test_thread()
 {
-  uint32_t cd = Get_Scheduler()->current_pdir;
+  //uint32_t cd = Get_Scheduler()->current_pdir;
   /*
   while(1)
   {
@@ -168,9 +173,10 @@ void tasking_initiator()
 /*
   for(int i = 0; i < total_CPU_Cores; i++)
   {
-    printf("\n\t{scheduler: %d}, {dispatcher: %d", KitList[i].scheduler, KitList[i].switcher, )
-  }
-*/
+    printf("\n\t{scheduler: %d}, {dispatcher: %d", KitList[i].scheduler, KitList[i].switcher);
+  }*/
+
+    
   kb_io_init();
   init_shell();
   multitasking_ON = 1;
@@ -181,21 +187,21 @@ void tasking_initiator()
 
   for(uint32_t i = 0; i < total_CPU_Cores - 1; i++)
   {
-    KitList[i+1].current_task = create_task("System_Spawner", Spawner_Task, 0, 0x202, kernel_proc);
+    KitList[i+1].current_task = (uint32_t)create_task("System_Spawner", Spawner_Task, 0, 0x202, kernel_proc);
     Activate_task_strict_SP((task_t*)(KitList[i+1].current_task), &KitList[i+1]);
     //printf("\nCore %d Initialized", i);
     *(uint32_t*)(0x3000 + (i*0x2000) + AP_startup_Code_sz + 8) = 0x3240; //Notifies the cores that its time to start scheduling...
   }
 
-  KitList[0].current_task = create_task("System_Spawner", Spawner_Task, 0, 0x202, kernel_proc);
+  KitList[0].current_task = (uint32_t)create_task("System_Spawner", Spawner_Task, 0, 0x202, kernel_proc);
   Activate_task_strict_SP((task_t*)(KitList[0].current_task), &KitList[0]);
 
   UNLOCK(TASK_LOCK_KILL);
   UNLOCK(TASK_LOCK_ATD);
-
+  
   clearIRQMask(0);
   clearIRQMask(1);
-  apic_start_timer(APIC_LOCAL_BASE);       //The respective Timer initialization function of the timer of choice\
+  apic_start_timer(APIC_LOCAL_BASE);       //The respective Timer initialization function of the timer of choice
   
   asm volatile("sti;");
   kill();
@@ -206,7 +212,7 @@ void init_multitasking()
 
   init_Processing();  
 
-  kernel_proc = create_process("microkernel", 0, 1, 1);
+  kernel_proc = create_process("microkernel", 0, 1, (Process_t*)1);
   kernel_proc->pgdir = (uint32_t)system_dir;
 
   Init_Scheduler();
@@ -239,7 +245,7 @@ void init_multitasking()
 
   printf("\nInitializing SAS...");
   SAS_init();
-  printf("\SAS Initialized Successfully");
+  printf("\nSAS Initialized Successfully");
 
   IPC_init();
   Setup_MMADS();

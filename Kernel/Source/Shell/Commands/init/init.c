@@ -25,7 +25,7 @@ void Command_init()
   }
   else if(!strcmp("aqfs2", device_name))
   {
-    if(strcmp(CSI_Read(2), "burn") == 0 || Aqfs2_Checkfs())
+    if(strcmp((const char*)CSI_Read(2), "burn") == 0 || Aqfs2_Checkfs())
     {
       Aqfs2_Partitioner(0, 5, 200*1024);
       Aqfs2_burn(0);

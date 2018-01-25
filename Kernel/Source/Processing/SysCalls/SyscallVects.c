@@ -37,7 +37,7 @@ void _sys_kill(uint32_t* syscall_stack)
 void _sys_malloc(uint32_t* syscall_stack)
 {
   uint32_t tmp = _syscall_pop(syscall_stack);
-  //printf("<<%d ,", tmp);
+ // printf("<<%d ,", tmp);
   tmp = (uint32_t)kmalloc(tmp);//phy_alloc4K();
  // printf("%x>>", tmp);
   //Shell_Dbuff_sync();
@@ -141,7 +141,7 @@ void _sys_readFile(uint32_t* syscall_stack)
   }
   uint32_t ttll = (uint32_t)fread((void*)ptr, size, nmemb, (FILE*)stream);
   _syscall_push(syscall_stack, ttll);
-  printf("[%s; %d]", ptr, ttll);
+//  printf("[%s; %d]", ptr, ttll);
 }
 
 void _sys_writeFile(uint32_t* syscall_stack)

@@ -26,41 +26,23 @@ static uint8_t makeFlagByte();
 
 // Initialisation routine - zeroes all the interrupt service routines,
 // initialises the GDT and IDT.
-void init_descriptor_tables()
+void init_descriptor_tables() // For BSP
  {
-    // Initialise the global descriptor table.
-    init_gdt();
-    init_idt();
+   
+  //  AP_idt_Setup((uint32_t*)&idt_entries, (uint32_t*)idt_ptr);
+  //  lidt((void *)&idt_ptr);
  }
-
-extern uint32_t initial_esp;
-
-void init_gdt()  // For BSP
- {
-    uint16_t* ptr = gdt_ptr;
-    *ptr = ((sizeof(gdt_entry_t) * 5) - 1);
-    ++ptr;
-    uint32_t* ptr2=(uint32_t*)ptr;
-    *ptr2 = ((uint32_t)&gdt_entries);
-
-    gdt_set_gate(0, 0, 0, 0, 0, &gdt_entries);                // Null segment
-    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF, (uint64_t*)&gdt_entries); // Code segment
-    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF, (uint64_t*)&gdt_entries); // Data segment
-    gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF, (uint64_t*)&gdt_entries); // User mode code segment
-    gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF, (uint64_t*)&gdt_entries); // User mode data segment
-    lgdt((void *)&gdt_ptr);
- }
-
- uint32_t low_memAlloc_ptr = 0x00007E00;
 
  uintptr_t desc_malloc(uint32_t size)
  {
-   uint32_t a = low_memAlloc_ptr;
-   low_memAlloc_ptr += size;
+   if(descMalloc_cnt + size >= 4096)
+   {
+     //descMalloc_ptr = pmem_4k(1);//phy_alloc4K();
+   }
+   uint32_t a = descMalloc_ptr;
+   descMalloc_ptr += size;
 
    return a;
-   return (uintptr_t)kmalloc(4096);
-   return (uintptr_t)(500*1024);//kmalloc(4096);//*/
  }
 
  uintptr_t pmode_GDT_init(uint32_t APIC_id)
@@ -98,7 +80,7 @@ void init_gdt()  // For BSP
    return idt_new;
  }
 
- uintptr_t pmode_IDT_initP(uint32_t APIC_id)
+ uintptr_t pmode_IDT_initP()
  {
    uintptr_t idt_new = (uintptr_t)desc_malloc(960);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
    AP_idt_Setup((uint32_t*)(idt_new + 8), (uint32_t*)idt_new);//(vector_addr + AP_startup_Code_sz + pmode_code_size + 8 + 16), gdt_new);
@@ -191,7 +173,7 @@ void init_gdt()  // For BSP
    uint32_t* gdt_new_ptr2=(uint32_t*)gdt_new_ptr;
    *gdt_new_ptr2 = ((uint32_t)gdt_new_entries);
    uint32_t tmp = phy_alloc4K();
-   tss_struct_t* tss = tmp;//desc_malloc(sizeof(tss_struct_t));
+   tss_struct_t* tss = (tss_struct_t*)tmp;//desc_malloc(sizeof(tss_struct_t));
    //while(1);
    gdt_set_gate(0, 0, 0, 0, 0, gdt_new_entries);                // Null segment
    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF, (uint64_t*)gdt_new_entries); // Code segment - 0x08
@@ -335,13 +317,6 @@ void AP_idt_Setup(uint32_t* idt, uint32_t* idtr)
   idtSetEntry(55, (uint32_t)&switch_ToUserspace, 0x08, makeFlagByte(1, USER_MODE), (uint64_t*)idt);
   idtSetEntry(56, (uint32_t)&switch_ToKernelspace, 0x08, makeFlagByte(1, USER_MODE), (uint64_t*)idt);
 
-}
-
-void init_idt()
-{
-  //The limit is 1 less than our table size because this is the end address
-  AP_idt_Setup(&idt_entries, idt_ptr);
-  lidt((void *)&idt_ptr);
 }
 
 static uint8_t makeFlagByte(int isPresent, int ring)

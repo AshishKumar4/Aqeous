@@ -4,8 +4,6 @@ section .text
 
 [GLOBAL rmode_AP_code]
 [GLOBAL rmode_AP_code_end]
-[EXTERN trial_code]
-[EXTERN enable_pic]
 [GLOBAL gdt16_base]
 
 BITS 16
@@ -22,7 +20,7 @@ rmode_AP_code: use16
   xor esp, esp
   mov sp, 0x4284
 
-#  xor esi, esi
+  xor esi, esi
   mov si, 0x3240
   lgdt [ds:si]
 

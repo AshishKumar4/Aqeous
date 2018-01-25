@@ -55,7 +55,7 @@ void drawRect_direct(int x, int y, int width, int height, int C)
   //refresh_area(x,y,x+width,y+height);
 }
 
-void drawRect_window(window_t* w, int x, int y, int width, int height, int C)
+void __attribute__((flatten)) drawRect_window(window_t* w, int x, int y, int width, int height, int C)
 {
   uint32_t* tbuff = (uint32_t*)w->screen_buff;
   int window_width = w->locInfo.x_l;
@@ -69,7 +69,7 @@ void drawRect_window(window_t* w, int x, int y, int width, int height, int C)
   }
 }
 
-void __attribute__((optimize("O2"))) Gfx_DbuffSync()
+void __attribute__((flatten)) __attribute__((optimize("O2"))) Gfx_DbuffSync()
 {
   Mouse_Plot();
   uint32_t NeedToRefresh = dirtyRegions;
@@ -104,7 +104,7 @@ void Gfx_Dbuff()
   }
 }
 
-void line_plot(int x0, int y0, int x1, int y1, int color, int sz)
+void __attribute__((flatten)) line_plot(int x0, int y0, int x1, int y1, int color, int sz)
 {
       int deltax = x1-x0;
       int deltay = y1-y0;
@@ -164,7 +164,7 @@ void line_plot(int x0, int y0, int x1, int y1, int color, int sz)
       }
 }
 
-void __attribute__((optimize("O2"))) Mouse_Drag_Window()
+void __attribute__((flatten)) __attribute__((optimize("O2"))) Mouse_Drag_Window()
 {
   mouse_handler();
   mousex += mousedeltax;
@@ -188,7 +188,7 @@ void __attribute__((optimize("O2"))) Mouse_Drag_Window()
   mousey %= heightVESA;//*/
 }
 
-void __attribute__((optimize("O2"))) Mouse_Normal_Handler()
+void __attribute__((flatten)) __attribute__((optimize("O2"))) Mouse_Normal_Handler()
 {
   mouse_handler();
   mousex += mousedeltax;
@@ -209,7 +209,7 @@ void __attribute__((optimize("O2"))) Mouse_Normal_Handler()
   mousey %= heightVESA;//*/
 }
 
-void __attribute__((optimize("O0"))) Mouse_Normal_Handler2()
+void __attribute__((flatten)) __attribute__((optimize("O0"))) Mouse_Normal_Handler2()
 {
   mouse_handler();
   mousex += mousedeltax;

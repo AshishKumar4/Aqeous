@@ -5,15 +5,7 @@
 
 uint32_t* LIBSYMTABLE;
 
-void kill_tmp();
-
-void _malloc();
-
-void _stdout();
-
-void _stdin();
-void test_sys();
-
+void init_libsym();
 void LibSym_MapPdir(PageDirectory_t* pdir);
 
 #endif

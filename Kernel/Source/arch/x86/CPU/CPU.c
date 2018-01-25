@@ -60,7 +60,7 @@ void BasicCPU_Init()
   if(!total_CPU_Cores)
     total_CPU_Cores = 1;
   printf("\nTotal CPU Cores: %d", total_CPU_Cores);
-  tss_entries = desc_malloc(sizeof(tss_struct_t*)*(total_CPU_Cores));
+  tss_entries = (tss_struct_t**)desc_malloc(sizeof(tss_struct_t*)*(total_CPU_Cores));
   BootAPs();
 }
 
@@ -92,6 +92,9 @@ void __attribute__((optimize("O0"))) BootAPs()
   *semaphore = 0;
   vector = 1;
   uint32_t vector_addr = 4096;
+
+  CPU_BOOT_MODE = 0;
+
   for(uint32_t i = AP_stacks,j = 0; j<total_CPU_Cores; i+=8192, j++)
   {
     if(BSP_id == j) continue;
@@ -146,9 +149,13 @@ void __attribute__((optimize("O0"))) BootAPs()
 //  while(1);
 }
 
-void __attribute__((optimize("O0"))) Boot_AP(uint32_t APIC_id)
+extern void Spawner_Task();
+
+void __attribute__((optimize("O0"))) Boot_AP(uint32_t APIC_id)  // Basically Reboots the APs
 {
   asm volatile("cli");
+
+  SchedulerKits_t* kit = &KitList[APIC_id];
   // Boot the AP's
   *(char*)(0xf) = 0xa;
 
@@ -171,6 +178,8 @@ void __attribute__((optimize("O0"))) Boot_AP(uint32_t APIC_id)
   memset((void*)vector_addr, 0, 4096);
   memcpy((void*)vector_addr, AP_startup_Code, AP_startup_Code_sz);   // Copy the code of switching to protected mode into the bottom of stacks for each AP
 
+  CPU_BOOT_MODE = 0x1111;
+
   ByteSequence_Replace(0x4284, 2, (AP_tmp+4092), 2, (uint32_t*)vector_addr, (uint32_t*)(vector_addr+AP_startup_Code_sz));
 
   uint32_t* gdt_new = (uint32_t*)(vector_addr + AP_startup_Code_sz + pmode_code_size + 16);
@@ -184,24 +193,28 @@ void __attribute__((optimize("O0"))) Boot_AP(uint32_t APIC_id)
   ByteSequence_Replace(0x3250, 2, (uint32_t)idt_new, 2, (uint32_t*)vector_addr, (uint32_t*)(vector_addr+AP_startup_Code_sz));
 
   pmode_code_addr = vector_addr + AP_startup_Code_sz + 16;
+  printf("\n{%x}", pmode_code_addr);
   memcpy((void*)pmode_code_addr , pmode_AP_code, pmode_code_size);   // Copy the code of switching to protected mode into the bottom of stacks for each AP
 
   *(uint32_t*)(vector_addr + AP_startup_Code_sz + 8) = 0;
   ByteSequence_Replace(0x5599, 2, vector_addr + AP_startup_Code_sz + 8, 2, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
   ByteSequence_Replace(0x4959, 2, pmode_code_addr, 2, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
 
+  // Setup Permanent GDT, IDT
+  ByteSequence_Replace(0x32409798, 4, (uint32_t)kit->gdt, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+  ByteSequence_Replace(0x32409799, 4, (uint32_t)kit->idt, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+  ByteSequence_Replace(0x42842222, 4, (uint32_t)&Spawner_Task, 4, (uint32_t*)pmode_code_addr, (uint32_t*)(pmode_code_addr + pmode_code_size));
+
   vector = ((vector_addr)/4096);
-
-
 
   printf("\nSending INIT IPI...");
   localapic_write(APIC_LOCAL_BASE, LAPIC_ICRHI, (APIC_id<<24));
   localapic_write(APIC_LOCAL_BASE, LAPIC_ICRLO, 0x00004500);        // INIT IPI
-  delay_hpet(10);
+  delay_hpet(10);     // 10 ms
   printf("\nSending INIT SIPI...");
   localapic_write(APIC_LOCAL_BASE, LAPIC_ICRHI, (APIC_id<<24));
   localapic_write(APIC_LOCAL_BASE, LAPIC_ICRLO, 0x00004600 | vector);     // SIPI IP]
-  delay_hpet(200);
+  delay_hpet(200);    // 200 ms
   if(!(*test_counter))
   {
     localapic_write(APIC_LOCAL_BASE, LAPIC_ICRHI, (APIC_id<<24));
@@ -219,6 +232,7 @@ void __attribute__((optimize("O0"))) Boot_AP(uint32_t APIC_id)
 
   if(*test_counter)
     printf("\n\t\t%gThe AP #%x has been Booted Successfully %x %g",10,APIC_id,*test_counter, 0);
+  
   asm volatile("sti");
 }
 
@@ -230,7 +244,7 @@ void __attribute__((optimize("O0"))) AP_RealMode_Setup(uint32_t APIC_id)
 
   uint32_t vector = 0;
 
-  uint32_t rmode_code_addr;
+ // uint32_t rmode_code_addr;
   rmode_code_size = rmode_AP_code_end - rmode_AP_code;
 
   uint32_t vector_addr = 0x5000;
@@ -244,6 +258,8 @@ void __attribute__((optimize("O0"))) AP_RealMode_Setup(uint32_t APIC_id)
   uint32_t AP_tmp = vector_addr;
 
   vector_addr = AP_tmp - 4096;
+
+  CPU_BOOT_MODE = 0x1111;
 
   memset((void*)vector_addr, 0, 4096);
   memcpy((void*)vector_addr, rmode_AP_code, rmode_code_size);   // Copy the code of switching to protected mode into the bottom of stacks for each AP
@@ -264,7 +280,7 @@ void __attribute__((optimize("O0"))) AP_RealMode_Setup(uint32_t APIC_id)
   ByteSequence_Replace(0x3250, 2, (uint32_t)idt_new, 2, (uint32_t*)vector_addr, (uint32_t*)(vector_addr+rmode_code_size));  // Temporary IDT
 
   vector = ((vector_addr)/4096);
-  memset(0x1000, 0, 0x2000);
+  memset((void*)0x1000, 0, 0x2000);
 
   printf("\nSending INIT IPI...");
   localapic_write(APIC_LOCAL_BASE, LAPIC_ICRHI, (APIC_id<<24));

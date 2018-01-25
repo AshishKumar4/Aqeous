@@ -22,7 +22,7 @@ void Setup_fs()
 	uint32_t buf = (uint32_t)kmalloc(512);
 	read(curr_port, root_location / 512, 1, (uint32_t)buf);
 	Directory_t* root = (Directory_t*)(buf + (uint32_t)(root_location % 512));
-	strcpy(root->name, "root");
+	strcpy((char*)root->name, "root");
 	root->perm = 0;
 	root->files = 0;
 	root->folders = 0;
@@ -39,7 +39,7 @@ void Setup_fs()
 
 	root_dir.dir = root;
 	root_dir.type = 2;
-	strcpy(curr_dir.full_name, "root");
+	strcpy((char*)curr_dir.full_name, "root");
 	write(curr_port, root_location / 512, 1, (uint32_t)buf);
 	////kfree((uint32_t*)(uint32_t*)buf);
 }
@@ -68,7 +68,7 @@ void create_directory(char *name, uint16_t perm, char* destination)
 	dir->files = 0;
 	dir->location = Next_available;
 	dir->folders = 0;
-	strcpy(dir->name, name);
+	strcpy((char*)dir->name, name);
 	dir->parent = parent;
 	dir->perm = perm;
 	dir->Next_Friend = 0;
@@ -140,7 +140,7 @@ void create_file(char *name, uint16_t perm, char* destination)
 	file->location = Next_available;
 
 	file->perm = perm;
-	strcpy(file->name, name);
+	strcpy((char*)file->name, name);
 	file->parent = parent;
 	file->sz = 0;
 	file->Next_Friend = 0;
@@ -269,7 +269,7 @@ Directory_t* search_folderOGP(char* path) //Search Folder ON GIVEN PATH
 
 	char* tmpath = (char*)kmalloc(strlen(path));
 	memset(tmpath, 0, strlen(path));
-	strcpy(tmpath, path);
+	strcpy((char*)tmpath, path);
 
 	char* tmpd = strtok(tmpath, "/");
 
@@ -368,7 +368,7 @@ File_handle_t* file_loaderOGP(char* path)
 	uint32_t buf = (uint32_t)kmalloc(512);
 
 	char* tmpath = (char*)kmalloc(strlen(path) + 1);
-	strcpy(tmpath, path);
+	strcpy((char*)tmpath, path);
 
 	char* tmpstr = tmpath;
 	char* fname;
@@ -381,7 +381,7 @@ File_handle_t* file_loaderOGP(char* path)
 	else tmpath = 0;
 
 	char* full_path = (char*)kmalloc(strlen(path) + 1);
-	strcpy(full_path, path);
+	strcpy((char*)full_path, path);
 	full_path[strlen(path)] = '\0';
 
 	Directory_t* dir = (Directory_t*)search_folderOGP_T(tmpath);
@@ -500,7 +500,7 @@ int file_load(char *name)
 void file_closeOGP(char *path)
 {
 	char* tmpath = (char*)kmalloc(strlen(path));
-	strcpy(tmpath, path);
+	strcpy((char*)tmpath, path);
 
 	char* tmpstr = tmpath;
 	//		char* fname;
@@ -512,7 +512,7 @@ void file_closeOGP(char *path)
 		tmpath[i] = '\0';
 	else tmpath = 0;
 
-	File_handle_t* temp = start_handle, *temp2 = 0;
+	File_handle_t* temp = (File_handle_t*)start_handle, *temp2 = 0;
 	for (int i = 0; temp; i++)
 	{
 		if (!strcmp(temp->full_path, path))
@@ -550,7 +550,7 @@ void file_closeOGP(char *path)
 void file_close(char *name)
 {
 	file_flush(name);
-	File_handle_t* temp = start_handle, *temp2 = 0;
+	File_handle_t* temp = (File_handle_t*)start_handle, *temp2 = 0;
 	for (int i = 0; temp; i++)
 	{
 		if (!strcmp(temp->name, name))
@@ -578,7 +578,7 @@ void file_close(char *name)
 
 File_handle_t* file_searchOGP(char* path)
 {
-	File_handle_t* temp = start_handle;
+	File_handle_t* temp = (File_handle_t*)start_handle;
 	for (int i = 0; temp; i++)
 	{
 		//printf("\nname: \n%s\n%s\n", temp->full_path, path);
@@ -599,7 +599,7 @@ File_handle_t* file_searchOGP(char* path)
 
 File_handle_t* file_search(char* name)
 {
-	File_handle_t* temp = start_handle;
+	File_handle_t* temp = (File_handle_t*)start_handle;
 	for (int i = 0; temp; i++)
 	{
 		if (!strcmp(temp->name, name))
@@ -623,7 +623,7 @@ void set_curr_dir(uint64_t location, char* path)
 	Directory_t* dir = (Directory_t*)(buf);
 	curr_dir.dir = dir;
 	char* name = (char*)(buf + 512);
-	strcpy(name, curr_dir.full_name);
+	strcpy((char*)name, (const char*)curr_dir.full_name);
 	if (!strcmp(path, ".."))
 	{
 		int i;
@@ -636,7 +636,7 @@ void set_curr_dir(uint64_t location, char* path)
 			strcat(name, "/");
 		strcat(name, path);
 	}
-	strcpy(curr_dir.full_name, name);
+	strcpy((char*)curr_dir.full_name, name);
 	printf("\ncurr dir: %s", name);
 }
 
@@ -894,7 +894,7 @@ void file_truncate(File_handle_t* handle)
 File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the header of a file which contains the memory regions of the offset
 {
 	uint32_t tm = (uint32_t)kmalloc(512);
-	memset(tm, 0, 512);
+	memset((void*)tm, 0, 512);
 	//printf("\n-->%d", file->first_header);
 	read(curr_port, (file->first_header / 512), 1, tm);
 	File_Header_t* tmp = (File_Header_t*)(tm);
@@ -923,10 +923,10 @@ File_Header_t* file_header_search(uint32_t foffset, File_t* file) //Finds the he
 		if(tmp->location != tmp2)
 		{
 			printf("\nError file header location MisMatch!");
-			return 3;
+			return (File_Header_t*)3;
 		}
 	}
-	return 0;
+	return NULL;
 }
 
 inline void flush_header(File_Header_t* header)
@@ -938,7 +938,7 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 {
 	File_handle_t* handle = file_searchOGP(path);
 	if (!handle) return 1; //File not loaded yet.
-	char* name = handle->name;
+	//char* name = handle->name;
 
 	File_t* file_st = (File_t*)handle->file;
 	File_Header_t* header = file_header_search(offset, file_st); //find which header has the offset memory.
@@ -963,7 +963,7 @@ int file_readTM(uint32_t* buffer, uint32_t offset, uint32_t size, char* path) //
 	uint32_t b1 = header->used - header->reserved; //Local offset
 	//printf("\na1: %d, b1: %d, header->reserved: %d", a1, b1, header->reserved);
 	uint32_t tbuff = (uint32_t)kmalloc(ROUNDUP(a1, 1024));
-	memset(tbuff, 0, ROUNDUP(a1, 1024));
+	memset((void*)tbuff, 0, ROUNDUP(a1, 1024));
 	read(curr_port, (1 + ((header->location + b1) / 512)), (ROUNDUP(a1, 1024) / 512) + 1, tbuff); //Read the first part of buffer.
 
 	//printf("\na1: %d ROUNDUP(a1,1024)/512: %d, ROUNDUP(a1,1024): %d %d\n", a1, ROUNDUP(a1,1024)/512, ROUNDUP(a1,1024), size);
@@ -1030,7 +1030,7 @@ int file_writeAppend(uint32_t* buffer, uint32_t size, char* path) //Write to a f
 {
 	File_handle_t* handle = file_searchOGP(path);
 	if (!handle) return 4; //File not loaded yet.
-	char* name = handle->name;
+//	char* name = handle->name;
 
 	uint32_t bb = (uint32_t)buffer;
 	File_t* file_st = (File_t*)handle->file;
@@ -1102,7 +1102,7 @@ int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsiz
 {
 	File_handle_t* handle = file_searchOGP(path);
 	if (!handle) return 0; //File not loaded yet.
-	char* name = handle->name;
+//	char* name = handle->name;
 
 	File_t* file_st = (File_t*)handle->file;
 	File_Header_t* header = file_header_search(offset, file_st); //find which header has the offset memory.
@@ -1117,7 +1117,7 @@ int file_editFM(uint32_t offset, uint32_t osize, uint32_t *buffer, uint32_t fsiz
 
 	uint32_t left_end = header->used - header->reserved;
 
-	uint32_t sz = header->spread - left_end;
+//	uint32_t sz = header->spread - left_end;
 	uint32_t bb = (uint32_t)buffer;
 
 	uint32_t tl = header->spread - left_end;
@@ -1250,7 +1250,7 @@ int file_read(uint32_t* buffer, uint32_t offset, uint32_t size, File_handle_t* h
 void file_write(uint32_t* ptr, uint32_t pointer, uint32_t size, File_handle_t* handle, uint32_t overwrite)
 {
 	if(!file_GetSize(handle))
-		printf("\n <%d>", file_writeAppend((uint32_t*)ptr, size, (char*)handle->full_path));
+		printf("\n <%d,%d>", file_writeAppend((uint32_t*)ptr, size, (char*)handle->full_path), overwrite);
 	else
 		file_editFM(pointer, 0, (uint32_t*)ptr, (uint32_t)(size), (char*)handle->full_path);
 }
@@ -1277,7 +1277,7 @@ void make_boot_sector()
 	memset((void*)buf, 0, 1024);
 	read(curr_port, 0, 2, (uint32_t)buf);
 	Identity_Sectors_t* identity = (Identity_Sectors_t*)(buf + 436);
-	strcpy(identity->name, "AqFS472");
+	strcpy((char*)identity->name, "AqFS472");
 	identity->active_partition = 446; //Partition 1
 
 	uint8_t* boot_ptr = (uint8_t*)buf;
@@ -1405,7 +1405,7 @@ void AqFS_burnTest()
 	memset((void*)buf, 0, 1024);
 	read(curr_port, 0, 2, (uint32_t)buf);
 	Identity_Sectors_t* identity = (Identity_Sectors_t*)(buf + 436);
-	strcpy(identity->name, "AqFS472");
+	strcpy((char*)identity->name, "AqFS472");
 	identity->active_partition = 446; //Partition 1
 
 	uint8_t* boot_ptr = (uint8_t*)buf;
@@ -1434,7 +1434,7 @@ void AqFS_burnTest()
 	{
 		printf("Filesystem Not supported/Disk not partitioned Correctly\n");
 		//AqFS_burn();
-		return 1;
+		return; //	1;
 	}
 
 	/*fs_alloc_init();

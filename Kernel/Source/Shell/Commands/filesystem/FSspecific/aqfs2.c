@@ -31,6 +31,7 @@ void aqfs2_ls()
 
 void aqfs2_cp(char* dpath, char* spath, char* nname)
 {
+  printf("%s %s %s", dpath, spath, nname);
 }
 
 void aqfs2_del(char* path)
@@ -43,7 +44,7 @@ void aqfs2_mkdir(char* path)
   Aq_CreateNew_Directory(path, 1);
 }
 
-void aqfs2_mkfl(char *path, char* dir_name)
+void aqfs2_mkfl(char *path)
 {
   Aq_CreateNew_File(path, 1);
   printf("\n%s file created\n",path);

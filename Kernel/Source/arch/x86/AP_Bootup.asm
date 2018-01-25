@@ -71,6 +71,8 @@ AP_startup_Code_end:
 [EXTERN system_dir]
 [EXTERN Spawner_Task]
 
+[EXTERN CPU_BOOT_MODE]
+
 INTbasedPmodeTrampoline:
   ; Determines the CPU which is currently running the code and redirects it accordingly
   pop eax
@@ -80,6 +82,10 @@ INTbasedPmodeTrampoline:
 
   mov dword eax, 0x00000500
   add dword [eax], 1
+
+  mov eax, [CPU_BOOT_MODE]
+  cmp eax, 0x1111
+  je reboot_mode
 
   mov dword eax, 0xfee00020                 ; LAPIC ID entry
   mov dword eax, [eax]
@@ -94,14 +100,28 @@ INTbasedPmodeTrampoline:
   push ebx
   mov dword ebx, 0x08
   push ebx
-  push eax
+  push eax  
   iretd
+
+reboot_mode:
+  mov eax, 0x4010
+  add dword eax, [AP_startup_Code_sz]
+
+  mov dword ebx, 0
+  push ebx
+  mov dword ebx, 0x202
+  push ebx
+  mov dword ebx, 0x08
+  push ebx
+  push eax  
+  iretd
+
 
 pmode_AP_code:
   xor dword eax, eax
   mov dword eax, [0x5599]
-  cmp eax, 0
 
+  cmp eax, 0
   je pmode_AP_code
 
   cmp eax, 0x4284               ; Enable Paging and other stuffs
@@ -112,9 +132,6 @@ pmode_AP_code:
 
   mov dword eax, 0x32409798
   lgdt[eax]
-
-  mov ax, 0x2B
-  ltr ax
 
   mov dword eax, 0x32409799
   lidt[eax]
@@ -127,6 +144,9 @@ pmode_AP_code:
   mov dword cr4, eax 
   ; Add it to the SMP System
 back_code:
+ ; mov ax, 0x2B
+ ; ltr ax
+  
   int 50
   mov dword eax, 0x42842222
   jmp eax

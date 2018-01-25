@@ -20,8 +20,7 @@
 #include "ata.c"
 #include "acpi.c"
 #include "virt_mm/vmem.c"
-#include "keyboard.c"
-#include "KeyboardNew.c"
+#include "Keyboard.c"
 #include "task.c"
 #include "tasking.c"
 #include "process.c"
@@ -94,7 +93,7 @@ void kernel_early(struct multiboot *mboot_ptr)
 	UNLOCK(printlock);
 	Screen_BuffSync= idle_test;
 
-	init_descriptor_tables();	// Setup Descriptor tables for BSP
+	//init_descriptor_tables();	// Setup Descriptor tables for BSP
 
 	detect_cpu();
 	BasicCPU_Init();		// Initialize all the processing units in the System

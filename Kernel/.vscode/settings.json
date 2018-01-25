@@ -26,6 +26,8 @@
         "common.h": "c",
         "xlocnum": "c",
         "kb_handle.h": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "deque": "c",
+        "queue": "c"
     }
 }

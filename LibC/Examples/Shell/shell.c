@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "stdint.h"
+#include "string.h"
 #include "shell.h"
 
 void main()
@@ -8,71 +9,84 @@ void main()
     char* shell_buf;
     Main_CSI_struct = malloc(4096);
     CSI_mem_start = Main_CSI_struct;
+    Shell_Commands_list = malloc(4096*1024);
     console_manager_init();
     printf("\nInitializing the Shell...\n");
 	while(1)
 	{
-        printf("\n%g%s%g>%g",12, "Rabbit",10,11);
+      //  printf("\n%g%s%g>%g",12, "Rabbit",10,11); /*/
+     	printf("\n%s>", "Rabbit"); //*/
         shell_buf = (char*)malloc(128);
         scanf("%s", shell_buf);
-        
-		printf("[%s]%g",10, shell_buf);
+
+		printf("[%s]",shell_buf);
 		Shell_command_locator((char*)shell_buf);
 	}
 }
 
 void Shell_ArgParse(char* str)
 {
-	*tot_entries = 0;
+	tot_entries = 0;
+	char* st = strtok(str, " ");
+
 	while(1) //Provide the Arguments provided by the user
 	{
-		str = strtok(NULL, " ");
-		if(str== NULL) break;
-		*CSI_entries_ptr = (uint32_t)str;
+		st = strtok(NULL, " ");
+		if(st== NULL) break;
+		*CSI_entries_ptr = (uint32_t)st;
 
-		if(str[0] == '\"')
+		if(st[0] == '\"')
 		{
-			++str;
+			++st;
 
-			*CSI_entries_ptr = (uint32_t)str;
+			*CSI_entries_ptr = (uint32_t)st;
 
-			for(;str[strlen(str)-1] != '\"';)
+			for(;st[strlen(st)-1] != '\"';)
 			{
-				 str[strlen(str)] = ' ';
-				 str = strtok(NULL, " ");
+				 st[strlen(st)] = ' ';
+				 st = strtok(NULL, " ");
 			}
 			str[strlen(str)-1] = '\0';
 		}
 
 		++CSI_entries_ptr;
-		++*tot_entries;
+		++tot_entries;
 	}
 }
 
 int Shell_command_locator(char *inst)
 {
-	 uint32_t tmp = 0;
+	uint32_t tmp = 0;
 
-	 char* tmpstr = strtok(inst, " ");
-	 int i;
+	for(int i = 0; inst[i] != ' ' && inst[i] != '\0' ; i++)
+	{
+		++tmp;
+	}
+
+	char tmpstr[tmp+1];
+	strncpy(tmpstr, inst, tmp);
+	tmpstr[tmp] = '\0';
+
+	tmp = 0;
+
+  int i = 0;
 	 for( i = 0 ; tmpstr[i]!='\0' && i <= 16; i++ )				// Hash Function
 	 {
 			if((uint32_t)tmpstr[i] >= 97)
-				 tmp += (((uint32_t)tmpstr[i]) - 97)*(i+1);
+				tmp += (((uint32_t)tmpstr[i]) - 97)*(i+1);
 			else
-				 tmp += (((uint32_t)tmpstr[i]) - 65)*(i+1);
+				tmp += (((uint32_t)tmpstr[i]) - 65)*(i+1);
 	 }
+
 	 if(tmp <= 2048)
 	 {
 			uint32_t* ptr = (uint32_t*)Shell_Commands_list[tmp];
-			if(!strcmpx(((Shell_Commands_t*)ptr)->command, tmpstr))
+			if(!strcmp(((Shell_Commands_t*)ptr)->command, tmpstr))
 			{
-				 func_t func = ((Shell_Commands_t*)ptr)->func;
-
-                 Shell_ArgParse(tmpstr);
-                  
+				func_t func = ((Shell_Commands_t*)ptr)->func;
+                Shell_ArgParse(inst);
 				func();
-				memset((uint32_t*)CSI_mem_start, 0, 2 + *tot_entries);
+				memset((uint32_t*)CSI_mem_start, 0, 8 + tot_entries);
 				CSI_entries_ptr = (uint32_t*)&Main_CSI_struct->entries;
 				return ((Shell_Commands_t*)ptr)->reserved;
 			}
@@ -135,12 +149,12 @@ void Command_test()
 void Command_infinity()
 {
     printf("\nTesting in a second...");
-    double te = 10.12322; 
+    double te = 10.12322;
     while(1)
     {
         printf("[-a-]");
-        te = 10.12322; 
-        for(int i = 0; i < 10000; i++)
+        te = 10.12322;
+        for(int i = 0; i < 1000; i++)
         {
             te *= te;
         }

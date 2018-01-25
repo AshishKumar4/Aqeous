@@ -86,6 +86,9 @@ enum KYBRD_ERROR {
 
 static int call=0,_ctrl=0,_shift=0,_alt=0,_numlock=0,_capslock=0,_scrolllock=0, _arrow_up = 0, _arrow_down = 0;
 
+func_t NormalKey_Func;
+uintptr_t* Ctrl_Handles;
+
 //! read status from keyboard controller
 inline uint8_t kybrd_ctrl_read_status ()
 {
@@ -123,6 +126,11 @@ void keyboard_init();
 void Assign_Scode(int scode, int (*func)(int));
 void Create_ScodeTables();
 void Keyboard_init();
+
+uintptr_t Get_ctrlHandle(int key);
+
+int Scode_NormalKeys(int key);
+void Scode_ctrlNormalKeys(int scancode);
 
 int Scode_OrdinaryMakeHandle(int key);
 int Scode_OrdinaryBreakHandle(int key);

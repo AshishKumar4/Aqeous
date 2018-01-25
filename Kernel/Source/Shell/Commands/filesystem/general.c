@@ -88,12 +88,12 @@ void Command_editfl()
       return;
     }
   }
-  uint32_t* data = (char*)CSI_ReadAPS("-d");
-  uint32_t* type = (char*)CSI_ReadAPS("-a");
+  uint32_t* data = (uint32_t*)CSI_ReadAPS("-d");
+  uint32_t* type = (uint32_t*)CSI_ReadAPS("-a");
 
   uint32_t off = StrToInt((char*)CSI_ReadAPS("-x"));
   uint32_t osz = StrToInt((char*)CSI_ReadAPS("-z"));
-  if(!osz) osz = strlen(data);
+  if(!osz) osz = (uint32_t)strlen((const char*)data);
 
   Current_Partition->FS.editfl(path, data, type, off, osz);
 }

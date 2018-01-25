@@ -28,6 +28,8 @@
 #define AQ_ALLOCTABLE_MAX_ENTRIES   8192/sizeof(AqAllocEntry_t)
 #define AQ_ALLOCTABLE_BLOCKS        8192/512
 
+#define AQ_EXISTANCE_REAL           0
+#define AQ_EXISTANCE_VIRTUAL        1
 
 // Bundle is smallest unit which is I/O from the Disk. It is some multiple of sector size
 // Blocks are smallest unit of Disk Memory. Every structure is block aligned.
@@ -155,7 +157,9 @@ typedef struct AqHandle
 {
     uint32_t        type;
     char            name[AQ_MAX_NAME_LENGTH];   
+    char*           path;
     uintptr_t       descriptor;
+    uint32_t        existance;
 }AqHandle_t;
 
 typedef struct AqMainHeader

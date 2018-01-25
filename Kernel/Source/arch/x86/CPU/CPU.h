@@ -18,6 +18,7 @@ uint32_t AP_startup_Code_sz;
 uint32_t pmode_code_size;
 uint32_t rmode_code_size;
 
+volatile uint32_t CPU_BOOT_MODE = 1;
 uint32_t* cpu_get_apic_base();
 
 void BasicCPU_Init();

@@ -123,11 +123,13 @@ Water_BasicTypeToken_t* Water_StrTypeGenerate(const char* str, int sz)
 
 Water_BasicTypeToken_t* Water_BuildFuncValue(Water_BasicTypeToken_t* func)
 {
+  printf("%d", func);
   return 0;
 }
 
 int Water_SetFuncParam(Water_BasicTypeToken_t* func, const char* param)
 {
+  printf("%d %s", func, param); 
   return 0;
 }
 
@@ -1270,6 +1272,7 @@ Water_Token_t* Water_EvaluateShuntingYard()
 
 uintptr_t Water_OpGetClass(uint32_t hash)
 {
+  printf("%d", hash);
   return 0;
 }
 
