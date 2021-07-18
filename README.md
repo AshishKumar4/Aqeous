@@ -2,7 +2,7 @@
 
 >__Kernel Code resides in Kernel directory, FASM directory contains FASM source ported for AqeousOS, Custom C Library for user programs in LibC including a test program__
 
-Extremely Sorry guys, this outdated code only works for Cygwin Windows based systems, May not compile under POSIXs systems due to Utter Carelessness shown at the coder's side, creating a ton of case senstivity issues in file includes.
+Extremely Sorry guys, this outdated code only works for Cygwin Windows based systems, May not compile under POSIXs systems due to Utter Carelessness shown at the coder's side (He was merely 14 when he wrote this), creating a ton of case senstivity issues in file includes.
 The ZIP File contains these two files:  
 * _hdd.img_  
   
