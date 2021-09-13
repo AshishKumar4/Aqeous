@@ -92,14 +92,14 @@ Files
    116   14   157  Source/MultiTasking/IPCInterface/IPCInterface.c
     36    0    47  Source/MultiTasking/IPCInterface/IPCInterface.h
     60    0    64  Source/MultiTasking/ProcManager/ProcManager.c
-    18    0    27  Source/MultiTasking/ProcManager/ProcManager.h
+    18    0    27  Source/MultiTasking/MultiTasking/ProcManager/ProcManager.h
    249   82   362  Source/MultiTasking/Scheduler/Scheduler.c
-    54    2    84  Source/MultiTasking/Scheduler/Scheduler.h
+    54    2    84  Source/MultiTasking/MultiTasking/Scheduler/scheduler.h
    215  133   349  Source/MultiTasking/Scheduler/Scheduler_obsolete.c
     40    1    53  Source/MultiTasking/process.c
     34    9    45  Source/MultiTasking/process.h
    403  196   636  Source/MultiTasking/task.c
-    59    9    91  Source/MultiTasking/task.h
+    59    9    91  Source/MultiTasking/MultiTasking/task.h
    155   98   279  Source/MultiTasking/tasking.c
     38   10    64  Source/MultiTasking/tasking.h
     24    0    33  Source/NeuralNetwork/Neuron/NeuralManager.c
@@ -122,13 +122,13 @@ Files
      0    0     1  Source/Shell/GUI/windows.c
      0    0     1  Source/Shell/GUI/windows.h
    425   83   552  Source/Shell/Shell.c
-    61    7    98  Source/Shell/Shell.h
+    61    7    98  Source/Shell/Shell/shell.h
     35    7    52  Source/arch/x86/APIC/IOAPIC/ioapic.c
     13   30    48  Source/arch/x86/APIC/IOAPIC/ioapic.h
     17    0    20  Source/arch/x86/APIC/LocalAPIC/lapic.c
     45    5    54  Source/arch/x86/APIC/LocalAPIC/lapic.h
     88   17   117  Source/arch/x86/APIC/apic.c
-    93   40   129  Source/arch/x86/APIC/apic.h
+    93   40   129  Source/arch/x86/APIC/APIC/apic.h
    122   11   177  Source/arch/x86/AP_Bootup.asm
    105   20   143  Source/arch/x86/CPU/cpu.c
     14    0    21  Source/arch/x86/CPU/cpu.h

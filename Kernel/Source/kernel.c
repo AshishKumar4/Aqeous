@@ -1,6 +1,6 @@
-#include "LIBRARY.c"
+#include "library.c"
 
-#include "mouse.c"
+#include "Mouse/mouse.c"
 #include "console.c"
 #include "descriptors.c"
 #include "int_handlers.c"
@@ -9,7 +9,7 @@
 //#include "multiboot2.h"
 //#include "vfs.c"
 #include "cmos.c"
-#include "pci.c"
+#include "PCI.c"
 #include "ahci.c"
 #include "graphics.c"
 #include "timer.c"
@@ -20,18 +20,18 @@
 #include "ata.c"
 #include "acpi.c"
 #include "virt_mm/vmem.c"
-#include "Keyboard.c"
-#include "task.c"
-#include "tasking.c"
-#include "process.c"
-#include "ProcManager/ProcManager.c"
+#include "Keyboard/keyboard.c"
+#include "MultiTasking/task.c"
+#include "MultiTasking/tasking.c"
+#include "MultiTasking/process.c"
+#include "MultiTasking/ProcManager/ProcManager.c"
 #include "MManager/mmanagerSys.c"
 #include "hpet.c"
 #include "fs.c"
-#include "lowlvl_Lib/lib.c"
+#include "LowLvl_Lib/lib.c"
 #include "fs_alloc.c"
-#include "Scheduler/Scheduler.c"
-#include "Shell.c"
+#include "MultiTasking/Scheduler/scheduler.c"
+#include "Shell/shell.c"
 #include "kb_handle.c"
 #include "parallels.c"
 #include "serials.c"
@@ -45,19 +45,19 @@
 #include "memfunc.c"
 #include "math.c"
 #include "Intel_MP/mp.c"
-#include "NeuralNetwork/Neuron/Neuron.c"
+// #include "NeuralNetwork/Neuron/Neuron.c"
 
 #include "LocalAPIC/lapic.c"
 
 #include "Aqfs.c"
 #include "ext2/ext2_fs.c"
 
-#include "RandomLib/Random.c"
+#include "RandomLib/random.c"
 #include "lodepng/lodepng.c"
 
-#include "NeuralNetwork/Neuron/NeuralProcessing.c"
+// #include "NeuralNetwork/Neuron/NeuralProcessing.c"
 
-#include "IPCInterface/IPCInterface.c"
+#include "MultiTasking/IPCInterface/IPCInterface.c"
 #include "vfs.c"
 #include "WindowSystem/window.c"
 #include "Water/Water.c"
@@ -68,7 +68,7 @@
 
 #include "Processing/LibSymTable/LibSymTable.c"
 #include "Processing/SysCalls/SysCalls.c"
-#include "ThreadTable.c"
+#include "MultiTasking/ThreadTable.c"
 
 
 uint32_t initial_esp;
@@ -116,14 +116,15 @@ void kernel_early(struct multiboot *mboot_ptr)
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	maxmem=memAvailable;
 
-	/*for(int i=0;i<20;i++)
-	{
-		if(mmap_info->startLo==0) break;
-			printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
-			mmap_info->type,strMemoryTypes[mmap_info->type-1]);
-			mmap_info->reservedt = 0xFFE42;
-			mmap_info++;
-	}*/
+	// for(int i=0;i<20;i++)
+	// {
+	// 	if(mmap_info->startLo==0) break;
+	// 		printf("region %i address: %x size: %x Bytes Type: %i (%s)\n",i,mmap_info->startHi,mmap_info->sizeHi,
+	// 		mmap_info->type,strMemoryTypes[mmap_info->type-1]);
+	// 		mmap_info->reservedt = 0xFFE42;
+	// 		mmap_info++;
+	// }
+
 	printf("\nInitializing Memory Manager!\n");
 	mmap_info=(MemRegion_t*)mmap;//+mboot_ptr->size;
 	max_mem=maxmem*1024;
@@ -134,15 +135,16 @@ void kernel_early(struct multiboot *mboot_ptr)
 	printf("\n Available Memory: %x KB\n",maxmem);
 
 	Create_ScodeTables();
+
 	
 	printf("\n\nEnumerating all devices on PCI BUS:\n");
 	checkAllBuses();
 	//while(1);
 	printf("\nEnabling Hard Disk\n");
 	checkAHCI();
-
 	vfs_init();
 
+	// while(1);
 //*/
 	find_MCFGtable();
 
@@ -151,6 +153,8 @@ void kernel_early(struct multiboot *mboot_ptr)
 	
 	printf("\nsize of HPET_Table_t: %x",sizeof(HPET_Table_t));
 	if(cpuHasMSR()) printf("\nCPU has MSR");
+
+	Command_ls();
 	
 	printf("\n\nInitializing MultiThreading System");
 	init_timer(60);
@@ -166,7 +170,7 @@ void kernel_early(struct multiboot *mboot_ptr)
 	//apic_start_timer(APIC_LOCAL_BASE);       //The respective Timer initialization function of the timer of choice
 	//init_idt();
 	while(1);
-	//We shall never get back here, Not until the universe ends. ;)
+	// We shall never get back here, Not until the universe ends. ;)
 }
 
 void kernel_main()

@@ -1,6 +1,6 @@
 #include "library.h"
-#include "tasking.h"
-#include "ThreadTable.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/ThreadTable.h"
 
 void ThreadTable_init()
 {

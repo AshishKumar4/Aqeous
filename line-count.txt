@@ -54,9 +54,9 @@ Files
     56    6    61  Experimental Edition/Installer/Source/MemManagement/vmem.c
     39    6    52  Experimental Edition/Installer/Source/MemManagement/vmem.h
     44    0    51  Experimental Edition/Installer/Source/Shell/Shell.c
-    19    6    34  Experimental Edition/Installer/Source/Shell/Shell.h
+    19    6    34  Experimental Edition/Installer/Source/Shell/Shell/shell.h
     35    8    50  Experimental Edition/Installer/Source/arch/x86/APIC/APIC.c
-     3    0     4  Experimental Edition/Installer/Source/arch/x86/APIC/APIC.h
+     3    0     4  Experimental Edition/Installer/Source/arch/x86/APIC/APIC/apic.h
    335   20   364  Experimental Edition/Installer/Source/arch/x86/cpuid/cpuid.c
     86    2    94  Experimental Edition/Installer/Source/arch/x86/cpuid/cpuid.h
     18    9    22  Experimental Edition/Installer/Source/arch/x86/descriptors.asm
@@ -158,12 +158,12 @@ Files
      0    0     1  Experimental Edition/Source/Shell/GUI/windows.c
      0    0     1  Experimental Edition/Source/Shell/GUI/windows.h
    286   73   380  Experimental Edition/Source/Shell/Shell.c
-    51    7    79  Experimental Edition/Source/Shell/Shell.h
+    51    7    79  Experimental Edition/Source/Shell/Shell/shell.h
    113   20   149  Experimental Edition/Source/arch/x86/APIC/APIC.c
-    91   39   120  Experimental Edition/Source/arch/x86/APIC/APIC.h
+    91   39   120  Experimental Edition/Source/arch/x86/APIC/APIC/apic.h
     17    1    21  Experimental Edition/Source/arch/x86/CPU.c
     48    1    55  Experimental Edition/Source/arch/x86/PIC/PIC.c
-     7    0    12  Experimental Edition/Source/arch/x86/PIC/PIC.h
+     7    0    12  Experimental Edition/Source/arch/x86/PIC/PIC/pic.h
     48    1    55  Experimental Edition/Source/arch/x86/PIT/PIT.c
     83   46   119  Experimental Edition/Source/arch/x86/asmlibrary.asm
    331   15   354  Experimental Edition/Source/arch/x86/cpuid/cpuid.c

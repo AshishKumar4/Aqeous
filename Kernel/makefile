@@ -4,10 +4,10 @@ CONSOLE:=$(SOURCE)/console
 CONSOLEVGA:=$(CONSOLE)/arch/x86
 GRAPHICS:=$(SOURCE)/graphics
 OBJ:=objs
-CC:=i686-elf-gcc
-CPP:=i686-elf-g++
-LD:=i686-elf-ld
-AS:=i686-elf-as
+CC:=i686-linux-gnu-gcc-11
+CPP:=i686-linux-gnu-g++-11
+LD:=i686-linux-gnu-ld
+AS:=i686-linux-gnu-as
 NASM:=nasm
 
 KERNEL:=$(SOURCE)/kernel.o
@@ -26,7 +26,7 @@ ATA:=$(DRIVERS)/ATA
 PCI:=$(DRIVERS)/PCI
 AHCI:=$(DRIVERS)/AHCI
 ACPI:=$(DRIVERS)/ACPI
-MOUSE:=$(DRIVERS)/mouse
+MOUSE:=$(DRIVERS)/Mouse
 KEYBOARD:=$(DRIVERS)/keyboard
 CPUID:=$(ARCH)/cpuid
 APIC:=$(ARCH)/APIC
@@ -52,6 +52,9 @@ INCLUDED:=$(INCLUDED) -I$(KEYBOARD) -I$(DRIVERS) -I$(CPUID) -I$(APIC) -I$(FILESY
 INCLUDED:=$(INCLUDED) -I$(PIC) -I$(PARALLEL_IO) -I$(SERIAL_IO) -I$(GUI_SHELL)
 
 FLAGS:= -m32 -O2 -ffreestanding -fbuiltin -Wall -Wextra -nostdlib -lgcc -fno-builtin $(INCLUDED)
+
+QEMU_CMD:=qemu-system-x86_64 -kernel Aqeous.bin -m 4G -monitor stdio -drive file=hdd.img,format=raw,if=none,id=hdd0 -device ahci,id=ahci -device ide-hd,drive=hdd0,bus=ahci.0
+
 all: clean build-nasm build-kernel
 
 clean:
@@ -95,16 +98,17 @@ build-assembly:
 	$(CC) -T linker.ld $(FLAGS) -S $(SOURCE)/kernel.c
 
 build-objdump:
-	objdump -D -M intel aqeous.bin > aqeous.txt
+	objdump -D -M intel Aqeous.bin > aqeous.txt
+
 
 qemu: 
-	qemu-system-x86_64 -kernel aqeous.bin -smp 4 -m 4G -monitor stdio -drive file=hdd.img,if=none,id=hdd0 -device ich9-ahci,id=ahci -device ide-drive,drive=hdd0,bus=ahci.1
+	$(QEMU_CMD) -smp 4
 
 qemu1: 
-	qemu-system-x86_64 -kernel aqeous.bin -smp 1 -m 4G -monitor stdio -drive file=hdd.img,if=none,id=hdd0 -device ich9-ahci,id=ahci -device ide-drive,drive=hdd0,bus=ahci.1
+	$(QEMU_CMD) -smp 1
 
 qemu2: 
-	qemu-system-x86_64 -kernel aqeous.bin -smp 2 -m 4G -monitor stdio -drive file=hdd.img,if=none,id=hdd0 -device ich9-ahci,id=ahci -device ide-drive,drive=hdd0,bus=ahci.1
+	$(QEMU_CMD) -smp 2
 
 %.o: %.c
 	$(CC) -c $< -o $@ $(FLAGS)

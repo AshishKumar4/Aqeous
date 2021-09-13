@@ -5,12 +5,12 @@
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
 
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
 
-#include "shell.h"
+#include "Shell/shell.h"
 #include "common.h"
 
 void Setup_MMADS()

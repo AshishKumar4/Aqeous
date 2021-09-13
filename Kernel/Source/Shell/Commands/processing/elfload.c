@@ -1,7 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "shell.h"
+#include "Shell/shell.h"
 #include "Processing/ELF/Elf.h"
 
 void Command_elfload()

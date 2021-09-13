@@ -48,7 +48,7 @@ back_code:
   pop  es                                ; load es from 16bit stack
   pop  ds
   sti
-#  hlt
+;  hlt
 
   int 0x10
 

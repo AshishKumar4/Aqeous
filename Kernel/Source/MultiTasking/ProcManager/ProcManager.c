@@ -1,7 +1,7 @@
-#include "ProcManager/ProcManager.h"
-#include "task.h"
-#include "process.h"
-#include "tasking.h"
+#include "MultiTasking/ProcManager/ProcManager.h"
+#include "MultiTasking/task.h"
+#include "MultiTasking/process.h"
+#include "MultiTasking/tasking.h"
 
 ProcDirectory_t* PrDir_create()
 {

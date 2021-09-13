@@ -1,8 +1,8 @@
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
-#include "graphics.h"
-#include "Imagelib/imagelib.h"
+#include "graphics/graphics.h"
+#include "graphics/ImageLib/imagelib.h"
 #include "lodepng/lodepng.h"
 #include "WindowSystem/window.h"
 

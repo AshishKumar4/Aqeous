@@ -2,8 +2,8 @@
 #include "stdlib.h"
 #include "common.h"
 #include "string.h"
-#include "Shell.h"
-#include "Water.h"
+#include "Shell/shell.h"
+#include "Water/Water.h"
 #include "ctype.h"
 
 

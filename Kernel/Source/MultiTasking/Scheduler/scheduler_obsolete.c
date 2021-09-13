@@ -1,4 +1,4 @@
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -7,9 +7,9 @@
 #include "phy_mm/mem.h"
 #include "timer.h"
 #include "stdint.h"
-#include "APIC.h"
-#include "PIC.h"
-#include "Scheduler/Scheduler.h"
+#include "APIC/apic.h"
+#include "PIC/pic.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 #include "descriptors.h"
 /*
 Symbol Map:

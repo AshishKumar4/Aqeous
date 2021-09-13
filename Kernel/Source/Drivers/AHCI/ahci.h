@@ -5,7 +5,7 @@
 //#include <mem.h>
 #include <ahci_device_list.h>
 #include <ata.h>
-#include <pci.h>
+#include <PCI.h>
 
 #define SECTOR_SIZE 512
 
@@ -644,7 +644,7 @@ typedef struct
     uint32_t    len;
 } ahci_prdt;
 
- void probe_port(ahci_t *ahci_c);
+ void probe_port(ahci_t *ahci_c, HBA_MEM *abar);
 
 
 uint32_t sata=0;

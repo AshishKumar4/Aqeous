@@ -14,7 +14,7 @@
     {AOI = Address of itself}
 */
 
-typedef struct __attribute__((packed)) CustomCSRB_M //Custom Circular Self Refrencing Buffer FOR memory management
+typedef struct __attribute__((packed, aligned(sizeof(uint32_t)))) CustomCSRB_M //Custom Circular Self Refrencing Buffer FOR memory management
 {
     uint32_t* addr;
     uint32_t begin;
@@ -22,7 +22,7 @@ typedef struct __attribute__((packed)) CustomCSRB_M //Custom Circular Self Refre
     uint32_t reserved;
 }CustomCSRB_M_t;
 
-typedef struct __attribute__((packed)) CustomCSRB_M_header // Custom CSRB Header for Memory Management
+typedef struct __attribute__((packed, aligned(sizeof(uint32_t)))) CustomCSRB_M_header // Custom CSRB Header for Memory Management
 {
     uint32_t entries;
     uint32_t changed;

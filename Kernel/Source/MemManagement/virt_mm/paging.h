@@ -21,7 +21,7 @@
 typedef uint_fast32_t page_t;
 typedef uint_fast32_t table_t;
 
-typedef struct __attribute__((packed)) PageDirectory
+typedef struct __attribute__((packed, aligned(sizeof(uint32_t)))) PageDirectory
 {
     table_t table_entry[PAGES_PER_DIR];
 }PageDirectory_t;
@@ -29,7 +29,7 @@ typedef struct __attribute__((packed)) PageDirectory
 PageDirectory_t* system_dir;
 PageDirectory_t* _cur_dir,* _prev_dir, *TemplatePgDir;
 
-typedef struct __attribute__((packed)) PageTable
+typedef struct __attribute__((packed, aligned(sizeof(uint32_t)))) PageTable
 {
     page_t page_entry[PAGES_PER_TABLE];
 }PageTable_t;
@@ -38,7 +38,7 @@ PageTable_t* TemplatePgTbl_Array;
 
 uint32_t cumulative_Knlpgdsz = 0;
 
-typedef struct __attribute__((packed)) Pdir_Capsule
+typedef struct __attribute__((packed, aligned(sizeof(uint32_t)))) Pdir_Capsule
 {
     PageDirectory_t pdir;
     uint32_t csrb_f[1024];

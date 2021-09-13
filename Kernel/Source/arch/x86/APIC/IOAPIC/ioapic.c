@@ -1,5 +1,5 @@
-#include <APIC/IOAPIC/IOAPIC.h>
-#include <APIC.h>
+#include "APIC/IOAPIC/ioapic.h"
+#include "APIC/apic.h"
 #include <stdio.h>
 #include <stdlib.h>
 

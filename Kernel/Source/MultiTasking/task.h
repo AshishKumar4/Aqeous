@@ -10,7 +10,7 @@
 #include "stdint.h"
 #include "fs.h"
 
-#include "Scheduler/Scheduler.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 
 // This structure defines a 'task' - a process.
 typedef struct __attribute__((packed)) _task //DO NOT CHANGE ANYTHING UNLESS YOU HAVE A REASON; Make changes in tasking.asm too then.
@@ -77,7 +77,7 @@ void Task_wakeup_direct(task_t* task);
 
 void Task_Swap(task_t* new, task_t* original);
 
-#include "process.h"
+#include "MultiTasking/process.h"
 
 task_t* create_task(char* name, void (*func)(), uint32_t priority, uint32_t flags, Process_t* process);
 

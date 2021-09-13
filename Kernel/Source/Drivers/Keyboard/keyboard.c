@@ -3,7 +3,7 @@
 #include "scancodes.h"
 #include "common.h"
 #include "library.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 
 void keyboard_init()
 {

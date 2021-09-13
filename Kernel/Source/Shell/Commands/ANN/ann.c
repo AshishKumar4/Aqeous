@@ -1,6 +1,6 @@
 #include "NeuralNetwork/Neuron/neuron.h"
 #include "FileSystem/AqFS/fs.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "MemManagement/phy_mm/mem.h"
 #include "stdio.h"
 #include "stdlib.h"

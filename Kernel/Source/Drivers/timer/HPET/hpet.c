@@ -1,7 +1,7 @@
-#include "hpet.h"
+#include "timer/HPET/hpet.h"
 #include "stdio.h"
 #include "string.h"
-#include "apic.h"
+#include "APIC/apic.h"
 #include "sys.h"
 
 inline unsigned int hpet_readl(unsigned int a)

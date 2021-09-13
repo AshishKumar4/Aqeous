@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "common.h"
 #include "string.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "Water.h"
 #include "ctype.h"
 #include "OperationFuncs.c"

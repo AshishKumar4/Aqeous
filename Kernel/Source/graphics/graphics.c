@@ -6,10 +6,10 @@
 #include <math.h>
 #include <string.h>
 #include <mouse.h>
-#include "RandomLib/Random.h"
+#include "RandomLib/random.h"
 #include "WindowSystem/window.h"
 
-#include "imagelib/imagelib.c"
+#include "graphics/ImageLib/imagelib.c"
 
 inline void refresh_area(int x0, int y0, int x1, int y1)
 {

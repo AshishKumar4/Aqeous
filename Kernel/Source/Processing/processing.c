@@ -3,8 +3,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "common.h"
-#include "tasking.h"
-#include "process.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/process.h"
 #include "ELF/Elf.h"
 
 

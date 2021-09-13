@@ -1,13 +1,13 @@
 #include "kb_handle.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "stdlib.h"
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
 #include "stdio.h"
 #include "queues.h"
-#include "shell.h"
-#include "Scheduler\Scheduler.h"
+#include "Shell/shell.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 
 void kb_io_init()
 {

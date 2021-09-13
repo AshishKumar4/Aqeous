@@ -1,7 +1,7 @@
 #ifndef IPCINTERFACE_h
 #define IPCINTERFACE_h
 
-#include "task.h"
+#include "MultiTasking/task.h"
 
 #define TASK_PRIORITY_REFRESH 1
 #define TASK_ACTIVATE         2

@@ -1,4 +1,4 @@
-#include <pci.h>
+#include <PCI.h>
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"

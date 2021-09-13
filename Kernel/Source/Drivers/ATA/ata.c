@@ -1,7 +1,7 @@
 #include <console.h>
 #include <sys.h>
 #include <ata.h>
-#include <pci.h>
+#include <PCI.h>
 #include <ahci.h>
 inline void write_sector(unsigned int addr)
 {

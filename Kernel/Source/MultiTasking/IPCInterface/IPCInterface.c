@@ -1,10 +1,10 @@
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
-#include "tasking.h"
-#include "task.h"
-#include "Scheduler/Scheduler.h"
-#include "process.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/task.h"
+#include "MultiTasking/Scheduler/scheduler.h"
+#include "MultiTasking/process.h"
 
 void __attribute__((optimize("O0"))) IPC_init()
 {

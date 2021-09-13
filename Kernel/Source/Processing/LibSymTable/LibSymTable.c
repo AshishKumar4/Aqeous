@@ -1,5 +1,5 @@
 #include "LibSymTable.h"
-#include "LIBRARY.h"
+#include "library.h"
 #include "Processing/SysCalls/SysCalls.h"
 #include "IO_Handling/IO_Devices/Keyboard/kb_handle.h"
 #include "Processing/SysCalls/SyscallVects.h"

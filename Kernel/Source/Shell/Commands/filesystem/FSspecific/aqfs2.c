@@ -1,6 +1,6 @@
 #include "Aqfs.h"
 #include "AqfsTools.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "common.h"
 #include "string.h"
 #include "stdio.h"
@@ -9,7 +9,7 @@
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "kb_handle.h"
 
 void aqfs2_cd(char* dir)

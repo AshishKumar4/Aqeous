@@ -6,7 +6,7 @@
 #include "common.h"
 #include "stdlib.h"
 #include "string.h"
-#include "apic.h"
+#include "APIC/apic.h"
 
 typedef struct MP_FloatingPointer
 {

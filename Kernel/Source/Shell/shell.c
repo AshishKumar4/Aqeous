@@ -1,6 +1,6 @@
-#include "shell.h"
+#include "Shell/shell.h"
 #include "console.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "kb_handle.h"
 #include "common.h"
 #include "stdlib.h"
@@ -10,7 +10,7 @@
 #include "vesa.h"
 #include "fs.h"
 #include "graphics.h"
-#include "PIC.h"
+#include "PIC/pic.h"
 #include "memfunc.h"
 
 #include "Commands/Default_Commands.c"
@@ -743,7 +743,7 @@ void console_manager_init()
 	 Shell_Add_Commands(Command_aptest, 307, 0, "aptest");
 	 Shell_Add_Commands(Command_proc, 99, 0, "proc");
 	 Shell_Add_Commands(Command_rn, 43, 0, "rn");
-	 Shell_Add_Commands(Command_ann, 65, 0, "ann");
+	//  Shell_Add_Commands(Command_ann, 65, 0, "ann");
 	 Shell_Add_Commands(Command_echo, 85, 0, "echo");
 	 Shell_Add_Commands(Command_cat, 59, 0, "cat");
 	 Shell_Add_Commands(Command_rm, 41, 0, "rm");

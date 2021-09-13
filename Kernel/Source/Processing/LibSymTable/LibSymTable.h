@@ -1,7 +1,7 @@
 #ifndef LIBSYMTABLE_H
 #define LIBSYMTABLE_H
 
-#include "LIBRARY.h"
+#include "library.h"
 
 uint32_t* LIBSYMTABLE;
 

@@ -1,11 +1,11 @@
 #include "stdio.h"
-#include "hpet.h"
-#include "shell.h"
-#include "tasking.h"
+#include "timer/HPET/hpet.h"
+#include "Shell/shell.h"
+#include "MultiTasking/tasking.h"
 #include "string.h"
 
 #include "ext2/ext2_fs.h"
-#include "apic.h"
+#include "APIC/apic.h"
 #include "NeuralNetwork/Neuron/neuron.h"
 #include "vfs.h"
 
@@ -42,10 +42,10 @@ void Command_init()
   {
     MADTapic_parse();
   }
-  else if(!strcmp("nn", device_name))
-  {
-    NeuralNet_init();
-  }
+  // else if(!strcmp("nn", device_name))
+  // {
+  //   NeuralNet_init();
+  // }
   else if(!strcmp("vfs", device_name))
   {
     vfs_init();

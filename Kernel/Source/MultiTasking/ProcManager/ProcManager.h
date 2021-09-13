@@ -1,8 +1,8 @@
 #ifndef PROCMANAGER_h
 #define PROCMANAGER_h
 
-#include "process.h"
-#include "tasking.h"
+#include "MultiTasking/process.h"
+#include "MultiTasking/tasking.h"
 
 typedef struct __attribute__((packed)) ProcTable
 {

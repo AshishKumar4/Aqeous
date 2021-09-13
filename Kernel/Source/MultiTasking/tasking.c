@@ -1,30 +1,30 @@
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
-#include "process.h"
+#include "MultiTasking/process.h"
 #include "sys.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "vesa.h"
 #include "kb_handle.h"
 #include "stdlib.h"
 #include "FS_Handling.h"
-#include "apic.h"
+#include "APIC/apic.h"
 #include "pic.h"
-#include "hpet.h"
+#include "timer/HPET/hpet.h"
 #include "MManager/mmanagerSys.h"
 
 #include "cpu/cpu.h"
-#include "Scheduler/Scheduler.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 
 #include "RandomLib/random.h"
 #include "math.h"
 
 #include "NeuralNetwork/Neuron/NeuralProcessing.h"
-#include "ProcManager/ProcManager.h"
+#include "MultiTasking/ProcManager/ProcManager.h"
 
 #include "IPCInterface/IPCInterface.h"
 #include "math.h"
@@ -38,7 +38,7 @@
 #include "Processing/LibSymTable/LibSymTable.h"
 #include "Processing/SysCalls/SysCalls.h"
 #include "Processing/processing.h"
-#include "ThreadTable.h"
+#include "MultiTasking/ThreadTable.h"
 
 void idle()
 {

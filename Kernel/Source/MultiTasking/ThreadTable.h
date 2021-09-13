@@ -2,8 +2,8 @@
 #define THREADTABLE_H 
 
 #include "library.h"
-#include "tasking.h"
-#include "threadtable.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/ThreadTable.h"
 
 #define THREADTABLE_VMEM                0xC2A00000
 #define THREADTABLE_SIZE                (2048*1024)

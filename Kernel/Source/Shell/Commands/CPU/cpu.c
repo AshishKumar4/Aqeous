@@ -1,9 +1,9 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "shell.h"
+#include "Shell/shell.h"
 #include "string.h"
 #include "common.h"
-#include "CPU/cpu.h"
+#include "cpu/cpu.h"
 #include "vesa.h"
 
 void Command_cpu()

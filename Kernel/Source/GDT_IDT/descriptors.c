@@ -2,8 +2,8 @@
 #include <descriptors.h>
 #include <sys.h>
 #include <string.h>
-#include <cpu/cpu.h>
-#include "hpet.h"
+#include "cpu/cpu.h"
+#include "timer/HPET/hpet.h"
 #include "cmos.h"
 #include "stdio.h"
 #include "stdlib.h"

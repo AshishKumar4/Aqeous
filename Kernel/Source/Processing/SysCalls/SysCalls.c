@@ -1,10 +1,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "common.h"
 #include "SysCalls.h"
-#include "Scheduler/Scheduler.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 
 #include "SyscallVects.c"
 

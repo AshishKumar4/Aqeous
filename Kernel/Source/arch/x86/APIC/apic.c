@@ -2,11 +2,11 @@
 #include "apic.h"
 #include "sys.h"
 #include "pic.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "cpu/cpu.h"
 
-#include "IOAPIC/IOAPIC.c"
-#include "localapic/lapic.h"
+#include "APIC/IOAPIC/ioapic.c"
+#include "APIC/LocalAPIC/lapic.h"
 
 bool check_apic()
 {

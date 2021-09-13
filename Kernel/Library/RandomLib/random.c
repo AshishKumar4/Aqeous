@@ -4,7 +4,7 @@
 #include "common.h"
 #include "mathex.h"
 #include "timer.h"
-#include "hpet.h"
+#include "timer/HPET/hpet.h"
 #include "APIC/LocalAPIC/lapic.h"
 #include "math.h"
 

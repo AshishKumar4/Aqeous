@@ -6,7 +6,7 @@
         "vector": "c",
         "xstring": "c",
         "xutility": "c",
-        "shell.h": "c",
+        "Shell/shell.h": "c",
         "xlocale": "c",
         "system_error": "c",
         "istream": "c",

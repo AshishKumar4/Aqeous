@@ -2,7 +2,7 @@
 
 #include "fs.h"
 #include "fs_alloc.h"
-#include "shell.h"
+#include "Shell/shell.h"
 #include "string.h"
 #include "stdlib.h"
 #include "phy_mm/mem.h"

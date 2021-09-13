@@ -2,7 +2,7 @@
 #include "graphics.h"
 #include "lodepng/lodepng.h"
 #include "stdio.h"
-#include "imagelib/imagelib.h"
+#include "graphics/ImageLib/imagelib.h"
 #include "multiboot.h"
 #include "Interpolation/Interpolator.h"
 //#include "upng/upng.h"

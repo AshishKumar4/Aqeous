@@ -1,7 +1,7 @@
-#include "tasking.h"
-#include "task.h"
-#include "ProcManager/ProcManager.h"
-#include "Scheduler/Scheduler.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/task.h"
+#include "MultiTasking/ProcManager/ProcManager.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 #include "ProcManagement.h"
 
 void Command_proc()

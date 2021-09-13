@@ -3,14 +3,14 @@
 #include "string.h"
 #include "common.h"
 
-#include "ELF.h"
-#include "tasking.h"
-#include "task.h"
-#include "process.h"
-#include "Shell.h"
+#include "Elf.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/task.h"
+#include "MultiTasking/process.h"
+#include "Shell/shell.h"
 #include "Processing/processing.h"
 
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "console.h"
 
 uint32_t Elf_VerifyMagic(Elf32_Ehdr_t* hdr)

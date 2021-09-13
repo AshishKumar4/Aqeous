@@ -1,10 +1,10 @@
 #include "cpuid_c.h"
-#include "apic.h"
+#include "APIC/apic.h"
 #include "cpu/cpu.h"
-#include "LocalAPIC/lapic.h"
+#include "APIC/LocalAPIC/lapic.h"
 
 #include "timer.h"
-#include "HPET/HPET.h"
+#include "timer/HPET/hpet.h"
 #include "Intel_MP/mp.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -13,7 +13,7 @@
 #include "common.h"
 #include "sys.h"
 #include "descriptors.h"
-#include "Scheduler/scheduler.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 
 bool cpuHasMSR()
 {

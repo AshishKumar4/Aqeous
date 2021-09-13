@@ -1,6 +1,6 @@
-#include "tasking.h"
-#include "task.h"
-#include "Scheduler/Scheduler.h"
+#include "MultiTasking/tasking.h"
+#include "MultiTasking/task.h"
+#include "MultiTasking/Scheduler/scheduler.h"
 #include "stdio.h"
 #include "stdlib.h"
 

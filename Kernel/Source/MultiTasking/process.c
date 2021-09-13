@@ -1,12 +1,12 @@
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
 #include "phy_mm/mem.h"
-#include "process.h"
-#include "ProcManager/ProcManager.h"
+#include "MultiTasking/process.h"
+#include "MultiTasking/ProcManager/ProcManager.h"
 
 uint32_t pidcounter = 1;
 

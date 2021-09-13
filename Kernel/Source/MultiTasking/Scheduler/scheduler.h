@@ -1,7 +1,7 @@
 #ifndef SCHEDULER_h
 #define SCHEDULER_h
 
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -10,8 +10,8 @@
 #include "phy_mm/mem.h"
 #include "timer.h"
 #include "stdint.h"
-#include "APIC.h"
-#include "PIC.h"
+#include "APIC/apic.h"
+#include "PIC/pic.h"
 
 void Init_Scheduler();
 

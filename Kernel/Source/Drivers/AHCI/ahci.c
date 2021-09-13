@@ -1,9 +1,10 @@
-#include <ahci.h>
+
 #include <string.h>
 #include <sys.h>
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
+#include "ahci.h"
 #include <ata.h>
 ahci_t *test1;
 /**
@@ -87,7 +88,6 @@ void stop_cmd(HBA_PORT *port);
 int find_cmdslot(HBA_PORT *port);
 unsigned int bus,device,func;
 
-HBA_MEM *abar;
 bool AHCI;
 
 char *get_device_info(uint16_t vendorID, uint16_t deviceID)
@@ -112,29 +112,36 @@ void ahci_handler()
   printf("\nAHCI disk sent an intterupt\n");
 }
 
+HBA_MEM* ABAR;
+
+HBA_MEM* getABAR(HBA_PORT* port) {
+  return ABAR;
+}
+
 int checkAHCI()
 {
     AHCI_Controllers=(ahci_t*)phy_alloc4K();
-    ahci_t* ahci = AHCI_Controllers;
-	  //AHCI_BASE = (uint32_t)pmem_4k(64);//kmalloc(4*1024*1024);
+    ahci_t* ahciController = AHCI_Controllers;
+	  // AHCI_BASE = (uint32_t)pmem_4k(64);//kmalloc(4*1024*1024);
     for(uint32_t ahcis=0;ahcis<TotalAHCIDevices;ahcis++)
     {
       ++controllers;
-      ahci->ahci=&AHCI_Devices[ahcis];
-      printf(get_device_info(ahci->ahci->Header->VendorId, ahci->ahci->Header->DeviceId));
+      ahciController->ahci=&AHCI_Devices[ahcis];
+      printf(get_device_info(ahciController->ahci->Header->VendorId, ahciController->ahci->Header->DeviceId));
       printf("\n\tAHCI CONTROLLER #");
       printint(controllers);
       printf(" FOUND, INITIALIZING AHCI CONTROLLER and Disks");
 
-      abar=(HBA_MEM*)ROUNDDOWN(ahci->ahci->Header->Bar5, 4096);
-      printf("\nABAR: %x, REST FIELDS: %x", abar, (ahci->ahci->Header->Bar5)%4096);
+      HBA_MEM* abar=(HBA_MEM*)ROUNDDOWN(ahciController->ahci->Header->Bar5, 4096);
+      ABAR = abar;
+      printf("\nABAR: %x, REST FIELDS: %x, RAW: %x", abar, (ahciController->ahci->Header->Bar5)%4096, ahciController->ahci->Header->Bar5);
 
-      probe_port(ahci);
+      probe_port(ahciController, abar);
 
       printf("\n\tAHCI CONTROLLER Initialized\n");
-      ahci->ControllerID=controllers;
+      ahciController->ControllerID=controllers;
       ahci_found=1;
-      ++ahci;
+      ++ahciController;
     }
 
     printf("\n");
@@ -160,11 +167,14 @@ int IDENTIFYdrive(Disk_dev_t* disk)
   return 1;
 }
 
-void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
+void probe_port(ahci_t *ahci_c, HBA_MEM *abar)
 {
   Disk_dev_t* Disk_dev;
 	// Search disk in impelemented ports
 	uint32_t pi = abar->pi;
+  for (int i = 0; i < 12; i++) {
+    printf("\t[%d, %x]", i, ((DWORD*)abar)[i]);
+  }
   uint32_t temp2=0;
   int i = 0;
   printf("\nPorts: %x, CAP: %x, vs: %x", pi, abar->cap, abar->vs);
@@ -172,6 +182,7 @@ void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 	{
 		if (pi & 0x1)
 		{
+      printf("\n%d->", i);
   			int dt = check_type(&abar->ports[i]);
         if(dt && !(abar->ports[i].cmd&(1<<0)))
     		{
@@ -187,7 +198,7 @@ void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
             ++disks;
             ++sata;
             temp2|=(1<<i);
-  				  //printf("\n\t\tSATA drive #%x found",sata);
+  				  printf("\n\t\tSATA drive #%x found",sata);
             //port_rebase(&abar->ports[i],i);
             //test_sata(&abar->ports[i]);
             //int a=IDENTIFYdrive(&ahci_c->Disk[i]);
@@ -237,8 +248,8 @@ void probe_port(ahci_t *ahci_c)//(HBA_MEM *abar)
 	}
   if(!AHCI)
   {
-    printf("\n\t\tNo Drives Recognized on this controller\n");
-    return;
+    printf("\n\t\tNo Drives Recognized on this controller %d\n", temp2);
+    // return;
   }
   for(int i=0,j=0;i<32;i++)
   {
@@ -261,28 +272,28 @@ int check_type(HBA_PORT *port)
 	DWORD ssts = port->ssts;
 
 	BYTE ipm = (ssts >> 8) & 0x0F;
-  BYTE det = ssts & 0x0F;
+  BYTE det = ssts & 0x3;
   
-  if(!sact)
+  printf("clb %x, clbu %x, fb %x, fbu %x", port->clb, port->clbu, port->fb, port->fbu);
+  printf("{sig %x, sact %x, ssts %x det: %x}", port->sig, port->sact, port->ssts, det);
+  if(det != HBA_PORT_DET_PRESENT) {
     return AHCI_DEV_NULL;
-
-  if(det == 1)
+  }
+  else if(det == 1)
   {
     printf("\nDevice presence detected but Phy communication not established ");
   }
-	else if (det != HBA_PORT_DET_PRESENT)	// Check drive status
-	{
-    return AHCI_DEV_NULL;
-  }
+
+  printf("Device found!");
+
 	if (ipm != HBA_PORT_IPM_ACTIVE)
   {
     printf("\nInterface Not in active Mode");
     return AHCI_DEV_NULL;
   }
   
- // printf("\n{%x, %x, %x}", port->sig, port->sact, port->ssts);
 
-	switch (port->sig)
+	switch (port->sig & 0xf)
 	{
 	case SATA_SIG_ATAPI:
 		return AHCI_DEV_SATAPI;
@@ -297,6 +308,7 @@ int check_type(HBA_PORT *port)
 
 void port_rebase(HBA_PORT *port, int portno)
 {
+  HBA_MEM* abar = getABAR(port);
   abar->ghc=(DWORD)(1<<31);
   abar->ghc=(DWORD)(1<<0);
   abar->ghc=(DWORD)(1<<31);
@@ -701,7 +713,7 @@ int find_cmdslot(HBA_PORT *port)
 {
     // An empty command slot has its respective bit cleared to �0� in both the PxCI and PxSACT registers.
         // If not set in SACT and CI, the slot is free // Checked
-
+        HBA_MEM* abar = getABAR(port);
         DWORD slots = (port->sact | port->ci);
         int cmdslots= (abar->cap & 0x0f00)>>8 ; // Bit 8-12
       	for (int i=0; i<cmdslots; i++)

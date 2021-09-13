@@ -1,4 +1,4 @@
-#include "lapic.h"
+#include "APIC/LocalAPIC/lapic.h"
 
 uint32_t __attribute__((optimize("O0"))) localapic_read(uint32_t base, uint32_t reg)
 {

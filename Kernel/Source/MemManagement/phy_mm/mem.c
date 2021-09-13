@@ -8,8 +8,8 @@
 #include "MManager/mmanagerSys.h"
 
 #include "virt_mm/paging.h"
-#include "Scheduler/Scheduler.h"
-#include "tasking.h"
+#include "MultiTasking/Scheduler/scheduler.h"
+#include "MultiTasking/tasking.h"
 
 /*
 	[0-4MB] = KERNEL

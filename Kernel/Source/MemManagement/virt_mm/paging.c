@@ -4,8 +4,8 @@
 #include "string.h"
 #include "phy_mm/mem.h"
 #include "Processing/LibSymTable/LibSymTable.h"
-#include "ProcManager/ProcManager.h"
-#include "ThreadTable.h"
+#include "MultiTasking/ProcManager/ProcManager.h"
+#include "MultiTasking/ThreadTable.h"
 
 void SystemDir_Mapper() ///will use it to manage OS directly
 {

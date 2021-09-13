@@ -1,5 +1,5 @@
 #include "fs.h"
-#include "Shell.h"
+#include "Shell/shell.h"
 #include "common.h"
 #include "string.h"
 #include "stdio.h"

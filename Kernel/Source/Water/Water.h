@@ -17,8 +17,8 @@
 #include "stdlib.h"
 #include "common.h"
 #include "string.h"
-#include "Shell.h"
-#include "task.h"
+#include "Shell/shell.h"
+#include "MultiTasking/task.h"
 
 task_t* Water_Task;
 uintptr_t* Working_Table;

@@ -3,15 +3,15 @@
 #include "phy_mm/mem.h"
 #include "virt_mm/vmem.h"
 #include "virt_mm/paging.h"
-#include "shell.h"
+#include "Shell/shell.h"
 #include "stdio.h"
-#include "tasking.h"
+#include "MultiTasking/tasking.h"
 #include "FS_Handling.h"
 #include "string.h"
-#include "shell.h"
+#include "Shell/shell.h"
 #include "fs.h"
 #include "ahci.h"
-#include "pci.h"
+#include "PCI.h"
 
 //uint32_t a = 0;
 //uint32_t* b = 0;
